@@ -3829,7 +3829,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     n;
 
         READ_N(n);
-        Z80_INPUT_BYTE(n, A);
+        Z80_INPUT_BYTE((n | (A << 8)), A);
 
         elapsed_cycles += 4;
 
