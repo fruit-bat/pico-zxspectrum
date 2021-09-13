@@ -6,6 +6,7 @@ add_executable(ZxSpectrum
 	main.cpp
 	Z80.cpp
 	ZxSpectrumKeyboard.cpp
+	ZxSpectrumHidKeyboard.cpp
 	ZxSpectrum.cpp
 	hid_app.c
 #	hw_config.c

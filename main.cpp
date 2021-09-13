@@ -19,7 +19,7 @@ extern "C" {
 #include "tmds_encode.h"
 }
 #include "ZxSpectrum.h"
-#include "ZxSpectrumKeyboard.h"
+#include "ZxSpectrumHidKeyboard.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -120,11 +120,12 @@ void __not_in_flash("main") core1_main() {
 	__builtin_unreachable();
 }
 
-static ZxSpectrumKeyboard keyboard;
+static ZxSpectrumHidKeyboard keyboard;
 static ZxSpectrum zxSpectrum(&keyboard);
 
+
 extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
-//  sorcerer2HidKeyboard.processHidReport(report);
+	keyboard.processHidReport(report);
 }
 
 extern "C" int __not_in_flash("main") main() {
@@ -146,6 +147,8 @@ extern "C" int __not_in_flash("main") main() {
 	screenPtr = zxSpectrum.screenPtr();
 	attrPtr = screenPtr + (32 * 24 * 8);
 
+	keyboard.setZxSpectrum(&zxSpectrum);
+	
 	printf("Configuring DVI\n");
    
 	dvi0.timing = &DVI_TIMING;
@@ -168,7 +171,7 @@ extern "C" int __not_in_flash("main") main() {
 	zxSpectrum.reset();
 
 	while (1) {
-		// tuh_task();
+		tuh_task();
 		zxSpectrum.step();
 		hid_app_task();
 	}
