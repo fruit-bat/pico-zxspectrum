@@ -2,6 +2,7 @@
 #pragma GCC optimize ("O2")
 
 #include "Z80.h"
+#include "ZxSpectrumKeyboard.h"
 
 class ZxSpectrum {
 private:
@@ -10,6 +11,7 @@ private:
   uint32_t _tu4;
   int32_t _ta4;
   bool _moderate;
+  ZxSpectrumKeyboard *_keyboard;
   
   static inline int readByte(void * context, int address)
   {
@@ -26,15 +28,17 @@ private:
   
   static inline int readIO(void * context, int address)
   {
+    // printf("readIO %04X\n", address);
     const auto m = (ZxSpectrum*)context;
     switch(address & 0xFF) {
-      //case 0xFE: return m->_keyboard->read(address);
+      case 0xFE: return m->_keyboard->read(address);
       default: return 0xff;
     }
   }
 
   static inline void writeIO(void * context, int address, int value)
   {
+    // printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
     switch(address & 0xFF) {
       default: break;
@@ -55,6 +59,7 @@ private:
   
 public:
   ZxSpectrum(
+    ZxSpectrumKeyboard *keyboard
   );
   inline unsigned char* screenPtr() { return &_RAM[0x4000]; }
   void reset(unsigned int address);
@@ -63,4 +68,3 @@ public:
   void moderate(bool on);
   void toggleModerate();
 };
-

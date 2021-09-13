@@ -2,12 +2,14 @@
 #include "basic.h"
 #include <memory.h>
 #include <pico/printf.h>
-#include "pico/stdlib.h"
-// #include "Sorcerer2HidKeyboard.h"
+#include <pico/stdlib.h>
 
 ZxSpectrum::ZxSpectrum(
+  ZxSpectrumKeyboard *keyboard
 ) : 
+  _cycles(0),
   _moderate(false),
+  _keyboard(keyboard),
   _RAM{0}
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
@@ -25,8 +27,7 @@ void ZxSpectrum::reset(unsigned int address)
 
 void ZxSpectrum::step()
 {
-
-  // printAtF(0,0, "PC:%04X ", _Z80.getPC()); 
+  // printf("PC:%04X ", _Z80.getPC()); 
   for(int i=0; i < INSTRUCTION_PER_STEP; ++i) {
     int c = _Z80.step();
     _cycles += c;
@@ -37,6 +38,10 @@ void ZxSpectrum::step()
       if (_ta4 > 4) busy_wait_us_32(_ta4 >> 2);
       if (_ta4 < -1000000) _ta4 = -1000000;
     }
+  }
+  if (_cycles > 175000) {
+    _cycles -= 175000;
+    _Z80.IRQ(0x38);
   }
 }
 

@@ -3840,7 +3840,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       case IN_R_C: {
 
         int     x;
-        Z80_INPUT_BYTE(C, x);
+        Z80_INPUT_BYTE(BC, x);
         if (Y(opcode) != INDIRECT_HL)
 
           R(Y(opcode)) = x;
@@ -3864,7 +3864,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         int     x, f;
 
-        Z80_INPUT_BYTE(C, x);
+        Z80_INPUT_BYTE(BC, x);
         WRITE_BYTE(HL, x);
 
         f = SZYX_FLAGS_TABLE[--B & 0xff]
@@ -3915,7 +3915,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           r += 2;
 
-          Z80_INPUT_BYTE(C, x);
+          Z80_INPUT_BYTE(BC, x);
           Z80_WRITE_BYTE(hl, x);
 
           hl += d;
