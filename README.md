@@ -1,7 +1,20 @@
 # pico-zxspectrum
 ZX Spectrum for Raspberry Pico Pi RP2040
 
+This is an attempt to make a very basic ZX Spectrum emulation on the RP2040 with DVI output.
+
+Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
+
+## Features
+* DVI over HDMI output
+* USB Keyboard input
+* No screen buffer
+
+## First light
+<img src="docs/zxspectrum_screen_1.jpg" width="400"/>
+
 # References
+[Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts<br/>
