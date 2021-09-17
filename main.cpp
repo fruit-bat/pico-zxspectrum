@@ -93,7 +93,7 @@ static inline void prepare_scanline(uint y) {
 			
 			p = tmds_encode_font_2bpp(
 				(const uint8_t*)s,
-				attrPtr+((y>>3)<<5),
+				attrPtr+((v>>3)<<5),
 				p,
 				32 * 8 * 2,
 				(const uint8_t*)screenPtr, // TODO remove
