@@ -12,6 +12,7 @@ private:
   int32_t _ta4;
   bool _moderate;
   ZxSpectrumKeyboard *_keyboard;
+  int32_t _borderColour;
   
   static inline int readByte(void * context, int address)
   {
@@ -41,7 +42,11 @@ private:
     // printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
     switch(address & 0xFF) {
-      default: break;
+      case 0xFE: 
+        m->_borderColour = value & 7;
+        break;
+      default: 
+        break;
     }  
   }
   
@@ -67,5 +72,5 @@ public:
   void step();
   void moderate(bool on);
   void toggleModerate();
-  unsigned int borderColour() { return 7; }
+  unsigned int borderColour() { return _borderColour; }
 };

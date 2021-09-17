@@ -10,6 +10,7 @@ ZxSpectrum::ZxSpectrum(
   _cycles(0),
   _moderate(false),
   _keyboard(keyboard),
+  _borderColour(7),
   _RAM{0}
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);

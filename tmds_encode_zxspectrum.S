@@ -5,33 +5,6 @@
 .cpu cortex-m0plus
 .thumb
 
-// Using the following:
-//
-// - A font stored as a 1bpp bitmap, with row 0 of each character stored in
-//   one contiguous array, then row 1, etc, where each character is 8 bits
-//   wide
-//
-// - A character buffer
-//
-// - A colour buffer for each of R, G, B (so 3 planes total), each buffer
-//   storing a 2-bit foreground and background colour for each character
-//
-// Generate encoded TMDS buffers, fast enough to fit all the encode on one
-// core, and with small memory footprint (so no framebuffer of any depth!) The
-// main trick here is a LUT with an 8 bit index, composed of 4x1bpp pixels
-// (the 4 LSBs of the index) and a 2x2-bit palette (the four MSBs of the
-// index). Each LUT entry is 4 TMDS symbols, so 2 32-bit words, giving a total
-// table size of 2 kB.
-
-// Offsets suitable for ldr/str (must be <= 0x7c):
-#define ACCUM0_OFFS     (SIO_INTERP0_ACCUM0_OFFSET     - SIO_INTERP0_ACCUM0_OFFSET)
-#define ACCUM1_OFFS     (SIO_INTERP0_ACCUM1_OFFSET     - SIO_INTERP0_ACCUM0_OFFSET)
-#define ACCUM1_ADD_OFFS (SIO_INTERP0_ACCUM1_ADD_OFFSET - SIO_INTERP0_ACCUM0_OFFSET)
-#define PEEK0_OFFS      (SIO_INTERP0_PEEK_LANE0_OFFSET - SIO_INTERP0_ACCUM0_OFFSET)
-#define PEEK1_OFFS      (SIO_INTERP0_PEEK_LANE1_OFFSET - SIO_INTERP0_ACCUM0_OFFSET)
-#define PEEK2_OFFS      (SIO_INTERP0_PEEK_FULL_OFFSET  - SIO_INTERP0_ACCUM0_OFFSET)
-#define INTERP1         (SIO_INTERP1_ACCUM0_OFFSET     - SIO_INTERP0_ACCUM0_OFFSET)
-
 // r2 contains output buffer pointer
 // r4 contains a byte of pixel data
 // r5 contains TMDS LUT 
@@ -59,14 +32,14 @@
 // we need the attribute to colour bits table
 
 .macro do_char charbuf_offs
-	ldrb r4, [r0, #\charbuf_offs]
+  ldrb r4, [r0, #\charbuf_offs]
   lsls r5, r1, #5
   add r5, r9
-	do_crumb lsrs 3
-	do_crumb lsrs 1
-	do_crumb lsls 1
-	do_crumb lsls 3
-	
+  do_crumb lsrs 3
+  do_crumb lsrs 1
+  do_crumb lsls 1
+  do_crumb lsls 3
+  
 .endm
 
 
@@ -83,51 +56,51 @@
 .thumb_func
 tmds_encode_font_2bpp:
 
-	push {r4-r7, lr}
-	mov r4, r8
-	mov r5, r9
-	mov r6, r10
-	push {r4-r6}
+  push {r4-r7, lr}
+  mov r4, r8
+  mov r5, r9
+  mov r6, r10
+  push {r4-r6}
 
   ldr r7, =(32 * 8 * 2 * 2)
-	add r7, r2
-	mov ip, r7
+  add r7, r2
+  mov ip, r7
 
   mov r8, r3        // save the flash mask in r8
 
-	ldr r3, [sp, #32] // 8 words saved, so 32-byte offset to first stack argument
+  ldr r3, [sp, #32] // 8 words saved, so 32-byte offset to first stack argument
   lsls r3, #8       // * 256
-	ldr r7, =attr_to_colour_chan_B
+  ldr r7, =attr_to_colour_chan_B
   adds r3, r7
 
 
-	ldr r7, =palettised_1bpp_tables
-	mov r9, r7
+  ldr r7, =palettised_1bpp_tables
+  mov r9, r7
 
-	mov r10, r1
+  mov r10, r1
 
-	b 2f
+  b 2f
 1:
-	mov r4, r10
-	ldrb r1, [r4]      // Load the colour attribute
-	mov r5, r8
-	ands r1, r5
-	adds r4, #1        // Increment the attribute pointer
-	adds r1, r3        // Pointer to the entry in attr_to_colour_chan_X
-	ldrb r1, [r1]      // Load the translated colour b0b1f1f0
-	mov r10, r4
-	do_char 0 
-	adds r0, #1
+  mov r4, r10
+  ldrb r1, [r4]      // Load the colour attribute
+  mov r5, r8
+  ands r1, r5
+  adds r4, #1        // Increment the attribute pointer
+  adds r1, r3        // Pointer to the entry in attr_to_colour_chan_X
+  ldrb r1, [r1]      // Load the translated colour b0b1f1f0
+  mov r10, r4
+  do_char 0 
+  adds r0, #1
 2:
-	cmp r2, ip
-	blo 1b
+  cmp r2, ip
+  blo 1b
 
-	pop {r4-r6}
-	mov r8, r4
-	mov r9, r5
-	mov r10, r6
-	mov r0, r2         // Return the output buffer pointer
-	pop {r4-r7, pc}
+  pop {r4-r6}
+  mov r8, r4
+  mov r9, r5
+  mov r10, r6
+  mov r0, r2         // Return the output buffer pointer
+  pop {r4-r7, pc}
 
 //
 // BORDER
@@ -143,125 +116,125 @@ tmds_encode_font_2bpp:
 .thumb_func
 tmds_encode_border:
 
-	push {r4-r7, lr}
-	mov r4, r8
-	mov r5, r9
-	mov r6, r10
-	push {r4-r6}
+  push {r4-r7, lr}
+  mov r4, r8
+  mov r5, r9
+  mov r6, r10
+  push {r4-r6}
 
-	lsls r0, #5         // Work out the number of words (chars * 8 * 2 * 2)
-	add r0, r2
-	mov ip, r0 
+  lsls r0, #5         // Work out the number of words (chars * 8 * 2 * 2)
+  add r0, r2
+  mov ip, r0 
 
   lsls r1, #8         // * 256
-	ldr r7, =attr_to_colour_chan_B
+  ldr r7, =attr_to_colour_chan_B
   adds r1, r7
   adds r1, r3
   ldrb r1, [r1]       // Load the colour intensity nibble for the channel
-	ldr r7, =palettised_1bpp_tables
-	lsls r1, #5         // * 8 * 4
+  ldr r7, =palettised_1bpp_tables
+  lsls r1, #5         // * 8 * 4
   adds r1, r7         // r1 now point as the LUT entry 
   ldr r7, =(8*3)
   adds r6, r1, r7     // move to the entry 1111
   ldmia r6, {r6, r7}  // Load the LUT entries into r6,r7
-	b 4f
+  b 4f
 3:
   stmia r2!, {r6-r7}  // Write out the LUT entries 
 4:
-	cmp r2, ip
-	blo 3b
+  cmp r2, ip
+  blo 3b
 
-	pop {r4-r6}
-	mov r8, r4
-	mov r9, r5
-	mov r10, r6
-	mov r0, r2         // Return the output buffer pointer
-	pop {r4-r7, pc}
+  pop {r4-r6}
+  mov r8, r4
+  mov r9, r5
+  mov r10, r6
+  mov r0, r2         // Return the output buffer pointer
+  pop {r4-r7, pc}
 
 
 .section .scratch_x.palettised_1bpp_tables, "a"
 .align 2
 palettised_1bpp_tables:
-	// background, foreground = 00, 00
-	.word 0x7f103, 0x7f103 // 0000
-	.word 0x7f103, 0x7f103 // 1100
-	.word 0x7f103, 0x7f103 // 0011
-	.word 0x7f103, 0x7f103 // 1111
-	// background, foreground = 00, 01
-	.word 0x7f103, 0x7f103 // 0000
-	.word 0x7f103, 0x73d30 // 1100
-	.word 0x73d30, 0x7f103 // 0011
-	.word 0x73d30, 0x73d30 // 1111
-	// background, foreground = 00, 10
-	.word 0x7f103, 0x7f103 // 0000
-	.word 0x7f103, 0xb3e30 // 1100
-	.word 0xb3e30, 0x7f103 // 0011
-	.word 0xb3e30, 0xb3e30 // 1111
-	// background, foreground = 00, 11
-	.word 0x7f103, 0x7f103 // 0000
-	.word 0x7f103, 0xbf203 // 1100
-	.word 0xbf203, 0x7f103 // 0011
-	.word 0xbf203, 0xbf203 // 1111
-	// background, foreground = 01, 00
-	.word 0x73d30, 0x73d30 // 0000
-	.word 0x73d30, 0x7f103 // 1100
-	.word 0x7f103, 0x73d30 // 0011
-	.word 0x7f103, 0x7f103 // 1111
-	// background, foreground = 01, 01
-	.word 0x73d30, 0x73d30 // 0000
-	.word 0x73d30, 0x73d30 // 1100
-	.word 0x73d30, 0x73d30 // 0011
-	.word 0x73d30, 0x73d30 // 1111
-	// background, foreground = 01, 10
-	.word 0x73d30, 0x73d30 // 0000
-	.word 0x73d30, 0xb3e30 // 1100
-	.word 0xb3e30, 0x73d30 // 0011
-	.word 0xb3e30, 0xb3e30 // 1111
-	// background, foreground = 01, 11
-	.word 0x73d30, 0x73d30 // 0000
-	.word 0x73d30, 0xbf203 // 1100
-	.word 0xbf203, 0x73d30 // 0011
-	.word 0xbf203, 0xbf203 // 1111
-	// background, foreground = 10, 00
-	.word 0xb3e30, 0xb3e30 // 0000
-	.word 0xb3e30, 0x7f103 // 1100
-	.word 0x7f103, 0xb3e30 // 0011
-	.word 0x7f103, 0x7f103 // 1111
-	// background, foreground = 10, 01
-	.word 0xb3e30, 0xb3e30 // 0000
-	.word 0xb3e30, 0x73d30 // 1100
-	.word 0x73d30, 0xb3e30 // 0011
-	.word 0x73d30, 0x73d30 // 1111
-	// background, foreground = 10, 10
-	.word 0xb3e30, 0xb3e30 // 0000
-	.word 0xb3e30, 0xb3e30 // 1100
-	.word 0xb3e30, 0xb3e30 // 0011
-	.word 0xb3e30, 0xb3e30 // 1111
-	// background, foreground = 10, 11
-	.word 0xb3e30, 0xb3e30 // 0000
-	.word 0xb3e30, 0xbf203 // 1100
-	.word 0xbf203, 0xb3e30 // 0011
-	.word 0xbf203, 0xbf203 // 1111
-	// background, foreground = 11, 00
-	.word 0xbf203, 0xbf203 // 0000
-	.word 0xbf203, 0x7f103 // 1100
-	.word 0x7f103, 0xbf203 // 0011
-	.word 0x7f103, 0x7f103 // 1111
-	// background, foreground = 11, 01
-	.word 0xbf203, 0xbf203 // 0000
-	.word 0xbf203, 0x73d30 // 1100
-	.word 0x73d30, 0xbf203 // 0011
-	.word 0x73d30, 0x73d30 // 1111
-	// background, foreground = 11, 10
-	.word 0xbf203, 0xbf203 // 0000
-	.word 0xbf203, 0xb3e30 // 1100
-	.word 0xb3e30, 0xbf203 // 0011
-	.word 0xb3e30, 0xb3e30 // 1111
-	// background, foreground = 11, 11
-	.word 0xbf203, 0xbf203 // 0000
-	.word 0xbf203, 0xbf203 // 1100
-	.word 0xbf203, 0xbf203 // 0011
-	.word 0xbf203, 0xbf203 // 1111
+  // background, foreground = 00, 00
+  .word 0x7f103, 0x7f103 // 0000
+  .word 0x7f103, 0x7f103 // 1100
+  .word 0x7f103, 0x7f103 // 0011
+  .word 0x7f103, 0x7f103 // 1111
+  // background, foreground = 00, 01
+  .word 0x7f103, 0x7f103 // 0000
+  .word 0x7f103, 0x73d30 // 1100
+  .word 0x73d30, 0x7f103 // 0011
+  .word 0x73d30, 0x73d30 // 1111
+  // background, foreground = 00, 10
+  .word 0x7f103, 0x7f103 // 0000
+  .word 0x7f103, 0xb3e30 // 1100
+  .word 0xb3e30, 0x7f103 // 0011
+  .word 0xb3e30, 0xb3e30 // 1111
+  // background, foreground = 00, 11
+  .word 0x7f103, 0x7f103 // 0000
+  .word 0x7f103, 0xbf203 // 1100
+  .word 0xbf203, 0x7f103 // 0011
+  .word 0xbf203, 0xbf203 // 1111
+  // background, foreground = 01, 00
+  .word 0x73d30, 0x73d30 // 0000
+  .word 0x73d30, 0x7f103 // 1100
+  .word 0x7f103, 0x73d30 // 0011
+  .word 0x7f103, 0x7f103 // 1111
+  // background, foreground = 01, 01
+  .word 0x73d30, 0x73d30 // 0000
+  .word 0x73d30, 0x73d30 // 1100
+  .word 0x73d30, 0x73d30 // 0011
+  .word 0x73d30, 0x73d30 // 1111
+  // background, foreground = 01, 10
+  .word 0x73d30, 0x73d30 // 0000
+  .word 0x73d30, 0xb3e30 // 1100
+  .word 0xb3e30, 0x73d30 // 0011
+  .word 0xb3e30, 0xb3e30 // 1111
+  // background, foreground = 01, 11
+  .word 0x73d30, 0x73d30 // 0000
+  .word 0x73d30, 0xbf203 // 1100
+  .word 0xbf203, 0x73d30 // 0011
+  .word 0xbf203, 0xbf203 // 1111
+  // background, foreground = 10, 00
+  .word 0xb3e30, 0xb3e30 // 0000
+  .word 0xb3e30, 0x7f103 // 1100
+  .word 0x7f103, 0xb3e30 // 0011
+  .word 0x7f103, 0x7f103 // 1111
+  // background, foreground = 10, 01
+  .word 0xb3e30, 0xb3e30 // 0000
+  .word 0xb3e30, 0x73d30 // 1100
+  .word 0x73d30, 0xb3e30 // 0011
+  .word 0x73d30, 0x73d30 // 1111
+  // background, foreground = 10, 10
+  .word 0xb3e30, 0xb3e30 // 0000
+  .word 0xb3e30, 0xb3e30 // 1100
+  .word 0xb3e30, 0xb3e30 // 0011
+  .word 0xb3e30, 0xb3e30 // 1111
+  // background, foreground = 10, 11
+  .word 0xb3e30, 0xb3e30 // 0000
+  .word 0xb3e30, 0xbf203 // 1100
+  .word 0xbf203, 0xb3e30 // 0011
+  .word 0xbf203, 0xbf203 // 1111
+  // background, foreground = 11, 00
+  .word 0xbf203, 0xbf203 // 0000
+  .word 0xbf203, 0x7f103 // 1100
+  .word 0x7f103, 0xbf203 // 0011
+  .word 0x7f103, 0x7f103 // 1111
+  // background, foreground = 11, 01
+  .word 0xbf203, 0xbf203 // 0000
+  .word 0xbf203, 0x73d30 // 1100
+  .word 0x73d30, 0xbf203 // 0011
+  .word 0x73d30, 0x73d30 // 1111
+  // background, foreground = 11, 10
+  .word 0xbf203, 0xbf203 // 0000
+  .word 0xbf203, 0xb3e30 // 1100
+  .word 0xb3e30, 0xbf203 // 0011
+  .word 0xb3e30, 0xb3e30 // 1111
+  // background, foreground = 11, 11
+  .word 0xbf203, 0xbf203 // 0000
+  .word 0xbf203, 0xbf203 // 1100
+  .word 0xbf203, 0xbf203 // 0011
+  .word 0xbf203, 0xbf203 // 1111
 
 .align 1
 attr_to_colour_chan_B:
