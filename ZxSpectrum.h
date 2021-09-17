@@ -67,5 +67,5 @@ public:
   void step();
   void moderate(bool on);
   void toggleModerate();
-  unsigned int borderColour() { return 1; }
+  unsigned int borderColour() { return 7; }
 };

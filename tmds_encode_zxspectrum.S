@@ -54,7 +54,6 @@
 // r2 contains output buffer pointer
 // r3 contains 
 // r4-r7 are for scratch + pixels
-// r8 contains a pointer to the font bitmap for this scanline.
 // r9 contains the TMDS LUT base.
 
 // we need the attribute to colour bits table
@@ -74,7 +73,7 @@
 // r0 is character buffer
 // r1 is colour buffer
 // r2 is output TMDS buffer
-// r3 is pixel count
+// r3 is flash flag
 // First stack argument is the font bitmap for this scanline.
 // The second arg is the color channel 
 
@@ -90,18 +89,18 @@ tmds_encode_font_2bpp:
 	mov r6, r10
 	push {r4-r6}
 
-	lsls r3, #1
-	add r3, r2
-	mov ip, r3
-	// ldr r3, =(0xf0 * 8)
+  ldr r7, =(32 * 8 * 2 * 2)
+	add r7, r2
+	mov ip, r7
 
-	ldr r3, [sp, #36] // 8 words saved, so 36-byte offset to second stack argument
+  mov r8, r3        // save the flash mask in r8
+
+	ldr r3, [sp, #32] // 8 words saved, so 32-byte offset to first stack argument
   lsls r3, #8       // * 256
 	ldr r7, =attr_to_colour_chan_B
   adds r3, r7
 
-	ldr r7, [sp, #32] // 8 words saved, so 32-byte offset to first stack argument
-	mov r8, r7
+
 	ldr r7, =palettised_1bpp_tables
 	mov r9, r7
 
@@ -111,6 +110,8 @@ tmds_encode_font_2bpp:
 1:
 	mov r4, r10
 	ldrb r1, [r4]      // Load the colour attribute
+	mov r5, r8
+	ands r1, r5
 	adds r4, #1        // Increment the attribute pointer
 	adds r1, r3        // Pointer to the entry in attr_to_colour_chan_X
 	ldrb r1, [r1]      // Load the translated colour b0b1f1f0

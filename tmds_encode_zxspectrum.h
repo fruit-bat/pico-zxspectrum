@@ -20,10 +20,10 @@
 uint32_t *tmds_encode_font_2bpp(
   const uint8_t *charbuf,
   const uint8_t	*colourbuf,
-	uint32_t *tmdsbuf, 
-	uint n_pix, 
-	const uint8_t *font_line, 
-	uint32_t plane);
+  uint32_t *tmdsbuf, 
+  uint32_t flash, 
+  uint32_t plane
+);
 
 
 uint32_t *tmds_encode_border(

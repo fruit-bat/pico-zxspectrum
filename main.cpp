@@ -49,6 +49,9 @@ extern "C" {
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
 
+static ZxSpectrumHidKeyboard keyboard;
+static ZxSpectrum zxSpectrum(&keyboard);
+
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 
@@ -62,11 +65,9 @@ extern "C" void hid_app_task();
 // 240-192 = 48 => 24 border rows top and bottom
 // 320-256 = 64 => 64 border pixels left and right
 //
-static inline void prepare_scanline(uint y) {
+static inline void prepare_scanline(uint y, uint f) {
 	
-	// TODO Fetch the border color which can change row by row
-	uint8_t borderColor = 1; // Black border initiallly
-	
+	uint8_t borderColor = zxSpectrum.borderColour();
 	uint32_t *tmdsbuf;
 	queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
 	uint32_t *p = tmdsbuf;
@@ -95,8 +96,7 @@ static inline void prepare_scanline(uint y) {
 				(const uint8_t*)s,
 				attrPtr+((v>>3)<<5),
 				p,
-				32 * 8 * 2,
-				(const uint8_t*)screenPtr, // TODO remove
+				(f >> 5) & 1 ? 0xff : 0x7f,
 				plane
 			);	
 			
@@ -113,8 +113,12 @@ static inline void prepare_scanline(uint y) {
 
 void core1_scanline_callback() {
 	static uint y = 1;
-	prepare_scanline(y++);
-	if (y >= FRAME_HEIGHT) y -= FRAME_HEIGHT;
+	static uint f = 0;
+	prepare_scanline(y++, f);
+	if (y >= FRAME_HEIGHT) { 
+		y -= FRAME_HEIGHT;
+		++f;
+	}
 }
 
 void __not_in_flash("main") core1_main() {
@@ -130,8 +134,6 @@ void __not_in_flash("main") core1_main() {
 	__builtin_unreachable();
 }
 
-static ZxSpectrumHidKeyboard keyboard;
-static ZxSpectrum zxSpectrum(&keyboard);
 
 
 extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
@@ -168,7 +170,7 @@ extern "C" int __not_in_flash("main") main() {
 
 	printf("Prepare first scanline\n");
 
-	prepare_scanline(0);
+	prepare_scanline(0, 0);
 
 	printf("Core 1 start\n");
 	sem_init(&dvi_start_sem, 0, 1);
