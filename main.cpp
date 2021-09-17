@@ -1,3 +1,5 @@
+#pragma GCC optimize ("O2")
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "pico/stdlib.h"
@@ -16,7 +18,7 @@ extern "C" {
 #include "dvi.h"
 #include "dvi_serialiser.h"
 #include "common_dvi_pin_configs.h"
-#include "tmds_encode.h"
+#include "tmds_encode_zxspectrum.h"
 }
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
@@ -37,7 +39,6 @@ extern "C" {
 #define FONT_CHAR_HEIGHT 8
 
 // DVDD 1.2V (1.1V seems ok too)
-#define FRAME_WIDTH 640
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
 #define DVI_TIMING dvi_timing_640x480p_60hz
@@ -62,42 +63,51 @@ extern "C" void hid_app_task();
 // 320-256 = 64 => 64 border pixels left and right
 //
 static inline void prepare_scanline(uint y) {
-	static uint8_t scanbuf[FRAME_WIDTH];
 	
 	// TODO Fetch the border color which can change row by row
-	uint8_t borderColor = 0x00; // Black border initiallly
-	uint8_t fgColor = 0xff; // TODO forground
-	uint8_t bgColor = 0x02; // TODO background
-	
-	if (y < 24 || y >= (24+192)) {
-//		memset(scanbuf, borderColor, FRAME_WIDTH);
-		memset(scanbuf, 0, sizeof(scanbuf));
-	}
-	else {
-		uint v = y - 24;
-//		memset(scanbuf, borderColor, 64);
-//		memset(scanbuf + FRAME_WIDTH - 64, borderColor, 64);
-//		uint8_t *p = scanbuf + 64;
-		uint8_t *p = scanbuf + 8;
-		uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
-		for(uint i = 0; i < 32; ++i) {
-			p[i] = s[i];
-		}
-/*		for(uint i = 0; i < 32; ++i) {
-			uint8_t b = *s++;
-			for (uint j = 0; j < 8; ++j) {
-				uint8_t c = b & (0x80 >> j) ? fgColor : bgColor;
-				*p++ = c;
-				*p++ = c;
-			}
-		}
-*/
-	}
+	uint8_t borderColor = 1; // Black border initiallly
 	
 	uint32_t *tmdsbuf;
 	queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
-//	dvi_scanbuf_main_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
-	tmds_encode_1bpp((const uint32_t*)scanbuf, tmdsbuf, FRAME_WIDTH);
+	uint32_t *p = tmdsbuf;
+			
+	for (int plane = 0; plane < 3; ++plane) {
+		if (y < 24 || y >= (24+192)) {
+			p = tmds_encode_border(
+				40,          // r0 is width in characters
+				plane,       // r1 is colour channel
+				p,           // r2 is output TMDS buffer
+				borderColor  // r3 is the colour attribute
+			);		
+		}
+		else {
+			uint v = y - 24;
+			uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
+			
+			p = tmds_encode_border(
+				4,           // r0 is width in characters
+				plane,       // r1 is colour channel
+				p,           // r2 is output TMDS buffer
+				borderColor  // r3 is the colour attribute
+			);
+			
+			p = tmds_encode_font_2bpp(
+				(const uint8_t*)s,
+				attrPtr+((y>>3)<<5),
+				p,
+				32 * 8 * 2,
+				(const uint8_t*)screenPtr, // TODO remove
+				plane
+			);	
+			
+			p = tmds_encode_border(
+				4,           // r0 is width in characters
+				plane,       // r1 is colour channel
+				p,           // r2 is output TMDS buffer
+				borderColor  // r3 is the colour attribute
+			);		
+		}
+	}
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
 
