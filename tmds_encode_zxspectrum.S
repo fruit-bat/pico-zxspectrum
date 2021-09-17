@@ -50,11 +50,11 @@
 // First stack argument is the font bitmap for this scanline.
 // The second arg is the color channel 
 
-.section .scratch_x.tmds_encode_font_2bpp, "ax"
-.global tmds_encode_font_2bpp
-.type tmds_encode_font_2bpp,%function
+.section .scratch_x.tmds_encode_screen, "ax"
+.global tmds_encode_screen
+.type tmds_encode_screen,%function
 .thumb_func
-tmds_encode_font_2bpp:
+tmds_encode_screen:
 
   push {r4-r7, lr}
   mov r4, r8

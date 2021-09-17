@@ -92,7 +92,7 @@ static inline void prepare_scanline(uint y, uint f) {
 				borderColor  // r3 is the colour attribute
 			);
 			
-			p = tmds_encode_font_2bpp(
+			p = tmds_encode_screen(
 				(const uint8_t*)s,
 				attrPtr+((v>>3)<<5),
 				p,
