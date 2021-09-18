@@ -14,7 +14,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 <img src="docs/zxspectrum_screen_1.jpg" width="400"/>
 
 ## Prototype
-<img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
+<img src="docs/pico_zxspectrum_prototype_1.jpg" width="400"/>
 
 ## Wiring
 
