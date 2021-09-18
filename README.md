@@ -93,7 +93,7 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 
 # References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
-[Z80 fileformat documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
+[Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts<br/>
