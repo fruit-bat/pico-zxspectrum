@@ -13,11 +13,6 @@
 #include "Z80.h"
 
 
-#pragma GCC optimize ("O2")
-
-
-
-
 /* Write the following macros for memory access and input/output on the Z80.
  *
  * Z80_FETCH_BYTE() and Z80_FETCH_WORD() are used by the emulator to read the
