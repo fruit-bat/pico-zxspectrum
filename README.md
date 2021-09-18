@@ -87,12 +87,9 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 | F11 + F12 | Reset |
 
 ## Missing features
-* Write 'tape' format
-* Read/Write WAV files
 * Audio input
 * Audio Output
-* Centronics interface
-* Serial interface (Uart 0 is currently used for debug) 
+* Load from .z80.,sna
 
 # References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
