@@ -178,7 +178,6 @@ extern "C" int __not_in_flash("main") main() {
 	sem_release(&dvi_start_sem);
 
 	zxSpectrum.reset();
-	loadJsw(&zxSpectrum);
 
 	while (1) {
 		tuh_task();
