@@ -74,7 +74,7 @@ tmds_encode_screen:
   adds r3, r7
 
 
-  ldr r7, =palettised_1bpp_tables
+  ldr r7, =palettised_2bpp_tables
   mov r9, r7
 
   mov r10, r1
@@ -131,7 +131,7 @@ tmds_encode_border:
   adds r1, r7
   adds r1, r3
   ldrb r1, [r1]       // Load the colour intensity nibble for the channel
-  ldr r7, =palettised_1bpp_tables
+  ldr r7, =palettised_2bpp_tables
   lsls r1, #5         // * 8 * 4
   adds r1, r7         // r1 now point as the LUT entry 
   ldr r7, =(8*3)
@@ -152,9 +152,9 @@ tmds_encode_border:
   pop {r4-r7, pc}
 
 
-.section .scratch_x.palettised_1bpp_tables, "a"
+.section .scratch_x.palettised_2bpp_tables, "a"
 .align 2
-palettised_1bpp_tables:
+palettised_2bpp_tables:
   // background, foreground = 00, 00
   .word 0x7f103, 0x7f103 // 0000
   .word 0x7f103, 0x7f103 // 1100
