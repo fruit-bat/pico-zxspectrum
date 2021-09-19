@@ -3,6 +3,7 @@
 
 #include "Z80.h"
 #include "ZxSpectrumKeyboard.h"
+#include "InputStream.h"
 
 class ZxSpectrum {
 private:
@@ -61,6 +62,9 @@ private:
   }
 
   uint8_t _RAM[1<<16];
+
+  int loadZ80MemV0(InputStream *inputStream);
+  int loadZ80Header(InputStream *inputStream);
   
 public:
   ZxSpectrum(
@@ -73,4 +77,7 @@ public:
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
+  
+
+  void loadZ80(InputStream *inputStream);
 };

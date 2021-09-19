@@ -25,6 +25,16 @@ extern "C" {
 #include "tusb.h"
 #include <pico/printf.h>
 
+// DO NOT COMMIT
+
+#include "jsw.h"
+#include "ArrayInputStream.h"
+void loadJsw(ZxSpectrum *zxSpectrum) {
+  ArrayInputStream is(jsw, sizeof(jsw));
+  zxSpectrum->loadZ80(&is);	
+}
+// DO NOT COMMIT
+
 #define UART_ID uart0
 #define BAUD_RATE 115200
 
@@ -175,10 +185,10 @@ extern "C" int __not_in_flash("main") main() {
 	hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
 	multicore_launch_core1(core1_main);
 
-
 	sem_release(&dvi_start_sem);
 
 	zxSpectrum.reset();
+	loadJsw(&zxSpectrum);
 
 	while (1) {
 		tuh_task();

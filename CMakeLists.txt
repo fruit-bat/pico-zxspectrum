@@ -11,6 +11,8 @@ add_executable(ZxSpectrum
 	hid_app.c
 	tmds_encode_zxspectrum.S
 	tmds_encode_zxspectrum.h
+	InputStream.cpp
+	ArrayInputStream.cpp
 #	hw_config.c
 )
 

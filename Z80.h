@@ -130,6 +130,8 @@ enum {
 #       define Z80_IXL          9
 #       define Z80_IYH          10
 #       define Z80_IYL          11
+#       define Z80_SPH          12
+#       define Z80_SPL          13
 
 #else
 
@@ -146,6 +148,8 @@ enum {
 #       define Z80_IXL          8
 #       define Z80_IYH          11
 #       define Z80_IYL          10
+#       define Z80_SPH          13
+#       define Z80_SPL          12
 
 #endif
 
@@ -269,9 +273,36 @@ public:
   void writeRegWord(int reg, uint16_t value)  { state.registers.word[reg] = value; }
 
   uint16_t getPC()                            { return state.pc; }
-  void setPC(uint16_t value)                  { state.pc = value; }
-
-
+  
+  void setPC(uint16_t v)                      { state.pc = v; }
+  void setA(uint8_t v)                        { state.registers.byte[Z80_A] = v; }
+  void setF(uint8_t v)                        { state.registers.byte[Z80_F] = v; }
+  void setB(uint8_t v)                        { state.registers.byte[Z80_B] = v; }
+  void setC(uint8_t v)                        { state.registers.byte[Z80_C] = v; }
+  void setD(uint8_t v)                        { state.registers.byte[Z80_D] = v; }
+  void setE(uint8_t v)                        { state.registers.byte[Z80_E] = v; }
+  void setH(uint8_t v)                        { state.registers.byte[Z80_H] = v; }
+  void setL(uint8_t v)                        { state.registers.byte[Z80_L] = v; }
+  void setIXH(uint8_t v)                      { state.registers.byte[Z80_IXH] = v; }
+  void setIXL(uint8_t v)                      { state.registers.byte[Z80_IXL] = v; }
+  void setIYH(uint8_t v)                      { state.registers.byte[Z80_IYH] = v; }
+  void setIYL(uint8_t v)                      { state.registers.byte[Z80_IYL] = v; }
+  void setIFF1(uint8_t v)                     { state.iff1 = v; }
+  void setIFF2(uint8_t v)                     { state.iff2 = v; }
+  void setIM(uint8_t v)                       { state.im = v; }
+  void setI(uint8_t v)                        { state.i = v; }
+  void setR(uint8_t v)                        { state.r = v; }
+  void setSPH(uint8_t v)                      { state.registers.byte[Z80_SPH] = v; }
+  void setSPL(uint8_t v)                      { state.registers.byte[Z80_SPL] = v; }
+ 
+  void swap() {
+      for(int i=0; i <4; ++i) {
+        unsigned short t = state.alternates[i];
+        state.alternates[i] = state.registers.word[i];
+        state.registers.word[i] = t;
+      }
+  }
+  
 private:
 
   int intemulate(int opcode, int elapsed_cycles);
