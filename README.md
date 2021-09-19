@@ -14,7 +14,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 <img src="docs/zxspectrum_screen_1.jpg" width="400"/>
 
 ## Prototype
-<img src="docs/pico_sorcerer_prototype_1.jpg" width="400"/>
+<img src="docs/pico_zxspectrum_prototype_1.jpg" width="400"/>
 
 ## Wiring
 
@@ -87,15 +87,13 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 | F11 + F12 | Reset |
 
 ## Missing features
-* Write 'tape' format
-* Read/Write WAV files
 * Audio input
 * Audio Output
-* Centronics interface
-* Serial interface (Uart 0 is currently used for debug) 
+* Load from .z80.,sna
 
 # References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
+[Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts<br/>
