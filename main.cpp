@@ -25,16 +25,6 @@ extern "C" {
 #include "tusb.h"
 #include <pico/printf.h>
 
-// DO NOT COMMIT
-
-#include "jsw.h"
-#include "ArrayInputStream.h"
-void loadJsw(ZxSpectrum *zxSpectrum) {
-  ArrayInputStream is(jsw, sizeof(jsw));
-  zxSpectrum->loadZ80(&is);	
-}
-// DO NOT COMMIT
-
 #define UART_ID uart0
 #define BAUD_RATE 115200
 
