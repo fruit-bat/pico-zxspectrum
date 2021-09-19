@@ -1,6 +1,8 @@
 # pico-zxspectrum
 ZX Spectrum for Raspberry Pico Pi RP2040
 
+<img src="docs/1200px-ZXSpectrum48k.jpg" width="400"/>
+
 This is an attempt to make a very basic ZX Spectrum emulation on the RP2040 with DVI output.
 
 Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
