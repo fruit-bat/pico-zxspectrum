@@ -13,7 +13,7 @@
 // Mask off the 2 bits we need and multiply by 8
 .macro do_crumb pix_shift_instr pix_shamt 
   \pix_shift_instr r6, r4, #\pix_shamt
-  ldr r7, =24 // 00011000
+  movs r7, 24 // 00011000
   ands r6, r7
   add r6, r5
   ldmia r6, {r6, r7}
@@ -29,8 +29,6 @@
 // r4-r7 are for scratch + pixels
 // r9 contains the TMDS LUT base.
 
-// we need the attribute to colour bits table
-
 .macro do_char charbuf_offs
   ldrb r4, [r0, #\charbuf_offs]
   lsls r5, r1, #5
@@ -39,16 +37,14 @@
   do_crumb lsrs 1
   do_crumb lsls 1
   do_crumb lsls 3
-  
 .endm
 
 
-// r0 is character buffer
+// r0 is the bitmap for this scanline
 // r1 is colour buffer
 // r2 is output TMDS buffer
 // r3 is flash flag
-// First stack argument is the font bitmap for this scanline.
-// The second arg is the color channel 
+// First stack argument is the color channel 
 
 .section .scratch_x.tmds_encode_screen, "ax"
 .global tmds_encode_screen
@@ -62,7 +58,8 @@ tmds_encode_screen:
   mov r6, r10
   push {r4-r6}
 
-  ldr r7, =(32 * 8 * 2 * 2)
+  movs r7, 1
+  lsls r7, #10 // (32 * 8 * 2 * 2) = 1024
   add r7, r2
   mov ip, r7
 
@@ -73,12 +70,9 @@ tmds_encode_screen:
   ldr r7, =attr_to_colour_chan_B
   adds r3, r7
 
-
   ldr r7, =palettised_2bpp_tables
   mov r9, r7
-
   mov r10, r1
-
   b 2f
 1:
   mov r4, r10
