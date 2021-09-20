@@ -74,6 +74,7 @@ public:
   void reset(unsigned int address);
   void reset();
   void step();
+  void interrupt();
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }

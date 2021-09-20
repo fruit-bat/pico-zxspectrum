@@ -26,6 +26,10 @@ void ZxSpectrum::reset(unsigned int address)
 
 #define INSTRUCTION_PER_STEP 100
 
+void ZxSpectrum::interrupt() {
+  _Z80.IRQ(0x38);
+}
+
 void ZxSpectrum::step()
 {
   for(int i=0; i < INSTRUCTION_PER_STEP; ++i) {
@@ -38,10 +42,6 @@ void ZxSpectrum::step()
       if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
       if (_ta4 < -1000000) _ta4 = -1000000;
     }
-  }
-  if (_cycles > 175000) {
-    _cycles -= 175000;
-    _Z80.IRQ(0x38);
   }
 }
 

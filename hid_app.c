@@ -44,11 +44,6 @@ static tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 static void process_kbd_report(hid_keyboard_report_t const *report);
 static void process_mouse_report(hid_mouse_report_t const * report);
 
-void hid_app_task(void)
-{
-  // nothing to do
-}
-
 //--------------------------------------------------------------------+
 // TinyUSB Callbacks
 //--------------------------------------------------------------------+

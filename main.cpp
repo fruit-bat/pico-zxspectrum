@@ -52,8 +52,7 @@ static ZxSpectrum zxSpectrum(&keyboard);
 
 unsigned char* screenPtr;
 unsigned char* attrPtr;
-
-extern "C" void hid_app_task();
+unsigned int frame = 0;
 
 // Screen handler
 //
@@ -111,11 +110,10 @@ static inline void prepare_scanline(uint y, uint f) {
 
 void core1_scanline_callback() {
 	static uint y = 1;
-	static uint f = 0;
-	prepare_scanline(y++, f);
+	prepare_scanline(y++, frame);
 	if (y >= FRAME_HEIGHT) { 
 		y -= FRAME_HEIGHT;
-		++f;
+		++frame;
 	}
 }
 
@@ -179,10 +177,14 @@ extern "C" int __not_in_flash("main") main() {
 
 	zxSpectrum.reset();
 
+	static unsigned int lastInterruptFrame = frame;
 	while (1) {
 		tuh_task();
+		if (lastInterruptFrame != frame) {
+			lastInterruptFrame = frame;
+			zxSpectrum.interrupt();
+		}
 		zxSpectrum.step();
-		hid_app_task();
 	}
 	__builtin_unreachable();
 }
