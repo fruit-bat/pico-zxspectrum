@@ -5,6 +5,7 @@
 .cpu cortex-m0plus
 .thumb
 
+// r1 bit mask = 24
 // r2 contains output buffer pointer
 // r4 contains a byte of pixel data
 // r5 contains TMDS LUT 
@@ -13,32 +14,11 @@
 // Mask off the 2 bits we need and multiply by 8
 .macro do_crumb pix_shift_instr pix_shamt 
   \pix_shift_instr r6, r4, #\pix_shamt
-  movs r7, 24 // 00011000
-  ands r6, r7
+  ands r6, r1
   add r6, r5
   ldmia r6, {r6, r7}
   stmia r2!, {r6-r7}
 .endm
-
-
-// Once in the loop:
-// r0 contains character buffer pointer (only updated once per 8 chars)
-// r1 contains a one nibble colour channel value
-// r2 contains output buffer pointer
-// r3 contains 
-// r4-r7 are for scratch + pixels
-// r9 contains the TMDS LUT base.
-
-.macro do_char charbuf_offs
-  ldrb r4, [r0, #\charbuf_offs]
-  lsls r5, r1, #5
-  add r5, r9
-  do_crumb lsrs 3
-  do_crumb lsrs 1
-  do_crumb lsls 1
-  do_crumb lsls 3
-.endm
-
 
 // r0 is the bitmap for this scanline
 // r1 is colour buffer
@@ -83,7 +63,14 @@ tmds_encode_screen:
   adds r1, r3        // Pointer to the entry in attr_to_colour_chan_X
   ldrb r1, [r1]      // Load the translated colour b0b1f1f0
   mov r10, r4
-  do_char 0 
+  ldrb r4, [r0]
+  lsls r5, r1, #5
+  add r5, r9
+  movs r1, 24 // 00011000
+  do_crumb lsrs 3
+  do_crumb lsrs 1
+  do_crumb lsls 1
+  do_crumb lsls 3
   adds r0, #1
 2:
   cmp r2, ip
