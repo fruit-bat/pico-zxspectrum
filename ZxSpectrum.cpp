@@ -47,7 +47,7 @@ void ZxSpectrum::step()
 
 void ZxSpectrum::reset() { 
   reset(0x0000); 
-  _tu4 = time_us_32() << 2;
+  _tu4 = time_us_32() << 5;
   _ta4 = 0;
 }
 
@@ -55,7 +55,7 @@ void ZxSpectrum::moderate(bool on) {
   if (on == _moderate) return;
   
   if (on) {
-    _tu4 = time_us_32() << 2;
+    _tu4 = time_us_32() << 5;
     _ta4 = 0;
   }
   
