@@ -28,15 +28,14 @@ void ZxSpectrum::reset(unsigned int address)
 
 void ZxSpectrum::step()
 {
-  // printf("PC:%04X ", _Z80.getPC()); 
   for(int i=0; i < INSTRUCTION_PER_STEP; ++i) {
     int c = _Z80.step();
     _cycles += c;
     if (_moderate) {
-      uint32_t tu4 = time_us_32() << 2;
-      _ta4 += c - tu4 + _tu4; // +ve too fast, -ve too slow
+      uint32_t tu4 = time_us_32() << 5;
+      _ta4 += (c<<3) + c - tu4 + _tu4; // +ve too fast, -ve too slow
       _tu4 = tu4;
-      if (_ta4 > 4) busy_wait_us_32(_ta4 >> 2);
+      if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
       if (_ta4 < -1000000) _ta4 = -1000000;
     }
   }

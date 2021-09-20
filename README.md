@@ -85,7 +85,7 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 
 | Key | Action |
 | --- | ------ |
-| F4 | Toggle Z80 4Mhz moderator |
+| F4 | Toggle Z80 3.5Mhz moderator |
 | F11 + F12 | Reset |
 
 ## Missing features
