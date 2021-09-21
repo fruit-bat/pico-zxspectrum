@@ -161,7 +161,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
   unsigned int i = 16*1024;
   unsigned int wd = 0;
   unsigned int wf = 0;
-  while (i < 65536) {
+  while (i < 0x10000) {
     int r = is->readByte(); 
     if (r < -1) return r;
     wd <<= 8; wf <<= 1;
@@ -170,10 +170,10 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
     if ((wf & 0xf) == 0xf) {
       if (wd == 0x00eded00) break;
       if ((wd & 0xffff0000) == 0xeded0000) {
-        unsigned int n = (wd >> 8) & 0xff;
-        unsigned int d = wd & 0xff;
-        unsigned int e = (i + n) & 0xffff;
-        while (i < e) _RAM[i++] = d;
+        const unsigned int d = wd & 0xff;
+        const unsigned int e = i + ((wd >> 8) & 0xff);
+        const unsigned int f = e > 0x10000 ? 0x10000 : e;
+        while (i < f) _RAM[i++] = d;
         wf = 0;
       }
     }
