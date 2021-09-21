@@ -37,7 +37,7 @@ void ZxSpectrum::step()
     _cycles += c;
     if (_moderate) {
       uint32_t tu4 = time_us_32() << 5;
-      _ta4 += (c<<3) + c - tu4 + _tu4; // +ve too fast, -ve too slow
+      _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
       _tu4 = tu4;
       if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
       if (_ta4 < -1000000) _ta4 = -1000000;
@@ -157,6 +157,33 @@ int ZxSpectrum::loadZ80MemV0(InputStream *is) {
   return is->read(_RAM + (16*1024), (48*1024)); 
 }
 
+int ZxSpectrum::loadZ80MemV1(InputStream *is) {
+  unsigned int i = 16*1024;
+  unsigned int wd = 0;
+  unsigned int wf = 0;
+  while (i < 65536) {
+    int r = is->readByte(); 
+    if (r < -1) return r;
+    wd <<= 8; wf <<= 1;
+    if (r >= 0) { wd |= r; wf |= 1; }
+    if ((wf & 0xf) == 0) break;
+    if ((wf & 0xf) == 0xf) {
+      if (wd == 0x00eded00) break;
+      if ((wd & 0xffff0000) == 0xeded0000) {
+        unsigned int n = (wd >> 8) & 0xff;
+        unsigned int d = wd & 0xff;
+        unsigned int e = (i + n) & 0xffff;
+        while (i < e) _RAM[i++] = d;
+        wf = 0;
+      }
+    }
+    if (wf & 0x8) {
+      _RAM[i++] = wd >> 24;
+    } 
+  }
+  return i - (16*1024);
+}
+
 void ZxSpectrum::loadZ80(InputStream *is) {
   int version = loadZ80Header(is);
   printf("Reading Z80 version %d\n", version);
@@ -164,6 +191,9 @@ void ZxSpectrum::loadZ80(InputStream *is) {
   switch(version) {
     case 0:
       loadZ80MemV0(is);
+      break;
+    case 1:
+      loadZ80MemV1(is);
       break;
     default:
       printf("Reading Z80 version %d is not implemented!\n", version);
