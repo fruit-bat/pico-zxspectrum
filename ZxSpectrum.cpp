@@ -187,16 +187,18 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
 void ZxSpectrum::loadZ80(InputStream *is) {
   int version = loadZ80Header(is);
   printf("Reading Z80 version %d\n", version);
-  if (version < 0) return; // error
-  switch(version) {
-    case 0:
-      loadZ80MemV0(is);
-      break;
-    case 1:
-      loadZ80MemV1(is);
-      break;
-    default:
-      printf("Reading Z80 version %d is not implemented!\n", version);
-      break;
+  if (version >= 0) {
+    switch(version) {
+      case 0:
+        loadZ80MemV0(is);
+        break;
+      case 1:
+        loadZ80MemV1(is);
+        break;
+      default:
+        printf("Reading Z80 version %d is not implemented!\n", version);
+        break;
+    }
   }
+  is->close();
 }

@@ -3,13 +3,15 @@
 #include "ZxSpectrumKeyboard.h"
 #include "ZxSpectrum.h"
 #include "tusb.h"
+#include "ZxSpectrumSnapList.h"
 
 class ZxSpectrumHidKeyboard : public ZxSpectrumKeyboard {
   ZxSpectrum *_ZxSpectrum;  
+  ZxSpectrumSnapList* _zxSpectrumSnapList;
   bool _reset1;
   bool _reset2;  
 public:
-  ZxSpectrumHidKeyboard();
+  ZxSpectrumHidKeyboard(ZxSpectrumSnapList* zxSpectrumSnapList);
   void processHidReport(hid_keyboard_report_t const *report);
   void setZxSpectrum(ZxSpectrum *ZxSpectrum) { _ZxSpectrum = ZxSpectrum; }
   

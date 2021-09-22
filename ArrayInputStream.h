@@ -18,4 +18,6 @@ public:
   virtual int readByte() { 
     return _i >= _length ? -1 : _buf[_i++];
   }
+  
+  virtual void close() {}
 };

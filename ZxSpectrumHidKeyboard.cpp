@@ -97,18 +97,22 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard() : _reset1(false), _reset2(false) {
+ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumSnapList *zxSpectrumSnapList) :
+  _zxSpectrumSnapList(zxSpectrumSnapList),
+  _reset1(false), 
+  _reset2(false)
+{
   sort_keys();
 }
 
-static unsigned char LOCK_KEYS[] = {
-  HID_KEY_CAPS_LOCK
-//  HID_KEY_NUM_LOCK
-};
+//static unsigned char LOCK_KEYS[] = {
+//  HID_KEY_CAPS_LOCK
+////  HID_KEY_NUM_LOCK
+//};
 
 void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report) {
   static hid_keyboard_report_t prev = { 0, 0, {0} };
-  static bool lock_flags[sizeof(LOCK_KEYS)] = {false};
+//  static bool lock_flags[sizeof(LOCK_KEYS)] = {false};
   reset();
   if (report->keycode[0] == 1) return;
   const unsigned char m = report->modifier;
@@ -139,27 +143,34 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     if (hidKeyCode == HID_KEY_F4 && !isInReport(&prev, HID_KEY_F4)) {
       _ZxSpectrum->toggleModerate();
     }
-        
+    // F9 previous snap
+    if (hidKeyCode == HID_KEY_F9 && !isInReport(&prev, HID_KEY_F9)) {
+      _zxSpectrumSnapList->prev(_ZxSpectrum);
+    }
+    // F10 next snap
+    if (hidKeyCode == HID_KEY_F10 && !isInReport(&prev, HID_KEY_F10)) {
+      _zxSpectrumSnapList->next(_ZxSpectrum);
+    }
     const ZxSpectrumHidKey *k = findKey(hidKeyCode);
     if (k) {
-      const unsigned char keycode = k->keycode;
-      bool isLockKey = false;
-      for (unsigned int j = 0; j < sizeof(LOCK_KEYS); ++j) {
-        if (keycode == LOCK_KEYS[j] && !isInReport(&prev, keycode)) {
-          lock_flags[j] = !lock_flags[j];
-          isLockKey = true;
-        }
-      }
-      if (!isLockKey) {
+//      const unsigned char keycode = k->keycode;
+//      bool isLockKey = false;
+//      for (unsigned int j = 0; j < sizeof(LOCK_KEYS); ++j) {
+//        if (keycode == LOCK_KEYS[j] && !isInReport(&prev, keycode)) {
+//          lock_flags[j] = !lock_flags[j];
+//          isLockKey = true;
+//        }
+//      }
+//      if (!isLockKey) {
         press(k->line, k->key);
-      }
+//      }
     }
   }
-  for (unsigned int j = 0; j < sizeof(LOCK_KEYS); ++j) {
-    if (lock_flags[j]) {
-      const ZxSpectrumHidKey *k = findKey(LOCK_KEYS[j]);
-      if (k) press(k->line, k->key);
-    }
-  }
+//  for (unsigned int j = 0; j < sizeof(LOCK_KEYS); ++j) {
+//    if (lock_flags[j]) {
+//      const ZxSpectrumHidKey *k = findKey(LOCK_KEYS[j]);
+//      if (k) press(k->line, k->key);
+//    }
+//  }
   prev = *report;
 }

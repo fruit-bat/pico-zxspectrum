@@ -13,7 +13,11 @@ add_executable(ZxSpectrum
 	tmds_encode_zxspectrum.h
 	InputStream.cpp
 	ArrayInputStream.cpp
-#	hw_config.c
+	hw_config.c
+	SdCardFatFsSpi.cpp
+	FatFsSpiInputStream.cpp
+	ZxSpectrumSnapList.cpp
+	ZxSpectrumArraySnapZ80.cpp
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})
@@ -24,6 +28,9 @@ target_compile_definitions(ZxSpectrum PRIVATE
 	DVI_N_TMDS_BUFFERS=3
 )
 
+# Oh dear, it looks like FatFs_SPI should be built in the parent
+# currently this is built as part of sorcerer2... clearly it belongs somewhere else!
+# for now, if not also building sorcerer2 uncomment the line below
 # add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 
 target_link_libraries(ZxSpectrum
@@ -33,7 +40,7 @@ target_link_libraries(ZxSpectrum
 	libdvi
 	tinyusb_host
 	tinyusb_board
-# FatFs_SPI
+  FatFs_SPI
 )
 
 # create map/bin/hex file etc.
