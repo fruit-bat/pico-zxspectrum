@@ -11,7 +11,7 @@ class FatFsSpiInputStream : public InputStream {
   bool _eof;
   bool _open;
 public:
-  FatFsSpiInputStream(SdCardFatFsSpi* sdCard, char* name);
+  FatFsSpiInputStream(SdCardFatFsSpi* sdCard, const char* name);
   virtual int readByte();
   virtual void close();
 };

@@ -185,6 +185,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
 }
 
 void ZxSpectrum::loadZ80(InputStream *is) {
+  reset();
   int version = loadZ80Header(is);
   printf("Reading Z80 version %d\n", version);
   if (version >= 0) {

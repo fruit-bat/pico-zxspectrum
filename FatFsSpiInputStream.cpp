@@ -1,7 +1,7 @@
 #include "FatFsSpiInputStream.h"
 #include <pico/printf.h>
 
-FatFsSpiInputStream::FatFsSpiInputStream(SdCardFatFsSpi* sdCard, char* name) :
+FatFsSpiInputStream::FatFsSpiInputStream(SdCardFatFsSpi* sdCard, const char* name) :
   _sdCard(sdCard),
   _eof(false),
   _open(false)
