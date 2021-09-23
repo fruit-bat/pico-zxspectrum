@@ -34,6 +34,7 @@ private:
     const auto m = (ZxSpectrum*)context;
     switch(address & 0xFF) {
       case 0xFE: return m->_keyboard->read(address);
+      case 0x1f: return 0; // Kempstone joystick
       default: return 0xff;
     }
   }
