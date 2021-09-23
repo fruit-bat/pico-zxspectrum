@@ -8,4 +8,5 @@ public:
   void add(ZxSpectrumSnap *snap);
   void next(ZxSpectrum *specy);
   void prev(ZxSpectrum *specy);
+  void curr(ZxSpectrum *specy);
 };
