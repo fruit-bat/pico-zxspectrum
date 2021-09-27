@@ -114,7 +114,7 @@ static inline void prepare_scanline(uint y, uint f) {
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
 
-void core1_scanline_callback() {
+void __not_in_flash("main") core1_scanline_callback() {
 	static uint y = 1;
 	prepare_scanline(y++, frame);
 	if (y >= FRAME_HEIGHT) { 
@@ -142,7 +142,7 @@ extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
 	keyboard.processHidReport(report);
 }
 
-extern "C" int __not_in_flash("main") main() {
+extern "C" int main() {
 	vreg_set_voltage(VREG_VSEL);
 	sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL

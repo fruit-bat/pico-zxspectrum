@@ -271,8 +271,6 @@ public:
 
   uint16_t readRegWord(int reg)               { return state.registers.word[reg]; }
   void writeRegWord(int reg, uint16_t value)  { state.registers.word[reg] = value; }
-
-  uint16_t getPC()                            { return state.pc; }
   
   void setPC(uint16_t v)                      { state.pc = v; }
   void setA(uint8_t v)                        { state.registers.byte[Z80_A] = v; }
@@ -295,6 +293,28 @@ public:
   void setSPH(uint8_t v)                      { state.registers.byte[Z80_SPH] = v; }
   void setSPL(uint8_t v)                      { state.registers.byte[Z80_SPL] = v; }
  
+  uint16_t getPC()                      { return state.pc; }
+  uint8_t getA()                        { return state.registers.byte[Z80_A]; }
+  uint8_t getF()                        { return state.registers.byte[Z80_F]; }
+  uint8_t getB()                        { return state.registers.byte[Z80_B]; }
+  uint8_t getC()                        { return state.registers.byte[Z80_C]; }
+  uint8_t getD()                        { return state.registers.byte[Z80_D]; }
+  uint8_t getE()                        { return state.registers.byte[Z80_E]; }
+  uint8_t getH()                        { return state.registers.byte[Z80_H]; }
+  uint8_t getL()                        { return state.registers.byte[Z80_L]; }
+  uint8_t getIXH()                      { return state.registers.byte[Z80_IXH]; }
+  uint8_t getIXL()                      { return state.registers.byte[Z80_IXL]; }
+  uint8_t getIYH()                      { return state.registers.byte[Z80_IYH]; }
+  uint8_t getIYL()                      { return state.registers.byte[Z80_IYL]; }
+  uint8_t getIFF1()                     { return state.iff1; }
+  uint8_t getIFF2()                     { return state.iff2; }
+  uint8_t getIM()                       { return state.im; }
+  uint8_t getI()                        { return state.i; }
+  uint8_t getR()                        { return state.r; }
+  uint8_t getSPH()                      { return state.registers.byte[Z80_SPH]; }
+  uint8_t getSPL()                      { return state.registers.byte[Z80_SPL]; } 
+ 
+
   void swap() {
       for(int i=0; i <4; ++i) {
         unsigned short t = state.alternates[i];

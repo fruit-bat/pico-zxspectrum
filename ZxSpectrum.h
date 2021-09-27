@@ -14,18 +14,32 @@ private:
   bool _moderate;
   ZxSpectrumKeyboard *_keyboard;
   int32_t _borderColour;
+  int _port254;
+  unsigned char* _pageaddr[4];
   
-  static inline int readByte(void * context, int address)
-  {
-    return ((ZxSpectrum*)context)->_RAM[address];
+  inline void setPageaddr(int page, unsigned char *ptr) {
+    _pageaddr[page] = ptr - (page << 14);
+  }
+  
+  inline unsigned char* memaddr(int address) {
+    return address + _pageaddr[address >> 14];
+  }
+  
+  inline int readByte(int address) {
+    return *memaddr(address);
+  }
+  
+  inline void writeByte(int address, int value) {
+    if (address < 0x4000) return;    
+    *(memaddr(address)) = value;
+  } 
+
+  static inline int readByte(void * context, int address) {
+    return ((ZxSpectrum*)context)->readByte(address);
   }
 
-  static inline void writeByte(void * context, int address, int value)
-  {
-    auto s = ((ZxSpectrum*)context);
-    
-    if (address < 0x4000) return;
-    s->_RAM[address] = value;
+  static inline void writeByte(void * context, int address, int value) {
+    ((ZxSpectrum*)context)->writeByte(address, value);
   }
   
   static inline int readIO(void * context, int address)
@@ -44,7 +58,8 @@ private:
     // printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
     switch(address & 0xFF) {
-      case 0xFE: 
+      case 0xFE:
+        m->_port254 = value;
         m->_borderColour = value & 7;
         break;
       default: 
@@ -62,7 +77,7 @@ private:
     writeByte(context, addr, value & 0xFF); writeByte(context, addr + 1, value >> 8); 
   }
 
-  uint8_t _RAM[1<<16];
+  uint8_t _RAM[8][1<<14];
 
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
@@ -72,7 +87,7 @@ public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
   );
-  inline unsigned char* screenPtr() { return &_RAM[0x4000]; }
+  inline unsigned char* screenPtr() { return (unsigned char*)&_RAM[5]; }
   void reset(unsigned int address);
   void reset();
   void step();

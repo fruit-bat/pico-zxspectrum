@@ -11,10 +11,9 @@ ZxSpectrum::ZxSpectrum(
   _moderate(false),
   _keyboard(keyboard),
   _borderColour(7),
-  _RAM{0}
+  _RAM{{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
-  memcpy(&_RAM[0x0000], basic, 0x4000);
 }
 
 void ZxSpectrum::reset(unsigned int address)
@@ -22,6 +21,12 @@ void ZxSpectrum::reset(unsigned int address)
   _Z80.reset();
   _Z80.setPC(address);
   _cycles = 0;
+  _tu4 = time_us_32() << 5;
+  _ta4 = 0;
+  setPageaddr(0, (unsigned char*)basic);
+  setPageaddr(1, (unsigned char*)&_RAM[5]);
+  setPageaddr(2, (unsigned char*)&_RAM[2]);
+  setPageaddr(3, (unsigned char*)&_RAM[0]);
 }
 
 #define INSTRUCTION_PER_STEP 100
@@ -47,8 +52,6 @@ void ZxSpectrum::step()
 
 void ZxSpectrum::reset() { 
   reset(0x0000); 
-  _tu4 = time_us_32() << 5;
-  _ta4 = 0;
 }
 
 void ZxSpectrum::moderate(bool on) {
@@ -154,7 +157,12 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
 }
 
 int ZxSpectrum::loadZ80MemV0(InputStream *is) {
-  return is->read(_RAM + (16*1024), (48*1024)); 
+  for (unsigned int i = 0x4000; i < 0x10000; ++i) {
+    int r = is->readByte(); 
+    if (r < 0) return r;
+    writeByte(i, r);
+  }
+  return -1;
 }
 
 int ZxSpectrum::loadZ80MemV1(InputStream *is) {
@@ -173,12 +181,12 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
         const unsigned int d = wd & 0xff;
         const unsigned int e = i + ((wd >> 8) & 0xff);
         const unsigned int f = e > 0x10000 ? 0x10000 : e;
-        while (i < f) _RAM[i++] = d;
+        while (i < f) writeByte(i++, d);
         wf = 0;
       }
     }
     if (wf & 0x8) {
-      _RAM[i++] = wd >> 24;
+      writeByte(i++, wd >> 24);
     } 
   }
   return i - (16*1024);
