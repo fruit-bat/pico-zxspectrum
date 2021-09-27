@@ -69,6 +69,53 @@ void ZxSpectrum::toggleModerate() {
   moderate(!_moderate);
 }
 
+int ZxSpectrum::writeZ80Header(
+  OutputStream *os,
+  bool compresed
+) {
+  bool samRom = true; // TODO What is this ! ??
+  unsigned char buf[30];
+
+  buf[0] = _Z80.getA();
+  buf[1] = _Z80.getF();
+  buf[2] = _Z80.getC();
+  buf[3] = _Z80.getB();
+  buf[4] = _Z80.getL();
+  buf[5] = _Z80.getH();
+  buf[6] = _Z80.getPC() & 0xff;
+  buf[7] = _Z80.getPC() >> 8;
+  buf[8] = _Z80.getSPL();
+  buf[9] = _Z80.getSPH(); 
+  buf[10] = _Z80.getI();
+  buf[11] = _Z80.getR();
+  buf[12] = (
+    (_Z80.getR() >> 7) |
+    (_borderColour << 1) |
+    ((samRom ? 1 : 0) << 4) |
+    ((compresed ? 1 : 0) << 5)
+  );
+  buf[13] = _Z80.getE();
+  buf[14] = _Z80.getD();
+  _Z80.swap();
+  buf[15] = _Z80.getC();
+  buf[16] = _Z80.getB();
+  buf[17] = _Z80.getE();
+  buf[18] = _Z80.getD();
+  buf[19] = _Z80.getL();
+  buf[20] = _Z80.getH();
+  buf[21] = _Z80.getA();
+  buf[22] = _Z80.getF();  
+  _Z80.swap();
+  buf[23] = _Z80.getIYL();
+  buf[24] = _Z80.getIYH();  
+  buf[25] = _Z80.getIXL();
+  buf[26] = _Z80.getIXH(); 
+  buf[27] = _Z80.getIFF1();
+  buf[28] = _Z80.getIFF2();
+  buf[29] = _Z80.getIM();
+  
+  return os->write(buf, 30);
+}
 
 int ZxSpectrum::loadZ80Header(InputStream *is) {
 /*
@@ -166,7 +213,7 @@ int ZxSpectrum::loadZ80MemV0(InputStream *is) {
 }
 
 int ZxSpectrum::loadZ80MemV1(InputStream *is) {
-  unsigned int i = 16*1024;
+  unsigned int i = 0x4000;
   unsigned int wd = 0;
   unsigned int wf = 0;
   while (i < 0x10000) {
@@ -189,7 +236,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
       writeByte(i++, wd >> 24);
     } 
   }
-  return i - (16*1024);
+  return i - 0x4000;
 }
 
 void ZxSpectrum::loadZ80(InputStream *is) {

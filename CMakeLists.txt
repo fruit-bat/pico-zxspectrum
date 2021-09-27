@@ -12,6 +12,7 @@ add_executable(ZxSpectrum
 	tmds_encode_zxspectrum.S
 	tmds_encode_zxspectrum.h
 	InputStream.cpp
+	OutputStream.cpp
 	ArrayInputStream.cpp
 	hw_config.c
 	SdCardFatFsSpi.cpp

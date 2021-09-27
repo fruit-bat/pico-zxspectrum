@@ -4,6 +4,7 @@
 #include "Z80.h"
 #include "ZxSpectrumKeyboard.h"
 #include "InputStream.h"
+#include "OutputStream.h"
 
 class ZxSpectrum {
 private:
@@ -82,7 +83,7 @@ private:
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
   int loadZ80Header(InputStream *inputStream);
-  
+  int writeZ80Header(OutputStream *os, bool compresed);
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
