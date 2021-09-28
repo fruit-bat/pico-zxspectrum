@@ -92,7 +92,9 @@ private:
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
   int loadZ80Header(InputStream *inputStream);
-  int writeZ80Header(OutputStream *os, bool compresed);
+  int writeZ80Header(OutputStream *os, int version);
+  int writeZ80(OutputStream *os, int version);
+  int writeZ80MemV0(OutputStream *os);
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard

@@ -69,11 +69,43 @@ void ZxSpectrum::toggleModerate() {
   moderate(!_moderate);
 }
 
+
+int ZxSpectrum::writeZ80(OutputStream *os, int version) {
+  int r = writeZ80Header(os, version);
+  if (r < 0) return r;
+  if (version > 1) {
+    // TODO write the extra header
+    printf("Writing Z80 version %d is not implemented!\n", version);
+    return -2;
+  }
+  switch(version) {
+    case 0:
+      r = writeZ80MemV0(os);
+      break;
+    default:
+      printf("Writing Z80 version %d is not implemented!\n", version);
+      r = -2;
+      break;      
+  }
+  
+  return r;
+}
+
+int ZxSpectrum::writeZ80MemV0(OutputStream *os) {
+  for (unsigned int i = 0x4000; i < 0x10000; ++i) {
+    int b = readByte(i);
+    int r = os->writeByte(b); 
+    if (r < 0) return r;
+  }
+  return -1;
+}
+
 int ZxSpectrum::writeZ80Header(
   OutputStream *os,
-  bool compresed
+  int version
 ) {
   bool samRom = true; // TODO What is this ! ??
+  bool compresed = version == 1;
   unsigned char buf[30];
 
   buf[0] = _Z80.getA();
@@ -82,8 +114,8 @@ int ZxSpectrum::writeZ80Header(
   buf[3] = _Z80.getB();
   buf[4] = _Z80.getL();
   buf[5] = _Z80.getH();
-  buf[6] = _Z80.getPC() & 0xff;
-  buf[7] = _Z80.getPC() >> 8;
+  buf[6] = version > 1 ? 0 : _Z80.getPC() & 0xff;
+  buf[7] = version > 1 ? 0 : _Z80.getPC() >> 8;
   buf[8] = _Z80.getSPL();
   buf[9] = _Z80.getSPH(); 
   buf[10] = _Z80.getI();
