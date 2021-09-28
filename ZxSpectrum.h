@@ -95,6 +95,7 @@ private:
   int writeZ80Header(OutputStream *os, int version);
   int writeZ80(OutputStream *os, int version);
   int writeZ80MemV0(OutputStream *os);
+  int writeZ80MemV1(OutputStream *os);
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard

@@ -6,7 +6,7 @@
 
 ZxSpectrum::ZxSpectrum(
   ZxSpectrumKeyboard *keyboard
-) : 
+) :
   _cycles(0),
   _moderate(false),
   _keyboard(keyboard),
@@ -50,18 +50,18 @@ void ZxSpectrum::step()
   }
 }
 
-void ZxSpectrum::reset() { 
-  reset(0x0000); 
+void ZxSpectrum::reset() {
+  reset(0x0000);
 }
 
 void ZxSpectrum::moderate(bool on) {
   if (on == _moderate) return;
-  
+
   if (on) {
     _tu4 = time_us_32() << 5;
     _ta4 = 0;
   }
-  
+
   _moderate = on;
 }
 
@@ -82,22 +82,76 @@ int ZxSpectrum::writeZ80(OutputStream *os, int version) {
     case 0:
       r = writeZ80MemV0(os);
       break;
+    case 1:
+      r = writeZ80MemV1(os);
+      break;
     default:
       printf("Writing Z80 version %d is not implemented!\n", version);
       r = -2;
-      break;      
+      break;
   }
-  
+
   return r;
+}
+int ZxSpectrum::writeZ80MemV1(OutputStream *os) {
+  unsigned char buf[4];
+  int l = -1;
+  int c = 0;
+  for (unsigned int i = 0x4000; i < 0x10000; ++i) {
+    int b = readByte(i);
+    if (b == l) {
+      c++;
+      if (c == 0xff || i == 0xffff || l == 0xed) {
+        buf[0] = 0xed;
+        buf[1] = 0xed;
+        buf[2] = c;
+        buf[3] = l;
+        int r = os->write(buf, 4);
+        if (r < 0) return r;
+        l = -1;
+        c = 0;
+      }
+    }
+    else {
+      if (c > 4) {
+        buf[0] = 0xed;
+        buf[1] = 0xed;
+        buf[2] = c;
+        buf[3] = l;
+        int r = os->write(buf, 4);
+        if (r < 0) return r;
+      }
+      else if (c > 0) {
+        buf[0] = l;
+        buf[1] = l;
+        buf[2] = l;
+        buf[3] = l;
+        int r = os->write(buf, c);
+        if (r < 0) return r;
+      }
+
+      if (l == 0xed || i == 0xffff) {
+        int r = os->writeByte(b);
+        if (r < 0) return r;
+        l = -1;
+        c = 0;
+      }
+      else {
+        l = b;
+        c = 1;
+      }
+    }
+  }
+  return 0;
 }
 
 int ZxSpectrum::writeZ80MemV0(OutputStream *os) {
   for (unsigned int i = 0x4000; i < 0x10000; ++i) {
     int b = readByte(i);
-    int r = os->writeByte(b); 
+    int r = os->writeByte(b);
     if (r < 0) return r;
   }
-  return -1;
+  return 0;
 }
 
 int ZxSpectrum::writeZ80Header(
@@ -117,7 +171,7 @@ int ZxSpectrum::writeZ80Header(
   buf[6] = version > 1 ? 0 : _Z80.getPC() & 0xff;
   buf[7] = version > 1 ? 0 : _Z80.getPC() >> 8;
   buf[8] = _Z80.getSPL();
-  buf[9] = _Z80.getSPH(); 
+  buf[9] = _Z80.getSPH();
   buf[10] = _Z80.getI();
   buf[11] = _Z80.getR();
   buf[12] = (
@@ -136,16 +190,16 @@ int ZxSpectrum::writeZ80Header(
   buf[19] = _Z80.getL();
   buf[20] = _Z80.getH();
   buf[21] = _Z80.getA();
-  buf[22] = _Z80.getF();  
+  buf[22] = _Z80.getF();
   _Z80.swap();
   buf[23] = _Z80.getIYL();
-  buf[24] = _Z80.getIYH();  
+  buf[24] = _Z80.getIYH();
   buf[25] = _Z80.getIXL();
-  buf[26] = _Z80.getIXH(); 
+  buf[26] = _Z80.getIXH();
   buf[27] = _Z80.getIFF1();
   buf[28] = _Z80.getIFF2();
   buf[29] = _Z80.getIM();
-  
+
   return os->write(buf, 30);
 }
 
@@ -191,7 +245,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   printf("Reading Z80 header\n");
   unsigned char buf[30];
   int l = is->read(buf, sizeof(buf));
-  if (l < 30) { 
+  if (l < 30) {
     printf("Failed to read Z80 header\n");
     return -2; // error
   }
@@ -202,7 +256,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setF(buf[1]);
   _Z80.setC(buf[2]);
   _Z80.setB(buf[3]);
-  _Z80.setL(buf[4]);  
+  _Z80.setL(buf[4]);
   _Z80.setH(buf[5]);
   _Z80.setPC(pc);
   _Z80.setSPL(buf[8]);
@@ -217,7 +271,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setB(buf[16]);
   _Z80.setE(buf[17]);
   _Z80.setD(buf[18]);
-  _Z80.setL(buf[19]);  
+  _Z80.setL(buf[19]);
   _Z80.setH(buf[20]);
   _Z80.setA(buf[21]);
   _Z80.setF(buf[22]);
@@ -225,11 +279,11 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIYL(buf[23]);
   _Z80.setIYH(buf[24]);
   _Z80.setIXL(buf[25]);
-  _Z80.setIXH(buf[26]);    
+  _Z80.setIXH(buf[26]);
   _Z80.setIFF1(buf[27]);
   _Z80.setIFF2(buf[28]);
   _Z80.setIM(buf[29] & 3);
-  
+
   printf("Applied Z80 header\n");
 
   return pc == 0 ? 2 : compressed ? 1 : 0;
@@ -237,7 +291,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
 
 int ZxSpectrum::loadZ80MemV0(InputStream *is) {
   for (unsigned int i = 0x4000; i < 0x10000; ++i) {
-    int r = is->readByte(); 
+    int r = is->readByte();
     if (r < 0) return r;
     writeByte(i, r);
   }
@@ -249,7 +303,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
   unsigned int wd = 0;
   unsigned int wf = 0;
   while (i < 0x10000) {
-    int r = is->readByte(); 
+    int r = is->readByte();
     if (r < -1) return r;
     wd <<= 8; wf <<= 1;
     if (r >= 0) { wd |= r; wf |= 1; }
@@ -266,7 +320,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
     }
     if (wf & 0x8) {
       writeByte(i++, wd >> 24);
-    } 
+    }
   }
   return i - 0x4000;
 }
