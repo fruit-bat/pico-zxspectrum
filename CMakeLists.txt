@@ -22,6 +22,7 @@ add_executable(ZxSpectrum
 	ZxSpectrumArraySnapZ80.cpp
 	ZxSpectrumFatFsSpiSnapZ80.cpp
 	ZxSpectrumDirToSnap.cpp
+	QuickSave.cpp
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})

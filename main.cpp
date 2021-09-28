@@ -27,6 +27,7 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "ZxSpectrumDirToSnap.h"
+#include "QuickSave.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -52,7 +53,8 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 static ZxSpectrumSnapList zxSpectrumSnapList;
-static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnapList);
+static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnapList, &quickSave);
 static ZxSpectrum zxSpectrum(&keyboard);
 static ZxSpectrumDirToSnap dirToSnap(&sdCard0);
 

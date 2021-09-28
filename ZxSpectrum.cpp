@@ -90,7 +90,7 @@ int ZxSpectrum::writeZ80(OutputStream *os, int version) {
       r = -2;
       break;
   }
-
+  os->close();
   return r;
 }
 int ZxSpectrum::writeZ80MemV1(OutputStream *os) {

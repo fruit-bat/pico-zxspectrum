@@ -97,8 +97,9 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumSnapList *zxSpectrumSnapList) :
-  _zxSpectrumSnapList(zxSpectrumSnapList)
+ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumSnapList *zxSpectrumSnapList, QuickSave* quickSave) :
+  _zxSpectrumSnapList(zxSpectrumSnapList),
+  _quickSave(quickSave)
 {
   sort_keys();
 }
@@ -138,12 +139,18 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
 
   if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
     for (int i = 0; i < 12; ++i) {
-      if (fkp & (1 << i)) printf("left shift F%d pressed\n", i);
+      if (fkp & (1 << i)) {
+        printf("left shift F%d pressed\n", i);
+        _quickSave->save(_ZxSpectrum, i);
+      }
     }
   }
   else if (m & KEYBOARD_MODIFIER_RIGHTSHIFT) {
     for (int i = 0; i < 12; ++i) {
-      if (fkp & (1 << i)) printf("right shift F%d pressed\n", i);
+      if (fkp & (1 << i)) {
+        printf("right shift F%d pressed\n", i);
+        _quickSave->load(_ZxSpectrum, i);
+      }
     }
   }
   else {
