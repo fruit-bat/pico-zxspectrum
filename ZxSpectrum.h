@@ -111,4 +111,5 @@ public:
   
 
   void loadZ80(InputStream *inputStream);
+  void saveZ80(OutputStream *outputStream);
 };

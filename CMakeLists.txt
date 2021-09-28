@@ -17,6 +17,7 @@ add_executable(ZxSpectrum
 	hw_config.c
 	SdCardFatFsSpi.cpp
 	FatFsSpiInputStream.cpp
+	FatFsSpiOutputStream.cpp
 	ZxSpectrumSnapList.cpp
 	ZxSpectrumArraySnapZ80.cpp
 	ZxSpectrumFatFsSpiSnapZ80.cpp

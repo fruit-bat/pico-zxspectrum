@@ -13,7 +13,7 @@ FatFsSpiInputStream::FatFsSpiInputStream(SdCardFatFsSpi* sdCard, const char* nam
     }
   }
   
-  printf("openning file %s\n", name);
+  printf("openning file %s for read\n", name);
   _fr = f_open(&_fil, name, FA_READ|FA_OPEN_EXISTING);
   if (FR_OK != _fr && FR_EXIST != _fr) {
     printf("f_open(%s) error: %s (%d)\n", name, FRESULT_str(_fr), _fr);

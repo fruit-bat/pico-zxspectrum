@@ -344,3 +344,7 @@ void ZxSpectrum::loadZ80(InputStream *is) {
   }
   is->close();
 }
+
+void ZxSpectrum::saveZ80(OutputStream *os) {
+  writeZ80(os, 0);
+}
