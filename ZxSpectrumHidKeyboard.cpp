@@ -115,44 +115,45 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     }
   }
   
-  bool reset1 = false;
-  bool reset2 = false;
+  unsigned int fkd = 0;
+  unsigned int fkp = 0;
   
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
     
-    // F11 & F12 both down together for reset
-    bool checkReset = false;
-    reset1 |= hidKeyCode == HID_KEY_F11;
-    reset2 |= hidKeyCode == HID_KEY_F12;
-    checkReset |= reset1 && !isInReport(&prev, HID_KEY_F11);
-    checkReset |= reset2 && !isInReport(&prev, HID_KEY_F12);
-    
-    if (reset1 && reset2 && checkReset) {
-      _ZxSpectrum->reset();
+    for (int fk = 0; fk < 12; ++fk) {
+      const unsigned int fkb = 1 << fk;
+      const unsigned char fkc = HID_KEY_F1 + fk;
+      if (hidKeyCode == fkc) {
+        fkd |= fkb;
+        if (!isInReport(&prev, fkc)) fkp |= fkb;
+      }
     }
-      
-    // F4 toggle moderate
-    if (hidKeyCode == HID_KEY_F4 && !isInReport(&prev, HID_KEY_F4)) {
-      _ZxSpectrum->toggleModerate();
-    }
-    // F9 previous snap
-    if (hidKeyCode == HID_KEY_F9 && !isInReport(&prev, HID_KEY_F9)) {
-      _zxSpectrumSnapList->prev(_ZxSpectrum);
-    }
-    // F10 next snap
-    if (hidKeyCode == HID_KEY_F10 && !isInReport(&prev, HID_KEY_F10)) {
-      _zxSpectrumSnapList->next(_ZxSpectrum);
-    }
-    // F10 curr snap
-    if (hidKeyCode == HID_KEY_F8 && !isInReport(&prev, HID_KEY_F8)) {
-      _zxSpectrumSnapList->curr(_ZxSpectrum);
-    }
-    
+
     const ZxSpectrumHidKey *k = findKey(hidKeyCode);
     if (k) {
       press(k->line, k->key);
     }
   }
+
+  if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
+
+  }
+  else if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
+
+  }
+  else {
+    // F11 & F12 both down together for reset
+    if (((fkd & (3 << 10)) == (3 << 10)) && ((fkp & (3 << 10)) != 0)) _ZxSpectrum->reset();
+    // F4 toggle moderate
+    if (fkp & (1 << 3)) _ZxSpectrum->toggleModerate();
+    // F10 curr snap
+    if (fkp & (1 << 8)) _zxSpectrumSnapList->curr(_ZxSpectrum);
+    // F9 previous snap
+    if (fkp & (1 << 8)) _zxSpectrumSnapList->prev(_ZxSpectrum);
+    // F10 next snap
+    if (fkp & (1 << 9)) _zxSpectrumSnapList->next(_ZxSpectrum);
+  }
+  
   prev = *report;
 }

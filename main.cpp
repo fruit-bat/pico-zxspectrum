@@ -68,7 +68,7 @@ unsigned int frame = 0;
 // 240-192 = 48 => 24 border rows top and bottom
 // 320-256 = 64 => 64 border pixels left and right
 //
-static inline void prepare_scanline(uint y, uint f) {
+static inline void __not_in_flash("main") prepare_scanline(uint y, uint f) {
 	
 	uint8_t borderColor = zxSpectrum.borderColour();
 	uint32_t *tmdsbuf;
