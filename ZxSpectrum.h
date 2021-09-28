@@ -33,14 +33,33 @@ private:
   inline void writeByte(int address, int value) {
     if (address < 0x4000) return;    
     *(memaddr(address)) = value;
-  } 
-
+  }
+  
+  inline int readWord(int addr) { 
+    return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
+  }
+  
+  inline void writeWord(int addr, int value) { 
+    writeByte(addr, value & 0xFF); 
+    writeByte((addr + 1) & 0xffff, value >> 8);
+  }
+  
   static inline int readByte(void * context, int address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
 
   static inline void writeByte(void * context, int address, int value) {
     ((ZxSpectrum*)context)->writeByte(address, value);
+  }
+  
+  // TODO Can addr ever be odd (if not readWord can be simplified)? 
+  static inline int readWord(void * context, int addr) { 
+    return ((ZxSpectrum*)context)->readWord(addr); 
+  }
+  
+  // TODO Can addr ever be odd (if not writeWord can be simplified)?
+  static inline void writeWord(void * context, int addr, int value) { 
+    ((ZxSpectrum*)context)->writeWord(addr, value);
   }
   
   static inline int readIO(void * context, int address)
@@ -66,16 +85,6 @@ private:
       default: 
         break;
     }  
-  }
-  
-  static inline int readWord(void * context, int addr) 
-  { 
-    return readByte(context, addr) | (readByte(context, addr + 1) << 8); 
-  }
-  
-  static inline void writeWord(void * context, int addr, int value) 
-  { 
-    writeByte(context, addr, value & 0xFF); writeByte(context, addr + 1, value >> 8); 
   }
 
   uint8_t _RAM[8][1<<14];
