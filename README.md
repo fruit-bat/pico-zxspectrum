@@ -76,7 +76,7 @@ add_subdirectory(zxspectrum)
 ```
 In the build folder:
 ```
-cmake -DPICO_COPY_TO_RAM=0
+cmake -DPICO_COPY_TO_RAM=0 ..
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```

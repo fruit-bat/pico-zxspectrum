@@ -68,7 +68,7 @@ unsigned int frame = 0;
 // 240-192 = 48 => 24 border rows top and bottom
 // 320-256 = 64 => 64 border pixels left and right
 //
-static inline void __not_in_flash("main") prepare_scanline(uint y, uint f) {
+static inline void prepare_scanline(uint y, uint f) {
 	
 	uint8_t borderColor = zxSpectrum.borderColour();
 	uint32_t *tmdsbuf;
@@ -114,7 +114,7 @@ static inline void __not_in_flash("main") prepare_scanline(uint y, uint f) {
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
 
-void __not_in_flash("main") core1_scanline_callback() {
+void __not_in_flash_func(core1_scanline_callback)() {
 	static uint y = 1;
 	prepare_scanline(y++, frame);
 	if (y >= FRAME_HEIGHT) { 
@@ -123,7 +123,7 @@ void __not_in_flash("main") core1_scanline_callback() {
 	}
 }
 
-void __not_in_flash("main") core1_main() {
+void __not_in_flash_func(core1_main)() {
 	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
 	sem_acquire_blocking(&dvi_start_sem);
 
@@ -142,7 +142,7 @@ extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
 	keyboard.processHidReport(report);
 }
 
-extern "C" int main() {
+extern "C" int __not_in_flash_func(main)() {
 	vreg_set_voltage(VREG_VSEL);
 	sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL

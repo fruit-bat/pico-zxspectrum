@@ -137,10 +137,14 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
   }
 
   if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
-
+    for (int i = 0; i < 12; ++i) {
+      if (fkp & (1 << i)) printf("left shift F%d pressed\n", i);
+    }
   }
-  else if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
-
+  else if (m & KEYBOARD_MODIFIER_RIGHTSHIFT) {
+    for (int i = 0; i < 12; ++i) {
+      if (fkp & (1 << i)) printf("right shift F%d pressed\n", i);
+    }
   }
   else {
     // F11 & F12 both down together for reset
