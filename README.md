@@ -82,6 +82,13 @@ cmake -DPICO_COPY_TO_RAM=1 ..
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
+## Prepare an SD card
+Create the folders:
+```sh
+zxspectrum/snapshots
+zxspectrum/quicksaves
+```
+Put snapshot files int ```zxspectrum/snapshots```. Currently only .z80 version 1 (compressed and uncompressed) are supported.
 
 ## Special keys
 
