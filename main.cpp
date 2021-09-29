@@ -37,9 +37,6 @@ extern "C" {
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 
-#define FONT_CHAR_WIDTH 8
-#define FONT_CHAR_HEIGHT 8
-
 // DVDD 1.2V (1.1V seems ok too)
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
@@ -137,8 +134,6 @@ void __not_in_flash_func(core1_main)() {
 		__wfi();
 	__builtin_unreachable();
 }
-
-
 
 extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
 	keyboard.processHidReport(report);

@@ -11,6 +11,8 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 * DVI over HDMI output
 * USB Keyboard input
 * No screen buffer
+* 12 quick save slots
+* Load from .z80 version 1
 
 ## First light
 <img src="docs/zxspectrum_screen_1.jpg" width="400"/>
@@ -76,7 +78,7 @@ add_subdirectory(zxspectrum)
 ```
 In the build folder:
 ```
-cmake -DPICO_COPY_TO_RAM=0 ..
+cmake -DPICO_COPY_TO_RAM=1 ..
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
@@ -85,13 +87,19 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 
 | Key | Action |
 | --- | ------ |
+| AltGr | Symbol |
 | F4 | Toggle Z80 3.5Mhz moderator |
+| F8 | Reload current curr snap |
+| F9 | previous snap |
+| F10 | next snap |
 | F11 + F12 | Reset |
+| LCtrl + F1-F12 | Quick save |
+| LAlt + F1-F12 | Quick load |
 
 ## Missing features
 * Audio input
 * Audio Output
-* Load from .z80.,sna
+* Load from .z80 version 2, 3,.sna
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>

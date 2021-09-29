@@ -37,7 +37,7 @@ int FatFsSpiOutputStream::write(unsigned char* buffer, const unsigned int length
     return -2;
   }
   if (bw < length) {
-    printf("f_write(%s) error: wrote %d of %d\n", bw, length);
+    printf("f_write error: wrote %d of %d\n", bw, length);
     return -3; // failed to write
   }
   return bw;

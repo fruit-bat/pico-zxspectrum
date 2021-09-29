@@ -26,14 +26,19 @@ FatFsSpiInputStream::FatFsSpiInputStream(SdCardFatFsSpi* sdCard, const char* nam
 }
 
 int FatFsSpiInputStream::readByte() {
+  unsigned char b;
+  int r = read(&b, 1);
+  return r < 0 ? r : b;
+}
+
+int FatFsSpiInputStream::read(unsigned char* buffer, const unsigned int length) {
   if (_eof || !_open) return -1;
   
   // TODO Handle errors with separate codes
   if (FR_OK != _fr) return -1; 
 
-  unsigned char d;
   UINT br = 0;
-  _fr = f_read(&_fil, &d, 1, &br);
+  _fr = f_read(&_fil, buffer, length, &br);
   _eof = br == 0;
   if (_eof) {
     printf("eof\n");
@@ -43,7 +48,7 @@ int FatFsSpiInputStream::readByte() {
     printf("f_read(%s) error: (%d)\n", FRESULT_str(_fr), _fr);
     return -2;
   }
-  return d;
+  return br;
 }
 
 void FatFsSpiInputStream::close() {

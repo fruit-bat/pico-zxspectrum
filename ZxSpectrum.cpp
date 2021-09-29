@@ -8,10 +8,10 @@ ZxSpectrum::ZxSpectrum(
   ZxSpectrumKeyboard *keyboard
 ) :
   _cycles(0),
-  _moderate(false),
+  _moderate(true),
   _keyboard(keyboard),
   _borderColour(7),
-  _RAM{{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}}
+  _RAM{{0}, {0}, {0}/*, {0}, {0}, {0}, {0}, {0}*/}
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
 }
@@ -24,9 +24,9 @@ void ZxSpectrum::reset(unsigned int address)
   _tu4 = time_us_32() << 5;
   _ta4 = 0;
   setPageaddr(0, (unsigned char*)basic);
-  setPageaddr(1, (unsigned char*)&_RAM[5]);
-  setPageaddr(2, (unsigned char*)&_RAM[2]);
-  setPageaddr(3, (unsigned char*)&_RAM[0]);
+  setPageaddr(1, (unsigned char*)&_RAM[0]); // 5
+  setPageaddr(2, (unsigned char*)&_RAM[1]); // 2
+  setPageaddr(3, (unsigned char*)&_RAM[2]); // 0
 }
 
 #define INSTRUCTION_PER_STEP 100

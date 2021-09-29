@@ -1,5 +1,6 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "stdlib.h"
+#include <pico/printf.h>
 
 struct ZxSpectrumHidKey {
   unsigned char keycode;
@@ -7,7 +8,6 @@ struct ZxSpectrumHidKey {
   unsigned char key;
 };
 
-#define HID_KEY_LEFTALT 0xe2
 
 ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_SHIFT_LEFT,  0, 0},
@@ -54,7 +54,6 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_H,           6, 4},
 
   { HID_KEY_SPACE,       7, 0},
-  { HID_KEY_LEFTALT,     7, 1}, // Symbol
   { HID_KEY_M,           7, 2},
   { HID_KEY_N,           7, 3},
   { HID_KEY_B,           7, 4},
@@ -109,13 +108,11 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
   reset();
   if (report->keycode[0] == 1) return;
   const unsigned char m = report->modifier;
-  for (int i = 0; i < 8; ++i) {
-    if (m & (1 << i)) {
-      const ZxSpectrumHidKey *k = findKey(0xE0 | i);
-      if (k) press(k->line, k->key);
-    }
-  }
-  
+  // printf("hid:%02X %02X%02X%02X%02X%02X%02X\n", m, report->keycode[0], report->keycode[1], report->keycode[2], report->keycode[3], report->keycode[4], report->keycode[5]);
+
+  if (m & 0x22) press(0, 0); // Shift
+  if (m & 0x40) press(7, 1); // AtlGr -> Symbol
+
   unsigned int fkd = 0;
   unsigned int fkp = 0;
   
@@ -137,18 +134,18 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     }
   }
 
-  if (m & KEYBOARD_MODIFIER_LEFTSHIFT) {
+  if (m & KEYBOARD_MODIFIER_LEFTCTRL) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
-        printf("left shift F%d pressed\n", i);
+        printf("left ctrl F%d pressed\n", i);
         _quickSave->save(_ZxSpectrum, i);
       }
     }
   }
-  else if (m & KEYBOARD_MODIFIER_RIGHTSHIFT) {
+  else if (m & KEYBOARD_MODIFIER_LEFTALT) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
-        printf("right shift F%d pressed\n", i);
+        printf("left alt F%d pressed\n", i);
         _quickSave->load(_ZxSpectrum, i);
       }
     }

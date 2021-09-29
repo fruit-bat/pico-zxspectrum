@@ -87,7 +87,7 @@ private:
     }  
   }
 
-  uint8_t _RAM[8][1<<14];
+  uint8_t _RAM[3][1<<14]; // 8
 
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
@@ -100,7 +100,7 @@ public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
   );
-  inline unsigned char* screenPtr() { return (unsigned char*)&_RAM[5]; }
+  inline unsigned char* screenPtr() { return (unsigned char*)&_RAM[0]; } // 5
   void reset(unsigned int address);
   void reset();
   void step();

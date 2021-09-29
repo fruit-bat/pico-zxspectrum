@@ -1,5 +1,6 @@
 #include "ZxSpectrumFatFsSpiSnapZ80.h"
 #include "FatFsSpiInputStream.h"
+#include "BufferedInputStream.h"
 #include <string.h>
 
 ZxSpectrumFatFsSpiSnapZ80::ZxSpectrumFatFsSpiSnapZ80(
@@ -14,7 +15,8 @@ ZxSpectrumFatFsSpiSnapZ80::ZxSpectrumFatFsSpiSnapZ80(
 
 void ZxSpectrumFatFsSpiSnapZ80::load(ZxSpectrum *specy) {
   FatFsSpiInputStream is(_sdCard, _name);
-  specy->loadZ80(&is);	
+  BufferedInputStream bis(&is);
+  specy->loadZ80(&bis);	
 }
 
 ZxSpectrumFatFsSpiSnapZ80::~ZxSpectrumFatFsSpiSnapZ80() {
