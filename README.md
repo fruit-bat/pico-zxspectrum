@@ -88,7 +88,7 @@ Create the folders:
 zxspectrum/snapshots
 zxspectrum/quicksaves
 ```
-Put snapshot files int ```zxspectrum/snapshots```. Currently only .z80 version 1 (compressed and uncompressed) are supported.
+Put snapshot files in ```zxspectrum/snapshots```. Currently only .z80 version 1 (compressed and uncompressed) are supported.
 
 ## Special keys
 
