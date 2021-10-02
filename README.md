@@ -1,9 +1,9 @@
 # pico-zxspectrum
-ZX Spectrum for Raspberry Pico Pi RP2040
+48k ZX Spectrum for Raspberry Pico Pi RP2040
 
 <img src="docs/1200px-ZXSpectrum48k.jpg" width="400"/>
 
-This is an attempt to make a very basic ZX Spectrum emulation on the RP2040 with DVI output.
+This is an attempt to make a very basic 48k ZX Spectrum emulation on the RP2040 with DVI output.
 
 Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 
@@ -84,6 +84,13 @@ cmake -DPICO_COPY_TO_RAM=1 ..
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
+## Prepare an SD card
+Create the folders:
+```sh
+zxspectrum/snapshots
+zxspectrum/quicksaves
+```
+Put snapshot files in ```zxspectrum/snapshots```. Currently only .z80 version 1 (compressed and uncompressed) are supported.
 
 ## Special keys
 
@@ -91,17 +98,18 @@ cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 | --- | ------ |
 | AltGr | Symbol |
 | F4 | Toggle Z80 3.5Mhz moderator |
-| F8 | Reload current curr snap |
+| F8 | Reload current snap |
 | F9 | previous snap |
 | F10 | next snap |
 | F11 + F12 | Reset |
-| LCtrl + F1-F12 | Quick save |
-| LAlt + F1-F12 | Quick load |
+| LCtrl + F1-F12 | Quick save (LCtrl+F1 = save slot 1, LCtrl+F2 = save slot 2, etc) |
+| LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
 
 ## Missing features
 * Audio input
 * Audio Output
-* Load from .z80 version 2, 3,.sna
+* Load from .z80 (version 2, 3),.sna
+* &infin;
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
