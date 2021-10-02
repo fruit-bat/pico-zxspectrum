@@ -44,6 +44,7 @@ extern "C" {
 
 // Should be 25 for pico ?
 #define LED_PIN 25
+#define SPK_PIN 20
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -154,7 +155,13 @@ extern "C" int __not_in_flash_func(main)() {
     
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
-
+	
+	gpio_init(SPK_PIN);
+	gpio_set_dir(SPK_PIN, GPIO_OUT);
+	gpio_set_slew_rate(SPK_PIN, GPIO_SLEW_RATE_SLOW);
+	gpio_set_drive_strength(SPK_PIN, GPIO_DRIVE_STRENGTH_2MA);
+	gpio_pull_up(SPK_PIN);
+	
 	screenPtr = zxSpectrum.screenPtr();
 	attrPtr = screenPtr + (32 * 24 * 8);
 
@@ -185,11 +192,14 @@ extern "C" int __not_in_flash_func(main)() {
 	static unsigned int lastInterruptFrame = frame;
 	while (1) {
 		tuh_task();
-		if (lastInterruptFrame != frame) {
-			lastInterruptFrame = frame;
-			zxSpectrum.interrupt();
+		for (int i = 1; i < 100; ++i) {
+			if (lastInterruptFrame != frame) {
+				lastInterruptFrame = frame;
+				zxSpectrum.interrupt();
+			}
+			zxSpectrum.step();
+			gpio_put (SPK_PIN, zxSpectrum.getSpeaker());
 		}
-		zxSpectrum.step();
 	}
 	__builtin_unreachable();
 }

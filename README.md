@@ -40,6 +40,8 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 | GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
+| GP20  |       | 20    | 26    |           |           |           | Speaker                |
+
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 

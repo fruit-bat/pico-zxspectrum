@@ -31,7 +31,7 @@ target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_compile_definitions(ZxSpectrum PRIVATE
 	DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
 	DVI_VERTICAL_REPEAT=2
-	DVI_N_TMDS_BUFFERS=6
+	DVI_N_TMDS_BUFFERS=3
 )
 
 # Oh dear, it looks like FatFs_SPI should be built in the parent

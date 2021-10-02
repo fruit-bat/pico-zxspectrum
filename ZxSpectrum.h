@@ -5,6 +5,7 @@
 #include "ZxSpectrumKeyboard.h"
 #include "InputStream.h"
 #include "OutputStream.h"
+#include <pico/stdlib.h>
 
 class ZxSpectrum {
 private:
@@ -103,11 +104,23 @@ public:
   inline unsigned char* screenPtr() { return (unsigned char*)&_RAM[0]; } // 5
   void reset(unsigned int address);
   void reset();
-  void step();
+  inline void step()
+  {
+      int c = _Z80.step();
+      _cycles += c;
+      if (_moderate) {
+        uint32_t tu4 = time_us_32() << 5;
+        _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
+        _tu4 = tu4;
+        if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
+        if (_ta4 < -1000000) _ta4 = -1000000;
+      }
+  }
   void interrupt();
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
+  bool getSpeaker() { return _port254 & (1<<4);}
   
 
   void loadZ80(InputStream *inputStream);
