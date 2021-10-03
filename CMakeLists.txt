@@ -24,6 +24,10 @@ add_executable(ZxSpectrum
 	ZxSpectrumFatFsSpiSnapZ80.cpp
 	ZxSpectrumDirToSnap.cpp
 	QuickSave.cpp
+	Pulse.cpp
+	PulseByte.cpp
+	PulseByteStream.cpp
+	PulsePreamble.cpp
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})
