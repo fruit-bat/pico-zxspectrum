@@ -14,9 +14,9 @@ public:
   {}
 
   // Can return -ve for error
-  int advance(int tstates, bool *pstate) {
-    if (end()) return tstates;
-    while(tstates > 0) {
+  int advance(int *tstates, bool *pstate) {
+    if (end()) return 0;
+    while(*tstates > 0) {
       if (_pulseByte.end()) {
         --_n;
         if (end()) break;
@@ -24,9 +24,9 @@ public:
         if (b < 0) return b;
         _pulseByte.reset(b);
       }
-      tstates = _pulseByte.advance(tstates, pstate);
+      _pulseByte.advance(tstates, pstate);
     }
-    return tstates;
+    return 0;
   }
 
   bool end() {

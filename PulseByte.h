@@ -20,17 +20,16 @@ public:
     bitset();
   }
   
-  int advance(int tstates, bool *pstate) {
-    if (end()) return tstates;
-    while (tstates > 0) {
-      tstates = _pulse.advance(tstates, pstate);
+  void advance(int *tstates, bool *pstate) {
+    if (end()) return;
+    while (*tstates > 0) {
+      _pulse.advance(tstates, pstate);
       if (_pulse.end()) {
         _data >>= 1;
         if (end()) break;
         bitset();
       }
     }
-    return tstates;
   }
 
   bool end() {

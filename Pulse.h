@@ -20,21 +20,20 @@ public:
     _pulses = pulses;
   }
   
-  int advance(int tstates, bool *pstate) {
-    while (_pulses != 0 && tstates > 0) {
+  void advance(int *tstates, bool *pstate) {
+    while (_pulses != 0 && *tstates > 0) {
       int rem = _tstates - _cursor;
-      if (tstates >= rem) {
-        tstates -= rem;
+      if (*tstates >= rem) {
+        *tstates -= rem;
         _cursor = 0;
         --_pulses;
         *pstate = !*pstate;
       }
       else {
-        _cursor += tstates;
-        tstates = 0;
+        _cursor += *tstates;
+        *tstates = 0;
       }
     }
-    return tstates;
   }
 
   bool end() {

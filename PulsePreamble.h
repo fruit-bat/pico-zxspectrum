@@ -20,13 +20,12 @@ public:
     _marker.reset(marker);
   }
   
-  int advance(int tstates, bool *pstate) {
-    if (end()) return tstates;
-    tstates = _pilot.advance(tstates, pstate);
-    tstates = _sync1.advance(tstates, pstate);
-    tstates = _sync2.advance(tstates, pstate);
-    tstates = _marker.advance(tstates, pstate);
-    return tstates;
+  void advance(int *tstates, bool *pstate) {
+    if (end()) return;
+    _pilot.advance(tstates, pstate);
+    _sync1.advance(tstates, pstate);
+    _sync2.advance(tstates, pstate);
+    _marker.advance(tstates, pstate);
   }
 
   bool end() {
