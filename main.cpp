@@ -68,15 +68,19 @@ unsigned int frame = 0;
 // 240-192 = 48 => 24 border rows top and bottom
 // 320-256 = 64 => 64 border pixels left and right
 //
-static inline void prepare_scanline(uint y, uint f) {
+static inline void prepare_scanline(const uint y, uint f) {
 	
-	uint8_t borderColor = zxSpectrum.borderColour();
+	const uint8_t borderColor = zxSpectrum.borderColour();
 	uint32_t *tmdsbuf;
 	queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
 	uint32_t *p = tmdsbuf;
-			
-	for (int plane = 0; plane < 3; ++plane) {
-		if (y < 24 || y >= (24+192)) {
+	const uint v = y - 24;
+	const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
+	const uint8_t *a = attrPtr+((v>>3)<<5);
+	const int m = (f >> 5) & 1 ? 0xff : 0x7f;
+	
+	if (y < 24 || y >= (24+192)) {
+		for (int plane = 0; plane < 3; ++plane) {
 			p = tmds_encode_border(
 				40,          // r0 is width in characters
 				plane,       // r1 is colour channel
@@ -84,31 +88,28 @@ static inline void prepare_scanline(uint y, uint f) {
 				borderColor  // r3 is the colour attribute
 			);		
 		}
-		else {
-			uint v = y - 24;
-			uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
-			
+	}
+	else {
+		for (int plane = 0; plane < 3; ++plane) {
 			p = tmds_encode_border(
 				4,           // r0 is width in characters
 				plane,       // r1 is colour channel
 				p,           // r2 is output TMDS buffer
 				borderColor  // r3 is the colour attribute
 			);
-			
 			p = tmds_encode_screen(
 				(const uint8_t*)s,
-				attrPtr+((v>>3)<<5),
+				a,
 				p,
-				(f >> 5) & 1 ? 0xff : 0x7f,
+				m,
 				plane
 			);	
-			
 			p = tmds_encode_border(
 				4,           // r0 is width in characters
 				plane,       // r1 is colour channel
 				p,           // r2 is output TMDS buffer
 				borderColor  // r3 is the colour attribute
-			);		
+			);
 		}
 	}
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
