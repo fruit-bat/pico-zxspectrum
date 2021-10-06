@@ -12,4 +12,6 @@ public:
   BufferedInputStream(InputStream* delegate);
   virtual int readByte(); // read a single byte, -1 for eof, -ve for error
   virtual void close();
+  virtual bool closed();
+  virtual bool end();
 };

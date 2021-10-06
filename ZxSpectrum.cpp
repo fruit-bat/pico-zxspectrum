@@ -11,6 +11,7 @@ ZxSpectrum::ZxSpectrum(
   _moderate(true),
   _keyboard(keyboard),
   _borderColour(7),
+  _ear(false),
   _RAM{{0}, {0}, {0}/*, {0}, {0}, {0}, {0}, {0}*/}
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
@@ -27,6 +28,7 @@ void ZxSpectrum::reset(unsigned int address)
   setPageaddr(1, (unsigned char*)&_RAM[0]); // 5
   setPageaddr(2, (unsigned char*)&_RAM[1]); // 2
   setPageaddr(3, (unsigned char*)&_RAM[2]); // 0
+  _ear = false;
 }
 
 void ZxSpectrum::interrupt() {
@@ -330,4 +332,9 @@ void ZxSpectrum::loadZ80(InputStream *is) {
 
 void ZxSpectrum::saveZ80(OutputStream *os) {
   writeZ80(os, 0);
+}
+
+void ZxSpectrum::loadTap(InputStream *inputStream) {
+  _cycles = 0;
+  _pulseBlock.reset(inputStream);
 }

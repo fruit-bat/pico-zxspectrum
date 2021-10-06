@@ -29,6 +29,9 @@ extern "C" {
 #include "ZxSpectrumDirToSnap.h"
 #include "QuickSave.h"
 
+#include "FatFsSpiInputStream.h"
+
+
 #define UART_ID uart0
 #define BAUD_RATE 115200
 
@@ -189,6 +192,9 @@ extern "C" int __not_in_flash_func(main)() {
 	zxSpectrum.reset();
 
 	dirToSnap.addToList("zxspectrum/snapshots", &zxSpectrumSnapList);
+
+	FatFsSpiInputStream sis(&sdCard0, "zxspectrum/taps/swarm0-training.tap");
+	zxSpectrum.loadTap(&sis);
 
 	static unsigned int lastInterruptFrame = frame;
 	while (1) {

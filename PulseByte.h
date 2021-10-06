@@ -5,18 +5,19 @@
 class PulseByte {
   Pulse _pulse;
   int _data;
-public:
-  PulseByte() :
-    _data(1)
-  {}
 
   void bitset() {
     // https://sinclair.wiki.zxnet.co.uk/wiki/Spectrum_tape_interface
     _pulse.reset(2, _data & 1 ? 1710 : 855);
   }
   
+public:
+  PulseByte() :
+    _data(1)
+  {}
+
   void reset(int data) {
-    _data = data & 0x100;
+    _data = data | 0x100;
     bitset();
   }
   

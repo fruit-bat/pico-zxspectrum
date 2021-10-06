@@ -25,3 +25,11 @@ int BufferedInputStream::readByte() {
 void BufferedInputStream::close() {
   _delegate->close();
 }
+
+bool BufferedInputStream::closed() {
+  return _delegate->closed();
+}
+
+bool BufferedInputStream::end() {
+  return _delegate->end();
+}

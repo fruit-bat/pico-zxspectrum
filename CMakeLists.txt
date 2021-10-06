@@ -28,6 +28,8 @@ add_executable(ZxSpectrum
 	PulseByte.cpp
 	PulseByteStream.cpp
 	PulsePreamble.cpp
+	PulseBlock.cpp
+
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})
