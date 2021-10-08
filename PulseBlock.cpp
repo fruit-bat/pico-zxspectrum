@@ -1,32 +1,32 @@
 #include "PulseBlock.h"
-#include <pico/printf.h>
 
 void PulseBlock::reset(InputStream* is) {
-  int length = is->readWord();
-  printf("Read tap block length %d\n", length);
-  int marker = is->readByte();
-  printf("Read tap marker %d\n", marker);
-  if ((length <= 0) || (marker < 0)) {
-    is->close();
-    return;
+  if ((_is != 0) && (_is != is)) _is->close();
+  if (is) {
+    int length = is->readWord();
+    int marker = is->readByte();
+    if ((length <= 0) || (marker < 0)) {
+      is->close();
+      return;
+    }
+    _pulsePreamble.reset(marker);
+    _pulseByteStream.reset(is, length - 1); // Take off one for the marker
   }
-  _pulsePreamble.reset(marker);
-  _pulseByteStream.reset(is, length - 1); // Take off one for the marker
   _is = is;
   _r = 0;
+  _tstates = -7000000;
 }
 
-int PulseBlock::advance(int *tstates, bool *pstate) {
+int PulseBlock::advance(int tstates, bool *pstate) {
   if (end()) return -1;
-  _pulsePreamble.advance(tstates, pstate);
+  _tstates += tstates;
+  _pulsePreamble.advance(&_tstates, pstate);
   if (!_pulsePreamble.end()) return 0;
-  _r = _pulseByteStream.advance(tstates, pstate);
+  _r = _pulseByteStream.advance(&_tstates, pstate);
     if (_r == 0 && _pulseByteStream.end()) {
-    printf("End of tap block\n");
     reset(_is);
   }
   else if (_r < 0 || _pulseByteStream.end()) {
-     printf("End reading tap %d\n", _r);
     _is->close();
     _is = 0;
   }

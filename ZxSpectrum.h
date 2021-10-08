@@ -19,14 +19,13 @@
 class ZxSpectrum {
 private:
   Z80 _Z80;
-  int _cycles;
   uint32_t _tu4;
   int32_t _ta4;
   bool _moderate;
   ZxSpectrumKeyboard *_keyboard;
   int32_t _borderColour;
   int _port254;
-  unsigned char* _pageaddr[4];
+  unsigned char* _pageaddr[8];
   bool _ear;
 	PulseBlock _pulseBlock;
 
@@ -123,23 +122,15 @@ public:
   inline void step()
   {
       int c = _Z80.step();
-      _cycles += c;
       if (_moderate) {
         uint32_t tu4 = time_us_32() << 5;
         _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
         _tu4 = tu4;
         if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
         // Try to catch up, but only for 100 or so instructions
-        if (_ta4 < -100 * 4 * 32) { 
-          gpio_put (25, true); // TODO remove later?
-          _ta4 = -100 * 4 * 32;
-        }
-        else {
-        	gpio_put (25, false); // TODO remove later?
-        }
+        if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
       }
-
-      _pulseBlock.advance(&_cycles, &_ear);
+      _pulseBlock.advance(c, &_ear);
   }
   void interrupt();
   void moderate(bool on);

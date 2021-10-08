@@ -193,7 +193,7 @@ extern "C" int __not_in_flash_func(main)() {
 
 	dirToSnap.addToList("zxspectrum/snapshots", &zxSpectrumSnapList);
 
-	FatFsSpiInputStream sis(&sdCard0, "zxspectrum/taps/swarm0-training.tap");
+	FatFsSpiInputStream sis(&sdCard0, "zxspectrum/taps/swarm1-48k.tap");
 	zxSpectrum.loadTap(&sis);
 
 	static unsigned int lastInterruptFrame = frame;

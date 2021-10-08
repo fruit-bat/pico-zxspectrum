@@ -27,7 +27,6 @@ public:
         --_n;
         if (end()) break;
         int b = _is->readByte();
-        printf("Read tap data %d\n", b);
         if (b < 0) {
           _n = 0;
           _is = 0;

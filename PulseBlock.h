@@ -9,9 +9,10 @@ class PulseBlock {
   PulseByteStream _pulseByteStream;
   PulsePreamble _pulsePreamble;
   int _r;
+  int _tstates;
 public:
   PulseBlock() {}
   void reset(InputStream* is);
-  int advance(int *tstates, bool *pstate);
+  int advance(int tstates, bool *pstate);
   bool end();
 };

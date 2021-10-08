@@ -7,7 +7,6 @@ class PulseByte {
   int _data;
 
   void bitset() {
-    // https://sinclair.wiki.zxnet.co.uk/wiki/Spectrum_tape_interface
     _pulse.reset(2, _data & 0x100 ? 1710 : 855);
   }
   

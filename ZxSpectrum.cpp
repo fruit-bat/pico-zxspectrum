@@ -7,7 +7,6 @@
 ZxSpectrum::ZxSpectrum(
   ZxSpectrumKeyboard *keyboard
 ) :
-  _cycles(0),
   _moderate(true),
   _keyboard(keyboard),
   _borderColour(7),
@@ -21,7 +20,6 @@ void ZxSpectrum::reset(unsigned int address)
 {
   _Z80.reset();
   _Z80.setPC(address);
-  _cycles = 0;
   _tu4 = time_us_32() << 5;
   _ta4 = 0;
   setPageaddr(0, (unsigned char*)basic);
@@ -29,6 +27,7 @@ void ZxSpectrum::reset(unsigned int address)
   setPageaddr(2, (unsigned char*)&_RAM[1]); // 2
   setPageaddr(3, (unsigned char*)&_RAM[2]); // 0
   _ear = false;
+  _pulseBlock.reset(0);
 }
 
 void ZxSpectrum::interrupt() {
@@ -335,6 +334,5 @@ void ZxSpectrum::saveZ80(OutputStream *os) {
 }
 
 void ZxSpectrum::loadTap(InputStream *inputStream) {
-  _cycles = 0;
   _pulseBlock.reset(inputStream);
 }
