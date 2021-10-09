@@ -12,7 +12,7 @@ public:
   }
 
   void reset() {
-    for(int i = 0; i < 8; ++i) _line[i] = 0xff;
+    for(int i = 0; i < 8; ++i) _line[i] = 0x1f;
   }
 
   void press(unsigned int line, unsigned int key) {

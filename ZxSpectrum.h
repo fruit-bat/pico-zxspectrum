@@ -6,19 +6,21 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include <pico/stdlib.h>
+#include "PulseBlock.h"
 
 class ZxSpectrum {
 private:
   Z80 _Z80;
-  int _cycles;
   uint32_t _tu4;
   int32_t _ta4;
   bool _moderate;
   ZxSpectrumKeyboard *_keyboard;
   int32_t _borderColour;
   int _port254;
-  unsigned char* _pageaddr[4];
-  
+  uint8_t* _pageaddr[8];
+  bool _ear;
+	PulseBlock _pulseBlock;
+
   inline void setPageaddr(int page, unsigned char *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
@@ -45,6 +47,15 @@ private:
     writeByte((addr + 1) & 0xffff, value >> 8);
   }
   
+  inline int readIO(int address)
+  {
+    switch(address & 0xFF) {
+      case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
+      case 0x1f: return 0; // Kempstone joystick
+      default: return 0xff;
+    }
+  }
+  
   static inline int readByte(void * context, int address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
@@ -67,11 +78,7 @@ private:
   {
     // printf("readIO %04X\n", address);
     const auto m = (ZxSpectrum*)context;
-    switch(address & 0xFF) {
-      case 0xFE: return m->_keyboard->read(address);
-      case 0x1f: return 0; // Kempstone joystick
-      default: return 0xff;
-    }
+    return m->readIO(address);
   }
 
   static inline void writeIO(void * context, int address, int value)
@@ -107,22 +114,23 @@ public:
   inline void step()
   {
       int c = _Z80.step();
-      _cycles += c;
       if (_moderate) {
         uint32_t tu4 = time_us_32() << 5;
         _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
         _tu4 = tu4;
         if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
-        if (_ta4 < -1000000) _ta4 = -1000000;
+        // Try to catch up, but only for 100 or so instructions
+        if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
       }
+      _pulseBlock.advance(c, &_ear);
   }
   void interrupt();
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
-  bool getSpeaker() { return _port254 & (1<<4);}
-  
-
+  bool getSpeaker() { return (_port254 & (1<<4)) ^ (_ear ? (1<<4) : 0);}
+  void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);
+  void loadTap(InputStream *inputStream);
 };

@@ -85,12 +85,13 @@ make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
 ## Prepare an SD card
-Create the folders:
-```sh
-zxspectrum/snapshots
-zxspectrum/quicksaves
-```
-Put snapshot files in ```zxspectrum/snapshots```. Currently only .z80 version 1 (compressed and uncompressed) are supported.
+The following folders need to be created on the SD card:
+
+| Folder | Contents |
+| ------ | -------- |
+| zxspectrum/snapshots | Put your snapshot files in here. Currently only .z80 version 1 (compressed and uncompressed) is supported. |
+| zxspectrum/quicksaves | Folder for quick saves |
+| zxspectrum/taps | Folder for tape files. Currently only .tap supported. |
 
 ## Special keys
 
@@ -98,6 +99,9 @@ Put snapshot files in ```zxspectrum/snapshots```. Currently only .z80 version 1 
 | --- | ------ |
 | AltGr | Symbol |
 | F4 | Toggle Z80 3.5Mhz moderator |
+| F5 | play current tape |
+| F6 | play previous tape |
+| F7 | play next tape |
 | F8 | Reload current snap |
 | F9 | previous snap |
 | F10 | next snap |
@@ -106,8 +110,8 @@ Put snapshot files in ```zxspectrum/snapshots```. Currently only .z80 version 1 
 | LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
 
 ## Missing features
+* HUD
 * Audio input
-* Audio Output
 * Load from .z80 (version 2, 3),.sna
 * &infin;
 
@@ -121,3 +125,6 @@ http://mdfs.net/Software/Spectrum/Harston/<br/>
 https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html<br/>
 https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm<br/>
 https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
+http://www.zxdesign.info/cassette.shtml<br/>
+https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
+

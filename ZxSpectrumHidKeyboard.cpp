@@ -96,8 +96,9 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumSnapList *zxSpectrumSnapList, QuickSave* quickSave) :
+ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumFileLoop *zxSpectrumSnapList, ZxSpectrumFileLoop* zxSpectrumTapeList, QuickSave* quickSave) :
   _zxSpectrumSnapList(zxSpectrumSnapList),
+  _zxSpectrumTapeList(zxSpectrumTapeList),
   _quickSave(quickSave)
 {
   sort_keys();
@@ -155,12 +156,20 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     if (((fkd & (3 << 10)) == (3 << 10)) && ((fkp & (3 << 10)) != 0)) _ZxSpectrum->reset();
     // F4 toggle moderate
     if (fkp & (1 << 3)) _ZxSpectrum->toggleModerate();
-    // F10 curr snap
-    if (fkp & (1 << 8)) _zxSpectrumSnapList->curr(_ZxSpectrum);
+    // F8 curr snap
+    if (fkp & (1 << 7)) _zxSpectrumSnapList->curr(_ZxSpectrum);
     // F9 previous snap
     if (fkp & (1 << 8)) _zxSpectrumSnapList->prev(_ZxSpectrum);
     // F10 next snap
     if (fkp & (1 << 9)) _zxSpectrumSnapList->next(_ZxSpectrum);
+
+    // F5 curr tape
+    if (fkp & (1 << 4)) _zxSpectrumTapeList->curr(_ZxSpectrum);
+    // F6 previous tape
+    if (fkp & (1 << 5)) _zxSpectrumTapeList->prev(_ZxSpectrum);
+    // F7 next tape
+    if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
+
   }
   
   prev = *report;

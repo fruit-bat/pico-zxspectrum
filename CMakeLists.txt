@@ -19,11 +19,15 @@ add_executable(ZxSpectrum
 	SdCardFatFsSpi.cpp
 	FatFsSpiInputStream.cpp
 	FatFsSpiOutputStream.cpp
-	ZxSpectrumSnapList.cpp
-	ZxSpectrumArraySnapZ80.cpp
-	ZxSpectrumFatFsSpiSnapZ80.cpp
-	ZxSpectrumDirToSnap.cpp
 	QuickSave.cpp
+	Pulse.cpp
+	PulseByte.cpp
+	PulseByteStream.cpp
+	PulsePreamble.cpp
+	PulseBlock.cpp
+	ZxSpectrumFile.cpp
+	ZxSpectrumFileLoop.cpp
+	ZxSpectrumFatFsSpiFileLoop.cpp
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})

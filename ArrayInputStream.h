@@ -20,4 +20,7 @@ public:
   }
   
   virtual void close() {}
+
+  virtual bool closed() { return false; }
+  virtual bool end() { return _i >= _length; }
 };

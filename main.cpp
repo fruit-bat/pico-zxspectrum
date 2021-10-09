@@ -20,14 +20,13 @@ extern "C" {
 }
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
-#include "ZxSpectrumSnapList.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
-#include "ZxSpectrumDirToSnap.h"
 #include "QuickSave.h"
+#include "ZxSpectrumFatFsSpiFileLoop.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -50,11 +49,11 @@ struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
-static ZxSpectrumSnapList zxSpectrumSnapList;
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/taps");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
-static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnapList, &quickSave);
+static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
 static ZxSpectrum zxSpectrum(&keyboard);
-static ZxSpectrumDirToSnap dirToSnap(&sdCard0);
 
 unsigned char* screenPtr;
 unsigned char* attrPtr;
@@ -187,8 +186,6 @@ extern "C" int __not_in_flash_func(main)() {
 	sem_release(&dvi_start_sem);
 
 	zxSpectrum.reset();
-
-	dirToSnap.addToList("zxspectrum/snapshots", &zxSpectrumSnapList);
 
 	static unsigned int lastInterruptFrame = frame;
 	while (1) {
