@@ -25,11 +25,7 @@ extern "C" {
 #include "tusb.h"
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
-#include "ZxSpectrumDirToSnap.h"
 #include "QuickSave.h"
-
-#include "FatFsSpiInputStream.h"
-
 #include "ZxSpectrumFatFsSpiFileLoop.h"
 
 #define UART_ID uart0
@@ -58,7 +54,6 @@ static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/taps");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
 static ZxSpectrum zxSpectrum(&keyboard);
-static ZxSpectrumDirToSnap dirToSnap(&sdCard0);
 
 unsigned char* screenPtr;
 unsigned char* attrPtr;

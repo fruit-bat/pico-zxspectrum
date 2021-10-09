@@ -19,10 +19,6 @@ add_executable(ZxSpectrum
 	SdCardFatFsSpi.cpp
 	FatFsSpiInputStream.cpp
 	FatFsSpiOutputStream.cpp
-	ZxSpectrumSnapList.cpp
-	ZxSpectrumArraySnapZ80.cpp
-	ZxSpectrumFatFsSpiSnapZ80.cpp
-	ZxSpectrumDirToSnap.cpp
 	QuickSave.cpp
 	Pulse.cpp
 	PulseByte.cpp
