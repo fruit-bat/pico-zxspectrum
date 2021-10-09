@@ -1,10 +1,14 @@
 #include "PulseBlock.h"
+#include <pico/printf.h>
 
 void PulseBlock::reset(InputStream* is) {
+  printf("PulseBlock::reset\n");
   if ((_is != 0) && (_is != is)) _is->close();
   if (is) {
+    printf("PulseBlock::reset - 1\n");
     int length = is->readWord();
     int marker = is->readByte();
+
     if ((length <= 0) || (marker < 0)) {
       is->close();
       return;

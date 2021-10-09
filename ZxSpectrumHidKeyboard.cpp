@@ -96,8 +96,9 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumSnapList *zxSpectrumSnapList, QuickSave* quickSave) :
+ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumFileLoop *zxSpectrumSnapList, ZxSpectrumFileLoop* zxSpectrumTapeList, QuickSave* quickSave) :
   _zxSpectrumSnapList(zxSpectrumSnapList),
+  _zxSpectrumTapeList(zxSpectrumTapeList),
   _quickSave(quickSave)
 {
   sort_keys();
@@ -161,6 +162,14 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     if (fkp & (1 << 8)) _zxSpectrumSnapList->prev(_ZxSpectrum);
     // F10 next snap
     if (fkp & (1 << 9)) _zxSpectrumSnapList->next(_ZxSpectrum);
+
+    // F5 curr tape
+    if (fkp & (1 << 4)) _zxSpectrumTapeList->curr(_ZxSpectrum);
+    // F6 previous tape
+    if (fkp & (1 << 5)) _zxSpectrumTapeList->prev(_ZxSpectrum);
+    // F7 next tape
+    if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
+
   }
   
   prev = *report;

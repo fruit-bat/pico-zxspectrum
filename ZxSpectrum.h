@@ -25,7 +25,7 @@ private:
   ZxSpectrumKeyboard *_keyboard;
   int32_t _borderColour;
   int _port254;
-  unsigned char* _pageaddr[8];
+  uint8_t* _pageaddr[8];
   bool _ear;
 	PulseBlock _pulseBlock;
 
@@ -138,8 +138,6 @@ public:
   unsigned int borderColour() { return _borderColour; }
   bool getSpeaker() { return (_port254 & (1<<4)) ^ (_ear ? (1<<4) : 0);}
   void setEar(bool ear) { _ear = ear; }
-  
-
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
