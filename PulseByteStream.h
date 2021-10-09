@@ -17,6 +17,7 @@ public:
   void reset(InputStream* is, int n) {
     _is = is;
     _n = n == 0 ? 0 : n + 1;
+    _pulseByte.clear();
   }
 
   // Can return -ve for error

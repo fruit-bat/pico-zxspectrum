@@ -19,6 +19,10 @@ public:
     _data = (data << 1) | 1;
     bitset();
   }
+
+  void clear() {
+    _data = 0x100;
+  }
   
   void advance(int *tstates, bool *pstate) {
     if (end()) return;
