@@ -6,15 +6,7 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include <pico/stdlib.h>
-
-// swarm0-training.tap
-// swarm1-48k.tap
-// swarm2-48k.tap
-// swarm3-48k.tap
-// swarm4-48k.tap
-
 #include "PulseBlock.h"
-
 
 class ZxSpectrum {
 private:
