@@ -2,10 +2,8 @@
 #include <pico/printf.h>
 
 void PulseBlock::reset(InputStream* is) {
-  printf("PulseBlock::reset\n");
   if ((_is != 0) && (_is != is)) _is->close();
   if (is) {
-    printf("PulseBlock::reset - 1\n");
     int length = is->readWord();
     int marker = is->readByte();
 
@@ -15,10 +13,10 @@ void PulseBlock::reset(InputStream* is) {
     }
     _pulsePreamble.reset(marker);
     _pulseByteStream.reset(is, length - 1); // Take off one for the marker
+    _tstates = marker == 0 ? 0 : -3500000;
   }
   _is = is;
   _r = 0;
-  _tstates = -7000000;
 }
 
 int PulseBlock::advance(int tstates, bool *pstate) {
