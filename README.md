@@ -14,11 +14,17 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 * 12 quick save slots
 * Load from .z80 version 1
 
-## First light
+## Screen shots
+<figure>
 <img src="docs/zxspectrum_screen_1.jpg" width="400"/>
 
-## Prototype
-<img src="docs/pico_zxspectrum_prototype_1.jpg" width="400"/>
+<figurecaption>first light</figurecaption>
+</figure>
+<figure>
+<img src="docs/swarm_loading.jpg" width="400"/>
+<figurecaption>groovy</figurecaption>
+</figure>
+
 
 ## Wiring
 
