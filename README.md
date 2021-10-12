@@ -17,7 +17,6 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 ## Screen shots
 <figure>
 <img src="docs/zxspectrum_screen_1.jpg" width="400"/>
-
 <figurecaption>first light</figurecaption>
 </figure>
 <figure>
@@ -133,5 +132,4 @@ https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'go
 https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
 http://www.zxdesign.info/cassette.shtml<br/>
 https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
-
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>

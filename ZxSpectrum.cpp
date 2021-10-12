@@ -1,5 +1,6 @@
 #include "ZxSpectrum.h"
 #include "basic.h"
+
 #include <memory.h>
 #include <pico/printf.h>
 #include <pico/stdlib.h>
@@ -10,10 +11,10 @@ ZxSpectrum::ZxSpectrum(
   _moderate(true),
   _keyboard(keyboard),
   _borderColour(7),
-  _ear(false),
-  _RAM{{0}, {0}, {0}/*, {0}, {0}, {0}, {0}, {0}*/}
+  _ear(false)
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
+  reset();
 }
 
 void ZxSpectrum::reset(unsigned int address)
@@ -22,12 +23,16 @@ void ZxSpectrum::reset(unsigned int address)
   _Z80.setPC(address);
   _tu4 = time_us_32() << 5;
   _ta4 = 0;
-  setPageaddr(0, (unsigned char*)basic);
-  setPageaddr(1, (unsigned char*)&_RAM[0]); // 5
-  setPageaddr(2, (unsigned char*)&_RAM[1]); // 2
-  setPageaddr(3, (unsigned char*)&_RAM[2]); // 0
+  //setPageaddr(0, (uint8_t*)basic);
+  setPageaddr(0, (uint8_t*)zx_128k_rom_1);
+  setPageaddr(1, (uint8_t*)&_RAM[5]);
+  setPageaddr(2, (uint8_t*)&_RAM[2]);
+  setPageaddr(3, (uint8_t*)&_RAM[0]);
   _ear = false;
   _pulseBlock.reset(0);
+  memset(_RAM, 0, sizeof(_RAM));
+  _port254 = 0;
+  _portMem = 0;
 }
 
 void ZxSpectrum::interrupt() {
@@ -274,6 +279,8 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
 }
 
 int ZxSpectrum::loadZ80MemV0(InputStream *is) {
+  _port254 = 0x30;
+  setPageaddr(0, (uint8_t*)basic);
   for (unsigned int i = 0x4000; i < 0x10000; ++i) {
     int r = is->readByte();
     if (r < 0) return r;
@@ -283,6 +290,8 @@ int ZxSpectrum::loadZ80MemV0(InputStream *is) {
 }
 
 int ZxSpectrum::loadZ80MemV1(InputStream *is) {
+  _port254 = 0x30;
+  setPageaddr(0, (uint8_t*)basic);
   unsigned int i = 0x4000;
   unsigned int wd = 0;
   unsigned int wf = 0;

@@ -3980,7 +3980,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         x = Y(opcode) != INDIRECT_HL
         ? R(Y(opcode))
         : 0;
-        Z80_OUTPUT_BYTE(C, x);
+        Z80_OUTPUT_BYTE(BC, x);
 
         elapsed_cycles += 4;
 
@@ -3993,7 +3993,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     x, f;
 
         READ_BYTE(HL, x);
-        Z80_OUTPUT_BYTE(C, x);
+        Z80_OUTPUT_BYTE(BC, x);
 
         HL += opcode == OPCODE_OUTI ? +1 : -1;
 
@@ -4025,7 +4025,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           r += 2;
 
           Z80_READ_BYTE(hl, x);
-          Z80_OUTPUT_BYTE(C, x);
+          Z80_OUTPUT_BYTE(BC, x);
 
           hl += d;
           if (--b)

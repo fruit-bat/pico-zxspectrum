@@ -120,6 +120,9 @@ void __not_in_flash_func(core1_scanline_callback)() {
 	if (y >= FRAME_HEIGHT) { 
 		y -= FRAME_HEIGHT;
 		++frame;
+		// TODO Tidy this mechanism up
+		screenPtr = zxSpectrum.screenPtr();
+		attrPtr = screenPtr + (32 * 24 * 8);
 	}
 }
 
@@ -185,9 +188,7 @@ extern "C" int __not_in_flash_func(main)() {
 
 	sem_release(&dvi_start_sem);
 
-	zxSpectrum.reset();
-
-	static unsigned int lastInterruptFrame = frame;
+	unsigned int lastInterruptFrame = frame;
 	while (1) {
 		tuh_task();
 		for (int i = 1; i < 100; ++i) {

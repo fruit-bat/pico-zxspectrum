@@ -18,7 +18,7 @@ socket, which SPI it is driven by, and how it is wired.
 #include "ff.h" /* Obtains integer types */
 #include "diskio.h" /* Declarations of disk functions */
 
-void spi0_dma_isr();
+void __not_in_flash_func(spi0_dma_isr)();
 
 // Hardware Configuration of SPI "objects"
 // Note: multiple SD cards can be driven by one SPI if they use different slave
@@ -61,9 +61,9 @@ static sd_card_t sd_cards[] = {  // One for each SD card
 void spi0_dma_isr() { spi_irq_handler(&spis[0]); }
 
 /* ********************************************************************** */
-size_t sd_get_num() { return count_of(sd_cards); }
+size_t __not_in_flash_func(sd_get_num)() { return count_of(sd_cards); }
 
-sd_card_t *sd_get_by_num(size_t num) {
+sd_card_t *__not_in_flash_func(sd_get_by_num)(size_t num) {
     if (num <= sd_get_num()) {
         return &sd_cards[num];
     } else {
@@ -71,9 +71,9 @@ sd_card_t *sd_get_by_num(size_t num) {
     }
 }
 
-size_t spi_get_num() { return count_of(spis); }
+size_t __not_in_flash_func(spi_get_num)() { return count_of(spis); }
 
-spi_t *spi_get_by_num(size_t num) {
+spi_t *__not_in_flash_func(spi_get_by_num)(size_t num) {
     if (num <= sd_get_num()) {
         return &spis[num];
     } else {

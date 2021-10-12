@@ -7,6 +7,8 @@
 #include "OutputStream.h"
 #include <pico/stdlib.h>
 #include "PulseBlock.h"
+#include "128k_rom_1.h"
+#include "128k_rom_2.h"
 
 class ZxSpectrum {
 private:
@@ -15,13 +17,14 @@ private:
   int32_t _ta4;
   bool _moderate;
   ZxSpectrumKeyboard *_keyboard;
-  int32_t _borderColour;
-  int _port254;
+  uint8_t _borderColour;
+  uint8_t _port254;
+  uint8_t _portMem;
   uint8_t* _pageaddr[8];
   bool _ear;
 	PulseBlock _pulseBlock;
 
-  inline void setPageaddr(int page, unsigned char *ptr) {
+  inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
   
@@ -56,6 +59,27 @@ private:
     }
   }
   
+  inline void writeIO(int address, int value) {
+    if (address == 0x7ffd) {
+
+      if ((_portMem & 0x20) == 0) { 
+        _portMem = value;
+        setPageaddr(7, (unsigned char*)&_RAM[value & 7]);
+        setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+      }
+    }
+    else {
+      switch(address & 0xFF) {
+        case 0xFE:
+          _port254 = value;
+          _borderColour = value & 7;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  
   static inline int readByte(void * context, int address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
@@ -76,26 +100,19 @@ private:
   
   static inline int readIO(void * context, int address)
   {
-    // printf("readIO %04X\n", address);
+    //printf("readIO %04X\n", address);
     const auto m = (ZxSpectrum*)context;
     return m->readIO(address);
   }
 
   static inline void writeIO(void * context, int address, int value)
   {
-    // printf("writeIO %04X %02X\n", address, value);
+    //printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
-    switch(address & 0xFF) {
-      case 0xFE:
-        m->_port254 = value;
-        m->_borderColour = value & 7;
-        break;
-      default: 
-        break;
-    }  
+    m->writeIO(address, value);
   }
 
-  uint8_t _RAM[3][1<<14]; // 8
+  uint8_t _RAM[8][1<<14]; // 8
 
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
@@ -108,7 +125,7 @@ public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
   );
-  inline unsigned char* screenPtr() { return (unsigned char*)&_RAM[0]; } // 5
+  inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(unsigned int address);
   void reset();
   inline void step()
