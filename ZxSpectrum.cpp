@@ -21,7 +21,8 @@ void ZxSpectrum::reset(unsigned int address)
 {
   _Z80.reset();
   _Z80.setPC(address);
-  _tu4 = time_us_32() << 5;
+  _tus = time_us_32();
+  _tu4 = _tus << 5;
   _ta4 = 0;
   //setPageaddr(0, (uint8_t*)basic);
   setPageaddr(0, (uint8_t*)zx_128k_rom_1);
@@ -33,6 +34,7 @@ void ZxSpectrum::reset(unsigned int address)
   memset(_RAM, 0, sizeof(_RAM));
   _port254 = 0;
   _portMem = 0;
+  Reset8910(&_AY8910,3500000,0);
 }
 
 void ZxSpectrum::interrupt() {

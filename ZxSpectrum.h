@@ -9,6 +9,7 @@
 #include "PulseBlock.h"
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
+#include "AY8910.h"
 
 class ZxSpectrum {
 private:
@@ -23,6 +24,9 @@ private:
   uint8_t* _pageaddr[8];
   bool _ear;
 	PulseBlock _pulseBlock;
+  AY8910 _AY8910;
+  int32_t _tus;
+
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -52,21 +56,37 @@ private:
   
   inline int readIO(int address)
   {
-    switch(address & 0xFF) {
-      case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
-      case 0x1f: return 0; // Kempstone joystick
-      default: return 0xff;
+    if (address == 0xfffd) {
+      // AY-8912
+      printf("readIO %04X\n", address);
+      return RdData8910(&_AY8910);
+    }
+    else {
+      switch(address & 0xFF) {
+        case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
+        case 0x1f: return 0; // Kempstone joystick
+        default: return 0xff;
+      }
     }
   }
   
   inline void writeIO(int address, int value) {
     if (address == 0x7ffd) {
-
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
-        setPageaddr(7, (unsigned char*)&_RAM[value & 7]);
+        setPageaddr(7, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
+    }
+    else if (address == 0xfffd) {
+      // AY-8912
+      printf("AY-8912 register select %04X %02X\n", address, value);
+      WrCtrl8910(&_AY8910, value & 0xf);
+    }
+    else if (address == 0xbffd) {
+      // AY-8912
+      printf("AY-8912 register value %04X %02X\n", address, value);
+      WrData8910(&_AY8910, value);
     }
     else {
       switch(address & 0xFF) {
@@ -130,7 +150,7 @@ public:
   void reset();
   inline void step()
   {
-      int c = _Z80.step();
+      const int c = _Z80.step();
       if (_moderate) {
         uint32_t tu4 = time_us_32() << 5;
         _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
@@ -140,6 +160,11 @@ public:
         if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
       }
       _pulseBlock.advance(c, &_ear);
+  }
+  inline void stepSound() {
+    int tus = time_us_32();
+    Loop8910(&_AY8910, (tus - _tus) / 1000);
+    _tus = tus;
   }
   void interrupt();
   void moderate(bool on);

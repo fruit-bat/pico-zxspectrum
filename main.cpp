@@ -189,6 +189,7 @@ extern "C" int __not_in_flash_func(main)() {
 	sem_release(&dvi_start_sem);
 
 	unsigned int lastInterruptFrame = frame;
+	
 	while (1) {
 		tuh_task();
 		for (int i = 1; i < 100; ++i) {
@@ -199,6 +200,7 @@ extern "C" int __not_in_flash_func(main)() {
 			zxSpectrum.step();
 			gpio_put (SPK_PIN, zxSpectrum.getSpeaker());
 		}
+		zxSpectrum.stepSound();
 	}
 	__builtin_unreachable();
 }
