@@ -9,7 +9,7 @@
 #include "PulseBlock.h"
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
-#include "AY8910.h"
+#include "ZxSpectrumAy.h"
 
 class ZxSpectrum {
 private:
@@ -24,8 +24,7 @@ private:
   uint8_t* _pageaddr[8];
   bool _ear;
 	PulseBlock _pulseBlock;
-  AY8910 _AY8910;
-  int32_t _tus;
+  ZxSpectrumAy _ay;
 
 
   inline void setPageaddr(int page, uint8_t *ptr) {
@@ -59,7 +58,7 @@ private:
     if (address == 0xfffd) {
       // AY-8912
       printf("readIO %04X\n", address);
-      return RdData8910(&_AY8910);
+      return _ay.readData();
     }
     else {
       switch(address & 0xFF) {
@@ -81,12 +80,12 @@ private:
     else if (address == 0xfffd) {
       // AY-8912
       printf("AY-8912 register select %04X %02X\n", address, value);
-      WrCtrl8910(&_AY8910, value & 0xf);
+      _ay.writeCtrl(value);
     }
     else if (address == 0xbffd) {
       // AY-8912
       printf("AY-8912 register value %04X %02X\n", address, value);
-      WrData8910(&_AY8910, value);
+      _ay.writeData(value);
     }
     else {
       switch(address & 0xFF) {
@@ -132,7 +131,7 @@ private:
     m->writeIO(address, value);
   }
 
-  uint8_t _RAM[8][1<<14]; // 8
+  uint8_t _RAM[8][1<<14];
 
   int loadZ80MemV0(InputStream *inputStream);
   int loadZ80MemV1(InputStream *inputStream);
@@ -151,26 +150,28 @@ public:
   inline void step()
   {
       const int c = _Z80.step();
+      const uint32_t tu4 = time_us_32() << 5;
+      const uint32_t tud = tu4 - _tu4;
+      _tu4 = tu4;
       if (_moderate) {
-        uint32_t tu4 = time_us_32() << 5;
-        _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
-        _tu4 = tu4;
+        _ta4 += (c*9) - tud; // +ve too fast, -ve too slow
         if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
         // Try to catch up, but only for 100 or so instructions
         if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
       }
+      _ay.step(tud);
       _pulseBlock.advance(c, &_ear);
   }
-  inline void stepSound() {
-    int tus = time_us_32();
-    Loop8910(&_AY8910, (tus - _tus) / 1000);
-    _tus = tus;
-  }
+
   void interrupt();
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
-  bool getSpeaker() { return (_port254 & (1<<4)) ^ (_ear ? (1<<4) : 0);}
+  uint16_t getSpeaker() {
+    const uint16_t a1 = (_port254 & (1<<4)) ? 128 : -128;
+    const uint16_t a2 = _ear ? 64 : -64;
+    return a1 + a2;
+  }
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);
