@@ -10,6 +10,7 @@
 // ((32*1000000)/(2*2034*440)) = 17.8778939841
 
 // ((2*2034*440*(1<<12))/(32*1000000))
+// #define STEP 229
 #define STEP 229
 // Say we step 
 static const int Volumes[16] =
@@ -29,13 +30,14 @@ class ZxSpectrumAy {
   uint32_t _cntC;
   uint32_t _tb;
 
-  inline uint8_t mixer() { return _reg.r8[7]; }
-  inline uint16_t periodA() { return _reg.r16[0]; }
-  inline uint16_t periodB() { return _reg.r16[1]; }
-  inline uint16_t periodC() { return _reg.r16[2]; }
-  inline uint8_t volA() { return mixer() & 0x1 ? 0 : Volumes[_reg.r8[8] & 0xf]; }
-  inline uint8_t volB() { return mixer() & 0x2 ? 0 : Volumes[_reg.r8[9] & 0xf]; }
-  inline uint8_t volC() { return mixer() & 0x4 ? 0 : Volumes[_reg.r8[10] & 0xf]; }
+  inline uint32_t mixer() { return _reg.r8[7]; }
+  inline uint32_t periodA() { return _reg.r16[0]; }
+  //inline uint32_t periodA() { return (uint32_t)_reg.r8[0] + (((uint32_t)(_reg.r8[1] & 0xf)) << 8); }
+  inline uint32_t periodB() { return _reg.r16[1]; }
+  inline uint32_t periodC() { return _reg.r16[2]; }
+  inline uint32_t volA() { return 64; /* Volumes[_reg.r8[8] & 0xf]; */ }
+  inline uint32_t volB() { return 64; /* Volumes[_reg.r8[9] & 0xf]; */ }
+  inline uint32_t volC() { return 64; /* Volumes[_reg.r8[10] & 0xf]; */ }
 
 public:
   ZxSpectrumAy() {
@@ -44,7 +46,7 @@ public:
   
   inline void step(uint32_t u32s) {
     const uint32_t s = u32s * STEP;
-    const uint32_t pmA = periodA() << 12;
+    const uint32_t pmA = periodA() << 15;
     if (pmA > 0) {
       _cntA += s;
       while(_cntA >= pmA) { _cntA -= pmA; _tb ^= 1; }
@@ -52,7 +54,7 @@ public:
     else {
       _cntA = 0;
     }
-    const uint32_t pmB = periodB() << 12;
+    const uint32_t pmB = periodB() << 15;
     if (pmB > 0) {
       _cntB += s;
       while(_cntB >= pmB) { _cntB -= pmB; _tb ^= 2; }
@@ -60,7 +62,7 @@ public:
     else {
       _cntB = 0;
     }
-    const uint32_t pmC = periodC() << 12;
+    const uint32_t pmC = periodC() << 15;
     if (pmC > 0) {
       _cntC += s;
       while(_cntC >= pmC) { _cntC -= pmC; _tb ^= 4; }
@@ -91,5 +93,15 @@ public:
 
   inline uint8_t readData() {
     return _reg.r8[_l];
+  }
+
+  inline uint32_t vol() {
+    uint32_t v = 0;
+    const uint32_t m = mixer();
+    if (!(m & 1)) { const uint32_t vA = volA(); v += (_tb & 1) ? vA: -vA; }
+    if (!(m & 2)) { const uint32_t vB = volB(); v += (_tb & 2) ? vB: -vB; }
+    if (!(m & 4)) { const uint32_t vC = volC(); v += (_tb & 4) ? vC: -vC; }
+    
+    return v;
   }
 };

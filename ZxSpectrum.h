@@ -57,7 +57,7 @@ private:
   {
     if (address == 0xfffd) {
       // AY-8912
-      printf("readIO %04X\n", address);
+      //printf("readIO %04X\n", address);
       return _ay.readData();
     }
     else {
@@ -79,12 +79,12 @@ private:
     }
     else if (address == 0xfffd) {
       // AY-8912
-      printf("AY-8912 register select %04X %02X\n", address, value);
+      //printf("AY-8912 register select %04X %02X\n", address, value);
       _ay.writeCtrl(value);
     }
     else if (address == 0xbffd) {
       // AY-8912
-      printf("AY-8912 register value %04X %02X\n", address, value);
+      //printf("AY-8912 register value %04X %02X\n", address, value);
       _ay.writeData(value);
     }
     else {
@@ -170,7 +170,7 @@ public:
   uint16_t getSpeaker() {
     const uint16_t a1 = (_port254 & (1<<4)) ? 128 : -128;
     const uint16_t a2 = _ear ? 64 : -64;
-    return a1 + a2;
+    return a1 + a2 + _ay.vol();
   }
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
