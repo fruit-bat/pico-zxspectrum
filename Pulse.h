@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Pulse.h"
+#include <pico/stdlib.h>
 
 class Pulse {
   int _tstates;
@@ -14,13 +15,13 @@ public:
   {
   }
 
-  void reset(int pulses, int tstates) {
+  void __not_in_flash_func(reset)(int pulses, int tstates) {
     _tstates = tstates;
     _cursor = 0;
     _pulses = pulses;
   }
   
-  void advance(int *tstates, bool *pstate) {
+  void __not_in_flash_func(advance)(int *tstates, bool *pstate) {
     while (_pulses != 0 && *tstates > 0) {
       int rem = _tstates - _cursor;
       if (*tstates >= rem) {

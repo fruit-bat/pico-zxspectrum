@@ -169,12 +169,6 @@ extern "C" int __not_in_flash_func(main)() {
 	pwm_config_set_clkdiv(&config, 1.0f); 
 	pwm_config_set_wrap(&config, PWM_WRAP);
 	pwm_init(audio_pin_slice, &config, true);
-    
-	//gpio_init(SPK_PIN);
-	//gpio_set_dir(SPK_PIN, GPIO_OUT);
-	//gpio_set_slew_rate(SPK_PIN, GPIO_SLEW_RATE_SLOW);
-	//gpio_set_drive_strength(SPK_PIN, GPIO_DRIVE_STRENGTH_2MA);
-	//gpio_pull_up(SPK_PIN);
 	
 	screenPtr = zxSpectrum.screenPtr();
 	attrPtr = screenPtr + (32 * 24 * 8);
@@ -209,7 +203,6 @@ extern "C" int __not_in_flash_func(main)() {
 				zxSpectrum.interrupt();
 			}
 			zxSpectrum.step();
-			//gpio_put (SPK_PIN, zxSpectrum.getSpeaker());
 			const uint32_t l = zxSpectrum.getSpeaker();
 			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
 

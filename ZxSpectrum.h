@@ -167,10 +167,10 @@ public:
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
-  uint16_t getSpeaker() {
-    const uint16_t a1 = (_port254 & (1<<4)) ? 128 : -128;
-    const uint16_t a2 = _ear ? 64 : -64;
-    return a1 + a2 + _ay.vol();
+  int32_t getSpeaker() {
+    const int32_t a1 = (_port254 & (1<<4)) ? 254 : -254;
+    const int32_t a2 = _ear ? 128 : -128;
+    return (a1 + a2 + _ay.vol()) >> 1;
   }
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);

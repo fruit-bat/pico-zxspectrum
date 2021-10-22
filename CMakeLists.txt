@@ -28,7 +28,6 @@ add_executable(ZxSpectrum
 	ZxSpectrumFile.cpp
 	ZxSpectrumFileLoop.cpp
 	ZxSpectrumFatFsSpiFileLoop.cpp
-	AY8910.c
 	ZxSpectrumAy.cpp
 )
 
