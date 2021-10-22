@@ -133,13 +133,16 @@ private:
 
   uint8_t _RAM[8][1<<14];
 
-  int loadZ80MemV0(InputStream *inputStream);
-  int loadZ80MemV1(InputStream *inputStream);
-  int loadZ80Header(InputStream *inputStream);
+  int loadZ80MemV0(InputStream *is);
+  int loadZ80MemV1(InputStream *is);
+  int loadZ80Header(InputStream *is);
+  int loadZ80HeaderV2(InputStream *is, bool *is48k);
+  int loadZ80MemBlock(InputStream *is, const bool is48k);
   int writeZ80Header(OutputStream *os, int version);
   int writeZ80(OutputStream *os, int version);
   int writeZ80MemV0(OutputStream *os);
   int writeZ80MemV1(OutputStream *os);
+  
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
