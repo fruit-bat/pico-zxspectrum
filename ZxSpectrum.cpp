@@ -340,13 +340,14 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
 */ 
   const int hm = buf[34-32];
   *is48k = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3));
+  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*is48k ? "yes" : "no"));
   if (*is48k) {
     setPageaddr(0, (uint8_t*)basic);
   }
   else {
     setPageaddr(0, (uint8_t*)zx_128k_rom_1);
   }
-  _portMem = buf[35-32];
+  writeIO(0x7ffd, buf[35-32]);
   for (int i = 0; i < 16; ++i) {
     _ay.writeCtrl(i);
     _ay.writeData(buf[i + 39-32]);
@@ -433,10 +434,10 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
     unsigned int i = 0x0000;
     unsigned int wd = 0;
     unsigned int wf = 0;
-    while ((i < 0x4000) && (s > 0)) {
-      int r = is->readByte();
+    while (i < 0x4000) {
+      int r;
+      if (s > 0) { r = is->readByte(); s--; } else { r = -1; }
       if (r < -1) return r;
-      s--;
       wd <<= 8; wf <<= 1;
       if (r >= 0) { wd |= r; wf |= 1; }
       if ((wf & 0xf) == 0) break;
@@ -453,8 +454,7 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
         m[i++] = wd >> 24;;
       }
     }
-    printf("read %d copmressed block bytes %d under-run\n", i, s);
-    while (i < 0x4000) m[i++] = 0;
+    printf("read %d compressed block bytes %d under-run\n", i, s);
   }
   return 0;
 }
