@@ -341,13 +341,16 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
   const int hm = buf[34-32];
   *is48k = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3));
   printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*is48k ? "yes" : "no"));
+  _port254 = 0x30;
   if (*is48k) {
     setPageaddr(0, (uint8_t*)basic);
+    _portMem = 0x20;
   }
   else {
-    setPageaddr(0, (uint8_t*)zx_128k_rom_1);
+    _portMem = buf[35-32];
+    setPageaddr(7, (uint8_t*)&_RAM[_portMem & 7]);
+    setPageaddr(0, (uint8_t*)((_portMem & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
   }
-  writeIO(0x7ffd, buf[35-32]);
   for (int i = 0; i < 16; ++i) {
     _ay.writeCtrl(i);
     _ay.writeData(buf[i + 39-32]);
@@ -445,7 +448,7 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
         if ((wd & 0xffff0000) == 0xeded0000) {
           const unsigned int d = wd & 0xff;
           const unsigned int e = i + ((wd >> 8) & 0xff);
-          const unsigned int f = e > 0x10000 ? 0x10000 : e;
+          const unsigned int f = e > 0x4000 ? 0x4000 : e;
           while (i < f) m[i++] = d;
           wf = 0;
         }
