@@ -34,6 +34,7 @@ void ZxSpectrum::reset(unsigned int address)
   _port254 = 0;
   _portMem = 0;
   _ay.reset();
+  _keyboard->reset();
 }
 
 void ZxSpectrum::interrupt() {
@@ -348,7 +349,7 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
   }
   else {
     _portMem = buf[35-32];
-    setPageaddr(7, (uint8_t*)&_RAM[_portMem & 7]);
+    setPageaddr(3, (uint8_t*)&_RAM[_portMem & 7]);
     setPageaddr(0, (uint8_t*)((_portMem & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
   }
   for (int i = 0; i < 16; ++i) {

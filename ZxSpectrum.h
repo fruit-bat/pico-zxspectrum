@@ -21,7 +21,7 @@ private:
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
-  uint8_t* _pageaddr[8];
+  uint8_t* _pageaddr[4];
   bool _ear;
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
@@ -73,7 +73,7 @@ private:
     if (address == 0x7ffd) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
-        setPageaddr(7, (uint8_t*)&_RAM[value & 7]);
+        setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
