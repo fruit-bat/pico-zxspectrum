@@ -85,7 +85,7 @@ add_subdirectory(zxspectrum)
 ```
 In the build folder:
 ```
-cmake -DPICO_COPY_TO_RAM=1 ..
+cmake -DPICO_COPY_TO_RAM=0 ..
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
@@ -130,6 +130,9 @@ http://mdfs.net/Software/Spectrum/Harston/<br/>
 https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html<br/>
 https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm<br/>
 https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
+
+https://worldofspectrum.org/faq/reference/128kreference.htm
+
 http://www.zxdesign.info/cassette.shtml<br/>
 https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>
