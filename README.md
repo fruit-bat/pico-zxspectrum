@@ -1,29 +1,23 @@
 # pico-zxspectrum
-48k ZX Spectrum for Raspberry Pico Pi RP2040
+48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
 
-<img src="docs/1200px-ZXSpectrum48k.jpg" width="400"/>
+<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>  <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
 
-This is an attempt to make a very basic 48k ZX Spectrum emulation on the RP2040 with DVI output.
+This is an attempt to make a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
 
-Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
+Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
 
 ## Features
 * DVI over HDMI output
 * USB Keyboard input
-* No screen buffer
+* PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
-* Load from .z80 version 1
+* Load from .z80 snapshot files
+* Read from .tap tape files
 
 ## Screen shots
-<figure>
-<img src="docs/zxspectrum_screen_1.jpg" width="400"/>
-<figurecaption>first light</figurecaption>
-</figure>
-<figure>
-<img src="docs/swarm_loading.jpg" width="400"/>
-<figurecaption>groovy</figurecaption>
-</figure>
 
+<img src="docs/zxspectrum_screen_1.jpg" height="200"/> <img src="docs/swarm_loading.jpg" height="200"/>
 
 ## Wiring
 
@@ -45,7 +39,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 | GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
-| GP20  |       | 20    | 26    |           |           |           | Speaker                |
+| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
 
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
@@ -94,9 +88,9 @@ The following folders need to be created on the SD card:
 
 | Folder | Contents |
 | ------ | -------- |
-| zxspectrum/snapshots | Put your snapshot files in here. Currently only .z80 version 1 (compressed and uncompressed) is supported. |
-| zxspectrum/quicksaves | Folder for quick saves |
-| zxspectrum/taps | Folder for tape files. Currently only .tap supported. |
+| zxspectrum/snapshots | Put your .z80 snapshot files in here. |
+| zxspectrum/quicksaves | Folder for quick saves (only 48k working at the moment) |
+| zxspectrum/taps | Folder for .tap tape files. |
 
 ## Special keys
 
@@ -130,13 +124,9 @@ http://mdfs.net/Software/Spectrum/Harston/<br/>
 https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html<br/>
 https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm<br/>
 https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
-
-https://worldofspectrum.org/faq/reference/128kreference.htm
-
+https://worldofspectrum.org/faq/reference/128kreference.htm<br/>
 http://www.zxdesign.info/cassette.shtml<br/>
 https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>
-
-https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html
-
-https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm
+https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
+https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm<br/>
