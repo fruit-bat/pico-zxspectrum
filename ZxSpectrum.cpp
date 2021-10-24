@@ -33,6 +33,8 @@ void ZxSpectrum::reset(unsigned int address)
   memset(_RAM, 0, sizeof(_RAM));
   _port254 = 0;
   _portMem = 0;
+  _ay.reset();
+  _keyboard->reset();
 }
 
 void ZxSpectrum::interrupt() {
@@ -278,6 +280,189 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   return pc == 0 ? 2 : compressed ? 1 : 0;
 }
 
+int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
+/*
+        Offset  Length  Description
+        ---------------------------
+      * 30      2       Length of additional header block (see below)
+      * 32      2       Program counter
+      * 34      1       Hardware mode (see below)
+      * 35      1       If in SamRam mode, bitwise state of 74ls259.
+                        For example, bit 6=1 after an OUT 31,13 (=2*6+1)
+                        If in 128 mode, contains last OUT to 0x7ffd
+	                      If in Timex mode, contains last OUT to 0xf4
+      * 36      1       Contains 0xff if Interface I rom paged
+                        If in Timex mode, contains last OUT to 0xff
+      * 37      1       Bit 0: 1 if R register emulation on
+                        Bit 1: 1 if LDIR emulation on
+                        Bit 2: AY sound in use, even on 48K machines
+                        Bit 6: (if bit 2 set) Fuller Audio Box emulation
+                        Bit 7: Modify hardware (see below)
+      * 38      1       Last OUT to port 0xfffd (soundchip register number)
+      * 39      16      Contents of the sound chip registers
+        55      2       Low T state counter
+        57      1       Hi T state counter
+        58      1       Flag byte used by Spectator (QL spec. emulator)
+                        Ignored by Z80 when loading, zero when saving
+        59      1       0xff if MGT Rom paged
+        60      1       0xff if Multiface Rom paged. Should always be 0.
+        61      1       0xff if 0-8191 is ROM, 0 if RAM
+        62      1       0xff if 8192-16383 is ROM, 0 if RAM
+        63      10      5 x keyboard mappings for user defined joystick
+        73      10      5 x ASCII word: keys corresponding to mappings above
+        83      1       MGT type: 0=Disciple+Epson,1=Disciple+HP,16=Plus D
+        84      1       Disciple inhibit button status: 0=out, 0ff=in
+        85      1       Disciple inhibit flag: 0=rom pageable, 0ff=not
+     ** 86      1       Last OUT to port 0x1ffd
+*/
+  uint8_t buf[55];
+  const int hl = is->readWord();
+  if (hl > 55) {
+    printf("Invalud Z80 V2 header length %d\n", hl);
+    return -2; // error
+  }
+  int l = is->read(buf, hl);
+  if (l < hl) {
+    printf("Failed to read Z80 V2 header\n");
+    return -2; // error
+  }
+  _Z80.setPC((unsigned int)buf[0] + (((unsigned int)buf[1]) << 8));
+  const int v = (hl >=54) ? 3 : 2;
+/*
+        Value:          Meaning in v2           Meaning in v3
+      -----------------------------------------------------
+        0             48k                     48k
+        1             48k + If.1              48k + If.1
+        2             SamRam                  SamRam
+        3             128k                    48k + M.G.T.
+        4             128k + If.1             128k
+        5             -                       128k + If.1
+        6             -                       128k + M.G.T.
+*/ 
+  const int hm = buf[34-32];
+  *is48k = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3));
+  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*is48k ? "yes" : "no"));
+  _port254 = 0x30;
+  if (*is48k) {
+    setPageaddr(0, (uint8_t*)basic);
+    _portMem = 0x20;
+  }
+  else {
+    _portMem = buf[35-32];
+    setPageaddr(3, (uint8_t*)&_RAM[_portMem & 7]);
+    setPageaddr(0, (uint8_t*)((_portMem & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+  }
+  for (int i = 0; i < 16; ++i) {
+    _ay.writeCtrl(i);
+    _ay.writeData(buf[i + 39-32]);
+  }
+  _ay.writeCtrl(buf[38-32]);
+  return 0;
+}
+
+int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
+  /*
+        Byte    Length  Description
+        ---------------------------
+        0       2       Length of compressed data (without this 3-byte header)
+                        If length=0xffff, data is 16384 bytes long and not compressed
+        2       1       Page number of block
+        3       [0]     Data
+    */    
+  int l = is->readWord();
+  if (l < 0) return l;
+  printf("Found Z80 V2 block of length %d\n", l);
+  int b = is->readByte();
+  if (b < 0) {
+    printf("Failed to read Z80 V2 block number\n");
+    return -2;
+  }
+  printf("Found Z80 V2 block %d\n", b);
+
+  if (b >= 11) {
+    printf("Invalid Z80 V2 block number %d\n", b);
+    return -2;
+  }
+/*
+        Page    In '48 mode     In '128 mode    In SamRam mode
+        ------------------------------------------------------
+         0      48K rom         rom (basic)     48K rom
+         1      Interface I, Disciple or Plus D rom, according to setting
+         2      -               rom (reset)     samram rom (basic)
+         3      -               page 0          samram rom (monitor,..)
+         4      8000-bfff       page 1          Normal 8000-bfff
+         5      c000-ffff       page 2          Normal c000-ffff
+         6      -               page 3          Shadow 8000-bfff
+         7      -               page 4          Shadow c000-ffff
+         8      4000-7fff       page 5          4000-7fff
+         9      -               page 6          -
+        10      -               page 7          -
+        11      Multiface rom   Multiface rom   -
+*/
+  int p = -1;
+  if (is48k) {
+    switch(b) {
+      case 4: p = 2; break;
+      case 5: p = 0; break;
+      case 8: p = 5; break;
+      default: break;
+    }
+  }
+  else {
+    switch(b) {
+      case 3: p = 0; break;
+      case 4: p = 1; break;
+      case 5: p = 2; break;
+      case 6: p = 3; break;
+      case 7: p = 4; break;
+      case 8: p = 5; break;
+      case 9: p = 6; break;
+      case 10: p = 7; break;
+      default: break;
+    }
+  }
+  if (p == -1) {
+      printf("Failed to translate Z80 V2 block %d\n", b);
+      return -2;
+  }
+  uint8_t *m = (uint8_t *)&_RAM[p];
+  if (l == 0xffff) {
+    int r = is->read(m, 1<<14);
+    if (r < 1<<14) {
+      printf("Failed to read uncompressed data for Z80 V2 block %d\n", b);
+      return -2;
+    }
+  }
+  else {
+    int s = l;
+    unsigned int i = 0x0000;
+    unsigned int wd = 0;
+    unsigned int wf = 0;
+    while (i < 0x4000) {
+      int r;
+      if (s > 0) { r = is->readByte(); s--; } else { r = -1; }
+      if (r < -1) return r;
+      wd <<= 8; wf <<= 1;
+      if (r >= 0) { wd |= r; wf |= 1; }
+      if ((wf & 0xf) == 0) break;
+      if ((wf & 0xf) == 0xf) {
+        if ((wd & 0xffff0000) == 0xeded0000) {
+          const unsigned int d = wd & 0xff;
+          const unsigned int e = i + ((wd >> 8) & 0xff);
+          const unsigned int f = e > 0x4000 ? 0x4000 : e;
+          while (i < f) m[i++] = d;
+          wf = 0;
+        }
+      }
+      if (wf & 0x8) {
+        m[i++] = wd >> 24;;
+      }
+    }
+    printf("read %d compressed block bytes %d under-run\n", i, s);
+  }
+  return 0;
+}
+
 int ZxSpectrum::loadZ80MemV0(InputStream *is) {
   _port254 = 0x30;
   setPageaddr(0, (uint8_t*)basic);
@@ -329,6 +514,12 @@ void ZxSpectrum::loadZ80(InputStream *is) {
         break;
       case 1:
         loadZ80MemV1(is);
+        break;
+      case 2:
+        bool is48k;
+        if (loadZ80HeaderV2(is, &is48k) >= 0) {
+          while(loadZ80MemBlock(is, is48k) >= 0);
+        }
         break;
       default:
         printf("Reading Z80 version %d is not implemented!\n", version);

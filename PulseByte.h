@@ -24,7 +24,7 @@ public:
     _data = 0x100;
   }
   
-  void advance(int *tstates, bool *pstate) {
+  void __not_in_flash_func(advance)(int *tstates, bool *pstate) {
     if (end()) return;
     while (*tstates > 0) {
       _pulse.advance(tstates, pstate);
@@ -36,7 +36,7 @@ public:
     }
   }
 
-  bool end() {
+  bool __not_in_flash_func(end)() {
     return (_data & 0x1ff) == 0x100;
   }  
 };

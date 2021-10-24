@@ -9,6 +9,7 @@
 #include "PulseBlock.h"
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
+#include "ZxSpectrumAy.h"
 
 class ZxSpectrum {
 private:
@@ -20,9 +21,11 @@ private:
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
-  uint8_t* _pageaddr[8];
+  uint8_t* _pageaddr[4];
   bool _ear;
 	PulseBlock _pulseBlock;
+  ZxSpectrumAy _ay;
+
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -52,21 +55,37 @@ private:
   
   inline int readIO(int address)
   {
-    switch(address & 0xFF) {
-      case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
-      case 0x1f: return 0; // Kempstone joystick
-      default: return 0xff;
+    if (address == 0xfffd) {
+      // AY-8912
+      //printf("readIO %04X\n", address);
+      return _ay.readData();
+    }
+    else {
+      switch(address & 0xFF) {
+        case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
+        case 0x1f: return 0; // Kempstone joystick
+        default: return 0xff;
+      }
     }
   }
   
   inline void writeIO(int address, int value) {
     if (address == 0x7ffd) {
-
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
-        setPageaddr(7, (unsigned char*)&_RAM[value & 7]);
+        setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
+    }
+    else if (address == 0xfffd) {
+      // AY-8912
+      //printf("AY-8912 register select %04X %02X\n", address, value);
+      _ay.writeCtrl(value);
+    }
+    else if (address == 0xbffd) {
+      // AY-8912
+      //printf("AY-8912 register value %04X %02X\n", address, value);
+      _ay.writeData(value);
     }
     else {
       switch(address & 0xFF) {
@@ -112,15 +131,18 @@ private:
     m->writeIO(address, value);
   }
 
-  uint8_t _RAM[8][1<<14]; // 8
+  uint8_t _RAM[8][1<<14];
 
-  int loadZ80MemV0(InputStream *inputStream);
-  int loadZ80MemV1(InputStream *inputStream);
-  int loadZ80Header(InputStream *inputStream);
+  int loadZ80MemV0(InputStream *is);
+  int loadZ80MemV1(InputStream *is);
+  int loadZ80Header(InputStream *is);
+  int loadZ80HeaderV2(InputStream *is, bool *is48k);
+  int loadZ80MemBlock(InputStream *is, const bool is48k);
   int writeZ80Header(OutputStream *os, int version);
   int writeZ80(OutputStream *os, int version);
   int writeZ80MemV0(OutputStream *os);
   int writeZ80MemV1(OutputStream *os);
+  
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard
@@ -130,22 +152,29 @@ public:
   void reset();
   inline void step()
   {
-      int c = _Z80.step();
+      const int c = _Z80.step();
+      const uint32_t tu4 = time_us_32() << 5;
+      const uint32_t tud = tu4 - _tu4;
+      _tu4 = tu4;
       if (_moderate) {
-        uint32_t tu4 = time_us_32() << 5;
-        _ta4 += (c*9) - tu4 + _tu4; // +ve too fast, -ve too slow
-        _tu4 = tu4;
+        _ta4 += (c*9) - tud; // +ve too fast, -ve too slow
         if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
         // Try to catch up, but only for 100 or so instructions
         if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
       }
+      _ay.step(tud);
       _pulseBlock.advance(c, &_ear);
   }
+
   void interrupt();
   void moderate(bool on);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
-  bool getSpeaker() { return (_port254 & (1<<4)) ^ (_ear ? (1<<4) : 0);}
+  int32_t getSpeaker() {
+    const int32_t a1 = (_port254 & (1<<4)) ? 254 : -254;
+    const int32_t a2 = _ear ? 128 : -128;
+    return (a1 + a2 + _ay.vol()) >> 1;
+  }
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);

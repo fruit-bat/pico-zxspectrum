@@ -133,3 +133,7 @@ https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
 http://www.zxdesign.info/cassette.shtml<br/>
 https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>
+
+https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html
+
+https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm

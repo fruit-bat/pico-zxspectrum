@@ -12,6 +12,8 @@
 #include "hardware/dma.h"
 #include "hardware/uart.h"
 #include "pico/sem.h"
+#include "hardware/pwm.h"  // pwm 
+
 extern "C" {
 #include "dvi.h"
 #include "dvi_serialiser.h"
@@ -44,6 +46,8 @@ extern "C" {
 // Should be 25 for pico ?
 #define LED_PIN 25
 #define SPK_PIN 20
+#define PWM_WRAP 2048
+#define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -158,12 +162,13 @@ extern "C" int __not_in_flash_func(main)() {
     
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
-	
-	gpio_init(SPK_PIN);
-	gpio_set_dir(SPK_PIN, GPIO_OUT);
-	gpio_set_slew_rate(SPK_PIN, GPIO_SLEW_RATE_SLOW);
-	gpio_set_drive_strength(SPK_PIN, GPIO_DRIVE_STRENGTH_2MA);
-	gpio_pull_up(SPK_PIN);
+
+	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
+	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
+	pwm_config config = pwm_get_default_config();
+	pwm_config_set_clkdiv(&config, 1.0f); 
+	pwm_config_set_wrap(&config, PWM_WRAP);
+	pwm_init(audio_pin_slice, &config, true);
 	
 	screenPtr = zxSpectrum.screenPtr();
 	attrPtr = screenPtr + (32 * 24 * 8);
@@ -189,6 +194,7 @@ extern "C" int __not_in_flash_func(main)() {
 	sem_release(&dvi_start_sem);
 
 	unsigned int lastInterruptFrame = frame;
+	
 	while (1) {
 		tuh_task();
 		for (int i = 1; i < 100; ++i) {
@@ -197,7 +203,9 @@ extern "C" int __not_in_flash_func(main)() {
 				zxSpectrum.interrupt();
 			}
 			zxSpectrum.step();
-			gpio_put (SPK_PIN, zxSpectrum.getSpeaker());
+			const uint32_t l = zxSpectrum.getSpeaker();
+			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+
 		}
 	}
 	__builtin_unreachable();
