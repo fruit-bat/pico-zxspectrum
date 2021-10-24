@@ -104,15 +104,16 @@ The following folders need to be created on the SD card:
 | F8 | Reload current snap |
 | F9 | previous snap |
 | F10 | next snap |
-| F11 + F12 | Reset |
+| F11 | Reset as 48k Spectrum |
+| F12 | Reset as 128k Spectrum |
 | LCtrl + F1-F12 | Quick save (LCtrl+F1 = save slot 1, LCtrl+F2 = save slot 2, etc) |
 | LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
 
 ## Missing features
 * HUD
 * Audio input
-* Load from .z80 (version 2, 3),.sna
-* &infin;
+* Save to.z80 version 3
+* Some code is running way too fast
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>

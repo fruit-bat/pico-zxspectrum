@@ -11,6 +11,11 @@
 #include "128k_rom_2.h"
 #include "ZxSpectrumAy.h"
 
+enum ZxSpectrumType {
+  ZxSpectrum48k,
+  ZxSpectrum128k
+};
+
 class ZxSpectrum {
 private:
   Z80 _Z80;
@@ -148,8 +153,7 @@ public:
     ZxSpectrumKeyboard *keyboard
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
-  void reset(unsigned int address);
-  void reset();
+  void reset(ZxSpectrumType type);
   inline void step()
   {
       const int c = _Z80.step();

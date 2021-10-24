@@ -14,17 +14,23 @@ ZxSpectrum::ZxSpectrum(
   _ear(false)
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
-  reset();
+  reset(ZxSpectrum128k);
 }
 
-void ZxSpectrum::reset(unsigned int address)
+void ZxSpectrum::reset(ZxSpectrumType type)
 {
   _Z80.reset();
-  _Z80.setPC(address);
-  _tu4 = time_us_32() << 5;
+  _Z80.setPC(0x0000);
   _ta4 = 0;
-  //setPageaddr(0, (uint8_t*)basic);
-  setPageaddr(0, (uint8_t*)zx_128k_rom_1);
+  switch (type) {
+    case ZxSpectrum48k:
+      setPageaddr(0, (uint8_t*)basic);
+      break;
+    case ZxSpectrum128k:
+    default:
+      setPageaddr(0, (uint8_t*)zx_128k_rom_1);
+      break;
+  }
   setPageaddr(1, (uint8_t*)&_RAM[5]);
   setPageaddr(2, (uint8_t*)&_RAM[2]);
   setPageaddr(3, (uint8_t*)&_RAM[0]);
@@ -35,14 +41,11 @@ void ZxSpectrum::reset(unsigned int address)
   _portMem = 0;
   _ay.reset();
   _keyboard->reset();
+  _tu4 = time_us_32() << 5;
 }
 
 void ZxSpectrum::interrupt() {
   _Z80.IRQ(0x38);
-}
-
-void ZxSpectrum::reset() {
-  reset(0x0000);
 }
 
 void ZxSpectrum::moderate(bool on) {
@@ -504,7 +507,7 @@ int ZxSpectrum::loadZ80MemV1(InputStream *is) {
 }
 
 void ZxSpectrum::loadZ80(InputStream *is) {
-  reset();
+  reset(ZxSpectrum128k);
   int version = loadZ80Header(is);
   printf("Reading Z80 version %d\n", version);
   if (version >= 0) {

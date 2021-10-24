@@ -152,8 +152,10 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     }
   }
   else {
-    // F11 & F12 both down together for reset
-    if (((fkd & (3 << 10)) == (3 << 10)) && ((fkp & (3 << 10)) != 0)) _ZxSpectrum->reset();
+    // F11 reset to 48k
+    if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
+    // F11 reset to 128k
+    if (fkp & (1 << 11)) _ZxSpectrum->reset(ZxSpectrum128k);
     // F4 toggle moderate
     if (fkp & (1 << 3)) _ZxSpectrum->toggleModerate();
     // F8 curr snap

@@ -89,7 +89,7 @@
 
 #define Z80_READ_WORD(address, x)                                       \
 {                                                                       \
-  (x) = (m_readByte(m_context, (address) & 0xffff) | (m_readByte(m_context, ((address) + 1) & 0xffff) << 8)); \
+  (x) = (m_readWord(m_context, (address) & 0xffff)); \
 }
 
 #define Z80_FETCH_WORD(address, x)    Z80_READ_WORD((address), (x))
@@ -101,8 +101,7 @@
 
 #define Z80_WRITE_WORD(address, x)                                 \
 {                                                                  \
-  m_writeByte(m_context, (address) & 0xffff, (x));                 \
-  m_writeByte(m_context, ((address) + 1) & 0xffff, (x) >> 8);      \
+  m_writeWord(m_context, (address) & 0xffff, (x));                 \
 }
 
 #define Z80_READ_WORD_INTERRUPT(address, x)  Z80_READ_WORD((address), (x))
