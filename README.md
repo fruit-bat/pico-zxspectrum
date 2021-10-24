@@ -130,3 +130,4 @@ https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>
 https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
 https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm<br/>
+http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html<br/>
