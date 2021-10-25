@@ -44,8 +44,8 @@
  * accepted at the instruction right after a DI or EI on an actual processor.
  */
 
+#define Z80_CATCH_HALT
 /*
- #define Z80_CATCH_HALT
  #define Z80_CATCH_DI
  #define Z80_CATCH_EI
  #define Z80_CATCH_RETI
@@ -96,13 +96,13 @@
 
 enum {
 
-  Z80_STATUS_HALT = 1,
-  Z80_STATUS_DI,
-  Z80_STATUS_EI,
-  Z80_STATUS_RETI,
-  Z80_STATUS_RETN,
-  Z80_STATUS_ED_UNDEFINED,
-  Z80_STATUS_PREFIX
+  Z80_STATUS_FLAG_HALT = 1,
+  Z80_STATUS_FLAG_DI = 1<<1,
+  Z80_STATUS_FLAG_EI = 1<<2,
+  Z80_STATUS_FLAG_RETI = 1<<3,
+  Z80_STATUS_FLAG_RETN = 1<<4,
+  Z80_STATUS_FLAG_ED_UNDEFINED = 1<<5,
+  Z80_STATUS_FLAG_PREFIX = 1<<6
 
 };
 

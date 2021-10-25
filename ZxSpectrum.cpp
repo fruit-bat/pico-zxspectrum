@@ -25,10 +25,12 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   switch (type) {
     case ZxSpectrum48k:
       setPageaddr(0, (uint8_t*)basic);
+      _portMem = 0x20;
       break;
     case ZxSpectrum128k:
     default:
       setPageaddr(0, (uint8_t*)zx_128k_rom_1);
+      _portMem = 0;
       break;
   }
   setPageaddr(1, (uint8_t*)&_RAM[5]);
@@ -37,8 +39,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _ear = false;
   _pulseBlock.reset(0);
   memset(_RAM, 0, sizeof(_RAM));
-  _port254 = 0;
-  _portMem = 0;
+  _port254 = 0x30;
   _ay.reset();
   _keyboard->reset();
   _tu4 = time_us_32() << 5;

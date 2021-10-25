@@ -1901,7 +1901,7 @@ int Z80::NMI()
 
 int Z80::step()
 {
-  state.status = 0;
+  if (state.status != 0) return 0; 
   int elapsed_cycles = 0;
   int pc = state.pc;
   int opcode;

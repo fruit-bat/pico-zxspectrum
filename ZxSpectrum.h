@@ -161,10 +161,15 @@ public:
       const uint32_t tud = tu4 - _tu4;
       _tu4 = tu4;
       if (_moderate) {
-        _ta4 += (c*9) - tud; // +ve too fast, -ve too slow
-        if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
-        // Try to catch up, but only for 100 or so instructions
-        if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
+        if (c == 0) {
+          _ta4 = 0;
+        }
+        else {
+          _ta4 += (c*9) - tud; // +ve too fast, -ve too slow
+          if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
+          // Try to catch up, but only for 100 or so instructions
+          if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
+        }
       }
       _ay.step(tud);
       _pulseBlock.advance(c, &_ear);
