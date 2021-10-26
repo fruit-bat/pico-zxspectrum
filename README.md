@@ -66,8 +66,6 @@ USB host mode required for keyboard input still seems to need a [patch to the Pi
 
 Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 
-Need to implement .z80 version 3 for quick saves, which currently save 48k Spectrum images.
-
 I'm not convinced the noise channels on the AY-3-8912 sound correct.
 
 ## Build
@@ -118,7 +116,6 @@ The following folders need to be created on the SD card:
 ## Missing features
 * HUD
 * Audio input
-* Save to.z80 version 3
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
