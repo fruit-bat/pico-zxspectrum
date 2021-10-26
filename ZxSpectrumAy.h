@@ -121,7 +121,7 @@ public:
       _cntC = 0;
     }
     if (_pmE) {
-      _cntE += s >> 4;
+      _cntE += s >> 1;
       while(_cntE >= _pmE) {
         _cntE -= _pmE;
         ++_indE;
