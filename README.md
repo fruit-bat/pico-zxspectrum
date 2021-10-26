@@ -64,6 +64,12 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 ## Issues
 USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
 
+Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
+
+Need to implement .z80 version 3 for quick saves, which currently save 48k Spectrum images.
+
+I'm not convinced the noise channels on the AY-3-8912 sound correct.
+
 ## Build
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
 
@@ -113,7 +119,6 @@ The following folders need to be created on the SD card:
 * HUD
 * Audio input
 * Save to.z80 version 3
-* Some code is running way too fast
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
