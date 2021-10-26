@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <pico/printf.h>
 #include <pico/stdlib.h>
+#include "SizingOutputStream.h"
 
 ZxSpectrum::ZxSpectrum(
   ZxSpectrumKeyboard *keyboard
@@ -17,11 +18,7 @@ ZxSpectrum::ZxSpectrum(
   reset(ZxSpectrum128k);
 }
 
-void ZxSpectrum::reset(ZxSpectrumType type)
-{
-  _Z80.reset();
-  _Z80.setPC(0x0000);
-  _ta4 = 0;
+void ZxSpectrum::transmute(ZxSpectrumType type) {
   switch (type) {
     case ZxSpectrum48k:
       setPageaddr(0, (uint8_t*)basic);
@@ -33,6 +30,15 @@ void ZxSpectrum::reset(ZxSpectrumType type)
       _portMem = 0;
       break;
   }
+}
+
+void ZxSpectrum::reset(ZxSpectrumType type)
+{
+  _type = type;
+  _Z80.reset();
+  _Z80.setPC(0x0000);
+  _ta4 = 0;
+  transmute(type);
   setPageaddr(1, (uint8_t*)&_RAM[5]);
   setPageaddr(2, (uint8_t*)&_RAM[2]);
   setPageaddr(3, (uint8_t*)&_RAM[0]);
@@ -64,30 +70,123 @@ void ZxSpectrum::toggleModerate() {
   moderate(!_moderate);
 }
 
-
 int ZxSpectrum::writeZ80(OutputStream *os, int version) {
   int r = writeZ80Header(os, version);
-  if (r < 0) return r;
-  if (version > 1) {
-    // TODO write the extra header
-    printf("Writing Z80 version %d is not implemented!\n", version);
-    return -2;
+  if (r < 0) {
+    printf("Failed to write Z80 header\n");
+    return r;
   }
   switch(version) {
-    case 0:
+    case 0: {
       r = writeZ80MemV0(os);
       break;
-    case 1:
+    }
+    case 1: {
       r = writeZ80MemV1(os);
       break;
-    default:
+    }
+    case 3: {
+      r = writeZ80HeaderV3(os);
+      if (r < 0) {
+        printf("Failed to write Z80 header V3\n");
+        return r;
+      }
+      r = writeZ80MemV2(os);
+      if (r < 0) {
+        printf("Failed to write Z80 memory V2\n");
+        return r;
+      }         
+      break;
+    }
+    default: {
       printf("Writing Z80 version %d is not implemented!\n", version);
       r = -2;
       break;
+    }
   }
   os->close();
   return r;
 }
+
+int ZxSpectrum::writeZ80MemV2(OutputStream *os) {
+  for (unsigned int b = 0; b < 12; ++b) {
+    const int p = z80BlockToPage(b, _type);
+    if (p >=0) {
+      int r = writeZ80MemV2(os, b, p);
+      if (r < 0) {
+        printf("Failed to write Z80 V2 block %d\n", b);
+        return r;
+      }
+    }
+  }
+  return 0;
+}
+
+int ZxSpectrum::writeZ80MemV2(OutputStream *os, const uint8_t b, const uint8_t p) {
+  uint8_t *blk = (uint8_t *)&_RAM[p];
+  SizingOutputStream sos;
+  int r = writeZ80MemV2(&sos, blk);
+  if (r < 0) return r;
+  uint32_t l = sos.length();
+  r = os->writeWord(l);
+  if (r < 0) return r;
+  r = os->writeByte(b);
+  if (r < 0) return r;
+  return writeZ80MemV2(os, blk);
+}
+
+int ZxSpectrum::writeZ80MemV2(OutputStream *os, uint8_t *blk) {
+  unsigned char buf[4];
+  int l = -1;
+  int c = 0;
+  for (unsigned int i = 0; i < 0x4000; ++i) {
+    int b = blk[i];
+    if (b == l) {
+      c++;
+      if (c == 0xff || i == 0x3fff || l == 0xed) {
+        buf[0] = 0xed;
+        buf[1] = 0xed;
+        buf[2] = c;
+        buf[3] = l;
+        int r = os->write(buf, 4);
+        if (r < 0) return r;
+        l = -1;
+        c = 0;
+      }
+    }
+    else {
+      if (c > 4) {
+        buf[0] = 0xed;
+        buf[1] = 0xed;
+        buf[2] = c;
+        buf[3] = l;
+        int r = os->write(buf, 4);
+        if (r < 0) return r;
+      }
+      else if (c > 0) {
+        buf[0] = l;
+        buf[1] = l;
+        buf[2] = l;
+        buf[3] = l;
+        int r = os->write(buf, c);
+        if (r < 0) return r;
+      }
+
+      if (l == 0xed || i == 0x3fff) {
+        int r = os->writeByte(b);
+        if (r < 0) return r;
+        l = -1;
+        c = 0;
+      }
+      else {
+        l = b;
+        c = 1;
+      }
+    }
+  }
+  return 0;
+}
+
 int ZxSpectrum::writeZ80MemV1(OutputStream *os) {
   unsigned char buf[4];
   int l = -1;
@@ -153,7 +252,7 @@ int ZxSpectrum::writeZ80Header(
   OutputStream *os,
   int version
 ) {
-  bool samRom = true; // TODO What is this ! ??
+  bool samRom = false; // TODO What is this ! ??
   bool compresed = version == 1;
   unsigned char buf[30];
 
@@ -284,7 +383,48 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   return pc == 0 ? 2 : compressed ? 1 : 0;
 }
 
-int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
+int ZxSpectrum::writeZ80HeaderV3(OutputStream *os) {
+  uint8_t buf[57];
+  buf[30 - 30] = (sizeof(buf)-2) & 0xff;
+  buf[31 - 30] = (sizeof(buf)-2) >> 8;
+  buf[32 - 30] = _Z80.getPC() & 0xff;
+  buf[33 - 30] = _Z80.getPC() >> 8;
+  switch(_type) {
+    case ZxSpectrum48k: {
+      buf[34 - 30] = 0;
+      buf[35 - 30] = 255;
+      break;
+    }
+    case ZxSpectrum128k: {
+      buf[34 - 30] = 4;
+      buf[35 - 30] = _portMem;
+      break;
+    }
+    default:
+      printf("Invalid machine type to write to Z80 v3 header %d\n", _type);
+      return -2;
+  }
+  buf[36 - 30] = 255;
+  buf[37 - 30] = 0x04;
+  buf[38 - 30] = _ay.readCtrl();
+  for (uint8_t i = 0; i < 16; ++i) buf[39 - 30 + i] = _ay.readData(i);
+  buf[55 - 30] = 0;
+  buf[56 - 30] = 0;
+  buf[57 - 30] = 0;
+  buf[58 - 30] = 0;
+  buf[59 - 30] = 0;
+  buf[60 - 30] = 0;
+  buf[61 - 30] = 0;
+  buf[62 - 30] = 0;
+  for (uint8_t i = 0; i < 10; ++i) buf[63 - 30 + i] = 0;
+  for (uint8_t i = 0; i < 10; ++i) buf[73 - 30 + i] = 0;
+  buf[84 - 30] = 0;
+  buf[85 - 30] = 0;
+  buf[86 - 30] = 255;
+  return os->write(buf, sizeof(buf));
+}
+
+int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
 /*
         Offset  Length  Description
         ---------------------------
@@ -319,10 +459,10 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
         85      1       Disciple inhibit flag: 0=rom pageable, 0ff=not
      ** 86      1       Last OUT to port 0x1ffd
 */
-  uint8_t buf[55];
+  uint8_t buf[57];
   const int hl = is->readWord();
-  if (hl > 55) {
-    printf("Invalud Z80 V2 header length %d\n", hl);
+  if (hl > 57) {
+    printf("Invalud Z80 V2/V3 header length %d\n", hl);
     return -2; // error
   }
   int l = is->read(buf, hl);
@@ -344,14 +484,11 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
         6             -                       128k + M.G.T.
 */ 
   const int hm = buf[34-32];
-  *is48k = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3));
-  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*is48k ? "yes" : "no"));
+  *type = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3)) ? ZxSpectrum48k : ZxSpectrum128k;
+  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
+  transmute(*type);
   _port254 = 0x30;
-  if (*is48k) {
-    setPageaddr(0, (uint8_t*)basic);
-    _portMem = 0x20;
-  }
-  else {
+  if (*type == ZxSpectrum128k) {
     _portMem = buf[35-32];
     setPageaddr(3, (uint8_t*)&_RAM[_portMem & 7]);
     setPageaddr(0, (uint8_t*)((_portMem & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -364,31 +501,8 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, bool *is48k) {
   return 0;
 }
 
-int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
-  /*
-        Byte    Length  Description
-        ---------------------------
-        0       2       Length of compressed data (without this 3-byte header)
-                        If length=0xffff, data is 16384 bytes long and not compressed
-        2       1       Page number of block
-        3       [0]     Data
-    */    
-  int l = is->readWord();
-  if (l < 0) return l;
-  printf("Found Z80 V2 block of length %d\n", l);
-  int b = is->readByte();
-  if (b < 0) {
-    printf("Failed to read Z80 V2 block number\n");
-    return -2;
-  }
-  printf("Found Z80 V2 block %d\n", b);
-
-  if (b >= 11) {
-    printf("Invalid Z80 V2 block number %d\n", b);
-    return -2;
-  }
 /*
-        Page    In '48 mode     In '128 mode    In SamRam mode
+        Block   In '48 mode     In '128 mode    In SamRam mode
         ------------------------------------------------------
          0      48K rom         rom (basic)     48K rom
          1      Interface I, Disciple or Plus D rom, according to setting
@@ -403,32 +517,52 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
         10      -               page 7          -
         11      Multiface rom   Multiface rom   -
 */
+int ZxSpectrum::z80BlockToPage(const uint8_t b, const ZxSpectrumType type) {
+  //                                 0   1   2   3   4   5   6   7   8   9  10  11
+  const static int8_t z80p48k[]  = {-1, -1, -1, -1,  2,  0, -1, -1,  5, -1, -1, -1};
+  const static int8_t z80p128k[] = {-1, -1, -1,  0,  1,  2,  3,  4,  5,  6,  7, -1};
+
   int p = -1;
-  if (is48k) {
-    switch(b) {
-      case 4: p = 2; break;
-      case 5: p = 0; break;
-      case 8: p = 5; break;
-      default: break;
-    }
+  switch(type) {
+    case ZxSpectrum48k:  p = z80p48k[b];  break;
+    case ZxSpectrum128k: p = z80p128k[b]; break;
+    default: break;
+  }  
+  return p;
+}
+
+/*
+    Byte    Length  Description
+    ---------------------------
+    0       2       Length of compressed data (without this 3-byte header)
+                    If length=0xffff, data is 16384 bytes long and not compressed
+    2       1       Page number of block
+    3       [0]     Data
+*/   
+int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
+ 
+  int l = is->readWord();
+  if (l < 0) return l;
+  printf("Found Z80 V2 block of length %d\n", l);
+  int b = is->readByte();
+  if (b < 0) {
+    printf("Failed to read Z80 V2 block number\n");
+    return -2;
   }
-  else {
-    switch(b) {
-      case 3: p = 0; break;
-      case 4: p = 1; break;
-      case 5: p = 2; break;
-      case 6: p = 3; break;
-      case 7: p = 4; break;
-      case 8: p = 5; break;
-      case 9: p = 6; break;
-      case 10: p = 7; break;
-      default: break;
-    }
+  printf("Found Z80 V2 block %d\n", b);
+
+  if (b >= 11) {
+    printf("Invalid Z80 V2 block number %d\n", b);
+    return -2;
   }
+
+  int p = z80BlockToPage(b, type);
+  
   if (p == -1) {
       printf("Failed to translate Z80 V2 block %d\n", b);
       return -2;
   }
+  
   uint8_t *m = (uint8_t *)&_RAM[p];
   if (l == 0xffff) {
     int r = is->read(m, 1<<14);
@@ -468,8 +602,7 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const bool is48k) {
 }
 
 int ZxSpectrum::loadZ80MemV0(InputStream *is) {
-  _port254 = 0x30;
-  setPageaddr(0, (uint8_t*)basic);
+  transmute(ZxSpectrum48k);
   for (unsigned int i = 0x4000; i < 0x10000; ++i) {
     int r = is->readByte();
     if (r < 0) return r;
@@ -479,8 +612,7 @@ int ZxSpectrum::loadZ80MemV0(InputStream *is) {
 }
 
 int ZxSpectrum::loadZ80MemV1(InputStream *is) {
-  _port254 = 0x30;
-  setPageaddr(0, (uint8_t*)basic);
+  transmute(ZxSpectrum48k);
   unsigned int i = 0x4000;
   unsigned int wd = 0;
   unsigned int wf = 0;
@@ -520,9 +652,9 @@ void ZxSpectrum::loadZ80(InputStream *is) {
         loadZ80MemV1(is);
         break;
       case 2:
-        bool is48k;
-        if (loadZ80HeaderV2(is, &is48k) >= 0) {
-          while(loadZ80MemBlock(is, is48k) >= 0);
+        ZxSpectrumType type;
+        if (loadZ80HeaderV2(is, &type) >= 0) {
+          while(loadZ80MemBlock(is, type) >= 0);
         }
         break;
       default:
@@ -534,7 +666,7 @@ void ZxSpectrum::loadZ80(InputStream *is) {
 }
 
 void ZxSpectrum::saveZ80(OutputStream *os) {
-  writeZ80(os, 0);
+  writeZ80(os, 3);
 }
 
 void ZxSpectrum::loadTap(InputStream *inputStream) {

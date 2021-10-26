@@ -11,7 +11,6 @@
 // ((32*1000000)/(2*2034*440)) = 17.8778939841
 
 // ((2*2034*440*(1<<12))/(32*1000000))
-// #define STEP 229
 #define STEP 229
 #define MUL32 __mul_instruction
 
@@ -178,6 +177,14 @@ public:
     _l = v & 0xf;
   }
 
+  uint8_t readCtrl() {
+    return _l;
+  }
+  
+  uint8_t readData(uint8_t r) {
+    return _reg.r8[r];
+  }
+  
   inline void writeData(uint8_t v) {
     _reg.r8[_l] = v;
     switch (_l) {

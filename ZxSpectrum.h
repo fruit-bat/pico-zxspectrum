@@ -30,7 +30,7 @@ private:
   bool _ear;
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
-
+  ZxSpectrumType _type;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -61,8 +61,6 @@ private:
   inline int readIO(int address)
   {
     if (address == 0xfffd) {
-      // AY-8912
-      //printf("readIO %04X\n", address);
       return _ay.readData();
     }
     else {
@@ -83,13 +81,9 @@ private:
       }
     }
     else if (address == 0xfffd) {
-      // AY-8912
-      //printf("AY-8912 register select %04X %02X\n", address, value);
       _ay.writeCtrl(value);
     }
     else if (address == 0xbffd) {
-      // AY-8912
-      //printf("AY-8912 register value %04X %02X\n", address, value);
       _ay.writeData(value);
     }
     else {
@@ -137,17 +131,23 @@ private:
   }
 
   uint8_t _RAM[8][1<<14];
-
+  
+  void transmute(ZxSpectrumType type);
   int loadZ80MemV0(InputStream *is);
   int loadZ80MemV1(InputStream *is);
   int loadZ80Header(InputStream *is);
-  int loadZ80HeaderV2(InputStream *is, bool *is48k);
-  int loadZ80MemBlock(InputStream *is, const bool is48k);
+  int loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type);
+  int loadZ80MemBlock(InputStream *is, const ZxSpectrumType type);
   int writeZ80Header(OutputStream *os, int version);
+  int writeZ80HeaderV3(OutputStream *os);
   int writeZ80(OutputStream *os, int version);
   int writeZ80MemV0(OutputStream *os);
   int writeZ80MemV1(OutputStream *os);
-  
+  int writeZ80MemV2(OutputStream *os, uint8_t *blk);
+  int writeZ80MemV2(OutputStream *os, const uint8_t b, const uint8_t p);
+  int writeZ80MemV2(OutputStream *os);
+  int z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
+
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard

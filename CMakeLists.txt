@@ -13,6 +13,7 @@ add_executable(ZxSpectrum
 	tmds_encode_zxspectrum.h
 	InputStream.cpp
 	OutputStream.cpp
+	SizingOutputStream.cpp
 	ArrayInputStream.cpp
 	BufferedInputStream.cpp
 	hw_config.c
