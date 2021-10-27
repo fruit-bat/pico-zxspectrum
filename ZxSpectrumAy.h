@@ -212,13 +212,13 @@ public:
         break;
       case 11: case 12:
         _pmE = periodE() << 15;
-        _indE = 0; // ?
-        _cntE = 0; // ?
         break;
       case 13:
-        _env = (uint8_t *)&_envs[v & 0xf];
-        _indE = 0; // ?
-        _cntE = 0; // ?
+        if (v != 0xff) {
+          _env = (uint8_t *)&_envs[v & 0xf];
+          _indE = 0;
+          _cntE = 0;
+        }
         break;
       default:
        break;
