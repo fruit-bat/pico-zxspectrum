@@ -65,12 +65,12 @@ class ZxSpectrumAy {
   uint8_t _envA;
   uint8_t _envB;
   uint8_t _envC;
+  int32_t _ns;
 
   union  {
     uint8_t r8[16];
     uint16_t r16[8];
   } _reg;
-  uint32_t _rand[32];
   uint8_t _envs[16][32];
 
   inline uint32_t mixer() { return _reg.r8[7]; }
@@ -89,9 +89,6 @@ public:
       for (uint32_t j = 0; j < 32; ++ j) {
         _envs[i][j] = Volumes[Envelopes[i][j]];
       }
-    }
-    for (uint32_t i = 0; i < (sizeof(_rand)/sizeof(uint32_t)); ++ i) {
-      _rand[i] = rand();
     }
     reset();
   }
@@ -134,8 +131,8 @@ public:
       _cntN += s;
       while(_cntN >= _pmN) {
         _cntN -= _pmN;
-        _indN = (_indN + 1) & ((sizeof(_rand)<<3) - 1);
-        _tbN = (_rand[_indN >> 5] >> (_indN & 0x1f)) & 1 ? 1: -1;
+        _ns = (_ns * 2 + 1) ^ (((_ns >> 16) ^ (_ns >> 13)) & 1); 
+        _tbN = _ns & (1<<16) ? 1  : -1;
       }
     }
     else {
@@ -171,6 +168,7 @@ public:
     _envA = 0;
     _envB = 0;
     _envC = 0;
+    _ns = 0xffff;
   }
 
   inline void writeCtrl(uint8_t v) {
@@ -198,7 +196,7 @@ public:
         _pmC = periodC() << 15;
         break;
       case 6:
-        _pmN = periodN() << 15;
+        _pmN = periodN() << 18;
         break;
       case 8:
         _volA = volA();
