@@ -46,7 +46,7 @@ extern "C" {
 // Should be 25 for pico ?
 #define LED_PIN 25
 #define SPK_PIN 20
-#define PWM_WRAP 2048
+#define PWM_WRAP 2320
 #define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;

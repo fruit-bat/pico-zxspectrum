@@ -156,7 +156,7 @@ public:
   void reset(ZxSpectrumType type);
   inline void step()
   {
-      const int c = _Z80.step();
+      const int c = _Z80.step() + _Z80.step();
       const uint32_t tu4 = time_us_32() << 5;
       const uint32_t tud = tu4 - _tu4;
       _tu4 = tu4;
@@ -165,7 +165,7 @@ public:
           _ta4 = 0;
         }
         else {
-          _ta4 += (c*9) - tud; // +ve too fast, -ve too slow
+          _ta4 += MUL32(c, 8) - tud; // +ve too fast, -ve too slow
           if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
           // Try to catch up, but only for 100 or so instructions
           if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
@@ -182,7 +182,7 @@ public:
   int32_t getSpeaker() {
     const int32_t a1 = (_port254 & (1<<4)) ? 254 : -254;
     const int32_t a2 = _ear ? 128 : -128;
-    return (a1 + a2 + _ay.vol()) >> 1;
+    return a1 + a2 + _ay.vol();
   }
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);

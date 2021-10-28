@@ -35,9 +35,16 @@ static const uint8_t Envelopes[16][32] =
 };
 
 static const uint8_t Volumes[16] =
-//{ 0,1,2,4,6,8, 11,16,23,32,45,64,90,128,180,255 };
+//{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
 { 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,254 };
 
+
+//static int Lion17_YM_table [32] =
+//  { 0, 0, 190, 286, 375, 470, 560, 664,
+//    866, 1130, 1515, 1803, 2253, 2848, 3351, 3862,
+//    4844, 6058, 7290, 8559, 10474, 12878, 15297, 17787,
+//    21500, 26172, 30866, 35676, 42664, 50986, 58842, 65535};
+    
 class ZxSpectrumAy {
 
   uint8_t _l;
@@ -47,9 +54,7 @@ class ZxSpectrumAy {
   uint32_t _cntC;
   uint32_t _cntE;
   uint32_t _cntN;
-  int32_t _tbA;
-  int32_t _tbB;
-  int32_t _tbC;
+  int32_t _tb;
   int32_t _tbN;
   uint32_t _indE;
   uint32_t _indN;
@@ -87,7 +92,7 @@ public:
   ZxSpectrumAy() {
     for (uint32_t i = 0; i < 16; ++ i) {
       for (uint32_t j = 0; j < 32; ++ j) {
-        _envs[i][j] = Volumes[Envelopes[i][j]];
+        _envs[i][j] = Volumes[Envelopes[i][j] >> 1];
       }
     }
     reset();
@@ -97,21 +102,21 @@ public:
     const uint32_t s = MUL32(u32s, STEP);
     if (_pmA) {
       _cntA += s;
-      while(_cntA >= _pmA) { _cntA -= _pmA; _tbA = -_tbA; }
+      while(_cntA >= _pmA) { _cntA -= _pmA; _tb ^= 1; }
     }
     else {
       _cntA = 0;
     }
     if (_pmB) {
       _cntB += s;
-      while(_cntB >= _pmB) { _cntB -= _pmB; _tbB = -_tbB; }
+      while(_cntB >= _pmB) { _cntB -= _pmB; _tb ^= 2; }
     }
     else {
       _cntB = 0;
     }
     if (_pmC) {
       _cntC += s;
-      while(_cntC >= _pmC) { _cntC -= _pmC; _tbC = -_tbC; }
+      while(_cntC >= _pmC) { _cntC -= _pmC; _tb ^= 4; }
     }
     else {
       _cntC = 0;
@@ -132,7 +137,7 @@ public:
       while(_cntN >= _pmN) {
         _cntN -= _pmN;
         _ns = (_ns * 2 + 1) ^ (((_ns >> 16) ^ (_ns >> 13)) & 1); 
-        _tbN = _ns & (1<<16) ? 1  : -1;
+        _tbN = _ns & (1<<16) ? 7  : 0;
       }
     }
     else {
@@ -152,10 +157,8 @@ public:
     _cntN = 0;
     _indE = 0;
     _indN = 0;
-    _tbA = -1;
-    _tbB = -1;
-    _tbC = -1;
-    _tbN = -1;
+    _tb = 0;
+    _tbN = 0;
     _pmA = 0;
     _pmB = 0;
     _pmC = 0;
@@ -196,7 +199,7 @@ public:
         _pmC = periodC() << 15;
         break;
       case 6:
-        _pmN = periodN() << 18;
+        _pmN = periodN() << 19;
         break;
       case 8:
         _volA = volA();
@@ -231,32 +234,27 @@ public:
 
   int32_t __not_in_flash_func(vol)() {
     int32_t v = 0;
+   
     const uint32_t m = mixer();
     const uint32_t nm = ~m;
+    const uint32_t nme = (nm >> 3) | nm;
+    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
+    
     const uint8_t ae = _env[_indE];
     const uint32_t aA = _envA ? ae : _volA;
     const uint32_t aB = _envB ? ae : _volB;
     const uint32_t aC = _envC ? ae : _volC;
     
-    if (nm & 0x01) {
-      v += MUL32(_tbA, aA);
+    if (nme & 0x01) {
+      v += mtb & 0x01 ? aA + 1: -aA;
     }
-    if (nm & 0x02) {
-      v += MUL32(_tbB, aB);
+    if (nme & 0x02) {
+      v += mtb & 0x02 ? aB + 1: -aB;
     }
-    if (nm & 0x04) {
-      v += MUL32(_tbC, aC);
-    }
-    if (nm & 0x08) {
-      v += MUL32(_tbN, aA);
-    }
-    if (nm & 0x10) {
-      v += MUL32(_tbN, aB);
-    }
-    if (nm & 0x20) {
-      v += MUL32(_tbN, aC);
+    if (nme & 0x04) {
+      v += mtb & 0x04 ? aC + 1: -aC;
     }
     
-    return v;
+    return v / 2;
   }
 };
