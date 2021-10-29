@@ -255,6 +255,6 @@ public:
       v += mtb & 0x04 ? aC + 1: -aC;
     }
     
-    return v / 2;
+    return v >> 1;
   }
 };
