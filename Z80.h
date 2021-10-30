@@ -22,6 +22,7 @@
 
 
 #include <stdint.h>
+#include <pico/printf.h>
 
 
 
@@ -254,14 +255,14 @@ public:
   * this will return zero. In interrupt mode 0, data_on_bus must be a single
   * byte opcode.
   */
-  int IRQ(int data_on_bus);
+  int __not_in_flash_func(IRQ)(int data_on_bus);
 
   /* Trigger a non maskable interrupt, then return the number of cycles elapsed
    * to accept it.
    */
   int NMI();
 
-  int step();
+  int __not_in_flash_func(step)();
 
 
   // CPU registers access
@@ -325,7 +326,7 @@ public:
   
 private:
 
-  int intemulate(int opcode, int elapsed_cycles);
+  int __not_in_flash_func(intemulate)(int opcode, int elapsed_cycles);
 
 
   Z80_STATE         state;

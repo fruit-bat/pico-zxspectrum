@@ -94,7 +94,7 @@ The following folders need to be created on the SD card:
 | ------ | -------- |
 | zxspectrum/snapshots | Put your .z80 snapshot files in here. |
 | zxspectrum/quicksaves | Folder for quick saves (only 48k working at the moment) |
-| zxspectrum/taps | Folder for .tap tape files. |
+| zxspectrum/tapes | Folder for .tap tape files. |
 
 ## Special keys
 
