@@ -101,7 +101,7 @@ The following folders need to be created on the SD card:
 | Key | Action |
 | --- | ------ |
 | AltGr | Symbol |
-| F4 | Toggle Z80 3.5Mhz moderator |
+| F4 | Toggle the Z80 moderator. Cycles through 3.5Mhz, 4.0Mhz and unmoderated |
 | F5 | play current tape |
 | F6 | play previous tape |
 | F7 | play next tape |
