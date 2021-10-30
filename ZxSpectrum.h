@@ -19,9 +19,9 @@ enum ZxSpectrumType {
 class ZxSpectrum {
 private:
   Z80 _Z80;
-  uint32_t _tu4;
-  int32_t _ta4;
-  bool _moderate;
+  uint32_t _tu32;
+  int32_t _ta32;
+  uint32_t _moderate;
   ZxSpectrumKeyboard *_keyboard;
   uint8_t _borderColour;
   uint8_t _port254;
@@ -31,6 +31,7 @@ private:
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
+  uint32_t _modMul;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -157,18 +158,18 @@ public:
   inline void step()
   {
       const int c = _Z80.step() + _Z80.step();
-      const uint32_t tu4 = time_us_32() << 5;
-      const uint32_t tud = tu4 - _tu4;
-      _tu4 = tu4;
+      const uint32_t tu32 = time_us_32() << 5;
+      const uint32_t tud = tu32 - _tu32;
+      _tu32 = tu32;
       if (_moderate) {
         if (c == 0) {
-          _ta4 = 0;
+          _ta32 = 0;
         }
         else {
-          _ta4 += MUL32(c, 8) - tud; // +ve too fast, -ve too slow
-          if (_ta4 > 32) busy_wait_us_32(_ta4 >> 5);
+          _ta32 += MUL32(c, _moderate) - tud; // +ve too fast, -ve too slow
+          if (_ta32 > 32) busy_wait_us_32(_ta32 >> 5);
           // Try to catch up, but only for 100 or so instructions
-          if (_ta4 < -100 * 4 * 32)  _ta4 = -100 * 4 * 32;
+          if (_ta32 < -100 * 4 * 32)  _ta32 = -100 * 4 * 32;
         }
       }
       _ay.step(tud);
@@ -176,7 +177,7 @@ public:
   }
 
   void interrupt();
-  void moderate(bool on);
+  void moderate(uint32_t mul);
   void toggleModerate();
   unsigned int borderColour() { return _borderColour; }
   int32_t getSpeaker() {

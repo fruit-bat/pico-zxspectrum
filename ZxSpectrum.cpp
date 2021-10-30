@@ -9,7 +9,7 @@
 ZxSpectrum::ZxSpectrum(
   ZxSpectrumKeyboard *keyboard
 ) :
-  _moderate(true),
+  _moderate(9),
   _keyboard(keyboard),
   _borderColour(7),
   _ear(false)
@@ -23,11 +23,13 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
     case ZxSpectrum48k:
       setPageaddr(0, (uint8_t*)basic);
       _portMem = 0x20;
+      moderate(9);
       break;
     case ZxSpectrum128k:
     default:
       setPageaddr(0, (uint8_t*)zx_128k_rom_1);
       _portMem = 0;
+      moderate(8);
       break;
   }
 }
@@ -37,7 +39,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _type = type;
   _Z80.reset();
   _Z80.setPC(0x0000);
-  _ta4 = 0;
+  _ta32 = 0;
   transmute(type);
   setPageaddr(1, (uint8_t*)&_RAM[5]);
   setPageaddr(2, (uint8_t*)&_RAM[2]);
@@ -48,26 +50,33 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _port254 = 0x30;
   _ay.reset();
   _keyboard->reset();
-  _tu4 = time_us_32() << 5;
+  _tu32 = time_us_32() << 5;
 }
 
 void ZxSpectrum::interrupt() {
   _Z80.IRQ(0x38);
 }
 
-void ZxSpectrum::moderate(bool on) {
-  if (on == _moderate) return;
-
-  if (on) {
-    _tu4 = time_us_32() << 5;
-    _ta4 = 0;
+// 0 - Z80 unmoderated
+// 8 - Z80 at 4.0Mhz
+// 9 - Z80 at 3.5Mhz
+void ZxSpectrum::moderate(uint32_t mul) {
+  if (mul == _moderate) return;
+  if (mul) {
+    _tu32 = time_us_32() << 5;
+    _ta32 = 0;
   }
-
-  _moderate = on;
+  _moderate = mul;
 }
 
+
 void ZxSpectrum::toggleModerate() {
-  moderate(!_moderate);
+  switch(_moderate) {
+    case 9: moderate(8); break;
+    case 8: moderate(0); break;
+    case 0: moderate(9); break;
+    default: break;
+  }
 }
 
 int ZxSpectrum::writeZ80(OutputStream *os, int version) {
