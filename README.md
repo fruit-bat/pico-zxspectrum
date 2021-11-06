@@ -66,7 +66,6 @@ USB host mode required for keyboard input still seems to need a [patch to the Pi
 
 Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 
-I'm not convinced the noise channels on the AY-3-8912 sound correct.
 
 ## Build
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
