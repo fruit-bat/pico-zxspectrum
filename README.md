@@ -64,9 +64,10 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 ## Issues
 USB host mode required for keyboard input still seems to need a [patch to the Pico SDK](https://github.com/raspberrypi/tinyusb/pull/7/files) version of TinyUSB. The patch seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
 
+The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
+
 Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 
-I'm not convinced the noise channels on the AY-3-8912 sound correct.
 
 ## Build
 Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
@@ -93,7 +94,7 @@ The following folders need to be created on the SD card:
 | Folder | Contents |
 | ------ | -------- |
 | zxspectrum/snapshots | Put your .z80 snapshot files in here. |
-| zxspectrum/quicksaves | Folder for quick saves (only 48k working at the moment) |
+| zxspectrum/quicksaves | Folder for quick saves. |
 | zxspectrum/tapes | Folder for .tap tape files. |
 
 ## Special keys
