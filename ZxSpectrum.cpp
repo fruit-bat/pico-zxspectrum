@@ -19,6 +19,7 @@ ZxSpectrum::ZxSpectrum(
 }
 
 void ZxSpectrum::transmute(ZxSpectrumType type) {
+  _type = type;
   switch (type) {
     case ZxSpectrum48k:
       setPageaddr(0, (uint8_t*)basic);
@@ -54,7 +55,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
 }
 
 void ZxSpectrum::interrupt() {
-  _Z80.IRQ(0x38);
+  _Z80.IRQ(0xfe);
 }
 
 // 0 - Z80 unmoderated
@@ -353,7 +354,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
     return -2; // error
   }
   if (buf[12] == 255) buf[12] = 1;
-  unsigned int pc = (unsigned int)buf[6] + (((unsigned int)buf[7]) << 8);
+  unsigned int pc = ((unsigned int)buf[6]) + (((unsigned int)buf[7]) << 8);
   bool compressed = (1 << 5) & buf[12];
   _Z80.setA(buf[0]);
   _Z80.setF(buf[1]);
@@ -383,10 +384,15 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIYH(buf[24]);
   _Z80.setIXL(buf[25]);
   _Z80.setIXH(buf[26]);
-  _Z80.setIFF1(buf[27]);
-  _Z80.setIFF2(buf[28]);
+  _Z80.setIFF1(buf[27] ? 1 : 0);
+  _Z80.setIFF2(buf[28] ? 1 : 0);
   _Z80.setIM(buf[29] & 3);
-
+  if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
+  printf("PC %04X\n", pc);
+  printf("IFF1 %02X\n", buf[27]);
+  printf("IFF2 %02X\n", buf[28]);
+  printf("IM %02X\n", buf[29] & 3);
+  printf("Joystick %02X\n", buf[29] >> 6);
   printf("Applied Z80 header\n");
 
   return pc == 0 ? 2 : compressed ? 1 : 0;
@@ -479,7 +485,7 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
     printf("Failed to read Z80 V2 header\n");
     return -2; // error
   }
-  _Z80.setPC((unsigned int)buf[0] + (((unsigned int)buf[1]) << 8));
+  _Z80.setPC(((unsigned int)buf[0]) + (((unsigned int)buf[1]) << 8));
   const int v = (hl >=54) ? 3 : 2;
 /*
         Value:          Meaning in v2           Meaning in v3
@@ -602,7 +608,7 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
         }
       }
       if (wf & 0x8) {
-        m[i++] = wd >> 24;;
+        m[i++] = wd >> 24;
       }
     }
     printf("read %d compressed block bytes %d under-run\n", i, s);

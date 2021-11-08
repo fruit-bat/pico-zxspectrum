@@ -62,6 +62,13 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
   // Parse report descriptor with built-in parser
   _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
   printf("HID has %u reports and interface protocol = %s\r\n", _report_count[instance], protocol_str[interface_protocol]);
+
+  // request to receive report
+  // tuh_hid_report_received_cb() will be invoked when report is available
+  if ( !tuh_hid_receive_report(dev_addr, instance) )
+  {
+    printf("Error: cannot request to receive report\r\n");
+  }
 }
 
 // Invoked when device with hid interface is un-mounted
@@ -105,10 +112,8 @@ void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t i
   if (!rpt_info)
   {
     printf("Couldn't find the report info for this report !\r\n");
-    return;
   }
-
-  if ( rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP )
+  else if ( rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP )
   {
     switch (rpt_info->usage)
     {
@@ -126,6 +131,12 @@ void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t i
 
       default: break;
     }
+  }
+
+    // continue to request to receive report
+  if ( !tuh_hid_receive_report(dev_addr, instance) )
+  {
+    printf("Error: cannot request to receive report\r\n");
   }
 }
 
