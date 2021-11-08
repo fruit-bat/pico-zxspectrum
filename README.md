@@ -70,8 +70,6 @@ Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 
 
 ## Build
-Fistly patch up the TinyUSB library for USB host mode, as described [here](https://github.com/raspberrypi/tinyusb/pull/7/files).
-
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
 cd PicoDVI/software/apps
