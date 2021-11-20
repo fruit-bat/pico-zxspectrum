@@ -84,7 +84,7 @@
  * option.
  */
 
-#define Z80_MASK_IM2_VECTOR_ADDRESS
+/* #define Z80_MASK_IM2_VECTOR_ADDRESS */
 
 
 

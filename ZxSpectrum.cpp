@@ -55,7 +55,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
 }
 
 void ZxSpectrum::interrupt() {
-  _Z80.IRQ(0xfe);
+  _Z80.IRQ(0xff);
 }
 
 // 0 - Z80 unmoderated
