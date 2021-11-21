@@ -143,8 +143,8 @@ void __not_in_flash_func(core1_main)() {
 	__builtin_unreachable();
 }
 
-extern "C" void spectrum_keyboard_handler(hid_keyboard_report_t const *report) {
-	keyboard.processHidReport(report);
+extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+	keyboard.processHidReport(report, prev_report);
 }
 
 extern "C" int __not_in_flash_func(main)() {

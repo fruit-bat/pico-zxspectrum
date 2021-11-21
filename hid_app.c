@@ -26,7 +26,7 @@
 #include "bsp/board.h"
 #include "tusb.h"
 
-extern void spectrum_keyboard_handler(hid_keyboard_report_t const *report);
+extern void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report);
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM DECLARATION
@@ -41,7 +41,11 @@ extern void spectrum_keyboard_handler(hid_keyboard_report_t const *report);
 static uint8_t _report_count[CFG_TUH_HID];
 static tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
-static void process_kbd_report(hid_keyboard_report_t const *report);
+// Keep a copy of any previous keyboard report.
+// Currently, only capable of supporting a single keyboard, as
+// one of these is required each.
+static hid_keyboard_report_t prev_key_report = { 0, 0, {0} };
+
 static void process_mouse_report(hid_mouse_report_t const * report);
 
 //--------------------------------------------------------------------+
@@ -61,8 +65,20 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
 
   // Parse report descriptor with built-in parser
   _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
-  printf("HID has %u reports and interface protocol = %s\r\n", _report_count[instance], protocol_str[interface_protocol]);
+  
+  printf(
+    "HID has %u reports and interface protocol %d = %s\r\n",
+    _report_count[instance],
+    interface_protocol,
+    interface_protocol < 3 ? protocol_str[interface_protocol] : "Unknown"
+  );
 
+  // Mounting keyboard
+  if (interface_protocol == 1) {
+    // Clear down previous keyboard report
+    memset(&prev_key_report, 0, sizeof(hid_keyboard_report_t));
+  }
+  
   // request to receive report
   // tuh_hid_report_received_cb() will be invoked when report is available
   if ( !tuh_hid_receive_report(dev_addr, instance) )
@@ -117,12 +133,14 @@ void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t i
   {
     switch (rpt_info->usage)
     {
-      case HID_USAGE_DESKTOP_KEYBOARD:
+      case HID_USAGE_DESKTOP_KEYBOARD: {
         TU_LOG1("HID receive keyboard report\r\n");
         // Assume keyboard follow boot report layout
-        process_kbd_report( (hid_keyboard_report_t const*) report );
-      break;
-
+        hid_keyboard_report_t const* key_report = (hid_keyboard_report_t const*) report;
+        process_kbd_report( key_report,  &prev_key_report);
+        prev_key_report = *key_report;
+        break;
+      }
       case HID_USAGE_DESKTOP_MOUSE:
         TU_LOG1("HID receive mouse report\r\n");
         // Assume mouse follow boot report layout
@@ -138,15 +156,6 @@ void __not_in_flash_func(tuh_hid_report_received_cb)(uint8_t dev_addr, uint8_t i
   {
     printf("Error: cannot request to receive report\r\n");
   }
-}
-
-//--------------------------------------------------------------------+
-// Keyboard
-//--------------------------------------------------------------------+
-
-static void process_kbd_report(hid_keyboard_report_t const *report)
-{
-  spectrum_keyboard_handler(report);
 }
 
 //--------------------------------------------------------------------+
