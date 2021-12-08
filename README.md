@@ -76,12 +76,14 @@ Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
 cd PicoDVI/software/apps
-git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
+git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
+git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 ```
 
 In the 'apps' folder add the following line to CMakeLists.txt
 ```
 add_subdirectory(zxspectrum)
+add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
 In the build folder:
 ```

@@ -52,7 +52,7 @@ target_link_libraries(ZxSpectrum
 	libdvi
 	tinyusb_host
 	tinyusb_board
-  FatFs_SPI
+	FatFs_SPI
 )
 
 # create map/bin/hex file etc.
