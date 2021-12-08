@@ -69,7 +69,6 @@ https://github.com/hathach/tinyusb/pull/1193/files<br/>
 
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
-Some of the FAT SPI routines need to be kept in RAM, needs to be documented.
 
 
 ## Build
