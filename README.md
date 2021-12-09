@@ -69,7 +69,11 @@ https://github.com/hathach/tinyusb/pull/1193/files<br/>
 
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
-
+## Try it
+A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
+```sh
+cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
+```
 
 ## Build
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
