@@ -3,7 +3,7 @@
 
 <img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>  <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
 
-This is an attempt to make a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
+This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
 
 Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
 
@@ -118,6 +118,7 @@ The following folders need to be created on the SD card:
 
 ## Missing features
 * HUD
+* Joystick input
 * Audio input
 
 ## References
