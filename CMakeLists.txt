@@ -40,11 +40,6 @@ target_compile_definitions(ZxSpectrum PRIVATE
 	DVI_N_TMDS_BUFFERS=3
 )
 
-# Oh dear, it looks like FatFs_SPI should be built in the parent
-# currently this is built as part of sorcerer2... clearly it belongs somewhere else!
-# for now, if not also building sorcerer2 uncomment the line below
-# add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
-
 target_link_libraries(ZxSpectrum
 	pico_stdlib
 	pico_multicore

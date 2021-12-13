@@ -62,13 +62,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 </a>
                                                                                                         
 ## Issues
-USB host mode seems to work very reliably unless the keyboard is removed and reconnected, which causes the Pico to 'panic'.
-
-This allows usb reconnect: <br/>
-https://github.com/hathach/tinyusb/pull/1193/files<br/>
-
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
+It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only connect devices directly seems to work.
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
@@ -76,6 +72,16 @@ cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
 
 ## Build
+The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
+in particular it allows the keyboard to be reconnected.
+It is probably a good idea to update the version in [Pico SDK](https://github.com/raspberrypi/pico-sdk) to the latest.
+```sh
+cd $PICO_SDK_PATH
+cd lib/tinyusb/
+git checkout master
+git pull
+```
+
 This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
 cd PicoDVI/software/apps
@@ -83,7 +89,7 @@ git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 ```
 
-In the 'apps' folder add the following line to CMakeLists.txt
+In the 'apps' folder add the following lines to CMakeLists.txt
 ```
 add_subdirectory(zxspectrum)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
@@ -91,6 +97,7 @@ add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 In the build folder:
 ```
 cmake -DPICO_COPY_TO_RAM=0 ..
+make clean
 make -j4 ZxSpectrum
 cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
 ```
