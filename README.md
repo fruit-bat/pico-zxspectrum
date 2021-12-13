@@ -64,7 +64,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
-It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only connect devices directly seems to work.
+It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only devices connected directly seems to work.
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
