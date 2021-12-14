@@ -44,6 +44,12 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 
+### Audio filter
+It's a good idea to filter out high frequencies from the PWM audio output.
+The following components were chosen as I found them in a draw... but it sounds ok.
+
+![image](docs/circuit.png)
+
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1043509-smol_1024x1024.jpg" width="200"/>
