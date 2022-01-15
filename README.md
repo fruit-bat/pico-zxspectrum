@@ -138,6 +138,21 @@ The following folders need to be created on the SD card:
 * Joystick input
 * Audio input
 
+## Debug
+<a href="https://shop.pimoroni.com/products/usb-to-uart-serial-console-cable">
+<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/USB_UART_1_of_2_630x630.JPG" width="200"/>
+</a>
+
+| Pico pin | Pico GPIO | Adapter wire |
+| -------- | --------- | ------------ |
+| 1        | GP0       | White        |
+| 2        | GP1       | Green        |
+| 3        | GND       | Black        |
+
+```sh
+tio -m ODELBS /dev/ttyUSB0
+```
+
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
