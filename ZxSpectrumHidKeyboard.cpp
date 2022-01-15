@@ -104,9 +104,11 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumFileLoop *zxSpectrumSnapL
   sort_keys();
 }
 
-void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r = 0;
+
   reset();
-  if (report->keycode[0] == 1) return;
+  if (report->keycode[0] == 1) return r;
   const unsigned char m = report->modifier;
   // printf("hid:%02X %02X%02X%02X%02X%02X%02X\n", m, report->keycode[0], report->keycode[1], report->keycode[2], report->keycode[3], report->keycode[4], report->keycode[5]);
 
@@ -151,6 +153,9 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     }
   }
   else {
+    // F1 open menu
+    if (fkp & (1 << 0)) r = 1;
+    
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
     // F11 reset to 128k
@@ -172,4 +177,6 @@ void ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report
     if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
 
   }
+  
+  return r;
 }

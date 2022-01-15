@@ -30,6 +30,12 @@ extern "C" {
 #include "QuickSave.h"
 #include "ZxSpectrumFatFsSpiFileLoop.h"
 
+#include "PicoWinHidKeyboard.h"
+#include "PicoDisplay.h"
+#include "PicoCharRenderer.h"
+#include "PicoPen.h"
+
+
 #define UART_ID uart0
 #define BAUD_RATE 115200
 
@@ -59,9 +65,30 @@ static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
 static ZxSpectrum zxSpectrum(&keyboard);
 
+static PicoWin picoRootWin(0, 0, 80, 30);
+static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
+static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
+
+
+static bool showMenu = true;
+static bool toggleMenu = false;
+
+extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = keyboard.processHidReport(report, prev_report);
+  }
+  if (r == 1) toggleMenu = true;
+}
+
+
+
 unsigned char* screenPtr;
 unsigned char* attrPtr;
-unsigned int frame = 0;
+static volatile uint _frames = 0;
 
 // Screen handler
 //
@@ -117,7 +144,7 @@ static inline void prepare_scanline(const uint y, uint f) {
 	}
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
-
+/*
 void __not_in_flash_func(core1_scanline_callback)() {
 	static uint y = 1;
 	prepare_scanline(y++, frame);
@@ -129,6 +156,40 @@ void __not_in_flash_func(core1_scanline_callback)() {
 		attrPtr = screenPtr + (32 * 24 * 8);
 	}
 }
+*/
+
+void __not_in_flash_func(core1_scanline_callback)() {
+  static uint y = 1;
+  static uint ys = 0;
+  if (showMenu) {
+		uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
+		if (0 == (y & 7)) {
+			ys += rs;
+		}
+	}
+	else {
+		prepare_scanline(y++, _frames);
+	}
+  if (y == FRAME_HEIGHT) {
+    _frames++;
+    y = 0;
+    ys = 0;
+    
+		// TODO Tidy this mechanism up
+		screenPtr = zxSpectrum.screenPtr();
+		attrPtr = screenPtr + (32 * 24 * 8);
+		
+    if (toggleMenu) {
+      showMenu = !showMenu;
+      toggleMenu = false;
+    }
+  }
+}
+
+
+
+
+
 
 void __not_in_flash_func(core1_main)() {
 	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
@@ -141,10 +202,6 @@ void __not_in_flash_func(core1_main)() {
 	while (1) 
 		__wfi();
 	__builtin_unreachable();
-}
-
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-	keyboard.processHidReport(report, prev_report);
 }
 
 extern "C" int __not_in_flash_func(main)() {
@@ -174,7 +231,19 @@ extern "C" int __not_in_flash_func(main)() {
 	attrPtr = screenPtr + (32 * 24 * 8);
 
 	keyboard.setZxSpectrum(&zxSpectrum);
-	
+
+  // Initialise the menu renderer
+  pcw_init_renderer();
+  
+  picoRootWin.onPaint([](PicoPen *pen) {
+     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
+     pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+     pen->printAt(0, 2, false, "Menu System version 0.1");
+
+     pen->printAt(0, 29, false, "F1 to exit menu");
+     pen->printAt(80-14, 29, false, "ESC to go back");
+   });
+
 	printf("Configuring DVI\n");
    
 	dvi0.timing = &DVI_TIMING;
@@ -193,13 +262,14 @@ extern "C" int __not_in_flash_func(main)() {
 
 	sem_release(&dvi_start_sem);
 
-	unsigned int lastInterruptFrame = frame;
+	unsigned int lastInterruptFrame = _frames;
 	
+	uint frames = 0;
 	while (1) {
 		tuh_task();
 		for (int i = 1; i < 100; ++i) {
-			if (lastInterruptFrame != frame) {
-				lastInterruptFrame = frame;
+			if (lastInterruptFrame != _frames) {
+				lastInterruptFrame = _frames;
 				zxSpectrum.interrupt();
 			}
 			zxSpectrum.step();
@@ -207,6 +277,10 @@ extern "C" int __not_in_flash_func(main)() {
 			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
 
 		}
+    if (showMenu && frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
 	}
 	__builtin_unreachable();
 }

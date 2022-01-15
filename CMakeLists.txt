@@ -38,6 +38,7 @@ target_compile_definitions(ZxSpectrum PRIVATE
 	DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
 	DVI_VERTICAL_REPEAT=2
 	DVI_N_TMDS_BUFFERS=3
+	DVI_1BPP_BIT_REVERSE=1
 )
 
 target_link_libraries(ZxSpectrum
@@ -48,6 +49,7 @@ target_link_libraries(ZxSpectrum
 	tinyusb_host
 	tinyusb_board
 	FatFs_SPI
+	pico_dvi_menu
 )
 
 # create map/bin/hex file etc.
