@@ -33,7 +33,7 @@ extern "C" {
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
-#include "PicoPen.h"
+#include "ZxSpectrumMenu.h"
 
 
 #define UART_ID uart0
@@ -59,16 +59,18 @@ struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
+
+// ZX Spectrum emulator
 static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
 static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
 static ZxSpectrum zxSpectrum(&keyboard);
 
-static PicoWin picoRootWin(0, 0, 80, 30);
+// Menu system
+static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
-
 
 static bool showMenu = true;
 static bool toggleMenu = false;
@@ -232,20 +234,10 @@ extern "C" int __not_in_flash_func(main)() {
 
 	keyboard.setZxSpectrum(&zxSpectrum);
 
-  // Initialise the menu renderer
-  pcw_init_renderer();
+	// Initialise the menu renderer
+	pcw_init_renderer();
   
-  picoRootWin.onPaint([](PicoPen *pen) {
-     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
-     pen->printAt(0, 1, false, "on RP2040 Pico Pi");
-     pen->printAt(0, 2, false, "Menu System version 0.1");
-
-     pen->printAt(0, 29, false, "F1 to exit menu");
-     pen->printAt(80-14, 29, false, "ESC to go back");
-   });
-
 	printf("Configuring DVI\n");
-   
 	dvi0.timing = &DVI_TIMING;
 	dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
 	dvi0.scanline_callback = core1_scanline_callback;

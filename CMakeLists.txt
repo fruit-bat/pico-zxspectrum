@@ -30,6 +30,7 @@ add_executable(ZxSpectrum
 	src/ZxSpectrumFileLoop.cpp
 	src/ZxSpectrumFatFsSpiFileLoop.cpp
 	src/ZxSpectrumAy.cpp
+	src/ZxSpectrumMenu.cpp
 )
 
 target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
