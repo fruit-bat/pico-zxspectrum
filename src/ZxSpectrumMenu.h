@@ -28,6 +28,13 @@ private:
 
   PicoOption _freqOp;
   PicoOption _muteOp;
+  PicoOptionText _resetOp;
+
+  PicoSelect _reset;
+  PicoOptionText _reset48kOp;
+  PicoOptionText _reset128kOp;
+
+
 
   PicoWin _message;
   PicoSelect _confirm;

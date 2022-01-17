@@ -12,8 +12,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
-
-
+  _resetOp("Reset"),
+  
+  _reset(0, 0, 70, 6, 3),
+  _reset48kOp("Reset 48K ZX Spectrum"),
+  _reset128kOp("Reset 128K ZX Spectrum"),
 
   _message(0, 0, 70, 12),
   _confirm(0, 0, 70, 6, 3),
@@ -32,6 +35,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
 
   _main.addOption(_freqOp.addQuickKey(&_k1));
   _main.addOption(_muteOp.addQuickKey(&_k2));
+  _main.addOption(_resetOp.addQuickKey(&_k3));
+  _main.enableQuickKeys();
 
   _freqOp.toggle([=]() {
     _zxSpectrum->toggleModerate();
@@ -56,9 +61,25 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
     pen->clear();
     pen->printAtF(0, 0, false,"Audio           [ %-12s]", _zxSpectrum->mute() ? "off" : "on");
   });
+  _resetOp.toggle([=]() {
+    _wiz.push(
+      &_reset, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Reset options"); }, 
+      true);
+  });
+  
+  _reset.addOption(_reset48kOp.addQuickKey(&_k1));
+  _reset.addOption(_reset128kOp.addQuickKey(&_k2));
+  _reset.enableQuickKeys();
 
-
-
+  _reset48kOp.toggle([=]() {
+    _zxSpectrum->reset(ZxSpectrum48k);
+    _wiz.pop(true);
+  });
+  _reset128kOp.toggle([=]() {
+    _zxSpectrum->reset(ZxSpectrum128k);
+    _wiz.pop(true);
+  });
 
 
   onPaint([](PicoPen *pen) {
