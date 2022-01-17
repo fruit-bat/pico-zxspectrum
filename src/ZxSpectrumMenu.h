@@ -26,7 +26,8 @@ private:
   PicoWiz _wiz;
   PicoSelect _main;
 
-
+  PicoOption _freqOp;
+  PicoOption _muteOp;
 
   PicoWin _message;
   PicoSelect _confirm;

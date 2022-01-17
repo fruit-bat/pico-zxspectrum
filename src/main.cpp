@@ -146,19 +146,6 @@ static inline void prepare_scanline(const uint y, uint f) {
 	}
 	queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
 }
-/*
-void __not_in_flash_func(core1_scanline_callback)() {
-	static uint y = 1;
-	prepare_scanline(y++, frame);
-	if (y >= FRAME_HEIGHT) { 
-		y -= FRAME_HEIGHT;
-		++frame;
-		// TODO Tidy this mechanism up
-		screenPtr = zxSpectrum.screenPtr();
-		attrPtr = screenPtr + (32 * 24 * 8);
-	}
-}
-*/
 
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;

@@ -1,4 +1,5 @@
 #include "ZxSpectrumMenu.h"
+#include "ZxSpectrum.h"
 #include "PicoPen.h"
 
 #define SAVED_SNAPS_DIR "/sorcerer2/snaps"
@@ -11,6 +12,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
+
+
 
   _message(0, 0, 70, 12),
   _confirm(0, 0, 70, 6, 3),
@@ -26,6 +29,37 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _confirm.addOption(_confirmNo.addQuickKey(&_k1));
   _confirm.addOption(_confirmYes.addQuickKey(&_k2));
   _confirm.enableQuickKeys();
+
+  _main.addOption(_freqOp.addQuickKey(&_k1));
+  _main.addOption(_muteOp.addQuickKey(&_k2));
+
+  _freqOp.toggle([=]() {
+    _zxSpectrum->toggleModerate();
+    _main.repaint();
+  });
+  _freqOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m;
+    switch(_zxSpectrum->moderate()) {
+      case 9: m = "3.5 Mhz" ; break;
+      case 8: m = "4.0 Mhz" ; break;
+      case 0: m = "Unmoderated" ; break;
+      default: m = "Unknown" ; break;
+    }
+    pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", m);
+  });
+  _muteOp.toggle([=]() {
+    _zxSpectrum->toggleMute();
+    _main.repaint();
+  });
+  _muteOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"Audio           [ %-12s]", _zxSpectrum->mute() ? "off" : "on");
+  });
+
+
+
+
 
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");

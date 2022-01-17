@@ -32,6 +32,7 @@ private:
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
   uint32_t _modMul;
+  bool _mute;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -179,8 +180,14 @@ public:
   void interrupt();
   void moderate(uint32_t mul);
   void toggleModerate();
+  uint32_t moderate() { return _moderate; }
+  void mute(bool mute) { _mute = mute; }
+  void toggleMute() { _mute = !_mute; }
+  bool mute() { return _mute; }
+
   unsigned int borderColour() { return _borderColour; }
   int32_t getSpeaker() {
+    if (_mute) return 0;
     const int32_t a1 = (_port254 & (1<<4)) ? 128 : -127;
     const int32_t a2 = _ear ? 64 : -63;
     return a1 + a2 + _ay.vol();
