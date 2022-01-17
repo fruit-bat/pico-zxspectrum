@@ -93,10 +93,13 @@ This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://git
 cd PicoDVI/software/apps
 git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:fruit-bat/pico-dvi-menu
+
 ```
 
 In the 'apps' folder add the following lines to CMakeLists.txt
 ```
+add_subdirectory(pico-dvi-menu)
 add_subdirectory(zxspectrum)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
