@@ -11,15 +11,7 @@ add_executable(ZxSpectrum
 	src/hid_app.c
 	src/tmds_encode_zxspectrum.S
 	src/tmds_encode_zxspectrum.h
-	src/InputStream.cpp
-	src/OutputStream.cpp
-	src/SizingOutputStream.cpp
-	src/ArrayInputStream.cpp
-	src/BufferedInputStream.cpp
 	src/hw_config.c
-	src/SdCardFatFsSpi.cpp
-	src/FatFsSpiInputStream.cpp
-	src/FatFsSpiOutputStream.cpp
 	src/QuickSave.cpp
 	src/Pulse.cpp
 	src/PulseByte.cpp
@@ -51,6 +43,7 @@ target_link_libraries(ZxSpectrum
 	tinyusb_board
 	FatFs_SPI
 	pico_dvi_menu
+	pico_emu_utils
 )
 
 # create map/bin/hex file etc.
