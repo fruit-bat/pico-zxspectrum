@@ -1,9 +1,12 @@
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrum.h"
 #include "PicoPen.h"
+#include "FatFsSpiDirReader.h"
+#include "FatFsSpiInputStream.h"
+#include "BufferedInputStream.h"
 
-#define SAVED_SNAPS_DIR "/sorcerer2/snaps"
-#define SAVED_TAPES_DIR "/sorcerer2/tapes"
+#define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
+#define SAVED_TAPES_DIR "/zxspectrum/tapes"
 
 ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
  PicoWin(0, 0, 80, 30),
@@ -13,6 +16,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
   _resetOp("Reset"),
+
+  _tapePlayer(0, 0, 70, 6, 3),
+
+  _chooseTapeOp("Choose a tape"),
+  _ejectTapeOp("Eject tape"),
+  _chooseTape(0, 0, 70, 9, 2),
+  _chooseSnap(0, 0, 70, 9, 2),
   
   _reset(0, 0, 70, 6, 3),
   _reset48kOp("Reset 48K ZX Spectrum"),
@@ -33,11 +43,37 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _confirm.addOption(_confirmYes.addQuickKey(&_k2));
   _confirm.enableQuickKeys();
 
-  _main.addOption(_freqOp.addQuickKey(&_k1));
-  _main.addOption(_muteOp.addQuickKey(&_k2));
-  _main.addOption(_resetOp.addQuickKey(&_k3));
+  _main.addOption(_snapOp.addQuickKey(&_k1));
+  _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
+  _main.addOption(_freqOp.addQuickKey(&_k3));
+  _main.addOption(_muteOp.addQuickKey(&_k4));
+  _main.addOption(_resetOp.addQuickKey(&_k5));
   _main.enableQuickKeys();
-
+  _snapOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "SNAP Loader", "TODO");
+  });
+  _snapOp.toggle([=]() {
+    _wiz.push(
+      &_chooseSnap, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot:"); },
+      true);
+    FatFsSpiDirReader dirReader(_sdCard, SAVED_SNAPS_DIR);
+    _chooseSnap.deleteOptions();
+    dirReader.foreach([=](const FILINFO* info) {
+      _chooseSnap.addOption(new PicoOptionText(info->fname));
+    });
+  });
+  _tapePlayerOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Tape player", "TODO");
+  });
+  _tapePlayerOp.toggle([=]() {
+    _wiz.push(
+      &_tapePlayer, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Tape player"); }, 
+      true);
+  });
   _freqOp.toggle([=]() {
     _zxSpectrum->toggleModerate();
     _main.repaint();
@@ -51,7 +87,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
       case 0: m = "Unmoderated" ; break;
       default: m = "Unknown" ; break;
     }
-    pen->printAtF(0, 0, false,"CPU Speed       [ %-12s]", m);
+    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "CPU Speed", m);
   });
   _muteOp.toggle([=]() {
     _zxSpectrum->toggleMute();
@@ -59,7 +95,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   });
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"Audio           [ %-12s]", _zxSpectrum->mute() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Audio", _zxSpectrum->mute() ? "off" : "on");
   });
   _resetOp.toggle([=]() {
     _wiz.push(
@@ -81,7 +117,48 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
     _wiz.pop(true);
   });
 
+  _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
+  _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
+  _tapePlayer.enableQuickKeys();
 
+  _chooseTapeOp.toggle([=]() {
+    _wiz.push(
+      &_chooseTape, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
+      true);
+    FatFsSpiDirReader dirReader(_sdCard, SAVED_TAPES_DIR);
+    _chooseTape.deleteOptions();
+    dirReader.foreach([=](const FILINFO* info) {
+      _chooseTape.addOption(new PicoOptionText(info->fname));
+    });
+  });
+
+  _ejectTapeOp.toggle([=]() {
+    ejectTape();
+  });
+
+  _chooseSnap.onToggle([=](PicoOption *option) {
+    PicoOptionText *textOption = (PicoOptionText *)option;
+    std::string fname(SAVED_SNAPS_DIR);
+    fname.append("/");
+    fname.append(textOption->text());
+    FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
+    _zxSpectrum->loadZ80(is);
+    delete is;
+    _wiz.pop(true);
+  });
+  
+  _chooseTape.onToggle([=](PicoOption *option) {
+    PicoOptionText *textOption = (PicoOptionText *)option;
+    ejectTape();
+    std::string fname(SAVED_TAPES_DIR);
+    fname.append("/");
+    fname.append(textOption->text());
+    _tis = new FatFsSpiInputStream(_sdCard, fname.c_str());
+    _zxSpectrum->loadTap(_tis);
+    _wiz.pop(true);
+  });
+  
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
      pen->printAt(0, 1, false, "on RP2040 Pico Pi");
@@ -92,6 +169,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
    }); 
 }
 
+void ZxSpectrumMenu::ejectTape() {
+  // TODO ask the spectrum for the input stream
+  if (_tis) {
+    _zxSpectrum->loadTap(0);
+    delete _tis;
+    _tis = 0;
+  }
+}
+
 void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {
   _wiz.push(
     &_message, 
@@ -99,7 +185,6 @@ void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {
     true);
   _message.onPaint(message);
 }
-
 
 void ZxSpectrumMenu::confirm(
   std::function<void(PicoPen *pen)> message,

@@ -7,6 +7,7 @@
 #include "PicoWiz.h" 
 #include "SdCardFatFsSpi.h"
 #include "PicoTextField.h"
+#include "InputStream.h"
 #include <functional>
 
 class ZxSpectrum;
@@ -15,6 +16,7 @@ class ZxSpectrumMenu : public PicoWin {
 private:
   SdCardFatFsSpi *_sdCard;
   ZxSpectrum *_zxSpectrum;
+  InputStream* _tis;
 
   PicoQuickKeyAscii _k1;
   PicoQuickKeyAscii _k2;
@@ -26,9 +28,18 @@ private:
   PicoWiz _wiz;
   PicoSelect _main;
 
+  PicoOption _tapePlayerOp;
+  PicoOption _snapOp;
   PicoOption _freqOp;
   PicoOption _muteOp;
   PicoOptionText _resetOp;
+
+  PicoSelect _tapePlayer;
+  PicoOptionText _chooseTapeOp;
+  PicoOptionText _ejectTapeOp;
+
+  PicoSelect _chooseTape;
+  PicoSelect _chooseSnap;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -40,6 +51,8 @@ private:
   PicoSelect _confirm;
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
+  
+  void ejectTape();
   
   void showError(std::function<void(PicoPen *pen)> message);
 
