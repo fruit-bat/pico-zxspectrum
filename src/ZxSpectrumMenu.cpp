@@ -119,6 +119,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
 
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
+  _tapePlayer.addOption(_pauseTapeOp.addQuickKey(&_k3));
   _tapePlayer.enableQuickKeys();
 
   _chooseTapeOp.toggle([=]() {
@@ -136,7 +137,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _ejectTapeOp.toggle([=]() {
     ejectTape();
   });
-
+  
+  _pauseTapeOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Motor", _zxSpectrum->tapePaused() ? "off" : "on");
+  });
+  _pauseTapeOp.toggle([=]() {
+    _zxSpectrum->togglePauseTape();
+  });
+  
   _chooseSnap.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     std::string fname(SAVED_SNAPS_DIR);

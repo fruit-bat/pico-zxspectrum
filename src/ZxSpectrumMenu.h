@@ -37,6 +37,7 @@ private:
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
+  PicoOption _pauseTapeOp;
 
   PicoSelect _chooseTape;
   PicoSelect _chooseSnap;

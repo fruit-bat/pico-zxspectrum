@@ -33,6 +33,7 @@ private:
   ZxSpectrumType _type;
   uint32_t _modMul;
   bool _mute;
+  bool _pauseTape;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -174,7 +175,7 @@ public:
         }
       }
       _ay.step(tud);
-      _pulseBlock.advance(c, &_ear);
+      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
   }
 
   void interrupt();
@@ -196,4 +197,7 @@ public:
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
+  bool tapePaused() { return _pauseTape; }
+  void pauseTape(bool pause) { _pauseTape = pause; }
+  void togglePauseTape() { _pauseTape = !_pauseTape; }
 };
