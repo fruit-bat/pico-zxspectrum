@@ -1,5 +1,6 @@
 # pico-zxspectrum
 48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
+
 <img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>
 <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
 
@@ -45,6 +46,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
+
+### Prototype
+<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
 ### Audio filter
 It's a good idea to filter out high frequencies from the PWM audio output.
