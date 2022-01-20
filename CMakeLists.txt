@@ -3,41 +3,35 @@
 # add_definitions(-DRUN_FROM_CRYSTAL)
 
 add_executable(ZxSpectrum
-	main.cpp
-	Z80.cpp
-	ZxSpectrumKeyboard.cpp
-	ZxSpectrumHidKeyboard.cpp
-	ZxSpectrum.cpp
-	hid_app.c
-	tmds_encode_zxspectrum.S
-	tmds_encode_zxspectrum.h
-	InputStream.cpp
-	OutputStream.cpp
-	SizingOutputStream.cpp
-	ArrayInputStream.cpp
-	BufferedInputStream.cpp
-	hw_config.c
-	SdCardFatFsSpi.cpp
-	FatFsSpiInputStream.cpp
-	FatFsSpiOutputStream.cpp
-	QuickSave.cpp
-	Pulse.cpp
-	PulseByte.cpp
-	PulseByteStream.cpp
-	PulsePreamble.cpp
-	PulseBlock.cpp
-	ZxSpectrumFile.cpp
-	ZxSpectrumFileLoop.cpp
-	ZxSpectrumFatFsSpiFileLoop.cpp
-	ZxSpectrumAy.cpp
+	src/main.cpp
+	src/Z80.cpp
+	src/ZxSpectrumKeyboard.cpp
+	src/ZxSpectrumHidKeyboard.cpp
+	src/ZxSpectrum.cpp
+	src/hid_app.c
+	src/tmds_encode_zxspectrum.S
+	src/tmds_encode_zxspectrum.h
+	src/hw_config.c
+	src/QuickSave.cpp
+	src/Pulse.cpp
+	src/PulseByte.cpp
+	src/PulseByteStream.cpp
+	src/PulsePreamble.cpp
+	src/PulseBlock.cpp
+	src/ZxSpectrumFile.cpp
+	src/ZxSpectrumFileLoop.cpp
+	src/ZxSpectrumFatFsSpiFileLoop.cpp
+	src/ZxSpectrumAy.cpp
+	src/ZxSpectrumMenu.cpp
 )
 
-target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 target_compile_definitions(ZxSpectrum PRIVATE
 	DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
 	DVI_VERTICAL_REPEAT=2
 	DVI_N_TMDS_BUFFERS=3
+	DVI_1BPP_BIT_REVERSE=1
 )
 
 target_link_libraries(ZxSpectrum
@@ -48,6 +42,8 @@ target_link_libraries(ZxSpectrum
 	tinyusb_host
 	tinyusb_board
 	FatFs_SPI
+	pico_dvi_menu
+	pico_emu_utils
 )
 
 # create map/bin/hex file etc.

@@ -1,7 +1,8 @@
 # pico-zxspectrum
 48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
 
-<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>  <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
+<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>
+<img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
 
@@ -14,10 +15,12 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
+* On screen menu system (work in progress)
 
 ## Screen shots
 
-<img src="docs/zxspectrum_screen_1.jpg" height="200"/> <img src="docs/swarm_loading.jpg" height="200"/>
+<img src="docs/swarm_loading.jpg" height="200"/>
+<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
 ## Wiring
 
@@ -43,6 +46,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
+
+### Prototype
+<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
 ### Audio filter
 It's a good idea to filter out high frequencies from the PWM audio output.
@@ -93,10 +99,15 @@ This code needs to be cloned into the 'apps' folder of the [PicoDVI](https://git
 cd PicoDVI/software/apps
 git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:fruit-bat/pico-dvi-menu
+git clone git@github.com:fruit-bat/pico-emu-utils
+
 ```
 
 In the 'apps' folder add the following lines to CMakeLists.txt
 ```
+add_subdirectory(pico-dvi-menu)
+add_subdirectory(pico-emu-utils)
 add_subdirectory(zxspectrum)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
@@ -121,6 +132,7 @@ The following folders need to be created on the SD card:
 | Key | Action |
 | --- | ------ |
 | AltGr | Symbol |
+| F1 | Toggle on screen menu |
 | F4 | Toggle the Z80 moderator. Cycles through 3.5Mhz, 4.0Mhz and unmoderated |
 | F5 | play current tape |
 | F6 | play previous tape |
