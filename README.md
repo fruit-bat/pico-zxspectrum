@@ -1,8 +1,7 @@
 # pico-zxspectrum
 48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
-
+<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>
 <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
-<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
 
@@ -19,7 +18,8 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 ## Screen shots
 
-<img src="docs/zxspectrum_screen_1.jpg" height="200"/> <img src="docs/swarm_loading.jpg" height="200"/>
+<img src="docs/swarm_loading.jpg" height="200"/>
+<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
 ## Wiring
 
