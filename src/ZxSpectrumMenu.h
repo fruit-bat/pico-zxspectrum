@@ -46,7 +46,8 @@ private:
   PicoOptionText _reset48kOp;
   PicoOptionText _reset128kOp;
 
-
+  std::string _tapeName;
+  std::string _snapName;
 
   PicoWin _message;
   PicoSelect _confirm;

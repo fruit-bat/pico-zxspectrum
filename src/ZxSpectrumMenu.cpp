@@ -51,7 +51,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "SNAP Loader", "TODO");
+    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "SNAP Loader", _snapName.c_str());
   });
   _snapOp.toggle([=]() {
     _wiz.push(
@@ -66,12 +66,14 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   });
   _tapePlayerOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Tape player", "TODO");
+    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Tape player", _tapeName.c_str());
   });
   _tapePlayerOp.toggle([=]() {
     _wiz.push(
       &_tapePlayer, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Tape player"); }, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false,"Tape player [ %-40s]", _tapeName.c_str());
+      }, 
       true);
   });
   _freqOp.toggle([=]() {
@@ -109,10 +111,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _reset.enableQuickKeys();
 
   _reset48kOp.toggle([=]() {
+    _snapName.clear();
     _zxSpectrum->reset(ZxSpectrum48k);
     _wiz.pop(true);
   });
   _reset128kOp.toggle([=]() {
+    _snapName.clear();
     _zxSpectrum->reset(ZxSpectrum128k);
     _wiz.pop(true);
   });
@@ -136,6 +140,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
 
   _ejectTapeOp.toggle([=]() {
     ejectTape();
+    _tapePlayer.repaint();
   });
   
   _pauseTapeOp.onPaint([=](PicoPen *pen){
@@ -151,6 +156,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
     std::string fname(SAVED_SNAPS_DIR);
     fname.append("/");
     fname.append(textOption->text());
+    _snapName = textOption->text();
     FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
     _zxSpectrum->loadZ80(is);
     delete is;
@@ -163,6 +169,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
     std::string fname(SAVED_TAPES_DIR);
     fname.append("/");
     fname.append(textOption->text());
+    _tapeName = textOption->text();
     _tis = new FatFsSpiInputStream(_sdCard, fname.c_str());
     _zxSpectrum->loadTap(_tis);
     _wiz.pop(true);
@@ -182,6 +189,7 @@ void ZxSpectrumMenu::ejectTape() {
   // TODO ask the spectrum for the input stream
   if (_tis) {
     _zxSpectrum->loadTap(0);
+    _tapeName.clear();
     delete _tis;
     _tis = 0;
   }
