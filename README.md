@@ -1,7 +1,8 @@
 # pico-zxspectrum
 48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
 
-<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>  <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
+<img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
+<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
 
@@ -14,6 +15,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
+* On screen menu system (work in progress)
 
 ## Screen shots
 
@@ -126,6 +128,7 @@ The following folders need to be created on the SD card:
 | Key | Action |
 | --- | ------ |
 | AltGr | Symbol |
+| F1 | Toggle on screen menu |
 | F4 | Toggle the Z80 moderator. Cycles through 3.5Mhz, 4.0Mhz and unmoderated |
 | F5 | play current tape |
 | F6 | play previous tape |
