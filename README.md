@@ -164,10 +164,16 @@ The following folders need to be created on the SD card:
 ```sh
 tio -m ODELBS /dev/ttyUSB0
 ```
+## Thanks to
+[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
+[Damien G](https://damieng.com/) for maintaining and publishing some amazing [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
+[Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
+[hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
+[Fonts by DamienG](https://damieng.com/typography/zx-origins/)<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard<br/>
 http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts<br/>
