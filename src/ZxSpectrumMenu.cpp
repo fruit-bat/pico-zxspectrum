@@ -58,11 +58,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
       &_chooseSnap, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot:"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, SAVED_SNAPS_DIR);
-    _chooseSnap.deleteOptions();
-    dirReader.foreach([=](const FILINFO* info) {
-      _chooseSnap.addOption(new PicoOptionText(info->fname));
-    });
+      loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
   });
   _tapePlayerOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -131,11 +127,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
       &_chooseTape, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
       true);
-    FatFsSpiDirReader dirReader(_sdCard, SAVED_TAPES_DIR);
-    _chooseTape.deleteOptions();
-    dirReader.foreach([=](const FILINFO* info) {
-      _chooseTape.addOption(new PicoOptionText(info->fname));
-    });
+    loadDirAlphabetical(SAVED_TAPES_DIR, &_chooseTape);
   });
 
   _ejectTapeOp.toggle([=]() {
@@ -193,6 +185,28 @@ void ZxSpectrumMenu::ejectTape() {
     delete _tis;
     _tis = 0;
   }
+}
+
+void ZxSpectrumMenu::loadDirAlphabetical(const char* folder, PicoSelect *select) {
+  FatFsSpiDirReader dirReader(_sdCard, folder);
+  int32_t focus = select->focus();
+  select->deleteOptions();
+  std::vector<std::string> fnames;
+  std::vector<const FILINFO*> infos;
+  dirReader.foreach([&](const FILINFO* info) { 
+    fnames.push_back(info->fname);
+  });
+  std::sort(fnames.begin(), fnames.end(), [](const std::string& a, const std::string& b) -> bool {
+    for (size_t c = 0; c < a.size() and c < b.size(); c++) {
+      if (std::tolower(a[c]) != std::tolower(b[c]))
+        return (std::tolower(a[c]) < std::tolower(b[c]));
+      }
+    return a.size() < b.size();
+  });
+  for (auto &fname : fnames) {
+    select->addOption(new PicoOptionText(fname.c_str()));
+  };
+  select->focus(focus);
 }
 
 void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {

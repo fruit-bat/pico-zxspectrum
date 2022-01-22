@@ -54,6 +54,8 @@ private:
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
   
+  void loadDirAlphabetical(const char* folder, PicoSelect *select);
+  
   void ejectTape();
   
   void showError(std::function<void(PicoPen *pen)> message);
