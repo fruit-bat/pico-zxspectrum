@@ -16,6 +16,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
   _resetOp("Reset"),
+  _quickSavesOp("Quick saves"),
 
   _tapePlayer(0, 0, 70, 6, 3),
 
@@ -31,7 +32,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _message(0, 0, 70, 12),
   _confirm(0, 0, 70, 6, 3),
   _confirmNo("No"),
-  _confirmYes("Yes")
+  _confirmYes("Yes"),
+  
+  _quickSaves(0, 0, 70, 12, 1)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -48,6 +51,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _main.addOption(_freqOp.addQuickKey(&_k3));
   _main.addOption(_muteOp.addQuickKey(&_k4));
   _main.addOption(_resetOp.addQuickKey(&_k5));
+  _main.addOption(_quickSavesOp.addQuickKey(&_k6));
+
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -166,6 +171,27 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
     _zxSpectrum->loadTap(_tis);
     _wiz.pop(true);
   });
+  
+  _quickSavesOp.toggle([=]() {
+    _wiz.push(
+      &_quickSaves, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Manage quick saves"); }, 
+      true);
+  });
+  
+  PicoOption *qsos[] = {
+    &_quick01Op, &_quick02Op, &_quick03Op, &_quick04Op, &_quick05Op, &_quick06Op,
+    &_quick07Op, &_quick08Op, &_quick09Op, &_quick10Op, &_quick11Op, &_quick12Op};
+    
+  for(int i = 0; i <12; ++i) {
+    PicoOption *qs = qsos[i]; 
+    _quickSaves.addOption(qs);
+    qs->onPaint([=](PicoPen *pen){
+      pen->clear();
+      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-12s]", i + 1, "", "TODO");
+    });
+  }
+
   
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");

@@ -33,6 +33,7 @@ private:
   PicoOption _freqOp;
   PicoOption _muteOp;
   PicoOptionText _resetOp;
+  PicoOptionText _quickSavesOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -54,6 +55,20 @@ private:
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
   
+  PicoSelect _quickSaves;
+  PicoOption _quick01Op;
+  PicoOption _quick02Op;
+  PicoOption _quick03Op;
+  PicoOption _quick04Op;
+  PicoOption _quick05Op;
+  PicoOption _quick06Op;
+  PicoOption _quick07Op;
+  PicoOption _quick08Op;
+  PicoOption _quick09Op;
+  PicoOption _quick10Op;
+  PicoOption _quick11Op;
+  PicoOption _quick12Op;
+
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
