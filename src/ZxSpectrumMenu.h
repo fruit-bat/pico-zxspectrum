@@ -69,6 +69,10 @@ private:
   PicoOption _quick11Op;
   PicoOption _quick12Op;
 
+  PicoSelect _quickSave;
+  PicoOptionText _quickSaveLoadOp;
+  PicoOptionText _quickSaveToSnapOp;
+
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();

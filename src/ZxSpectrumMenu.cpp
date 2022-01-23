@@ -6,6 +6,7 @@
 #include "BufferedInputStream.h"
 
 #define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
+#define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
 #define SAVED_TAPES_DIR "/zxspectrum/tapes"
 
 ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
@@ -34,7 +35,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
   _confirmNo("No"),
   _confirmYes("Yes"),
   
-  _quickSaves(0, 0, 70, 12, 1)
+  _quickSaves(0, 0, 70, 12, 1),
+  
+  _quickSave(0, 0, 70, 6, 3),
+  _quickSaveLoadOp("Load"),
+  _quickSaveToSnapOp("Save as SNAP")
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -190,9 +195,17 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum) :
       pen->clear();
       pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-12s]", i + 1, "", "TODO");
     });
+    qs->toggle([=]() {
+      _wiz.push(
+        &_quickSave, 
+        [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", i + 1); }, 
+        true);
+    });
   }
 
-  
+  _quickSave.addOption(_quickSaveLoadOp.addQuickKey(&_k1));
+  _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k2));
+
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
      pen->printAt(0, 1, false, "on RP2040 Pico Pi");
