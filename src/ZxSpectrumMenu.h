@@ -75,7 +75,8 @@ private:
   PicoOptionText _quickSaveToSnapOp;
   int _quickSaveSlot;
   QuickSave *_quickSaveHelper;
-  
+  PicoTextField _fileName;
+
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
