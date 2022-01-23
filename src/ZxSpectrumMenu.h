@@ -9,6 +9,7 @@
 #include "PicoTextField.h"
 #include "InputStream.h"
 #include <functional>
+#include "QuickSave.h"
 
 class ZxSpectrum;
 
@@ -72,7 +73,9 @@ private:
   PicoSelect _quickSave;
   PicoOptionText _quickSaveLoadOp;
   PicoOptionText _quickSaveToSnapOp;
-
+  int _quickSaveSlot;
+  QuickSave *_quickSaveHelper;
+  
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
@@ -92,5 +95,5 @@ private:
   
 public:
 
-  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum);
+  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
 };
