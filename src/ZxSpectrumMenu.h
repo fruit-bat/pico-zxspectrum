@@ -73,9 +73,11 @@ private:
   PicoSelect _quickSave;
   PicoOptionText _quickSaveLoadOp;
   PicoOptionText _quickSaveToSnapOp;
+  PicoOptionText _quickSaveClearOp;
   int _quickSaveSlot;
   QuickSave *_quickSaveHelper;
   PicoTextField _fileName;
+  bool _quickSaveSlotUsed[12];
 
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
@@ -93,6 +95,12 @@ private:
     std::function<void(PicoPen *pen)> message,
     std::function<void()> yes
   );
+  
+  bool checkExists(const char *file);
+  
+  bool deleteSave(const char *folder, const char *file);
+  
+  void quickSaveToSnap(int i, const char *folder, const char *file);
   
 public:
 

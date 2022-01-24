@@ -40,6 +40,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _quickSave(0, 0, 70, 6, 3),
   _quickSaveLoadOp("Load"),
   _quickSaveToSnapOp("Save as SNAP"),
+  _quickSaveClearOp("Clear"),
   
   _quickSaveHelper(quickSave),
   
@@ -182,9 +183,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   });
   
   _quickSavesOp.toggle([=]() {
+    for(int i = 0; i <12; ++i) {
+      _quickSaveSlotUsed[i] = _quickSaveHelper->used(i);
+    }
     _wiz.push(
       &_quickSaves, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Manage quick saves"); }, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Quick save"); }, 
       true);
   });
   
@@ -197,19 +201,22 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     _quickSaves.addOption(qs);
     qs->onPaint([=](PicoPen *pen){
       pen->clear();
-      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-12s]", i + 1, "", "TODO");
+      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-4s ]", i + 1, "", _quickSaveSlotUsed[i] ? "used" : "free");
     });
     qs->toggle([=]() {
-      _wiz.push(
-        &_quickSave, 
-        [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", i + 1); }, 
-        true);
-      _quickSaveSlot = i;
+      if (_quickSaveHelper->used(i)) {
+        _wiz.push(
+          &_quickSave, 
+          [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", i + 1); }, 
+          true);
+        _quickSaveSlot = i;
+      }
     });
   }
 
   _quickSave.addOption(_quickSaveLoadOp.addQuickKey(&_k1));
-  _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k2));
+  _quickSave.addOption(_quickSaveClearOp.addQuickKey(&_k2));
+  _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k3));
 
   _quickSaveLoadOp.toggle([=]() {
     _quickSaveHelper->load(_zxSpectrum, _quickSaveSlot);
@@ -223,10 +230,41 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", _quickSaveSlot + 1); }, 
       true);
     _fileName.onenter([=](const char* name) {
-      // TODO Check return value
-      _quickSaveHelper->copy(_quickSaveSlot, SAVED_SNAPS_DIR, name);
-      _wiz.pop(true);
+      std::string fname(SAVED_SNAPS_DIR);
+      fname.append("/");
+      fname.append(name);
+      auto nl = strlen(name);
+      if (nl < 4 || !((strncmp(name + nl - 4, ".z80", 4) == 0) || (strncmp(name + nl - 4, ".Z80", 4) == 0))) {
+        fname.append(".z80");
+      }
+      if (checkExists(fname.c_str())) {
+        confirm(
+          [=](PicoPen *pen){
+            pen->printAtF(0, 0, false, "'%s' exits. Overwrite?", name);
+          },
+          [=]() {
+            quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
+          }
+        );
+      }
+      else {
+        quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
+      }
     });
+  });
+
+  _quickSaveClearOp.toggle([=]() {
+    confirm(
+      [=](PicoPen *pen){
+        pen->printAt(0, 0, false, "Remove quick save ?");
+      },
+      [=]() {
+        if (_quickSaveHelper->clear(_quickSaveSlot)) {
+           _quickSaveSlotUsed[_quickSaveSlot];
+        }
+        _wiz.pop(true);
+      }
+    );
   });
   
   onPaint([](PicoPen *pen) {
@@ -239,6 +277,17 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
    }); 
 }
 
+void ZxSpectrumMenu::quickSaveToSnap(int i, const char *name, const char *fname) {
+  if (!_quickSaveHelper->copy(i, fname)) {
+    showError([=](PicoPen *pen) {
+      pen->printAtF(0, 0, false, "Error: failed to create SNAP '%'", name);
+    });
+  }
+  else {
+    _wiz.pop(true);
+  }
+}
+
 void ZxSpectrumMenu::ejectTape() {
   // TODO ask the spectrum for the input stream
   if (_tis) {
@@ -247,6 +296,25 @@ void ZxSpectrumMenu::ejectTape() {
     delete _tis;
     _tis = 0;
   }
+}
+
+bool ZxSpectrumMenu::checkExists(const char *file) {
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  FILINFO fno;
+  FRESULT fr = f_stat(file, &fno);
+  return fr == FR_OK;
+}
+
+bool ZxSpectrumMenu::deleteSave(const char *folder, const char *file) {
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  std::string fname(folder);
+  fname.append("/");
+  fname.append(file);
+  return f_unlink(fname.c_str()) == FR_OK;
 }
 
 void ZxSpectrumMenu::loadDirAlphabetical(const char* folder, PicoSelect *select) {
@@ -288,6 +356,9 @@ void ZxSpectrumMenu::confirm(
     &_confirm, 
     message,
     true);
+  _confirmNo.toggle([=]() {
+    _wiz.pop(true);
+  });
   _confirmYes.toggle([=]() {
     _wiz.pop(true);
     if (yes) yes();

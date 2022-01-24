@@ -7,11 +7,14 @@
 class QuickSave {
   SdCardFatFsSpi* _sdCard;
   // TOFO make it clearer this is the folder name
-  std::string _name;
+  std::string _folder;
+  void filename(const char *buf, int slot);
 public:
-  QuickSave(SdCardFatFsSpi* sdCard, const char* name);
+  QuickSave(SdCardFatFsSpi* sdCard, const char* folder);
   ~QuickSave();
   void save(ZxSpectrum *specy, int slot);
   void load(ZxSpectrum *specy, int slot);
-  bool copy(int slot, const char *folder, const char *name);
+  bool copy(int slot, const char *fname);
+  bool used(int slot);
+  bool clear(int slot);
 };
