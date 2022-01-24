@@ -6,7 +6,6 @@
 
 class QuickSave {
   SdCardFatFsSpi* _sdCard;
-  // TOFO make it clearer this is the folder name
   std::string _folder;
   void filename(const char *buf, int slot);
 public:
