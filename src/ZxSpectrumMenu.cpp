@@ -16,7 +16,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
-  _resetOp("Reset"),
   _quickSavesOp("Quick saves"),
 
   _tapePlayer(0, 0, 70, 6, 3),
@@ -58,15 +57,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
 
   _main.addOption(_snapOp.addQuickKey(&_k1));
   _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
-  _main.addOption(_freqOp.addQuickKey(&_k3));
-  _main.addOption(_muteOp.addQuickKey(&_k4));
-  _main.addOption(_resetOp.addQuickKey(&_k5));
-  _main.addOption(_quickSavesOp.addQuickKey(&_k6));
+  _main.addOption(_quickSavesOp.addQuickKey(&_k3));
+  _main.addOption(_freqOp.addQuickKey(&_k4));
+  _main.addOption(_muteOp.addQuickKey(&_k5));
+  _main.addOption(_resetOp.addQuickKey(&_k6));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "SNAP Loader", _snapName.c_str());
+    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "SNAP loader", _snapName.c_str());
   });
   _snapOp.toggle([=]() {
     _wiz.push(
@@ -110,6 +109,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     pen->clear();
     pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Audio", _zxSpectrum->mute() ? "off" : "on");
   });
+  _resetOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m;
+    switch(_zxSpectrum->type()) {
+      case ZxSpectrum48k: m = "48k ZX Spectrum" ; break;
+      case ZxSpectrum128k: m = "128k ZX Spectrum" ; break;
+      default: m = "" ; break;
+    }
+    pen->printAtF(0, 0, false,"%-16s[ %-16s ]", "Reset", m);
+  });
   _resetOp.toggle([=]() {
     _wiz.push(
       &_reset, 
@@ -147,7 +156,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
 
   _ejectTapeOp.toggle([=]() {
     ejectTape();
-    _tapePlayer.repaint();
+    _wiz.repaint();
   });
   
   _pauseTapeOp.onPaint([=](PicoPen *pen){
@@ -192,12 +201,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       true);
   });
   
-  PicoOption *qsos[] = {
-    &_quick01Op, &_quick02Op, &_quick03Op, &_quick04Op, &_quick05Op, &_quick06Op,
-    &_quick07Op, &_quick08Op, &_quick09Op, &_quick10Op, &_quick11Op, &_quick12Op};
-    
-  for(int i = 0; i <12; ++i) {
-    PicoOption *qs = qsos[i]; 
+  for(int i = 0; i < 12; ++i) {
+    PicoOption *qs = &_quickOps[i]; 
     _quickSaves.addOption(qs);
     qs->onPaint([=](PicoPen *pen){
       pen->clear();
@@ -217,6 +222,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _quickSave.addOption(_quickSaveLoadOp.addQuickKey(&_k1));
   _quickSave.addOption(_quickSaveClearOp.addQuickKey(&_k2));
   _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k3));
+  _quickSave.enableQuickKeys();
 
   _quickSaveLoadOp.toggle([=]() {
     _quickSaveHelper->load(_zxSpectrum, _quickSaveSlot);
@@ -260,7 +266,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       },
       [=]() {
         if (_quickSaveHelper->clear(_quickSaveSlot)) {
-           _quickSaveSlotUsed[_quickSaveSlot];
+           _quickSaveSlotUsed[_quickSaveSlot] = false;
         }
         _wiz.pop(true);
       }

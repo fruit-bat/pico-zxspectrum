@@ -157,6 +157,7 @@ public:
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
+  ZxSpectrumType type() { return _type; }
   inline void step()
   {
       const int c = _Z80.step() + _Z80.step();
