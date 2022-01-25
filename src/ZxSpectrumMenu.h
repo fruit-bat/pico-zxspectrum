@@ -9,6 +9,7 @@
 #include "PicoTextField.h"
 #include "InputStream.h"
 #include <functional>
+#include "QuickSave.h"
 
 class ZxSpectrum;
 
@@ -32,7 +33,8 @@ private:
   PicoOption _snapOp;
   PicoOption _freqOp;
   PicoOption _muteOp;
-  PicoOptionText _resetOp;
+  PicoOption _resetOp;
+  PicoOptionText _quickSavesOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -54,6 +56,18 @@ private:
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
   
+  PicoSelect _quickSaves;
+  PicoOption _quickOps[12];
+
+  PicoSelect _quickSave;
+  PicoOptionText _quickSaveLoadOp;
+  PicoOptionText _quickSaveToSnapOp;
+  PicoOptionText _quickSaveClearOp;
+  int _quickSaveSlot;
+  QuickSave *_quickSaveHelper;
+  PicoTextField _fileName;
+  bool _quickSaveSlotUsed[12];
+
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
@@ -71,7 +85,13 @@ private:
     std::function<void()> yes
   );
   
+  bool checkExists(const char *file);
+  
+  bool deleteSave(const char *folder, const char *file);
+  
+  void quickSaveToSnap(int i, const char *folder, const char *file);
+  
 public:
 
-  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum);
+  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
 };

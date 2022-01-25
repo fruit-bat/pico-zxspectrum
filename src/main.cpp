@@ -68,7 +68,7 @@ static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quick
 static ZxSpectrum zxSpectrum(&keyboard);
 
 // Menu system
-static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum);
+static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum, &quickSave);
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 

@@ -29,7 +29,7 @@ public:
       }
       _pulsePreamble.reset(marker);
       _pulseByteStream.reset(is, length - 1); // Take off one for the marker
-      _tstates = marker == 0 ? 0 : -3500000;
+      _tstates = -10000000;
     }
     _is = is;
     _r = 0;

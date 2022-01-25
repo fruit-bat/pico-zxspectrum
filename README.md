@@ -72,11 +72,15 @@ The following components were chosen as I found them in a draw... but it sounds 
 <a href="https://thepihut.com/products/adafruit-micro-sd-spi-or-sdio-card-breakout-board-3v-only">
 <img src="https://cdn.shopify.com/s/files/1/0176/3274/products/4682-01_dcdcf68d-19aa-4deb-b758-471e8e7baf62_600x.jpg" width="200"/>
 </a>
-                                                                                                        
+
+<a href="https://shop.pimoroni.com/products/adafruit-stemma-speaker-plug-and-play-audio-amplifier">
+<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/3885-02_630x630.jpg" width="200"/>
+</a>
+
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
-It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only devices connected directly seems to work.
+It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only devices connected directly seem to work.
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
@@ -146,7 +150,6 @@ The following folders need to be created on the SD card:
 | LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
 
 ## Missing features
-* HUD
 * Joystick input
 * Audio input
 
@@ -166,9 +169,10 @@ tio -m ODELBS /dev/ttyUSB0
 ```
 ## Thanks to
 [CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
-[Damien G](https://damieng.com/) for maintaining and publishing some amazing [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
+[Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
-[hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)
+[hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
+[Lin Ke-Fong](https://github.com/anotherlin) source for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
