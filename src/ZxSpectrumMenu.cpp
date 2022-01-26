@@ -17,7 +17,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _wiz(5, 6, 70, 18),
   _main(0, 0, 70, 6, 3),
   _quickSavesOp("Quick saves"),
-
+  
+  _snapMgr(0, 0, 70, 6, 3),
+  _snapLoadOp("Load"),
+  _snapRenameOp("Rename"),
+  _snapDeleteOp("Delete"),
+  
   _tapePlayer(0, 0, 70, 6, 3),
 
   _chooseTapeOp("Choose a tape"),
@@ -65,14 +70,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "SNAP loader", _snapName.c_str());
+    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Snapshot", _snapName.c_str());
   });
   _snapOp.toggle([=]() {
     _wiz.push(
-      &_chooseSnap, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot:"); },
+      &_snapMgr, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Snapshot", _snapName.c_str());
+      },
       true);
-      loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
   });
   _tapePlayerOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -126,6 +132,97 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       true);
   });
   
+  _snapMgr.addOption(_snapLoadOp.addQuickKey(&_k1));
+  _snapMgr.addOption(_snapRenameOp.addQuickKey(&_k2));
+  _snapMgr.addOption(_snapDeleteOp.addQuickKey(&_k3));
+  _snapMgr.enableQuickKeys();
+  
+  _snapLoadOp.toggle([=]() {
+    _wiz.push(
+      &_chooseSnap, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to load"); },
+      true);
+      
+    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+
+    _chooseSnap.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      std::string fname(SAVED_SNAPS_DIR);
+      fname.append("/");
+      fname.append(textOption->text());
+      _snapName = textOption->text();
+      FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
+      _zxSpectrum->loadZ80(is);
+      delete is;
+      _wiz.pop(true);
+    });
+  });
+  
+  _snapRenameOp.toggle([=]() {
+    _wiz.push(
+      &_chooseSnap, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to rename"); },
+      true);
+      
+    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+
+    _chooseSnap.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      _fileName.clear();
+      _fileName.onenter([=](const char* name) {
+        std::string fname;
+        snapName(fname, name);
+        if (checkExists(fname.c_str())) {
+          showError([=](PicoPen *pen) {
+            pen->printAtF(0, 0, false, "Error: already exists '%s'", name);
+          });
+        }
+        else {
+          std::string fnameo;
+          snapName(fnameo, textOption->text());
+
+          if(renameSave(fnameo.c_str(), fname.c_str())) {
+            loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+            _wiz.pop(true);
+          }
+          else {
+            showError([=](PicoPen *pen) {
+              pen->printAtF(0, 0, false, "Error: failed to rename to '%s'", name);
+            });
+          }
+        }
+      });
+      _wiz.push(
+        &_fileName, 
+        [=](PicoPen *pen){ 
+          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", textOption->text()); 
+        },
+        true);
+    });
+  });
+  
+  _snapDeleteOp.toggle([=]() {
+    _wiz.push(
+      &_chooseSnap, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to delete"); },
+      true);
+      
+    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+
+    _chooseSnap.onToggle([=](PicoOption *option) {
+      PicoOptionText *textOption = (PicoOptionText *)option;
+      confirm(
+        [=](PicoPen *pen){
+          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", textOption->text());
+        },
+        [=]() {
+          deleteSave(SAVED_SNAPS_DIR, textOption->text());
+          loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+        }
+      );
+    });
+  });
+  
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
   _reset.addOption(_reset128kOp.addQuickKey(&_k2));
   _reset.enableQuickKeys();
@@ -166,19 +263,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _pauseTapeOp.toggle([=]() {
     _zxSpectrum->togglePauseTape();
   });
-  
-  _chooseSnap.onToggle([=](PicoOption *option) {
-    PicoOptionText *textOption = (PicoOptionText *)option;
-    std::string fname(SAVED_SNAPS_DIR);
-    fname.append("/");
-    fname.append(textOption->text());
-    _snapName = textOption->text();
-    FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
-    _zxSpectrum->loadZ80(is);
-    delete is;
-    _wiz.pop(true);
-  });
-  
+
   _chooseTape.onToggle([=](PicoOption *option) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     ejectTape();
@@ -206,7 +291,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     _quickSaves.addOption(qs);
     qs->onPaint([=](PicoPen *pen){
       pen->clear();
-      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-4s ]", i + 1, "", _quickSaveSlotUsed[i] ? "used" : "free");
+      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-4s ]", i + 1, "", _quickSaveSlotUsed[i] ? "used" : "");
     });
     qs->toggle([=]() {
       if (_quickSaveHelper->used(i)) {
@@ -236,13 +321,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", _quickSaveSlot + 1); }, 
       true);
     _fileName.onenter([=](const char* name) {
-      std::string fname(SAVED_SNAPS_DIR);
-      fname.append("/");
-      fname.append(name);
-      auto nl = strlen(name);
-      if (nl < 4 || !((strncmp(name + nl - 4, ".z80", 4) == 0) || (strncmp(name + nl - 4, ".Z80", 4) == 0))) {
-        fname.append(".z80");
-      }
+      std::string fname;
+      snapName(fname, name);
       if (checkExists(fname.c_str())) {
         confirm(
           [=](PicoPen *pen){
@@ -283,10 +363,21 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
    }); 
 }
 
+void ZxSpectrumMenu::snapName(std::string &fname, const char *name) {
+  fname.clear();
+  fname.append(SAVED_SNAPS_DIR);
+  fname.append("/");
+  fname.append(name);
+  auto nl = strlen(name);
+  if (nl < 4 || !((strncmp(name + nl - 4, ".z80", 4) == 0) || (strncmp(name + nl - 4, ".Z80", 4) == 0))) {
+    fname.append(".z80");
+  }
+}
+
 void ZxSpectrumMenu::quickSaveToSnap(int i, const char *name, const char *fname) {
   if (!_quickSaveHelper->copy(i, fname)) {
     showError([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Error: failed to create SNAP '%'", name);
+      pen->printAtF(0, 0, false, "Error: failed to create SNAP '%s'", name);
     });
   }
   else {
@@ -321,6 +412,13 @@ bool ZxSpectrumMenu::deleteSave(const char *folder, const char *file) {
   fname.append("/");
   fname.append(file);
   return f_unlink(fname.c_str()) == FR_OK;
+}
+
+bool ZxSpectrumMenu::renameSave(const char *fileo, const char *filen) {
+  if (!_sdCard->mounted()) {
+    if (!_sdCard->mount()) return false;
+  }
+  return f_rename(fileo, filen) == FR_OK;
 }
 
 void ZxSpectrumMenu::loadDirAlphabetical(const char* folder, PicoSelect *select) {

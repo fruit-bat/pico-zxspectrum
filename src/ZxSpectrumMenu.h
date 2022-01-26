@@ -36,6 +36,11 @@ private:
   PicoOption _resetOp;
   PicoOptionText _quickSavesOp;
 
+  PicoSelect _snapMgr;
+  PicoOptionText _snapLoadOp;
+  PicoOptionText _snapRenameOp;
+  PicoOptionText _snapDeleteOp;
+
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
@@ -68,6 +73,8 @@ private:
   PicoTextField _fileName;
   bool _quickSaveSlotUsed[12];
 
+  void snapName(std::string &fname, const char *name);
+
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
@@ -87,6 +94,8 @@ private:
   
   bool checkExists(const char *file);
   
+  bool renameSave(const char *fileo, const char *filen);
+
   bool deleteSave(const char *folder, const char *file);
   
   void quickSaveToSnap(int i, const char *folder, const char *file);
