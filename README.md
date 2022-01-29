@@ -81,6 +81,12 @@ The following components were chosen as I found them in a draw... but it sounds 
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
 It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only devices connected directly seem to work.
+*Update*
+It looks like there has been some work on getting hubs to work on the RP2040...
+https://github.com/Ryzee119/tinyusb.git
+See the multi-hub branch
+
+
 ## Try it
 A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
 ```sh
