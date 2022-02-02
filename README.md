@@ -81,10 +81,14 @@ The following components were chosen as I found them in a draw... but it sounds 
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to.
 
 It would be really nice to be able to use a USB hub and connect a joystick as well as a keyboard but currently only devices connected directly seem to work.
-*Update*
-It looks like there has been some work on getting hubs to work on the RP2040...
-https://github.com/Ryzee119/tinyusb.git
-See the multi-hub branch
+
+*Update:* It looks like there has been some work on getting hubs to work on the RP2040...
+
+https://github.com/Ryzee119/tinyusb/tree/multi-hub
+
+Also, looks like tinyusb is missing a HID report parser. I'll see how far I can get...
+
+https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser
 
 
 ## Try it
@@ -198,3 +202,4 @@ https://mdfs.net/Software/Spectrum/ROMImages/<br/>
 https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
 https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm<br/>
 http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html<br/>
+[USB HID 1.1](https://www.usb.org/sites/default/files/hid1_11.pdf)<br/>
