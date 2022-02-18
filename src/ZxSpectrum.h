@@ -172,7 +172,7 @@ public:
           _ta32 += MUL32(c, _moderate) - tud; // +ve too fast, -ve too slow
           if (_ta32 > 32) busy_wait_us_32(_ta32 >> 5);
           // Try to catch up, but only for 100 or so instructions
-          if (_ta32 < -100 * 4 * 32)  _ta32 = -100 * 4 * 32;
+          if (_ta32 < -100 * 4 * 32)  _ta32 = -500 * 4 * 32;
         }
       }
       _ay.step(tud);
