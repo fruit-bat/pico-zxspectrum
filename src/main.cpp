@@ -22,6 +22,7 @@ extern "C" {
 }
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
+#include "ZxSpectrumHidJoystick.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -64,8 +65,9 @@ static SdCardFatFsSpi sdCard0(0);
 static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
 static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
-static ZxSpectrum zxSpectrum(&keyboard);
+static ZxSpectrum zxSpectrum(&keyboard, &joystick);
 
 // Menu system
 static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum, &quickSave);

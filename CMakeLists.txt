@@ -7,8 +7,8 @@ add_executable(ZxSpectrum
 	src/Z80.cpp
 	src/ZxSpectrumKeyboard.cpp
 	src/ZxSpectrumHidKeyboard.cpp
+	src/ZxSpectrumHidJoystick.cpp
 	src/ZxSpectrum.cpp
-	src/hid_app.c
 	src/tmds_encode_zxspectrum.S
 	src/tmds_encode_zxspectrum.h
 	src/hw_config.c
