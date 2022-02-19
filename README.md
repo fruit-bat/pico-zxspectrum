@@ -106,10 +106,10 @@ cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
 
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
-will need to be replaced with a version containing a HID report parser and USB HUB support.
+will need to be replaced with a version containing a HID report parser and USB hub support.
 
-The latest version of [TinyUSB](https://github.com/hathach/tinyusb) contains some useful patches,
-in particular it allows the keyboard to be reconnected.
+
+
 
 ```sh
 cd $PICO_SDK_PATH/lib/
@@ -170,7 +170,6 @@ The following folders need to be created on the SD card:
 | LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
 
 ## Missing features
-* Joystick input
 * Audio input
 
 ## Debug
