@@ -83,7 +83,7 @@ The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum w
 
 *Update:* There is now preliminary support for a Kempston joystick.
 
-A USB hub can be now connected to the RP2040 allowing a keyboard and joystick to work with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise and issue and attach a HID report descriptor from your device and I will have a look at it.
+A USB hub can be now connected to the RP2040 allowing a keyboard and joystick to work with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
 
 Thanks to Ryzee119 for the fixes needed for the USB hub on RP2040:
 
