@@ -3,6 +3,7 @@
 
 #include "Z80.h"
 #include "ZxSpectrumKeyboard.h"
+#include "ZxSpectrumJoystick.h"
 #include "InputStream.h"
 #include "OutputStream.h"
 #include <pico/stdlib.h>
@@ -23,6 +24,7 @@ private:
   int32_t _ta32;
   uint32_t _moderate;
   ZxSpectrumKeyboard *_keyboard;
+  ZxSpectrumJoystick *_joystick;
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
@@ -69,7 +71,7 @@ private:
     else {
       switch(address & 0xFF) {
         case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
-        case 0x1f: return 0; // Kempstone joystick
+        case 0x1f: return _joystick ? _joystick->kempstone() : 0;
         default: return 0xff;
       }
     }
@@ -153,14 +155,15 @@ private:
 
 public:
   ZxSpectrum(
-    ZxSpectrumKeyboard *keyboard
+    ZxSpectrumKeyboard *keyboard,
+    ZxSpectrumJoystick *joystick
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
   inline void step()
   {
-      const int c = _Z80.step() + _Z80.step();
+      const int c = _Z80.step() + _Z80.step() + _Z80.step() + _Z80.step();
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
       _tu32 = tu32;
@@ -171,8 +174,8 @@ public:
         else {
           _ta32 += MUL32(c, _moderate) - tud; // +ve too fast, -ve too slow
           if (_ta32 > 32) busy_wait_us_32(_ta32 >> 5);
-          // Try to catch up, but only for 100 or so instructions
-          if (_ta32 < -100 * 4 * 32)  _ta32 = -500 * 4 * 32;
+          // Try to catch up, but only for 500 or so instructions
+          if (_ta32 < -500 * 4 * 32)  _ta32 = -500 * 4 * 32;
         }
       }
       _ay.step(tud);

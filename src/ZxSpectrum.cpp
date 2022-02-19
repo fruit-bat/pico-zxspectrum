@@ -7,10 +7,12 @@
 #include "SizingOutputStream.h"
 
 ZxSpectrum::ZxSpectrum(
-  ZxSpectrumKeyboard *keyboard
+  ZxSpectrumKeyboard *keyboard,
+  ZxSpectrumJoystick *joystick
 ) :
   _moderate(9),
   _keyboard(keyboard),
+  _joystick(joystick),
   _borderColour(7),
   _ear(false)
 {
