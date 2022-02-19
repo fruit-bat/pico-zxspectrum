@@ -5,5 +5,5 @@
 class ZxSpectrumJoystick {
   
 public:
-  virtual uint8_t kempstone();
+  virtual uint8_t kempston();
 };

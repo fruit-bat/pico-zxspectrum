@@ -3,7 +3,7 @@
 #include "hid_host_joy.h"
 #include "ZxSpectrumHidJoystick.h"
 
-uint8_t ZxSpectrumHidJoystick::kempstone() {
+uint8_t ZxSpectrumHidJoystick::kempston() {
   uint8_t data = 0;
   tusb_hid_simple_joysick_t* simple_joysticks[1];
   if (tuh_hid_get_simple_joysticks(simple_joysticks, 1) > 0) {

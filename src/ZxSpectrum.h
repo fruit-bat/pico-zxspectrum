@@ -71,7 +71,7 @@ private:
     else {
       switch(address & 0xFF) {
         case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
-        case 0x1f: return _joystick ? _joystick->kempstone() : 0;
+        case 0x1f: return _joystick ? _joystick->kempston() : 0;
         default: return 0xff;
       }
     }
