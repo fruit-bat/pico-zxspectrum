@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory.h>
+#include <string.h>
 #include <stdlib.h>
 #include <pico/printf.h>
 

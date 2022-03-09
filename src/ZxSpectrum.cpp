@@ -1,7 +1,7 @@
 #include "ZxSpectrum.h"
 #include "basic.h"
 
-#include <memory.h>
+#include <string.h>
 #include <pico/printf.h>
 #include <pico/stdlib.h>
 #include "SizingOutputStream.h"
