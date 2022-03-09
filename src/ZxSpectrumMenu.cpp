@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrum.h"
 #include "PicoPen.h"
