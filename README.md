@@ -10,13 +10,13 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 ## Features
 * DVI over HDMI output
-* USB Keyboard input
+* USB Keyboard & Joystick
 * PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
 * On screen menu system (work in progress)
-* Joystick support (just Kempston for now)
+* Joystick support (Kempston and Sinclair)
 
 ## Screen shots
 
@@ -81,7 +81,7 @@ The following components were chosen as I found them in a draw... but it sounds 
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
 
-*Update:* There is now preliminary support for a Kempston joystick.
+*Update:* There is now preliminary support for a Kempston & Sinclair joysticks.
 
 A USB hub can be now connected to the RP2040 allowing a keyboard and joystick to work with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
 
