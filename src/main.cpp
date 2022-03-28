@@ -66,7 +66,7 @@ static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshot
 static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidJoystick joystick;
-static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave);
+static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave, &joystick);
 static ZxSpectrum zxSpectrum(&keyboard, &joystick);
 
 // Menu system
@@ -87,7 +87,6 @@ extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_key
   }
   if (r == 1) toggleMenu = true;
 }
-
 
 
 unsigned char* screenPtr;

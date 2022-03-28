@@ -96,7 +96,8 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
   return false;
 }
 
-ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumFileLoop *zxSpectrumSnapList, ZxSpectrumFileLoop* zxSpectrumTapeList, QuickSave* quickSave) :
+ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(ZxSpectrumFileLoop *zxSpectrumSnapList, ZxSpectrumFileLoop* zxSpectrumTapeList, QuickSave* quickSave, ZxSpectrumJoystick * zxSpectrumJoystick) :
+  ZxSpectrumKeyboard(zxSpectrumJoystick),
   _zxSpectrumSnapList(zxSpectrumSnapList),
   _zxSpectrumTapeList(zxSpectrumTapeList),
   _quickSave(quickSave)
