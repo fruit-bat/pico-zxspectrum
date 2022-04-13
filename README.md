@@ -10,13 +10,13 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 ## Features
 * DVI over HDMI output
-* USB Keyboard & Joystick
+* USB Keyboard & Joysticks
 * PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
 * On screen menu system (work in progress)
-* Joystick support (Kempston and Sinclair)
+* Kempston and Sinclair joystick emulation
 
 ## Screen shots
 
@@ -81,19 +81,21 @@ The following components were chosen as I found them in a draw... but it sounds 
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
 
-*Update:* There is now preliminary support for a Kempston & Sinclair joysticks.
+There is now preliminary support for Kempston & Sinclair joysticks.
 
-A USB hub can be now connected to the RP2040 allowing a keyboard and joystick to work with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
-
-Thanks to Ryzee119 for the fixes needed for the USB hub on RP2040:
-
-https://github.com/Ryzee119/tinyusb/tree/multi-hub
+A USB hub can be connected to the RP2040 allowing a keyboard and joysticks to be used with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
 
 To get this to work I have done some hacking and slashing in [TinyUSB](https://github.com/hathach/tinyusb) (sorry Ha Thach): 
 
 https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser
 
-The combined efforts are here:
+*update*
+
+Updates suggested by Ryzee119 are getting harder to merge into the latest code:
+
+https://github.com/Ryzee119/tinyusb/tree/multi-hub
+
+The combined efforts were here, but are now out of date:
 
 https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
@@ -108,15 +110,12 @@ cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
 
-
-
-
 ```sh
 cd $PICO_SDK_PATH/lib/
 mv tinyusb tinyusb.orig
 git clone git@github.com:fruit-bat/tinyusb.git
 cd tinyusb
-git checkout hid_micro_parser_and_hub
+git checkout hid_micro_parser
 ```
 The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
 ```
