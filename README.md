@@ -110,6 +110,7 @@ cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
 
+Using *git* protocol:
 ```sh
 cd $PICO_SDK_PATH/lib/
 mv tinyusb tinyusb.orig
@@ -117,14 +118,33 @@ git clone git@github.com:fruit-bat/tinyusb.git
 cd tinyusb
 git checkout hid_micro_parser
 ```
-The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library. 
+...or using *https* protocol:
+```sh
+cd $PICO_SDK_PATH/lib/
+mv tinyusb tinyusb.orig
+git clone https://github.com/fruit-bat/tinyusb.git
+cd tinyusb
+git checkout hid_micro_parser
 ```
+
+The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library.
+
+Using *git* protocol:
+```sh
 cd PicoDVI/software/apps
 git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
+```
+...or using *https* protocol:
+```sh
+cd PicoDVI/software/apps
+git clone https://github.com/fruit-bat/pico-zxspectrum.git zxspectrum
+git clone https://github.com/fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/fruit-bat/pico-dvi-menu
+git clone https://github.com/fruit-bat/pico-emu-utils
 ```
 
 In the 'apps' folder add the following lines to CMakeLists.txt
@@ -134,6 +154,15 @@ add_subdirectory(pico-emu-utils)
 add_subdirectory(zxspectrum)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
+If your board does not include SD card detect change the following line in the file "zxspectrum/src/hw_config.c":
+```
+.card_detected_true = 1
+```
+to:
+```
+.card_detected_true = -1
+```
+
 In the build folder:
 ```
 cmake -DPICO_COPY_TO_RAM=0 ..
