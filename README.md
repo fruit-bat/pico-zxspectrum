@@ -154,13 +154,13 @@ add_subdirectory(pico-emu-utils)
 add_subdirectory(zxspectrum)
 add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 ```
-If your board does not include SD card detect change the following line in the file "zxspectrum/src/hw_config.c":
+If your board does not include SD card detect add the following line in the file "zxspectrum/src/hw_config.c":
+```
+.use_card_detect = false,
+```
+after the line:
 ```
 .card_detected_true = 1
-```
-to:
-```
-.card_detected_true = -1
 ```
 
 In the build folder:

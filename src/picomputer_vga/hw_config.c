@@ -18,14 +18,14 @@ socket, which SPI it is driven by, and how it is wired.
 #include "ff.h" /* Obtains integer types */
 #include "diskio.h" /* Declarations of disk functions */
 
-void __not_in_flash_func(spi0_dma_isr)();
+void __not_in_flash_func(spi1_dma_isr)();
 
 // Hardware Configuration of SPI "objects"
 // Note: multiple SD cards can be driven by one SPI if they use different slave
 // selects.
 static spi_t spis[] = {  // One for each SPI.
     {
-        .hw_inst = spi0,  // SPI component
+        .hw_inst = spi1,  // SPI component
         .miso_gpio = 12, // GPIO number (not pin number)
         .mosi_gpio = 11,
         .sck_gpio = 10,
@@ -37,7 +37,7 @@ static spi_t spis[] = {  // One for each SPI.
         // worked for me with SanDisk.
 
         // Following attributes are dynamically assigned
-        .dma_isr = spi0_dma_isr,
+        .dma_isr = spi1_dma_isr,
         .initialized = false,  // initialized flag
     }
 };
@@ -48,9 +48,7 @@ static sd_card_t sd_cards[] = {  // One for each SD card
         .pcName = "0:",           // Name used to mount device
         .spi = &spis[0],          // Pointer to the SPI driving this card
         .ss_gpio = 13,            // The SPI slave select GPIO for this SD card
-        .card_detect_gpio = 22,   // Card detect
-        .card_detected_true = -1, // What the GPIO read returns when a card is
-                                  // present. Use -1 if there is no card detect.
+        .use_card_detect = false,
         // Following attributes are dynamically assigned
         .m_Status = STA_NOINIT,
         .sectors = 0,
@@ -58,7 +56,7 @@ static sd_card_t sd_cards[] = {  // One for each SD card
     }
 };
 
-void spi0_dma_isr() { spi_irq_handler(&spis[0]); }
+void spi1_dma_isr() { spi_irq_handler(&spis[0]); }
 
 /* ********************************************************************** */
 size_t __not_in_flash_func(sd_get_num)() { return count_of(sd_cards); }

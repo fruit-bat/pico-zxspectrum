@@ -48,8 +48,8 @@ uint8_t* attrPtr;
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
-//static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
-//static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
+// static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
+// static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 // static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 // static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard(
@@ -113,7 +113,8 @@ void __not_in_flash_func(core1_main)() {
         linebuf->frame,
         screenPtr,
         attrPtr,
-        1);
+        zxSpectrum.borderColour()
+      );
     }
       
     pzx_keyscan_row();
@@ -146,14 +147,18 @@ int main(){
   
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
-/*
+
+  // Don't use the same DMA channel as the screen  
+  set_spi_dma_irq_channel(true, true);
+
+
 	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
 	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
 	pwm_config config = pwm_get_default_config();
 	pwm_config_set_clkdiv(&config, 1.0f); 
 	pwm_config_set_wrap(&config, PWM_WRAP);
 	pwm_init(audio_pin_slice, &config, true);
-	*/
+
 	screenPtr = zxSpectrum.screenPtr();
 	attrPtr = screenPtr + (32 * 24 * 8);
 
@@ -189,7 +194,6 @@ int main(){
     pzx_keyscan_get_hid_reports(&curr, &prev);
     process_kbd_report(curr, prev);
     
-    /*
 		for (int i = 1; i < 100; ++i) {
 			if (lastInterruptFrame != _frames) {
 				lastInterruptFrame = _frames;
@@ -200,7 +204,7 @@ int main(){
 			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
 
 		}
-    */
+
     if (showMenu && frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();

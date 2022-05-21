@@ -9,7 +9,8 @@ add_executable(ZxSpectrumPicomputerVga
 add_subdirectory(/home/pi/pico/pico-vga-332/ "${CMAKE_CURRENT_BINARY_DIR}/pico-vga-332")
 
 target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
-  -DPCS_COLS=80 -DPCS_ROWS=30
+  -DPCS_COLS=80 
+  -DPCS_ROWS=30
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga
