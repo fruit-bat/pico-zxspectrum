@@ -2,11 +2,13 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
+#include "hardware/pwm.h"  // pwm 
+
+
 #include "vga.h"
 #include "pzx_prepare_vga332_scanline.h"
 #include "pzx_keyscan.h"
 
-#define VREG_VSEL VREG_VOLTAGE_1_10
 #include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -14,13 +16,77 @@
 #include "PicoTextField.h"
 #include "PicoWinHidKeyboard.h"
 
+
+#include "ZxSpectrum.h"
+#include "ZxSpectrumHidKeyboard.h"
+#include "ZxSpectrumHidJoystick.h"
+
+#include "bsp/board.h"
+#include "tusb.h"
+#include <pico/printf.h>
+#include "SdCardFatFsSpi.h"
+#include "QuickSave.h"
+#include "ZxSpectrumFatFsSpiFileLoop.h"
+
+#include "PicoWinHidKeyboard.h"
+#include "PicoDisplay.h"
+#include "ZxSpectrumMenu.h"
+
+#define LED_PIN 25
+#define SPK_PIN 9
+#define PWM_WRAP (256 + 256 + 256 + 256 + 256)
+#define PWM_MID (PWM_WRAP>>1)
+
+#define VREG_VSEL VREG_VOLTAGE_1_10
+
 struct semaphore dvi_start_sem;
 static const sVmode* vmode = NULL;
 
+uint8_t* screenPtr;
+uint8_t* attrPtr;
 
+static SdCardFatFsSpi sdCard0(0);
 
-static uint8_t screen[6144];
-static uint8_t attr[768];
+// ZX Spectrum emulator
+//static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
+//static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
+// static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+// static ZxSpectrumHidJoystick joystick;
+static ZxSpectrumHidKeyboard keyboard(
+  0, // &zxSpectrumSnaps, 
+  0, // &zxSpectrumTapes, 
+  0, // &quickSave, 
+  0  // &joystick
+);
+static ZxSpectrum zxSpectrum(
+  &keyboard, 
+  0 // &joystick
+);
+
+// Menu system
+static ZxSpectrumMenu picoRootWin(
+  &sdCard0, 
+  &zxSpectrum, 
+  0 // &quickSave
+);
+
+static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
+static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
+
+static bool showMenu = true;
+static bool toggleMenu = false;
+static volatile uint _frames = 0;
+
+extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = keyboard.processHidReport(report, prev_report);
+  }
+  if (r == 1) toggleMenu = true;
+}
 
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
@@ -34,7 +100,7 @@ void __not_in_flash_func(core1_main)() {
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
-    if (true) {
+    if (showMenu) {
       pcw_prepare_vga332_scanline_80(
         buf,
         y,
@@ -45,12 +111,26 @@ void __not_in_flash_func(core1_main)() {
         buf, 
         y, 
         linebuf->frame,
-        screen,
-        attr,
+        screenPtr,
+        attrPtr,
         1);
     }
       
     pzx_keyscan_row();
+    
+    if (y == 239) { // TODO use a const / get from vmode
+      
+      // TODO Tidy this mechanism up
+      screenPtr = zxSpectrum.screenPtr();
+      attrPtr = screenPtr + (32 * 24 * 8);
+      
+      if (toggleMenu) {
+        showMenu = !showMenu;
+        toggleMenu = false;
+      }
+      
+      _frames = linebuf->frame;
+    }    
   }
   __builtin_unreachable();
 }
@@ -63,70 +143,68 @@ int main(){
 
   //Initialise I/O
   stdio_init_all(); 
+  
+	gpio_init(LED_PIN);
+	gpio_set_dir(LED_PIN, GPIO_OUT);
+/*
+	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
+	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
+	pwm_config config = pwm_get_default_config();
+	pwm_config_set_clkdiv(&config, 1.0f); 
+	pwm_config_set_wrap(&config, PWM_WRAP);
+	pwm_init(audio_pin_slice, &config, true);
+	*/
+	screenPtr = zxSpectrum.screenPtr();
+	attrPtr = screenPtr + (32 * 24 * 8);
 
-  for(unsigned int i = 0; i < sizeof(screen) ; ++i) {
-    screen[i] = (0xff & time_us_32());
-  }
-  for(unsigned int i = 0; i < sizeof(attr); ++i) {
-    attr[i] = (0xff & i);
-  }
-  
-  pcw_init_renderer();
-  
+	keyboard.setZxSpectrum(&zxSpectrum);
+
+	// Initialise the menu renderer
+	pcw_init_renderer();
+
+  // Initialise the keyboard scan
   pzx_keyscan_init();
   
   sleep_ms(10);
   
-  printf("Core 0 VCO %d\n", Vmode.vco);
-
-  printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
+  
   multicore_launch_core1(core1_main);
     
-  PicoWin picoRootWin(10, 10, 60, 10);
-  PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
-  PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);  
-  
-  PicoTextField textField(24, 5, 16, 18);
-  picoRootWin.addChild(&textField, true);
-  picoRootWin.onPaint([=](PicoPen *pen){
-    pen->printAtF(24, 4, false,"Hello World!");
-  });
-  
-  printf("Core 0 VCO %d\n", Vmode.vco);
+
+
+
+
 
   sem_release(&dvi_start_sem);
 
+	unsigned int lastInterruptFrame = _frames;
 
   //Main Loop 
+	uint frames = 0;  
   while(1){
 
-   // printf("Hello ");
-    sleep_ms(1); 
-  
     hid_keyboard_report_t const *curr;
     hid_keyboard_report_t const *prev;
     pzx_keyscan_get_hid_reports(&curr, &prev);
+    process_kbd_report(curr, prev);
     
-    for(int ri = 0; ri < 6; ++ri) {
-      uint32_t r = pzx_keyscan_get_row(ri);
-      printf("keyrow %d %2.2x\n", ri, r);
+    /*
+		for (int i = 1; i < 100; ++i) {
+			if (lastInterruptFrame != _frames) {
+				lastInterruptFrame = _frames;
+				zxSpectrum.interrupt();
+			}
+			zxSpectrum.step();
+			const uint32_t l = zxSpectrum.getSpeaker();
+			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+
+		}
+    */
+    if (showMenu && frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
     }
-    for(int ri = 0; ri < 6; ++ri) {
-      uint32_t cc = curr->keycode[ri];
-      uint32_t cp = prev->keycode[ri];
-      printf("hid key %d %2.2x %2.2x\n", ri, cc, cp);
-    }
-    printf("\n");       
-    
-    picoWinHidKeyboard.processHidReport(curr, prev);
-    
-    picoDisplay.refresh();
       
-   // for(unsigned int i = 0; i < sizeof(screen); ++i) {
-   //   screen[i] = (0xff & time_us_32());
-   // }
-   // printf("world!\n");
-    sleep_ms(100); 
   }
 }

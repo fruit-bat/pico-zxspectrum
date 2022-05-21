@@ -20,7 +20,11 @@ target_link_libraries(ZxSpectrumPicomputerVga
 	tinyusb_host
 	tinyusb_board
   hardware_pio
+  hardware_pwm
 )
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerVga 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerVga 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerVga)
