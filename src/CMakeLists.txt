@@ -1,6 +1,9 @@
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+# TODO environment variable and relative paths
+# add_subdirectory(/home/pi/pico/PicoDVI/software/apps/pico-dvi-menu/ "${CMAKE_CURRENT_BINARY_DIR}/pico-dvi-menu")
+
 set(zxspectrum_common_src
 	${CMAKE_CURRENT_LIST_DIR}/Z80.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
@@ -33,3 +36,4 @@ set(zxspectrum_common_include
 )
 
 add_subdirectory(breadboard_hdmi)
+add_subdirectory(picomputer_vga)
