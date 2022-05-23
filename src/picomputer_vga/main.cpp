@@ -20,6 +20,7 @@
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumHidJoystick.h"
+#include "ZxSpectrumPicomputerVgaJoystick.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -52,15 +53,16 @@ static SdCardFatFsSpi sdCard0(0);
 // static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 // static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 // static ZxSpectrumHidJoystick joystick;
+static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
 static ZxSpectrumHidKeyboard keyboard(
   0, // &zxSpectrumSnaps, 
   0, // &zxSpectrumTapes, 
   0, // &quickSave, 
-  0  // &joystick
+  &picomputerVgaJoystick
 );
 static ZxSpectrum zxSpectrum(
   &keyboard, 
-  0 // &joystick
+  &picomputerVgaJoystick
 );
 
 // Menu system

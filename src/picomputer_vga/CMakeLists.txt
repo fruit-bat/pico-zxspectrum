@@ -3,6 +3,7 @@ add_executable(ZxSpectrumPicomputerVga
   ${zxspectrum_common_src}
 	main.cpp
 	hw_config.c
+  ZxSpectrumPicomputerVgaJoystick.cpp
 )
 
 # TODO environment variable and relative paths
