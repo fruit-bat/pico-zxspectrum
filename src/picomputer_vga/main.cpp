@@ -153,6 +153,7 @@ int main(){
   // Don't use the same DMA channel as the screen  
   set_spi_dma_irq_channel(true, true);
 
+	tusb_init();
 
 	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
 	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
@@ -190,6 +191,8 @@ int main(){
   //Main Loop 
 	uint frames = 0;  
   while(1){
+    
+		tuh_task();
 
     hid_keyboard_report_t const *curr;
     hid_keyboard_report_t const *prev;
