@@ -51,13 +51,13 @@ static SdCardFatFsSpi sdCard0(0);
 // ZX Spectrum emulator
 // static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
 // static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
-// static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 // static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
 static ZxSpectrumHidKeyboard keyboard(
   0, // &zxSpectrumSnaps, 
   0, // &zxSpectrumTapes, 
-  0, // &quickSave, 
+  &quickSave, 
   &picomputerVgaJoystick
 );
 static ZxSpectrum zxSpectrum(
