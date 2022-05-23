@@ -67,7 +67,7 @@ static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave, &joystick);
-static ZxSpectrum zxSpectrum(&keyboard, &joystick);
+static ZxSpectrum zxSpectrum(&keyboard, 0, &joystick);
 
 // Menu system
 static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum, &quickSave);

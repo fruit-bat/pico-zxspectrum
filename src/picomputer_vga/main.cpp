@@ -54,14 +54,21 @@ static SdCardFatFsSpi sdCard0(0);
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 // static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
-static ZxSpectrumHidKeyboard keyboard(
+static ZxSpectrumHidKeyboard keyboard1(
+  0, // &zxSpectrumSnaps, 
+  0, // &zxSpectrumTapes, 
+  &quickSave, 
+  &picomputerVgaJoystick
+);
+static ZxSpectrumHidKeyboard keyboard2(
   0, // &zxSpectrumSnaps, 
   0, // &zxSpectrumTapes, 
   &quickSave, 
   &picomputerVgaJoystick
 );
 static ZxSpectrum zxSpectrum(
-  &keyboard, 
+  &keyboard1, 
+  &keyboard2, 
   &picomputerVgaJoystick
 );
 
@@ -79,13 +86,24 @@ static bool showMenu = true;
 static bool toggleMenu = false;
 static volatile uint _frames = 0;
 
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
   }
   else {
-    r = keyboard.processHidReport(report, prev_report);
+    r = keyboard1.processHidReport(report, prev_report);
+  }
+  if (r == 1) toggleMenu = true;
+}
+
+void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = keyboard2.processHidReport(report, prev_report);
   }
   if (r == 1) toggleMenu = true;
 }
@@ -147,28 +165,29 @@ int main(){
   //Initialise I/O
   stdio_init_all(); 
   
-	gpio_init(LED_PIN);
-	gpio_set_dir(LED_PIN, GPIO_OUT);
+  gpio_init(LED_PIN);
+  gpio_set_dir(LED_PIN, GPIO_OUT);
 
   // Don't use the same DMA channel as the screen  
   set_spi_dma_irq_channel(true, true);
 
-	tusb_init();
+  tusb_init();
 
-	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
-	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
-	pwm_config config = pwm_get_default_config();
-	pwm_config_set_clkdiv(&config, 1.0f); 
-	pwm_config_set_wrap(&config, PWM_WRAP);
-	pwm_init(audio_pin_slice, &config, true);
+  gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
+  const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
+  pwm_config config = pwm_get_default_config();
+  pwm_config_set_clkdiv(&config, 1.0f); 
+  pwm_config_set_wrap(&config, PWM_WRAP);
+  pwm_init(audio_pin_slice, &config, true);
 
-	screenPtr = zxSpectrum.screenPtr();
-	attrPtr = screenPtr + (32 * 24 * 8);
+  screenPtr = zxSpectrum.screenPtr();
+  attrPtr = screenPtr + (32 * 24 * 8);
 
-	keyboard.setZxSpectrum(&zxSpectrum);
+  keyboard1.setZxSpectrum(&zxSpectrum);
+  keyboard2.setZxSpectrum(&zxSpectrum);
 
-	// Initialise the menu renderer
-	pcw_init_renderer();
+  // Initialise the menu renderer
+  pcw_init_renderer();
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
@@ -186,29 +205,29 @@ int main(){
 
   sem_release(&dvi_start_sem);
 
-	unsigned int lastInterruptFrame = _frames;
+  unsigned int lastInterruptFrame = _frames;
 
   //Main Loop 
-	uint frames = 0;  
+  uint frames = 0;  
   while(1){
     
-		tuh_task();
+    tuh_task();
 
     hid_keyboard_report_t const *curr;
     hid_keyboard_report_t const *prev;
     pzx_keyscan_get_hid_reports(&curr, &prev);
-    process_kbd_report(curr, prev);
+    process_picomputer_kbd_report(curr, prev);
     
-		for (int i = 1; i < 100; ++i) {
-			if (lastInterruptFrame != _frames) {
-				lastInterruptFrame = _frames;
-				zxSpectrum.interrupt();
-			}
-			zxSpectrum.step();
-			const uint32_t l = zxSpectrum.getSpeaker();
-			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+    for (int i = 1; i < 100; ++i) {
+      if (lastInterruptFrame != _frames) {
+        lastInterruptFrame = _frames;
+        zxSpectrum.interrupt();
+      }
+      zxSpectrum.step();
+      const uint32_t l = zxSpectrum.getSpeaker();
+      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
 
-		}
+    }
 
     if (showMenu && frames != _frames) {
       frames = _frames;

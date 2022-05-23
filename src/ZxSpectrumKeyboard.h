@@ -15,19 +15,19 @@ public:
     reset();
   }
 
-  void reset() {
+  inline void reset() {
     for(int i = 0; i < 8; ++i) _line[i] = 0x1f;
   }
 
-  void press(unsigned int line, unsigned int key) {
+  inline void press(unsigned int line, unsigned int key) {
     _line[line] &= ~(1 << key);
   }
 
-  void release(unsigned int line, unsigned int key) {
+  inline void release(unsigned int line, unsigned int key) {
     _line[line] |= 1 << key;
   }
 
-  unsigned char read(int address) {
+  inline unsigned char read(int address) {
     int rs = address >> 8;
     unsigned int a = 0xff;
     

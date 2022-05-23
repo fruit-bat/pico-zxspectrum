@@ -7,11 +7,13 @@
 #include "SizingOutputStream.h"
 
 ZxSpectrum::ZxSpectrum(
-  ZxSpectrumKeyboard *keyboard,
-  ZxSpectrumJoystick *joystick
+    ZxSpectrumKeyboard *keyboard1,
+    ZxSpectrumKeyboard *keyboard2,
+    ZxSpectrumJoystick *joystick
 ) :
   _moderate(9),
-  _keyboard(keyboard),
+  _keyboard1(keyboard1),
+  _keyboard2(keyboard2),
   _joystick(joystick),
   _borderColour(7),
   _ear(false)
@@ -52,7 +54,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   memset(_RAM, 0, sizeof(_RAM));
   _port254 = 0x30;
   _ay.reset();
-  _keyboard->reset();
+  if (_keyboard1) _keyboard1->reset();
+  if (_keyboard2) _keyboard2->reset();
   _tu32 = time_us_32() << 5;
 }
 
