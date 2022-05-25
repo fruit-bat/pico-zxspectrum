@@ -6,6 +6,7 @@
 #include "FatFsSpiDirReader.h"
 #include "FatFsSpiInputStream.h"
 #include "BufferedInputStream.h"
+#include "hardware/clocks.h"
 
 #define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
@@ -357,7 +358,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
-     pen->printAt(0, 1, false, "on RP2040 Pico Pi");
+     pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
      pen->printAt(0, 2, false, "Menu System version 0.1");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
