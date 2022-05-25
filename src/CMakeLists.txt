@@ -9,6 +9,7 @@ set(zxspectrum_common_src
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidKeyboard.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidJoystick.cpp
+	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumDualJoystick.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrum.cpp
 	${CMAKE_CURRENT_LIST_DIR}/QuickSave.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Pulse.cpp
