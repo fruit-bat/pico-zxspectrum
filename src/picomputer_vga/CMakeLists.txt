@@ -4,6 +4,8 @@ add_executable(ZxSpectrumPicomputerVga
 	main.cpp
 	hw_config.c
   ZxSpectrumPicomputerVgaJoystick.cpp
+	pzx_prepare_vga332_scanline.cpp
+	pzx_keyscan.cpp  
 )
 
 # TODO environment variable and relative paths
