@@ -101,9 +101,15 @@ https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
 
 ## Try it
-A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button, then:
+A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
+
+For the wiring show above use:
 ```sh
-cp ZxSpectrum.uf2 /media/pi/RPI-RP2/
+cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
+```
+or, for the RetroVGA board use:
+```sh
+cp ZxSpectrumPicocomputerVga.uf2 /media/pi/RPI-RP2/
 ```
 
 ## Build
@@ -127,12 +133,21 @@ cd tinyusb
 git checkout hid_micro_parser
 ```
 
+Make a folder in which to clone the required projects e.g.
+```sh
+mkdir ~/pico
+cd ~/pico
+```
+
+Clone the projects from github:
+
 The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library.
 
 Using *git* protocol:
 ```sh
-cd PicoDVI/software/apps
-git clone git@github.com:fruit-bat/pico-zxspectrum.git zxspectrum
+git clone git@github.com:Wren6991/PicoDVI.git
+git clone git@github.com:fruit-bat/pico-vga-332.git
+git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
@@ -140,36 +155,33 @@ git clone git@github.com:fruit-bat/pico-emu-utils
 ```
 ...or using *https* protocol:
 ```sh
-cd PicoDVI/software/apps
-git clone https://github.com/fruit-bat/pico-zxspectrum.git zxspectrum
+git clone https://github.com/Wren6991/PicoDVI.git
+git clone https://github.com/fruit-bat/pico-vga-332.git
+git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```
 
-In the 'apps' folder add the following lines to CMakeLists.txt
-```
-add_subdirectory(pico-dvi-menu)
-add_subdirectory(pico-emu-utils)
-add_subdirectory(zxspectrum)
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
-```
-If your board does not include SD card detect add the following line in the file "zxspectrum/src/hw_config.c":
-```
-.use_card_detect = false,
-```
-after the line:
-```
-.card_detected_true = 1
-```
-
-In the build folder:
-```
+Perform the build:
+```sh
+cd pico-zxspectrum
+mkdir build
+cd build
 cmake -DPICO_COPY_TO_RAM=0 ..
 make clean
-make -j4 ZxSpectrum
-cp apps/zxspectrum/ZxSpectrum.uf2 /media/pi/RPI-RP2/
+make -j4
 ```
+
+Copy the relevant version to your board:
+```sh
+cp ./bin/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+```
+or
+```sh
+cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
+```
+
 ## Prepare an SD card
 The following folders need to be created on the SD card:
 
