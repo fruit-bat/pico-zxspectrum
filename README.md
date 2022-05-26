@@ -141,10 +141,9 @@ cd ~/pico
 
 Clone the projects from github:
 
-The following code needs to be cloned into the 'apps' folder of the [PicoDVI](https://github.com/Wren6991/PicoDVI) library.
-
 Using *git* protocol:
 ```sh
+git clone git@github.com:raspberrypi/pico-extras.git
 git clone git@github.com:Wren6991/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
@@ -155,6 +154,7 @@ git clone git@github.com:fruit-bat/pico-emu-utils
 ```
 ...or using *https* protocol:
 ```sh
+git clone https://github.com/raspberrypi/pico-extras.git
 git clone https://github.com/Wren6991/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
