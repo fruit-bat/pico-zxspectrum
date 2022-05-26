@@ -1,51 +1,31 @@
-# Replace TMDS with 10 bit UART (same baud rate):
-# add_definitions(-DDVI_SERIAL_DEBUG=1)
-# add_definitions(-DRUN_FROM_CRYSTAL)
+cmake_minimum_required(VERSION 3.12)
+include(pico_sdk_import.cmake)
+include(pico_extras_import.cmake)
 
-add_executable(ZxSpectrum
-	src/main.cpp
-	src/Z80.cpp
-	src/ZxSpectrumKeyboard.cpp
-	src/ZxSpectrumHidKeyboard.cpp
-	src/ZxSpectrumHidJoystick.cpp
-	src/ZxSpectrum.cpp
-	src/tmds_encode_zxspectrum.S
-	src/tmds_encode_zxspectrum.h
-	src/hw_config.c
-	src/QuickSave.cpp
-	src/Pulse.cpp
-	src/PulseByte.cpp
-	src/PulseByteStream.cpp
-	src/PulsePreamble.cpp
-	src/PulseBlock.cpp
-	src/ZxSpectrumFile.cpp
-	src/ZxSpectrumFileLoop.cpp
-	src/ZxSpectrumFatFsSpiFileLoop.cpp
-	src/ZxSpectrumAy.cpp
-	src/ZxSpectrumMenu.cpp
+project(picodvi C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+pico_sdk_init()
+
+add_compile_options(-Wall)
+
+
+set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
+	"Select a default pin configuration from common_dvi_pin_configs.h")
+
+get_filename_component(PICO_FOLDER ${CMAKE_CURRENT_LIST_DIR}/.. ABSOLUTE)
+
+include_directories(
+	${PICO_FOLDER}/PicoDVI/software/include
 )
 
-target_include_directories(ZxSpectrum PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
-target_compile_definitions(ZxSpectrum PRIVATE
-	DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-	DVI_VERTICAL_REPEAT=2
-	DVI_N_TMDS_BUFFERS=3
-	DVI_1BPP_BIT_REVERSE=1
-)
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libdvi "${CMAKE_CURRENT_BINARY_DIR}/libdvi")
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libsprite "${CMAKE_CURRENT_BINARY_DIR}/libsprite")
+add_subdirectory(${PICO_FOLDER}/pico-vga-332/ "${CMAKE_CURRENT_BINARY_DIR}/pico-vga-332")
+add_subdirectory(${PICO_FOLDER}/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI "${CMAKE_CURRENT_BINARY_DIR}/FatFs_SPI")
+add_subdirectory(${PICO_FOLDER}/pico-dvi-menu "${CMAKE_CURRENT_BINARY_DIR}/pico-dvi-menu")
+add_subdirectory(${PICO_FOLDER}/pico-emu-utils "${CMAKE_CURRENT_BINARY_DIR}/pico-emu-utils")
 
-target_link_libraries(ZxSpectrum
-	pico_stdlib
-	pico_multicore
-	pico_util
-	libdvi
-	tinyusb_host
-	tinyusb_board
-	FatFs_SPI
-	pico_dvi_menu
-	pico_emu_utils
-)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrum)
+add_subdirectory(src  "${CMAKE_CURRENT_BINARY_DIR}/bin")
 

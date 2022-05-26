@@ -23,7 +23,8 @@ private:
   uint32_t _tu32;
   int32_t _ta32;
   uint32_t _moderate;
-  ZxSpectrumKeyboard *_keyboard;
+  ZxSpectrumKeyboard *_keyboard1;
+  ZxSpectrumKeyboard *_keyboard2;
   ZxSpectrumJoystick *_joystick;
   uint8_t _borderColour;
   uint8_t _port254;
@@ -70,7 +71,11 @@ private:
     }
     else {
       switch(address & 0xFF) {
-        case 0xFE: return _keyboard->read(address) | (_ear ? (1<<6) : 0) ;
+        case 0xFE: {
+          uint8_t kb = _keyboard1->read(address);
+          if (_keyboard2) kb &= _keyboard2->read(address);
+          return kb | (_ear ? (1<<6) : 0) ;
+        }
         case 0x1f: return _joystick ? _joystick->kempston() : 0;
         default: return 0xff;
       }
@@ -155,7 +160,8 @@ private:
 
 public:
   ZxSpectrum(
-    ZxSpectrumKeyboard *keyboard,
+    ZxSpectrumKeyboard *keyboard1,
+    ZxSpectrumKeyboard *keyboard2,
     ZxSpectrumJoystick *joystick
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
