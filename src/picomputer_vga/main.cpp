@@ -50,22 +50,16 @@ uint8_t* attrPtr;
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
-// static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
-// static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidJoystick hidJoystick;
 static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
 static ZxSpectrumDualJoystick dualJoystick(&hidJoystick, &picomputerVgaJoystick);
 
 static ZxSpectrumHidKeyboard keyboard1(
-  0, // &zxSpectrumSnaps, 
-  0, // &zxSpectrumTapes, 
   &quickSave, 
   &dualJoystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
-  0, // &zxSpectrumSnaps, 
-  0, // &zxSpectrumTapes, 
   &quickSave, 
   &picomputerVgaJoystick
 );
@@ -79,7 +73,7 @@ static ZxSpectrum zxSpectrum(
 static ZxSpectrumMenu picoRootWin(
   &sdCard0, 
   &zxSpectrum, 
-  0 // &quickSave
+  &quickSave
 );
 
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
@@ -201,11 +195,6 @@ int main(){
   
   multicore_launch_core1(core1_main);
     
-
-
-
-
-
   sem_release(&dvi_start_sem);
 
   unsigned int lastInterruptFrame = _frames;
