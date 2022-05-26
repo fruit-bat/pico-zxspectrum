@@ -18,7 +18,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * On screen menu system (work in progress)
 * Kempston and Sinclair joystick emulation
 
-## Coming soon
+## Experimental
 * VGA output
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
