@@ -12,7 +12,7 @@ static uint32_t zx_colour_words[16] = {
   X4(VGA_RGB_332(0,5,2)), // Cyan
   X4(VGA_RGB_332(5,5,0)), // Yellow
   X4(VGA_RGB_332(5,5,2)), // White
-  X4(VGA_RGB_332(0,0,0)), // Black
+  X4(VGA_RGB_332(0,0,0)), // Bright Black
   X4(VGA_RGB_332(0,0,3)), // Bright Blue
   X4(VGA_RGB_332(7,0,0)), // Bright Red
   X4(VGA_RGB_332(7,0,3)), // Bright Magenta
@@ -24,7 +24,7 @@ static uint32_t zx_colour_words[16] = {
 
 static uint32_t zx_bitbit_masks[4] = {
   0x00000000,
-  0xffff0000, // TOOD check order
+  0xffff0000,
   0x0000ffff,
   0xffffffff
 };
