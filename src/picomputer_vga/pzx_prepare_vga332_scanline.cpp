@@ -47,7 +47,7 @@ void __not_in_flash_func(pzx_prepare_vga332_scanline)(
   
   if (y < 24 || y >= (24+192)) {
     // Screen is 640 bytes
-    // Each color word is 4 bytes (and represents 2 pixels
+    // Each color word is 4 bytes, which represents 2 pixels
     for (int i = 0; i < 160; ++i) buf[i] = bw;
   }
   else {
@@ -63,7 +63,7 @@ void __not_in_flash_func(pzx_prepare_vga332_scanline)(
     for (int i = 0; i < 32; ++i) {
       uint8_t c = *a++; // Fetch the attribute for the character
       uint8_t p = *s++ ^ zx_invert_masks[(c >> 7) & m]; // fetch a byte of pixel data
-      uint8_t bci = (c >> 3) & 0xf; // The background colour 
+      uint8_t bci = (c >> 3) & 0xf; // The background colour index
       uint8_t fci = (c & 7) | (bci & 0x8); // The foreground colour index
       uint32_t bcw = zx_colour_words[bci]; // The background colour word
       uint32_t fcw = zx_colour_words[fci]; // The foreground colour word
