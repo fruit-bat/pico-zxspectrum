@@ -38,3 +38,4 @@ set(zxspectrum_common_include
 
 add_subdirectory(breadboard_hdmi)
 add_subdirectory(picomputer_vga)
+add_subdirectory(picomputer_max)
