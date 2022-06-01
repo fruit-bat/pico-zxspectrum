@@ -35,7 +35,7 @@ These are the mappings with the ALt key down.:<br/>
 <img src="docs/retro_vga_Keyboard_alt_down.svg" width="400"/><br/>
 Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
 
-The are the mappings with the numeric shift on:<br/>
+These are the mappings with the numeric shift on:<br/>
 <img src="docs/retro_vga_Keyboard_num.svg" width="400"/><br/>
 
 
