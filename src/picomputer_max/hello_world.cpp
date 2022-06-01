@@ -4,6 +4,7 @@
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
+#include "pzx_keyscan.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 #define LED_PIN 25
@@ -21,15 +22,16 @@ int main(){
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
   // Initialise the keyboard scan
-  // pzx_keyscan_init();
+  pzx_keyscan_init();
   
   sleep_ms(10);
   
   while(1){
     
 
-    printf("RP2040 Pico Pi at %3.1fMhz   ", (float)clock_get_hz(clk_sys) / 1000000.0);
+    printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
-      
+    pzx_keyscan_row();
+    
   }
 }
