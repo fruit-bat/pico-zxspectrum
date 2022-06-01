@@ -29,6 +29,7 @@ int main(){
   TFT_T_DMA tft;
   
   tft.begin();
+  tft.startDMA();
   
   while(1){
     
@@ -36,6 +37,6 @@ int main(){
     printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
     pzx_keyscan_row();
-    tft.fillScreenNoDma(time_us_32() & 0xffff);
+    tft.fillScreen(time_us_32() & 0xffff);
   }
 }
