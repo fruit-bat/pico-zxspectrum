@@ -54,6 +54,7 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_H,           6, 4},
 
   { HID_KEY_SPACE,       7, 0},
+  { HID_KEY_ALT_RIGHT,   7, 1},
   { HID_KEY_M,           7, 2},
   { HID_KEY_N,           7, 3},
   { HID_KEY_B,           7, 4},

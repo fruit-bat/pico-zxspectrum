@@ -52,14 +52,14 @@ static uint8_t kbits[3][6][6] = {
     { 0, 0, 0, 0, 0, 0 },
     // Row 1
     { HID_KEY_ESCAPE, 0, 0, 0, 0, 0 },
-    // Row 2
-    { HID_KEY_F10, HID_KEY_F9, HID_KEY_F8, HID_KEY_F7, HID_KEY_F6, 0 },
+    // Row 2 (Quick save 1-5)
+    { HID_KEY_F5, HID_KEY_F4, HID_KEY_F3, HID_KEY_F2, HID_KEY_F1, 0 },
     // Row 3
     { 0, 0, 0, 0, 0, 0 },
     // Row 4
     { 0, 0, 0, 0, 0, 0 },
-    // Row 5
-    { HID_KEY_F1, HID_KEY_F2, HID_KEY_F3, HID_KEY_F4, HID_KEY_F5, 0 }
+    // Row 5 (Menu, ZX CAPS, ZX Symbol)
+    { HID_KEY_F1, HID_KEY_ESCAPE, HID_KEY_ALT_RIGHT, 0, 0, 0 }
   }
 };
 
@@ -172,6 +172,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   uint32_t ki = 0;
   hid_keyboard_report_t *chr = &hr[hri & 1];
   chr->modifier = modifier;
+  if (esc_down && (rdb[2] != 0)) chr->modifier |= 1;
   for(int ri = 0; ri < 6; ++ri) {
     uint8_t r = rdb[ri];
     uint32_t ci = 0;
