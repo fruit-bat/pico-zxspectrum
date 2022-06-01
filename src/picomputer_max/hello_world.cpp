@@ -5,6 +5,7 @@
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 #include "pzx_keyscan.h"
+#include "tft_t_dma.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 #define LED_PIN 25
@@ -25,6 +26,9 @@ int main(){
   pzx_keyscan_init();
   
   sleep_ms(10);
+  TFT_T_DMA tft;
+  
+  tft.begin();
   
   while(1){
     
@@ -32,6 +36,6 @@ int main(){
     printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
     pzx_keyscan_row();
-    
+    tft.fillScreenNoDma(time_us_32() & 0xffff);
   }
 }

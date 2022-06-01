@@ -5,7 +5,8 @@ add_executable(ZxSpectrumPicomputerMax
   hello_world.cpp
 #  hw_config.c
 #  ZxSpectrumPicomputerVgaJoystick.cpp
-  pzx_keyscan.cpp  
+  pzx_keyscan.cpp
+  tft_t_dma.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE

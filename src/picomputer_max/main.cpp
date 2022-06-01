@@ -32,7 +32,7 @@
 #include "ZxSpectrumMenu.h"
 
 #define LED_PIN 25
-#define SPK_PIN 9
+#define SPK_PIN 0
 #define PWM_WRAP (256 + 256 + 256 + 256 + 256)
 #define PWM_MID (PWM_WRAP>>1)
 
