@@ -25,6 +25,20 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 <img src="docs/retrovga.png" width="200"/>
 </a>
 
+### RetroVGA keyboard mappings
+Trying to squeeze in all the key mappings is tricky but here is the first attempt.
+
+These are the nomal key mappings:<br/>
+<img src="docs/retro_vga_Keyboard_normal.svg" width="400"/><br/>
+
+These are the mappings with the ALt key down.:<br/>
+<img src="docs/retro_vga_Keyboard_alt_down.svg" width="400"/><br/>
+Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
+
+The are the mappings with the numeric shift on:<br/>
+<img src="docs/retro_vga_Keyboard_num.svg" width="400"/><br/>
+
+
 ## Screen shots
 
 <img src="docs/swarm_loading.jpg" height="200"/>
