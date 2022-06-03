@@ -9,7 +9,6 @@ ZxSpectrumFatFsSpiFileLoop::ZxSpectrumFatFsSpiFileLoop(SdCardFatFsSpi* sdCard, c
   _folder(folder),
   _is(0)
 {
-  reload();
 }
 
 ZxSpectrumFatFsSpiFileLoop::~ZxSpectrumFatFsSpiFileLoop() {

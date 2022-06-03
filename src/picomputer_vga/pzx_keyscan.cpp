@@ -49,7 +49,7 @@ static uint8_t kbits[3][6][6] = {
   // Esc down mappings
   {
     // Row 0
-    { 0, 0, 0, 0, 0, 0 },
+    { 0, 0, HID_KEY_F10, HID_KEY_F9, HID_KEY_F8, 0 },
     // Row 1
     { HID_KEY_ESCAPE, 0, 0, 0, 0, 0 },
     // Row 2 (Quick save 1-5)
