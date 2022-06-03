@@ -50,16 +50,22 @@ uint8_t* attrPtr;
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
 static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
 static ZxSpectrumHidJoystick hidJoystick;
 static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
 static ZxSpectrumDualJoystick dualJoystick(&hidJoystick, &picomputerVgaJoystick);
 
 static ZxSpectrumHidKeyboard keyboard1(
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes, 
   &quickSave, 
   &dualJoystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes,
   &quickSave, 
   &picomputerVgaJoystick
 );
@@ -79,7 +85,7 @@ static ZxSpectrumMenu picoRootWin(
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
-static bool showMenu = true;
+static bool showMenu = false;
 static bool toggleMenu = false;
 static volatile uint _frames = 0;
 
@@ -182,7 +188,11 @@ int main(){
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
-
+	
+	// Set up the quick load loops
+  zxSpectrumSnaps.reload();
+  zxSpectrumTapes.reload();
+  
   // Initialise the menu renderer
   pcw_init_renderer();
 

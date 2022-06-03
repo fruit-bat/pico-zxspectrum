@@ -221,6 +221,10 @@ extern "C" int __not_in_flash_func(main)() {
 	attrPtr = screenPtr + (32 * 24 * 8);
 
 	keyboard.setZxSpectrum(&zxSpectrum);
+	
+	// Set up the quick load loops
+  zxSpectrumSnaps.reload();
+  zxSpectrumTapes.reload();
 
 	// Initialise the menu renderer
 	pcw_init_renderer();
