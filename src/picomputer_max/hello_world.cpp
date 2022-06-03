@@ -11,6 +11,8 @@
 #define LED_PIN 25
 
 
+extern uint32_t frame;
+
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(100);
@@ -30,6 +32,9 @@ int main(){
   
   tft.begin();
   tft.startDMA();
+
+  uint32_t t1 = time_us_32();
+  uint32_t last_frame = frame;
   
   while(1){
     
@@ -37,6 +42,13 @@ int main(){
     printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
     pzx_keyscan_row();
-    tft.fillScreen(time_us_32() & 0xffff);
+
+    uint32_t t2 = time_us_32();
+    float dtus = (float)(t2-t1);
+    float dts = dtus / 1000000;
+    printf("FPS = %f\n", ((frame - last_frame) / dts));
+    
+    t1 = t2;
+    last_frame = frame;
   }
 }

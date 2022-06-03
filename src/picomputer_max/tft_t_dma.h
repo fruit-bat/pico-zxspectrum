@@ -38,8 +38,8 @@
 #define TFT_REALHEIGHT 240
 
 
-#define LINES_PER_BLOCK         64
-#define NR_OF_BLOCK             4
+#define LINES_PER_BLOCK         1
+#define NR_OF_BLOCK             2
 
 
 #ifdef ILI9341
@@ -192,27 +192,7 @@ class TFT_T_DMA
   bool isflipped(void);
   void startDMA(void);
   void stopDMA();
-  int get_frame_buffer_size(int *width, int *height);
   void waitSync();
-
-  // NoDMA functions
-  void fillScreenNoDma(uint16_t color);
-  void writeScreenNoDma(const uint16_t *pcolors);
-  void drawTextNoDma(int16_t x, int16_t y, const char * text, uint16_t fgcolor, uint16_t bgcolor, bool doublesize);
-  void drawRectNoDma(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-  void drawSpriteNoDma(int16_t x, int16_t y, const uint16_t *bitmap);
-  void drawSpriteNoDma(int16_t x, int16_t y, const uint16_t *bitmap, uint16_t croparx, uint16_t cropary, uint16_t croparw, uint16_t croparh);
-    
-    // DMA functions
-  uint16_t * getLineBuffer(int j);
-  void writeScreen(int width, int height, int stride, uint8_t *buffer, uint16_t *palette16);
-  void writeLine(int width, int height, int stride, uint8_t *buffer, uint16_t *palette16);
-  void writeLine(int width, int height, int y, uint16_t *buf);
-  void fillScreen(uint16_t color);
-  void drawText(int16_t x, int16_t y, const char * text, uint16_t fgcolor, uint16_t bgcolor, bool doublesize);
-  void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-  void drawSprite(int16_t x, int16_t y, const uint16_t *bitmap);
-  void drawSprite(int16_t x, int16_t y, const uint16_t *bitmap, uint16_t croparx, uint16_t cropary, uint16_t croparw, uint16_t croparh);
 
   protected:   
   uint8_t _rst, _cs, _dc;

@@ -28,13 +28,13 @@
 #endif
 
 
-static void SPItransfer(uint8_t val)
+static void __not_in_flash_func(SPItransfer)(uint8_t val)
 {
   uint8_t dat8=val;
   spi_write_blocking(TFT_SPIREG, &dat8, 1);
 }
 
-static void SPItransfer16(uint16_t val)
+static void __not_in_flash_func(SPItransfer16)(uint16_t val)
 {
   uint8_t dat8[2];
   dat8[0] = val>>8;
@@ -303,323 +303,92 @@ bool TFT_T_DMA::isflipped(void)
 void  TFT_T_DMA::waitSync() {
 }
 
-/***********************************************************************************************
-    No DMA functions
- ***********************************************************************************************/
-void TFT_T_DMA::fillScreenNoDma(uint16_t color) {
-  digitalWrite(_cs, 0);
-  setArea(0, 0, TFT_REALWIDTH-1, TFT_REALHEIGHT-1);
-  //digitalWrite(_dc, 0);
-  //SPItransfer(TFT_RAMWR);
-  int i,j;
-  for (j=0; j<TFT_REALHEIGHT; j++)
-  {
-    for (i=0; i<TFT_REALWIDTH; i++) {
-      //digitalWrite(_dc, 1);
-      SPItransfer16(color);
-    }
-  }
-#ifdef ILI9341
-  digitalWrite(_dc, 0);
-  SPItransfer(ILI9341_SLPOUT);
-  digitalWrite(_dc, 1);
-#endif
-  digitalWrite(_cs, 1);
-  setArea(0, 0, (TFT_REALWIDTH-1), (TFT_REALHEIGHT-1));
-}
-
-
-void TFT_T_DMA::drawRectNoDma(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
-  //SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE));
-  digitalWrite(_cs, 0);
-  setArea(x,y,x+w-1,y+h-1);
-  int i;
-  for (i=0; i<(w*h); i++)
-  {
-    //digitalWrite(_dc, 1);
-    SPItransfer16(color);
-  }
-#ifdef ILI9341
-  digitalWrite(_dc, 0);
-  SPItransfer(ILI9341_SLPOUT);
-  digitalWrite(_dc, 1);
-#endif
-  digitalWrite(_cs, 1);
-  setArea(0, 0, (TFT_REALWIDTH-1), (TFT_REALHEIGHT-1));
-  //SPI.endTransaction();
-}
-
-
-void TFT_T_DMA::writeScreenNoDma(const uint16_t *pcolors) {
-  //SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE));
-  digitalWrite(_cs, 0);
-  setArea(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1);
-  int i,j;
-  for (j=0; j<240; j++)
-  {
-    for (i=0; i<TFT_WIDTH; i++) {
-      SPItransfer16(*pcolors++);
-    }
-  }
-#ifdef ILI9341
-  digitalWrite(_dc, 0);
-  SPItransfer(ILI9341_SLPOUT);
-  digitalWrite(_dc, 1);
-#endif
-  digitalWrite(_cs, 1);
-  setArea(0, 0, (TFT_REALWIDTH-1), (TFT_REALHEIGHT-1));
-  //SPI.endTransaction();
-}
-
-void TFT_T_DMA::drawSpriteNoDma(int16_t x, int16_t y, const uint16_t *bitmap) {
-    drawSpriteNoDma(x,y,bitmap, 0,0,0,0);
-}
-
-void TFT_T_DMA::drawSpriteNoDma(int16_t x, int16_t y, const uint16_t *bitmap, uint16_t arx, uint16_t ary, uint16_t arw, uint16_t arh)
-{
-  int bmp_offx = 0;
-  int bmp_offy = 0;
-  uint16_t *bmp_ptr;
-
-  int w =*bitmap++;
-  int h = *bitmap++;
-
-  if ( (arw == 0) || (arh == 0) ) {
-    // no crop window
-    arx = x;
-    ary = y;
-    arw = w;
-    arh = h;
-  }
-  else {
-    if ( (x>(arx+arw)) || ((x+w)<arx) || (y>(ary+arh)) || ((y+h)<ary)   ) {
-      return;
-    }
-
-    // crop area
-    if ( (x > arx) && (x<(arx+arw)) ) {
-      arw = arw - (x-arx);
-      arx = arx + (x-arx);
-    } else {
-      bmp_offx = arx;
-    }
-    if ( ((x+w) > arx) && ((x+w)<(arx+arw)) ) {
-      arw -= (arx+arw-x-w);
-    }
-    if ( (y > ary) && (y<(ary+arh)) ) {
-      arh = arh - (y-ary);
-      ary = ary + (y-ary);
-    } else {
-      bmp_offy = ary;
-    }
-    if ( ((y+h) > ary) && ((y+h)<(ary+arh)) ) {
-      arh -= (ary+arh-y-h);
-    }
-  }
-
-
-  //SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE));
-  digitalWrite(_cs, 0);
-  setArea(arx, ary, arx+arw-1, ary+arh-1);
-
-  bitmap = bitmap + bmp_offy*w + bmp_offx;
-  for (int row=0;row<arh; row++)
-  {
-    bmp_ptr = (uint16_t*)bitmap;
-    for (int col=0;col<arw; col++)
-    {
-        uint16_t color = *bmp_ptr++;
-        SPItransfer16(color);
-    }
-    bitmap +=  w;
-  }
-#ifdef ILI9341
-  digitalWrite(_dc, 0);
-  SPItransfer(ILI9341_SLPOUT);
-  digitalWrite(_dc, 1);
-#endif
-  setArea(0, 0, TFT_REALWIDTH-1, TFT_REALHEIGHT-1);
-  digitalWrite(_cs, 1);
-  //SPI.endTransaction();
-}
-
-void TFT_T_DMA::drawTextNoDma(int16_t x, int16_t y, const char * text, uint16_t fgcolor, uint16_t bgcolor, bool doublesize) {
-  uint16_t c;
-  while ((c = *text++)) {
-    const unsigned char * charpt=&font8x8[c][0];
-
-    //SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE));
-    digitalWrite(_cs, 0);
-    setArea(x,y,x+7,y+(doublesize?15:7));
-    for (int i=0;i<8;i++)
-    {
-      unsigned char bits;
-      if (doublesize) {
-        bits = *charpt;
-        //digitalWrite(_dc, 1);
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-        bits = bits >> 1;
-        if (bits&0x01) SPItransfer16(fgcolor);
-        else SPItransfer16(bgcolor);
-      }
-      bits = *charpt++;
-      //digitalWrite(_dc, 1);
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-      bits = bits >> 1;
-      if (bits&0x01) SPItransfer16(fgcolor);
-      else SPItransfer16(bgcolor);
-    }
-    x +=8;
-#ifdef ILI9341
-    digitalWrite(_dc, 0);
-    SPItransfer(ILI9341_SLPOUT);
-    digitalWrite(_dc, 1);
-#endif
-    digitalWrite(_cs, 1);
-    //SPI.endTransaction();
-  }
-
-  //SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE));
-  digitalWrite(_cs, 0);
-  setArea(0, 0, (TFT_REALWIDTH-1), (TFT_REALHEIGHT-1));
-  digitalWrite(_cs, 1);
-  //SPI.endTransaction();
-}
-
 
 /***********************************************************************************************
     DMA functions
  ***********************************************************************************************/
-#ifndef USE_VGA
 
-#ifdef TFT_STATICFB
-static uint16_t fb0[LINES_PER_BLOCK*TFT_WIDTH]; //__attribute__ ((aligned(2048)));
-static uint16_t fb1[LINES_PER_BLOCK*TFT_WIDTH]; //__attribute__ ((aligned(2048)));
-static uint16_t fb2[LINES_PER_BLOCK*TFT_WIDTH]; //__attribute__ ((aligned(2048)));
-static uint16_t fb3[(TFT_HEIGHT-3*LINES_PER_BLOCK)*TFT_WIDTH];// __attribute__ ((aligned(2048)));
-static uint16_t * blocks[NR_OF_BLOCK]={fb0,fb1,fb2,fb3};
-static uint16_t blocklens[NR_OF_BLOCK];
-#else
-static uint16_t * blocks[NR_OF_BLOCK];
-static uint16_t blocklens[NR_OF_BLOCK];
-#endif
-
+static uint16_t fb0[LINES_PER_BLOCK*TFT_WIDTH];
+static uint16_t fb1[LINES_PER_BLOCK*TFT_WIDTH];
+static uint16_t * blocks[NR_OF_BLOCK]={fb0,fb1};
+static uint16_t blocklens[NR_OF_BLOCK]={320,320};
 
 static dma_channel_config dmaconfig;
 const uint dma_tx = dma_claim_unused_channel(true);
 static volatile uint8_t rstop = 0;
 static volatile bool cancelled = false;
 static volatile uint8_t curTransfer = 0;
-static uint8_t nbTransfer = 0;
+static uint16_t testcol[] = {0xf000, 0x0f00, 0x00f0, 0x000f};
 
-static void dma_isr() {
+uint32_t frame = 0;
+
+
+static void __not_in_flash_func(dma_isr)() {
+  static uint32_t y = 0;
+  
   irq_clear(DMA_IRQ_0);
   dma_hw->ints0 = 1u << dma_tx;
-  curTransfer++;
-  if (curTransfer >= nbTransfer) {
-    curTransfer = 0;
-  }
+  
   if (cancelled) {
     rstop = 1;
   }
   else
   {
-    dma_channel_transfer_from_buffer_now ( dma_tx, blocks[curTransfer], blocklens[curTransfer]);
+    //dma_channel_wait_for_finish_blocking( dma_tx );
+   // printf("%ld\n", y);
+   
+    { // Delay needed before pulling DC low
+       uint32_t t1 = time_us_32();
+       volatile uint32_t k = 0;
+       while(time_us_32() - t1 < 8) ++k;
+       // uint32_t t2 = time_us_32();
+    }
+    
+    // Set the area for 1 line
+    digitalWrite(TFT_DC, 0);
+    spi_set_format(TFT_SPIREG, 8, SPI_MODE, SPI_CPHA_0, SPI_MSB_FIRST);
+    SPItransfer(TFT_CASET);
+    digitalWrite(TFT_DC, 1);
+    SPItransfer16(y); // x1
+    digitalWrite(TFT_DC, 1);
+    SPItransfer16(y); // x2
+    digitalWrite(TFT_DC, 0);
+    SPItransfer(TFT_PASET);
+    digitalWrite(TFT_DC, 1);
+    SPItransfer16(0); // y1
+    digitalWrite(TFT_DC, 1);
+    SPItransfer16(320 - 1); // y2
+
+    digitalWrite(TFT_DC, 0);
+    SPItransfer(TFT_RAMWR);
+    digitalWrite(TFT_DC, 1);    
+ 
+    // Send a single line 
+    spi_set_format(TFT_SPIREG, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+    dma_channel_transfer_from_buffer_now ( dma_tx, blocks[curTransfer], 320);
+    curTransfer = (curTransfer + 1) & 1;
+
+    y += 1;
+    if (y >= 240) {
+      y = 0;
+      ++frame;
+    }
+    
+
+    
+    uint16_t *b = blocks[curTransfer];
+  //  uint16_t c = testcol[time_us_32() & 3];
+    uint16_t c = time_us_32() & 0xffff;
+    for(int i = 0; i < 320; ++i) {
+      b[i] = c;
+    }
+    
+    
   }
 }
 
 static void setDmaStruct() {
-  uint32_t remaining = TFT_HEIGHT*TFT_WIDTH*2;
-  int i=0;
-  nbTransfer = 0;
-  uint16_t col=RGBVAL16(0x00,0x00,0x00);;
-  while (remaining > 0) {
-    uint16_t * fb = blocks[i];
-    int32_t len = (remaining >= (LINES_PER_BLOCK*TFT_WIDTH*2)?LINES_PER_BLOCK*TFT_WIDTH*2:remaining);
-#ifdef TFT_DEBUG
-    printf("%d\n",(unsigned long)blocks[i]);
-    printf("%d\n",remaining);
-#endif
-    switch (i) {
-      case 0:
-        if (fb == 0) fb = (uint16_t*)((int)malloc(len+64)&0xffffffe0);
-        //fb=&fb0[0];
-#ifdef TFT_DEBUG
-        col = RGBVAL16(0x00,0xff,0x00);
-#endif
-        break;
-      case 1:
-        if (fb == 0) fb = (uint16_t*)((int)malloc(len+64)&0xffffffe0);
-        //fb=&fb1[0];
-#ifdef TFT_DEBUG
-        col = RGBVAL16(0x00,0xff,0xff);
-#endif
-        break;
-      case 2:
-        if (fb == 0) fb = (uint16_t*)((int)malloc(len+64)&0xffffffe0);
-        //fb=&fb2[0];
-#ifdef TFT_DEBUG
-        col = RGBVAL16(0x00,0x00,0xff);
-#endif
-        break;
-      case 3:
-        if (fb == 0) fb = (uint16_t*)((int)malloc(len+64)&0xffffffe0);
-        //fb=&fb3[0];
-#ifdef TFT_DEBUG
-        col = RGBVAL16(0xff,0x00,0xff);
-#endif
-        break;
-    }
-    blocks[i] = fb;
-    blocklens[i] = len/2;
-    if (blocks[i] == 0) {
-      printf("LI9341 allocaltion failed for block %d\n",i);
-      sleep_ms(10000);
-    }
-    nbTransfer++;
-    remaining -= len;
-    i++;
-  }
-
-
+ 
   // Setup the control channel
   dmaconfig = dma_channel_get_default_config(dma_tx);
   channel_config_set_transfer_data_size(&dmaconfig, DMA_SIZE_16);
@@ -648,10 +417,9 @@ void TFT_T_DMA::startDMA(void) {
   rstop = 0;
   digitalWrite(_cs, 1);
   setDmaStruct();
-  fillScreen(RGBVAL16(0x00,0x00,0x00));
 
   digitalWrite(_cs, 0);
-  setArea((TFT_REALWIDTH-TFT_WIDTH)/2, (TFT_REALHEIGHT-TFT_HEIGHT)/2, (TFT_REALWIDTH-TFT_WIDTH)/2 + TFT_WIDTH-1, (TFT_REALHEIGHT-TFT_HEIGHT)/2+TFT_HEIGHT-1);
+//  setArea((TFT_REALWIDTH-TFT_WIDTH)/2, (TFT_REALHEIGHT-TFT_HEIGHT)/2, (TFT_REALWIDTH-TFT_WIDTH)/2 + TFT_WIDTH-1, (TFT_REALHEIGHT-TFT_HEIGHT)/2+TFT_HEIGHT-1);
   // we switch to 16bit mode!!
   spi_set_format(TFT_SPIREG, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
   dma_start_channel_mask(1u << dma_tx);
@@ -664,7 +432,7 @@ void TFT_T_DMA::stopDMA(void) {
   sleep_ms(100);
   cancelled = false;
   //dmatx.detachInterrupt();
-  fillScreen(RGBVAL16(0x00,0x00,0x00));
+ // fillScreen(RGBVAL16(0x00,0x00,0x00));
   digitalWrite(_cs, 1);
   // we switch to 8bit mode!!
   //spi_set_format(TFT_SPIREG, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -694,349 +462,5 @@ void TFT_T_DMA::wait(void) {
   rstop = 0;
 }
 
-
-int TFT_T_DMA::get_frame_buffer_size(int *width, int *height){
-  if (width != nullptr) *width = TFT_REALWIDTH;
-  if (height != nullptr) *height = TFT_REALHEIGHT;
-  return TFT_REALWIDTH;
-}
-
-
-uint16_t * TFT_T_DMA::getLineBuffer(int j)
-{
-  uint16_t * block=blocks[j>>6];
-  return(&block[(j&0x3F)*TFT_REALWIDTH]);
-}
-
-void TFT_T_DMA::writeScreen(int width, int height, int stride, uint8_t *buf, uint16_t *palette16) {
-  uint8_t *buffer=buf;
-  uint8_t *src;
-
-  int i,j,y=0;
-  if (width*2 <= TFT_REALWIDTH) {
-    for (j=0; j<height; j++)
-    {
-      uint16_t * block=blocks[y>>6];
-      uint16_t * dst=&block[(y&0x3F)*TFT_WIDTH];
-      src=buffer;
-      for (i=0; i<width; i++)
-      {
-        uint16_t val = palette16[*src++];
-        *dst++ = val;
-        *dst++ = val;
-      }
-      y++;
-      if (height*2 <= TFT_HEIGHT) {
-        block=blocks[y>>6];
-        dst=&block[(y&0x3F)*TFT_WIDTH];
-        src=buffer;
-        for (i=0; i<width; i++)
-        {
-          uint16_t val = palette16[*src++];
-          *dst++ = val;
-          *dst++ = val;
-        }
-        y++;
-      }
-      buffer += stride;
-    }
-  }
-  else if (width <= TFT_REALWIDTH) {
-    //dst += (TFT_WIDTH-width)/2;
-    for (j=0; j<height; j++)
-    {
-      uint16_t * block=blocks[y>>6];
-      uint16_t * dst=&block[(y&0x3F)*TFT_WIDTH+(TFT_WIDTH-width)/2];
-      src=buffer;
-      for (i=0; i<width; i++)
-      {
-        uint16_t val = palette16[*src++];
-        *dst++ = val;
-      }
-      y++;
-      if (height*2 <= TFT_HEIGHT) {
-        block=blocks[y>>6];
-        dst=&block[(y&0x3F)*TFT_WIDTH+(TFT_WIDTH-width)/2];
-        src=buffer;
-        for (i=0; i<width; i++)
-        {
-          uint16_t val = palette16[*src++];
-          *dst++ = val;
-        }
-        y++;
-      }
-      buffer += stride;
-    }
-  }
-}
-
-void TFT_T_DMA::writeLine(int width, int height, int y, uint8_t *buf, uint16_t *palette16) {
-  uint16_t * block=blocks[y>>6];
-  uint16_t * dst=&block[(y&0x3F)*TFT_WIDTH];
-  if (width > TFT_WIDTH) {
-#ifdef TFT_LINEARINT
-    int delta = (width/(width-TFT_WIDTH))-1;
-    int pos = delta;
-    for (int i=0; i<TFT_WIDTH; i++)
-    {
-      uint16_t val = palette16[*buf++];
-      pos--;
-      if (pos == 0) {
-#ifdef LINEARINT_HACK
-        val  = ((uint32_t)palette16[*buf++] + val)/2;
-#else
-        uint16_t val2 = *buf++;
-        val = RGBVAL16((R16(val)+R16(val2))/2,(G16(val)+G16(val2))/2,(B16(val)+B16(val2))/2);
-#endif
-        pos = delta;
-      }
-      *dst++=val;
-    }
-#else
-    int step = ((width << 8)/TFT_WIDTH);
-    int pos = 0;
-    for (int i=0; i<TFT_WIDTH; i++)
-    {
-      *dst++=palette16[buf[pos >> 8]];
-      pos +=step;
-    }
-#endif
-  }
-  else if ((width*2) == TFT_WIDTH) {
-    for (int i=0; i<width; i++)
-    {
-      *dst++=palette16[*buf];
-      *dst++=palette16[*buf++];
-    }
-  }
-  else {
-    if (width <= TFT_WIDTH) {
-      dst += (TFT_WIDTH-width)/2;
-    }
-    for (int i=0; i<width; i++)
-    {
-      *dst++=palette16[*buf++];
-    }
-  }
-}
-
-void TFT_T_DMA::writeLine(int width, int height, int y, uint16_t *buf) {
-  uint16_t * block=blocks[y>>6];
-  uint16_t * dst=&block[(y&0x3F)*TFT_WIDTH];
-  if (width > TFT_WIDTH) {
-#ifdef TFT_LINEARINT
-    int delta = (width/(width-TFT_WIDTH))-1;
-    int pos = delta;
-    for (int i=0; i<TFT_WIDTH; i++)
-    {
-      uint16_t val = *buf++;
-      pos--;
-      if (pos == 0) {
-#ifdef LINEARINT_HACK
-        val  = ((uint32_t)*buf++ + val)/2;
-#else
-        uint16_t val2 = *buf++;
-        val = RGBVAL16((R16(val)+R16(val2))/2,(G16(val)+G16(val2))/2,(B16(val)+B16(val2))/2);
-#endif
-        pos = delta;
-      }
-      *dst++=val;
-    }
-#else
-    int step = ((width << 8)/TFT_WIDTH);
-    int pos = 0;
-    for (int i=0; i<TFT_WIDTH; i++)
-    {
-      *dst++=buf[pos >> 8];
-      pos +=step;
-    }
-#endif
-  }
-  else if ((width*2) == TFT_WIDTH) {
-    for (int i=0; i<width; i++)
-    {
-      *dst++=*buf;
-      *dst++=*buf++;
-    }
-  }
-  else {
-    if (width <= TFT_WIDTH) {
-      dst += (TFT_WIDTH-width)/2;
-    }
-    for (int i=0; i<width; i++)
-    {
-      *dst++=*buf++;
-    }
-  }
-}
-
-void TFT_T_DMA::fillScreen(uint16_t color) {
-  int i,j;
-  for (j=0; j<TFT_HEIGHT; j++)
-  {
-    uint16_t * block=blocks[j>>6];
-    uint16_t * dst=&block[(j&0x3F)*TFT_WIDTH];
-    for (i=0; i<TFT_WIDTH; i++)
-    {
-      *dst++ = color;
-    }
-  }
-}
-
-void TFT_T_DMA::drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
-  int i,j,l=y;
-  color=color;
-  for (j=0; j<h; j++)
-  {
-    uint16_t * block=blocks[l>>6];
-    uint16_t * dst=&block[(l&0x3F)*TFT_WIDTH+x];
-    for (i=0; i<w; i++)
-    {
-      *dst++ = color;
-    }
-    l++;
-  }
-}
-
-void TFT_T_DMA::drawText(int16_t x, int16_t y, const char * text, uint16_t fgcolor, uint16_t bgcolor, bool doublesize) {
-  uint16_t c;
-  uint16_t * block;
-  uint16_t * dst;
-  fgcolor = fgcolor;
-  bgcolor = bgcolor;
-
-  while ((c = *text++)) {
-    const unsigned char * charpt=&font8x8[c][0];
-
-    int l=y;
-    for (int i=0;i<8;i++)
-    {
-      unsigned char bits;
-      if (doublesize) {
-        block=blocks[l>>6];
-        dst=&block[(l&0x3F)*TFT_WIDTH+x];
-        bits = *charpt;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        bits = bits >> 1;
-        if (bits&0x01) *dst++=fgcolor;
-        else *dst++=bgcolor;
-        l++;
-      }
-      block=blocks[l>>6];
-      dst=&block[(l&0x3F)*TFT_WIDTH+x];
-      bits = *charpt++;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      bits = bits >> 1;
-      if (bits&0x01) *dst++=fgcolor;
-      else *dst++=bgcolor;
-      l++;
-    }
-    x +=8;
-  }
-}
-
-void TFT_T_DMA::drawSprite(int16_t x, int16_t y, const uint16_t *bitmap) {
-    drawSprite(x,y,bitmap, 0,0,0,0);
-}
-
-void TFT_T_DMA::drawSprite(int16_t x, int16_t y, const uint16_t *bitmap, uint16_t arx, uint16_t ary, uint16_t arw, uint16_t arh)
-{
-  int bmp_offx = 0;
-  int bmp_offy = 0;
-  uint16_t *bmp_ptr;
-
-  int w =*bitmap++;
-  int h = *bitmap++;
-
-
-  if ( (arw == 0) || (arh == 0) ) {
-    // no crop window
-    arx = x;
-    ary = y;
-    arw = w;
-    arh = h;
-  }
-  else {
-    if ( (x>(arx+arw)) || ((x+w)<arx) || (y>(ary+arh)) || ((y+h)<ary)   ) {
-      return;
-    }
-
-    // crop area
-    if ( (x > arx) && (x<(arx+arw)) ) {
-      arw = arw - (x-arx);
-      arx = arx + (x-arx);
-    } else {
-      bmp_offx = arx;
-    }
-    if ( ((x+w) > arx) && ((x+w)<(arx+arw)) ) {
-      arw -= (arx+arw-x-w);
-    }
-    if ( (y > ary) && (y<(ary+arh)) ) {
-      arh = arh - (y-ary);
-      ary = ary + (y-ary);
-    } else {
-      bmp_offy = ary;
-    }
-    if ( ((y+h) > ary) && ((y+h)<(ary+arh)) ) {
-      arh -= (ary+arh-y-h);
-    }
-  }
-
-
-  int l=ary;
-  bitmap = bitmap + bmp_offy*w + bmp_offx;
-  for (int row=0;row<arh; row++)
-  {
-    uint16_t * block=blocks[l>>6];
-    uint16_t * dst=&block[(l&0x3F)*TFT_WIDTH+arx];
-    bmp_ptr = (uint16_t*)bitmap;
-    for (int col=0;col<arw; col++)
-    {
-        *dst++ = *bmp_ptr++;
-    }
-    bitmap +=  w;
-    l++;
-  }
-}
-
-#endif
 
 #endif
