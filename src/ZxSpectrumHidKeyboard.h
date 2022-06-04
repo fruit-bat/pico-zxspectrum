@@ -11,6 +11,7 @@ class ZxSpectrumHidKeyboard : public ZxSpectrumKeyboard {
   ZxSpectrumFileLoop* _zxSpectrumSnapList;
   ZxSpectrumFileLoop* _zxSpectrumTapeList;
   QuickSave* _quickSave;
+  bool _kiosk;
 public:
   ZxSpectrumHidKeyboard(
     ZxSpectrumFileLoop* zxSpectrumSnapList,
@@ -21,10 +22,11 @@ public:
   ZxSpectrumHidKeyboard(
     QuickSave* quickSave, 
     ZxSpectrumJoystick * zxSpectrumJoystick
-  );  
+  );
   int processHidReport(
     hid_keyboard_report_t const *report, 
     hid_keyboard_report_t const *prev_report
   );
   void setZxSpectrum(ZxSpectrum *ZxSpectrum) { _ZxSpectrum = ZxSpectrum; }
+  void setKiosk(bool kiosk) { _kiosk = kiosk; }
 };
