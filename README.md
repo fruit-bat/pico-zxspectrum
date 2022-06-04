@@ -29,10 +29,10 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 Trying to squeeze in all the key mappings is tricky but here is an attempt.
 
 These are the nomal key mappings:<br/>
-<img src="docs/retro_vga_keyboard_normal.svg" width="400"/><br/>
+<img src="docs/retro_vga_keyboard_normal.svg" width="500"/><br/>
 
 These are the mappings with the ALt key down.:<br/>
-<img src="docs/retro_vga_keyboard_alt_down.svg" width="400"/><br/>
+<img src="docs/retro_vga_keyboard_alt_down.svg" width="500"/><br/>
 Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
 QS1, QS2, ...  save the emulator state to the appropriate Quick Save slot.
 
@@ -42,7 +42,7 @@ The SN keys load snapshots as if they are in a loop.
 SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the next snapshot.
 
 These are the mappings with the numeric shift on:<br/>
-<img src="docs/retro_vga_keyboard_num.svg" width="400"/><br/>
+<img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
 
 
 ## Screen shots
