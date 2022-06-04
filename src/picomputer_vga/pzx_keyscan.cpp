@@ -7,6 +7,7 @@
 #include "pzx_keyscan.h"
 
 #define SAMPLES 4 
+#define HID_KEY_HASH 0x32
 
 static uint8_t cp[] = {20, 21, 22, 26, 27, 28};  // Column pins
 static uint8_t rp[] = {14, 15, 16, 17, 18, 19};  // Row pins
@@ -31,16 +32,16 @@ static uint8_t kbits[3][6][6] = {
     // Row 5
     { HID_KEY_Q, HID_KEY_W, HID_KEY_E, HID_KEY_R, HID_KEY_T, /* HID_KEY_ALT_LEFT */ 0}
   },
-  // Alt mappings
+  // Numeric mappings
   {
     // Row 0
-    { HID_KEY_SPACE, HID_KEY_SEMICOLON, HID_KEY_M, HID_KEY_N, HID_KEY_B, HID_KEY_ARROW_DOWN },
+    { HID_KEY_SPACE, HID_KEY_HASH, HID_KEY_SEMICOLON, HID_KEY_MINUS, HID_KEY_EQUAL, HID_KEY_ARROW_DOWN },
     // Row 1
-    { HID_KEY_ENTER, HID_KEY_MINUS, HID_KEY_K, HID_KEY_J, HID_KEY_H, HID_KEY_ARROW_LEFT },
+    { HID_KEY_ENTER, HID_KEY_BRACKET_RIGHT, HID_KEY_BRACKET_LEFT, HID_KEY_GRAVE, HID_KEY_BACKSLASH, HID_KEY_ARROW_LEFT },
     // Row 2
     { HID_KEY_0, HID_KEY_9, HID_KEY_8, HID_KEY_7, HID_KEY_6, HID_KEY_ARROW_UP },
     // Row 3
-    { HID_KEY_EQUAL, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_ARROW_RIGHT },
+    { HID_KEY_BACKSPACE, HID_KEY_COMMA, HID_KEY_PERIOD, HID_KEY_SLASH, HID_KEY_APOSTROPHE, HID_KEY_ARROW_RIGHT },
     // Row 4
     { HID_KEY_A, HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_ESCAPE },
     // Row 5
@@ -128,15 +129,16 @@ void __not_in_flash_func(pzx_keyscan_row)() {
 
 uint8_t __not_in_flash_func(pzx_kempston)() {
   return 
-    ((rdb[KEY_ESC_ROW] & KEY_ESC_BIT) >> 1)
-  | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) >> 2)
-  | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 3)
-  | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) >> 4)
-  | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 5);
+    ((rdb[KEY_ESC_ROW] & KEY_ESC_BIT) >> 1)      // Kempston fire
+  | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) >> 2)        // Kempston up
+  | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 3)    // Kempston down
+  | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) >> 4)    // Kempston left
+  | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 5); // Kempston right
 }
 
 void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev) {
 
+  // Key modifier (shift, alt, ctrl, etc.)
   static uint8_t modifier = 0;
   
   bool alt_down = rdb[KEY_ALT_ROW] & KEY_ALT_BIT;
@@ -151,11 +153,11 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
       modifier &= ~2;
     }
     if (rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) {
-      // Alt keyboard on
+      // Numeric keyboard on
       kbi = 1;
     }
     else if (rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) {
-      // Alt keyboard off
+      // Numeric keyboard off
       kbi = 0;
     }
     rdb[KEY_UP_ROW] &= ~KEY_UP_BIT;
