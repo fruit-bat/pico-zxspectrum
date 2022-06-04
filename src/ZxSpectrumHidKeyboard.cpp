@@ -106,7 +106,8 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   ZxSpectrumKeyboard(zxSpectrumJoystick),
   _zxSpectrumSnapList(zxSpectrumSnapList),
   _zxSpectrumTapeList(zxSpectrumTapeList),
-  _quickSave(quickSave)
+  _quickSave(quickSave),
+  _kiosk(false)
 {
   sort_keys();
 }
@@ -118,7 +119,8 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   ZxSpectrumKeyboard(zxSpectrumJoystick),
   _zxSpectrumSnapList(0),
   _zxSpectrumTapeList(0),
-  _quickSave(quickSave)
+  _quickSave(quickSave),
+  _kiosk(false)
 {
   sort_keys();
 }
@@ -155,7 +157,7 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     }
   }
 
-  if (m & KEYBOARD_MODIFIER_LEFTCTRL) {
+  if ((m & KEYBOARD_MODIFIER_LEFTCTRL) && !_kiosk) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
         printf("left ctrl F%d pressed\n", i);
@@ -173,7 +175,7 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   }
   else {
     // F1 open menu
-    if (fkp & (1 << 0)) r = 1;
+    if ((fkp & (1 << 0)) && !_kiosk) r = 1;
     
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);

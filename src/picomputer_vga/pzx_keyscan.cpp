@@ -20,7 +20,7 @@ static uint8_t kbits[3][6][6] = {
   // Normal mappings
   {
     // Row 0
-    { HID_KEY_SPACE, HID_KEY_COMMA, HID_KEY_M, HID_KEY_N, HID_KEY_B, HID_KEY_ARROW_DOWN },
+    { HID_KEY_SPACE, HID_KEY_ALT_RIGHT, HID_KEY_M, HID_KEY_N, HID_KEY_B, HID_KEY_ARROW_DOWN },
     // Row 1
     { HID_KEY_ENTER, HID_KEY_L, HID_KEY_K, HID_KEY_J, HID_KEY_H, HID_KEY_ARROW_LEFT },
     // Row 2
@@ -35,7 +35,7 @@ static uint8_t kbits[3][6][6] = {
   // Numeric mappings
   {
     // Row 0
-    { HID_KEY_SPACE, HID_KEY_HASH, HID_KEY_SEMICOLON, HID_KEY_MINUS, HID_KEY_EQUAL, HID_KEY_ARROW_DOWN },
+    { HID_KEY_SPACE, HID_KEY_ALT_RIGHT, HID_KEY_SEMICOLON, HID_KEY_MINUS, HID_KEY_EQUAL, HID_KEY_ARROW_DOWN },
     // Row 1
     { HID_KEY_ENTER, HID_KEY_BRACKET_RIGHT, HID_KEY_BRACKET_LEFT, HID_KEY_GRAVE, HID_KEY_BACKSLASH, HID_KEY_ARROW_LEFT },
     // Row 2
@@ -60,7 +60,7 @@ static uint8_t kbits[3][6][6] = {
     // Row 4
     { HID_KEY_F8, HID_KEY_F9, HID_KEY_F10, 0, 0, 0 },
     // Row 5 (Menu, 0, ZX Symbol)
-    { HID_KEY_F1, 0, HID_KEY_ALT_RIGHT, 0, 0, /* HID_KEY_ALT_LEFT */ 0 }
+    { HID_KEY_F1, 0, 0, 0, 0, /* HID_KEY_ALT_LEFT */ 0 }
   }
 };
 

@@ -44,6 +44,12 @@ SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the 
 These are the mappings with the numeric shift on:<br/>
 <img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
 
+### RetroVGA kiosk mode
+Kiosk mode disables the menu system and quick-save buttons. 
+Kiosk mode is enabled by placing the following file on the SD-card:
+```bash
+zxspectrum/kiosk.txt
+```
 
 ## Screen shots
 
