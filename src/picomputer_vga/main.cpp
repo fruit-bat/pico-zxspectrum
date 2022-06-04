@@ -151,6 +151,7 @@ void __not_in_flash_func(core1_main)() {
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
+        picomputerVgaJoystick.enabled(!showMenu);
       }
       
       _frames = linebuf->frame;
@@ -208,6 +209,10 @@ int main(){
   sem_release(&dvi_start_sem);
 
   unsigned int lastInterruptFrame = _frames;
+
+  if (quickSave.used(0)) {
+    quickSave.load(&zxSpectrum, 0);
+  }
 
   //Main Loop 
   uint frames = 0;  

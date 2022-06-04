@@ -3,7 +3,8 @@
 #include "ZxSpectrumPicomputerVgaJoystick.h"
 #include "pzx_keyscan.h"
 
-ZxSpectrumPicomputerVgaJoystick::ZxSpectrumPicomputerVgaJoystick()
+ZxSpectrumPicomputerVgaJoystick::ZxSpectrumPicomputerVgaJoystick() :
+  _enabled(true)
 {
 }
 
@@ -16,5 +17,5 @@ uint8_t ZxSpectrumPicomputerVgaJoystick::sinclairR() {
 }
 
 uint8_t ZxSpectrumPicomputerVgaJoystick::kempston() {
-  return pzx_kempston();
+  return _enabled ? pzx_kempston() : 0;
 }
