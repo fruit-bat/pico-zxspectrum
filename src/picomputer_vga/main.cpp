@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
-#include "hardware/pwm.h"  // pwm 
+#include "hardware/pwm.h"
 
 
 #include "vga.h"
@@ -16,7 +16,7 @@
 #include "PicoTextField.h"
 #include "PicoWinHidKeyboard.h"
 
-
+#include "ZxSpectrumFatSpiKiosk.h"
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
@@ -50,16 +50,37 @@ uint8_t* attrPtr;
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
-static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
+  &sdCard0,
+  "zxspectrum/snapshots"
+);
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
+  &sdCard0,
+  "zxspectrum/tapes"
+);
+static QuickSave quickSave(
+  &sdCard0,
+  "zxspectrum/quicksaves"
+);
 static ZxSpectrumHidJoystick hidJoystick;
 static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
-static ZxSpectrumDualJoystick dualJoystick(&hidJoystick, &picomputerVgaJoystick);
-
+static ZxSpectrumDualJoystick dualJoystick(
+  &hidJoystick, 
+  &picomputerVgaJoystick
+);
+static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
+  &sdCard0,
+  "zxspectrum"
+);
 static ZxSpectrumHidKeyboard keyboard1(
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes, 
   &quickSave, 
   &dualJoystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes,
   &quickSave, 
   &picomputerVgaJoystick
 );
@@ -68,18 +89,20 @@ static ZxSpectrum zxSpectrum(
   &keyboard2, 
   &dualJoystick
 );
-
-// Menu system
 static ZxSpectrumMenu picoRootWin(
   &sdCard0, 
   &zxSpectrum, 
   &quickSave
 );
+static PicoDisplay picoDisplay(
+  pcw_screen(), 
+  &picoRootWin
+);
+static PicoWinHidKeyboard picoWinHidKeyboard(
+  &picoDisplay
+);
 
-static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
-static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
-
-static bool showMenu = true;
+static bool showMenu = false;
 static bool toggleMenu = false;
 static volatile uint _frames = 0;
 
@@ -145,6 +168,7 @@ void __not_in_flash_func(core1_main)() {
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
+        picomputerVgaJoystick.enabled(!showMenu);
       }
       
       _frames = linebuf->frame;
@@ -182,7 +206,11 @@ int main(){
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
-
+	
+	// Set up the quick load loops
+  zxSpectrumSnaps.reload();
+  zxSpectrumTapes.reload();
+  
   // Initialise the menu renderer
   pcw_init_renderer();
 
@@ -199,8 +227,16 @@ int main(){
 
   unsigned int lastInterruptFrame = _frames;
 
+  if (quickSave.used(0)) {
+    quickSave.load(&zxSpectrum, 0);
+  }
+
+  bool isKiosk = zxSpectrumKisok.isKiosk();
+  keyboard1.setKiosk(isKiosk);
+  keyboard2.setKiosk(isKiosk);
+
   //Main Loop 
-  uint frames = 0;  
+  uint frames = 0;
   while(1){
     
     tuh_task();
@@ -225,6 +261,5 @@ int main(){
       frames = _frames;
       picoDisplay.refresh();
     }
-      
   }
 }
