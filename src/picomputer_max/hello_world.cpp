@@ -12,7 +12,7 @@
 
 uint32_t frame;
 
-int main(){
+int mainly(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(100);
 	set_sys_clock_khz(240000, true);
