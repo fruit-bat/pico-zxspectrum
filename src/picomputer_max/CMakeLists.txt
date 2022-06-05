@@ -6,8 +6,14 @@ add_executable(ZxSpectrumPicomputerMax
 #  hw_config.c
 #  ZxSpectrumPicomputerVgaJoystick.cpp
   pzx_keyscan.cpp
-  tft_t_dma.cpp
+#  tft_t_dma.cpp
+  st7789_lcd.cpp
 )
+
+pico_generate_pio_header(ZxSpectrumPicomputerMax 
+  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+)
+
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   -DPCS_COLS=80 
@@ -16,7 +22,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
 
 target_link_libraries(ZxSpectrumPicomputerMax
   ${zxspectrum_common_libs}
-  pico_emu_utils
+#  pico_emu_utils
   pico_vga_menu
   
 #  tinyusb_host
