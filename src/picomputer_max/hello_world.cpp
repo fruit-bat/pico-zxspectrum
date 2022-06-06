@@ -16,7 +16,7 @@
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(100);
-	set_sys_clock_khz(180000, true);
+	// set_sys_clock_khz(180000, true);
 
   //Initialise I/O
   stdio_init_all(); 
@@ -41,21 +41,25 @@ int main(){
   while(1){
     
 
-    //printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
+    printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
     pzx_keyscan_row();
-    pzx_send_rgb444_frame(
-      pio, 
-      sm,
-      frame++,
-      &screen[0],
-      &screen[6144],
-      3);
     
+    t1 = time_us_32();
+    
+    for(int i = 0; i < 100; ++i) {
+      pzx_send_rgb444_frame(
+        pio, 
+        sm,
+        frame++,
+        &screen[0],
+        &screen[6144],
+        i & 7);
+    }
     uint32_t t2 = time_us_32();
     float dtus = (float)(t2-t1);
     float dts = dtus / 1000000;
-    //printf("FPS = %f\n", ((frame - last_frame) / dts));
+    printf("FPS = %f\n", ((frame - last_frame) / dts));
     
     t1 = t2;
     last_frame = frame;
