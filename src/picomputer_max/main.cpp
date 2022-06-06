@@ -4,6 +4,9 @@
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 
+#include "pzx_prepare_rgb444_scanline.h"
+#include "PicoCharRendererSt7789.h"
+#include "st7789_lcd.h"
 
 #include "pzx_keyscan.h"
 
@@ -39,7 +42,6 @@
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
-static const sVmode* vmode = NULL;
 
 uint8_t* screenPtr;
 uint8_t* attrPtr;
@@ -76,7 +78,7 @@ static ZxSpectrumMenu picoRootWin(
 static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
 static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
 
-static bool showMenu = true;
+static bool showMenu = false;
 static bool toggleMenu = false;
 static volatile uint _frames = 0;
 
@@ -102,53 +104,58 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   if (r == 1) toggleMenu = true;
 }
 
+
+static  PIO pio = pio0;
+static  uint sm = 0;
+
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  // TODO fetch the resolution from the mode ?
-  // VgaInit(vmode,640,480);
-
   while (1) {
-/*
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      pzx_prepare_vga332_scanline(
-        buf, 
-        y, 
-        linebuf->frame,
-        screenPtr,
-        attrPtr,
-        zxSpectrum.borderColour()
-      );
-    }
-  */    
-    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-      
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-      
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
+    uint32_t t1 = time_us_32();
+
+    for (uint y = 0; y < 240; ++y) {
+      if (showMenu) {
+        pcw_send_st7789_scanline(
+          pio, 
+          sm,
+          y,
+          _frames);
       }
-      
-      _frames = linebuf->frame;
-    }    
+      else {  
+        pzx_send_rgb444_scanline(
+          pio, 
+          sm,
+          y,
+          _frames,
+          screenPtr,
+          attrPtr,
+          zxSpectrum.borderColour()); 
+      }
+
+      pzx_keyscan_row();
+    }
+    _frames++;
+
+    // TODO Tidy this mechanism up
+    screenPtr = zxSpectrum.screenPtr();
+    attrPtr = screenPtr + (32 * 24 * 8);
+    
+    if (toggleMenu) {
+      showMenu = !showMenu;
+      toggleMenu = false;
+    }
+   
+    while((time_us_32() - t1) < 20000) {
+      sleep_us(100);
+      pzx_keyscan_row();
+    }
   }
   __builtin_unreachable();
 }
+
+
 
 int main(){
   vreg_set_voltage(VREG_VSEL);
@@ -185,6 +192,13 @@ int main(){
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
+
+  // Start up the LCD
+  st7789_init(pio, sm);
+  
+  sleep_ms(10);
+  
+  
   
   sleep_ms(10);
   

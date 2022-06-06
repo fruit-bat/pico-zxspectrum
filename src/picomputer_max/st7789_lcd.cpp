@@ -37,8 +37,7 @@ static const uint8_t st7789_init_seq[] = {
         1, 2, 0x29,                         // Main screen turn on, then wait 500 ms
         0                                   // Terminate list
 };
-// a0
-// 10100000
+
 static inline void lcd_set_dc_cs(bool dc, bool cs) {
     sleep_us(1);
     gpio_put_masked((1u << PIN_DC) | (1u << PIN_CS), !!dc << PIN_DC | !!cs << PIN_CS);

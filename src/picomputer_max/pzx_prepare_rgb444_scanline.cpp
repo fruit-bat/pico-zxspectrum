@@ -25,8 +25,8 @@ static uint32_t zx_colour_words[16] = {
 
 static uint32_t zx_bitbit_masks[4] = {
   0x00000000,
-  0xfff00000,
   0x000fff00,
+  0xfff00000,
   0xffffff00
 };
 
