@@ -12,10 +12,8 @@
 #include "hardware/gpio.h"
 #include "hardware/vreg.h"
 #include "hardware/clocks.h"
+#include "st7789_lcd.pio.h"
 
-extern "C" {
-  #include "st7789_lcd.pio.h"
-}
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -136,7 +134,7 @@ int __not_in_flash_func(main)() {
         for (int y = 0; y < SCREEN_HEIGHT; ++y) {
             uint16_t colour = time_us_32();
             for (int x = 0; x < (SCREEN_WIDTH>>1); ++x) {
-                // TODO RGB565 -> RGB444
+                // RGB565 -> RGB444
                 uint16_t c = // 0xf00;
                   ((colour >> 1) & 0x00f) |
                   ((colour >> 3) & 0x0f0) |
