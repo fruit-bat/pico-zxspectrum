@@ -14,20 +14,6 @@
 #include "st7789_lcd.h"
 #include "st7789_lcd.pio.h"
 
-
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
-#define IMAGE_SIZE 256
-#define LOG_IMAGE_SIZE 8
-
-#define TFT_SCLK        18
-#define TFT_MOSI        19
-#define TFT_MISO        255 // Not required, used for DC... 
-#define TFT_DC          16
-#define TFT_RST         255
-#define TFT_CS          21
-#define TFT_BACKLIGHT   20
-
 #define PIN_DIN 19
 #define PIN_CLK 18
 #define PIN_CS 21
@@ -43,7 +29,7 @@ static const uint8_t st7789_init_seq[] = {
         1, 20, 0x01,                        // Software reset
         1, 10, 0x11,                        // Exit sleep mode
         2, 2, 0x3a, 0x63,                   // Set colour mode to 12 bit (16 bit 0x55)
-        2, 0, 0x36, 0xa0,                   // Set MADCTL: row then column, refresh is bottom to top ????
+        2, 0, 0x36, 0x70,                   // Set MADCTL: row then column, refresh is bottom to top ????
         5, 0, 0x2a, 0x00, 0x00, 0x01, 0x40, // CASET: column addresses from 0 to 320
         5, 0, 0x2b, 0x00, 0x00, 0x00, 0xf0, // RASET: row addresses from 0 to 240
         1, 2, 0x21,                         // Inversion on, then 10 ms delay (supposedly a hack?)
@@ -51,7 +37,8 @@ static const uint8_t st7789_init_seq[] = {
         1, 2, 0x29,                         // Main screen turn on, then wait 500 ms
         0                                   // Terminate list
 };
-
+// a0
+// 10100000
 static inline void lcd_set_dc_cs(bool dc, bool cs) {
     sleep_us(1);
     gpio_put_masked((1u << PIN_DC) | (1u << PIN_CS), !!dc << PIN_DC | !!cs << PIN_CS);
@@ -112,38 +99,3 @@ void st7789_init(PIO pio, uint sm) {
     st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 24);
 }
 
-/*
-#define VREG_VSEL VREG_VOLTAGE_1_10
-#define LED_PIN 25
-
-
-int __not_in_flash_func(mainly)() {
-    vreg_set_voltage(VREG_VSEL);
-    sleep_ms(100);
-    set_sys_clock_khz(180000, true);
- 
-    stdio_init_all();
-
-    PIO pio = pio0;
-    uint sm = 0;
-
-    st7789_init(pio, sm);
-
-
-    
-    while(1) {
-        for (int y = 0; y < SCREEN_HEIGHT; ++y) {
-            uint16_t colour = time_us_32();
-            for (int x = 0; x < (SCREEN_WIDTH>>1); ++x) {
-                // RGB565 -> RGB444
-                uint16_t c = // 0xf00;
-                  ((colour >> 1) & 0x00f) |
-                  ((colour >> 3) & 0x0f0) |
-                  ((colour >> 4) & 0xf00);
-                st7789_lcd_put_rgb444(pio, sm, (c << 20) | (c << 8));
-            }
-        }
-    }
-    return 0;
-}
-*/

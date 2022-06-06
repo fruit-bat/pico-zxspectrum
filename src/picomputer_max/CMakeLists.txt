@@ -17,14 +17,14 @@ pico_generate_pio_header(ZxSpectrumPicomputerMax
 
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
-  -DPCS_COLS=80 
+  -DPCS_COLS=40 
   -DPCS_ROWS=30
 )
 
 target_link_libraries(ZxSpectrumPicomputerMax
   ${zxspectrum_common_libs}
   pico_emu_utils
-  pico_vga_menu
+  pico_st7789_menu
   
 #  tinyusb_host
 #  tinyusb_board

@@ -6,6 +6,7 @@
 #include "hardware/clocks.h"
 #include "pzx_keyscan.h"
 #include "pzx_prepare_rgb444_scanline.h"
+#include "PicoCharRendererSt7789.h"
 #include "st7789_lcd.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
@@ -26,7 +27,10 @@ int main(){
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
-
+  
+  // Initialise the menu renderer
+  pcw_init_renderer();
+  
   PIO pio = pio0;
   uint sm = 0;
 
@@ -48,6 +52,7 @@ int main(){
     t1 = time_us_32();
     
     for(int i = 0; i < 100; ++i) {
+      /*
       pzx_send_rgb444_frame(
         pio, 
         sm,
@@ -55,6 +60,11 @@ int main(){
         &screen[0],
         &screen[6144],
         i & 7);
+        */ 
+      pcw_send_st7789_frame(
+        pio, 
+        sm,
+        frame++);
     }
     uint32_t t2 = time_us_32();
     float dtus = (float)(t2-t1);
