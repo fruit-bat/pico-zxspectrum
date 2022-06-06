@@ -2,7 +2,7 @@
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
 #	main.cpp
-#  hello_world.cpp
+  hello_world.cpp
 #  hw_config.c
 #  ZxSpectrumPicomputerVgaJoystick.cpp
   pzx_keyscan.cpp

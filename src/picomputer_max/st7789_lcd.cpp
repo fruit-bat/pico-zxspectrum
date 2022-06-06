@@ -8,10 +8,10 @@
 #include <math.h>
 
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
 #include "hardware/gpio.h"
 #include "hardware/vreg.h"
 #include "hardware/clocks.h"
+#include "st7789_lcd.h"
 #include "st7789_lcd.pio.h"
 
 
@@ -87,7 +87,7 @@ static inline void st7789_start_pixels(PIO pio, uint sm) {
     lcd_set_dc_cs(1, 0);
 }
 
-void __not_in_flash_func(st7789_init)(PIO pio, uint sm) {
+void st7789_init(PIO pio, uint sm) {
     
     uint offset = pio_add_program(pio, &st7789_lcd_program);
     st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 8);
@@ -112,11 +112,12 @@ void __not_in_flash_func(st7789_init)(PIO pio, uint sm) {
     st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 24);
 }
 
+/*
 #define VREG_VSEL VREG_VOLTAGE_1_10
 #define LED_PIN 25
 
 
-int __not_in_flash_func(main)() {
+int __not_in_flash_func(mainly)() {
     vreg_set_voltage(VREG_VSEL);
     sleep_ms(100);
     set_sys_clock_khz(180000, true);
@@ -145,3 +146,4 @@ int __not_in_flash_func(main)() {
     }
     return 0;
 }
+*/
