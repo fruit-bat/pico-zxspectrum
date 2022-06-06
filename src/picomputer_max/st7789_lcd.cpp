@@ -107,8 +107,11 @@ void __not_in_flash_func(st7789_init)(PIO pio, uint sm) {
 //    gpio_put(PIN_RESET, 1);
     lcd_init(pio, sm, st7789_init_seq);
     gpio_put(PIN_BL, 1);
-    
 
+
+    st7789_start_pixels(pio, sm);
+    st7789_lcd_wait_idle(pio, sm);
+    st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 24);
 }
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
@@ -118,47 +121,27 @@ void __not_in_flash_func(st7789_init)(PIO pio, uint sm) {
 int __not_in_flash_func(main)() {
     vreg_set_voltage(VREG_VSEL);
     sleep_ms(100);
-   // set_sys_clock_khz(180000, true);
+    set_sys_clock_khz(180000, true);
  
     stdio_init_all();
 
     PIO pio = pio0;
     uint sm = 0;
 
-  //  st7789_init(pio, sm);
-
-    uint offset = pio_add_program(pio, &st7789_lcd_program);
-    st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 8);
-
-    gpio_init(PIN_CS);
-    gpio_init(PIN_DC);
-//    gpio_init(PIN_RESET);
-    gpio_init(PIN_BL);
-    gpio_set_dir(PIN_CS, GPIO_OUT);
-    gpio_set_dir(PIN_DC, GPIO_OUT);
-//    gpio_set_dir(PIN_RESET, GPIO_OUT);
-    gpio_set_dir(PIN_BL, GPIO_OUT);
-
-    gpio_put(PIN_CS, 1);
-//    gpio_put(PIN_RESET, 1);
-    lcd_init(pio, sm, st7789_init_seq);
-    gpio_put(PIN_BL, 1);
+    st7789_init(pio, sm);
 
 
-    st7789_start_pixels(pio, sm);
-    st7789_lcd_wait_idle(pio, sm);
-    st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 12);
     
     while(1) {
         for (int y = 0; y < SCREEN_HEIGHT; ++y) {
             uint16_t colour = time_us_32();
-            for (int x = 0; x < SCREEN_WIDTH; ++x) {
+            for (int x = 0; x < (SCREEN_WIDTH>>1); ++x) {
                 // TODO RGB565 -> RGB444
                 uint16_t c = // 0xf00;
                   ((colour >> 1) & 0x00f) |
                   ((colour >> 3) & 0x0f0) |
                   ((colour >> 4) & 0xf00);
-                st7789_lcd_put_rgb444(pio, sm, c << 20);
+                st7789_lcd_put_rgb444(pio, sm, (c << 20) | (c << 8));
             }
         }
     }
