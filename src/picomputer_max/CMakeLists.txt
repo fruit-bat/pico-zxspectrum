@@ -8,6 +8,7 @@ add_executable(ZxSpectrumPicomputerMax
   pzx_keyscan.cpp
 #  tft_t_dma.cpp
   st7789_lcd.cpp
+  pzx_prepare_rgb444_scanline.cpp
 )
 
 pico_generate_pio_header(ZxSpectrumPicomputerMax 
