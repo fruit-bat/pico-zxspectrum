@@ -2,62 +2,70 @@
 #include "stdlib.h"
 #include <pico/printf.h>
 
-struct ZxSpectrumHidKey {
-  unsigned char keycode;
+
+typedef struct  {
   unsigned char line;
   unsigned char key;
-};
+} ZxSpectrumKeyContact;
+
+typedef struct {
+  uint8_t keycode;
+  uint8_t contacts;
+  ZxSpectrumKeyContact contact[2];
+} ZxSpectrumHidKey;
 
 
 ZxSpectrumHidKey KEYS[] = {
-  { HID_KEY_SHIFT_LEFT,  0, 0},
-  { HID_KEY_SHIFT_RIGHT, 0, 0},
-  { HID_KEY_Z,           0, 1},
-  { HID_KEY_X,           0, 2},
-  { HID_KEY_C,           0, 3},
-  { HID_KEY_V,           0, 4},
+  { HID_KEY_SHIFT_LEFT,  1, { {0, 0} }},
+  { HID_KEY_SHIFT_RIGHT, 1, { {0, 0} }},
+  { HID_KEY_Z,           1, { {0, 1} }},
+  { HID_KEY_X,           1, { {0, 2} }},
+  { HID_KEY_C,           1, { {0, 3} }},
+  { HID_KEY_V,           1, { {0, 4} }},
 
-  { HID_KEY_A,           1, 0},
-  { HID_KEY_S,           1, 1},
-  { HID_KEY_D,           1, 2},
-  { HID_KEY_F,           1, 3},
-  { HID_KEY_G,           1, 4},
+  { HID_KEY_A,           1, { {1, 0} }},
+  { HID_KEY_S,           1, { {1, 1} }},
+  { HID_KEY_D,           1, { {1, 2} }},
+  { HID_KEY_F,           1, { {1, 3} }},
+  { HID_KEY_G,           1, { {1, 4} }},
 
-  { HID_KEY_Q,           2, 0},
-  { HID_KEY_W,           2, 1},
-  { HID_KEY_E,           2, 2},
-  { HID_KEY_R,           2, 3},
-  { HID_KEY_T,           2, 4},
+  { HID_KEY_Q,           1, { {2, 0} }},
+  { HID_KEY_W,           1, { {2, 1} }},
+  { HID_KEY_E,           1, { {2, 2} }},
+  { HID_KEY_R,           1, { {2, 3} }},
+  { HID_KEY_T,           1, { {2, 4} }},
   
-  { HID_KEY_1,           3, 0},
-  { HID_KEY_2,           3, 1},
-  { HID_KEY_3,           3, 2},
-  { HID_KEY_4,           3, 3},
-  { HID_KEY_5,           3, 4},
+  { HID_KEY_1,           1, { {3, 0} }},
+  { HID_KEY_2,           1, { {3, 1} }},
+  { HID_KEY_3,           1, { {3, 2} }},
+  { HID_KEY_4,           1, { {3, 3} }},
+  { HID_KEY_5,           1, { {3, 4} }},
 
-  { HID_KEY_0,           4, 0},
-  { HID_KEY_9,           4, 1},
-  { HID_KEY_8,           4, 2},
-  { HID_KEY_7,           4, 3},
-  { HID_KEY_6,           4, 4},
+  { HID_KEY_0,           1, { {4, 0} }},
+  { HID_KEY_9,           1, { {4, 1} }},
+  { HID_KEY_8,           1, { {4, 2} }},
+  { HID_KEY_7,           1, { {4, 3} }},
+  { HID_KEY_6,           1, { {4, 4} }},
 
-  { HID_KEY_P,           5, 0},
-  { HID_KEY_O,           5, 1},
-  { HID_KEY_I,           5, 2},
-  { HID_KEY_U,           5, 3},
-  { HID_KEY_Y,           5, 4},
+  { HID_KEY_P,           1, { {5, 0} }},
+  { HID_KEY_O,           1, { {5, 1} }},
+  { HID_KEY_I,           1, { {5, 2} }},
+  { HID_KEY_U,           1, { {5, 3} }},
+  { HID_KEY_Y,           1, { {5, 4} }},
 
-  { HID_KEY_ENTER,       6, 0},
-  { HID_KEY_L,           6, 1},
-  { HID_KEY_K,           6, 2},
-  { HID_KEY_J,           6, 3},
-  { HID_KEY_H,           6, 4},
+  { HID_KEY_ENTER,       1, { {6, 0} }},
+  { HID_KEY_L,           1, { {6, 1} }},
+  { HID_KEY_K,           1, { {6, 2} }},
+  { HID_KEY_J,           1, { {6, 3} }},
+  { HID_KEY_H,           1, { {6, 4} }},
 
-  { HID_KEY_SPACE,       7, 0},
-  { HID_KEY_ALT_RIGHT,   7, 1},
-  { HID_KEY_M,           7, 2},
-  { HID_KEY_N,           7, 3},
-  { HID_KEY_B,           7, 4},
+  { HID_KEY_SPACE,       1, { {7, 0} }},
+  { HID_KEY_ALT_RIGHT,   1, { {7, 1} }},
+  { HID_KEY_M,           1, { {7, 2} }},
+  { HID_KEY_N,           1, { {7, 3} }},
+  { HID_KEY_B,           1, { {7, 4} }},
+  
+  { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
 
 };
 
@@ -73,9 +81,9 @@ static int keys_v_comparator(const void *k1, const void *k2) {
   return keys_comparator((ZxSpectrumHidKey *)k1, (ZxSpectrumHidKey *)k2);
 }
 
-const static unsigned int KEYS_LEN = sizeof(KEYS) / sizeof(struct ZxSpectrumHidKey);
+const static unsigned int KEYS_LEN = sizeof(KEYS) / sizeof(ZxSpectrumHidKey);
 
-const static unsigned int KEY_SIZE = sizeof(struct ZxSpectrumHidKey);
+const static unsigned int KEY_SIZE = sizeof(ZxSpectrumHidKey);
 
 static void sort_keys() {
   if (!KEYS_SORTED) {
@@ -153,7 +161,10 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
 
     const ZxSpectrumHidKey *k = findKey(hidKeyCode);
     if (k) {
-      press(k->line, k->key);
+      for (uint32_t c = 0; c < k->contacts; ++c) {
+        const ZxSpectrumKeyContact *contact = &k->contact[c];
+        press(contact->line, contact->key);
+      }
     }
   }
 
