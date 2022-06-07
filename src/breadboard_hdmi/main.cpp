@@ -176,11 +176,6 @@ void __not_in_flash_func(core1_scanline_callback)() {
   }
 }
 
-
-
-
-
-
 void __not_in_flash_func(core1_main)() {
 	dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
 	sem_acquire_blocking(&dvi_start_sem);
@@ -194,7 +189,32 @@ void __not_in_flash_func(core1_main)() {
 	__builtin_unreachable();
 }
 
-extern "C" int __not_in_flash_func(main)() {
+void __not_in_flash_func(main_loop)() {
+	
+	unsigned int lastInterruptFrame = _frames;
+	
+	uint frames = 0;
+	
+	while (1) {
+		tuh_task();
+		for (int i = 1; i < 100; ++i) {
+			if (lastInterruptFrame != _frames) {
+				lastInterruptFrame = _frames;
+				zxSpectrum.interrupt();
+			}
+			zxSpectrum.step();
+			const uint32_t l = zxSpectrum.getSpeaker();
+			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+
+		}
+    if (showMenu && frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
+	}
+}
+
+int main() {
 	vreg_set_voltage(VREG_VSEL);
 	sleep_ms(10);
 #ifdef RUN_FROM_CRYSTAL
@@ -246,25 +266,7 @@ extern "C" int __not_in_flash_func(main)() {
 
 	sem_release(&dvi_start_sem);
 
-	unsigned int lastInterruptFrame = _frames;
-	
-	uint frames = 0;
-	while (1) {
-		tuh_task();
-		for (int i = 1; i < 100; ++i) {
-			if (lastInterruptFrame != _frames) {
-				lastInterruptFrame = _frames;
-				zxSpectrum.interrupt();
-			}
-			zxSpectrum.step();
-			const uint32_t l = zxSpectrum.getSpeaker();
-			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
-
-		}
-    if (showMenu && frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
-    }
-	}
+  main_loop();
+  
 	__builtin_unreachable();
 }

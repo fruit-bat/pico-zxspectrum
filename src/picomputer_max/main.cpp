@@ -178,9 +178,41 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+void __not_in_flash_func(main_loop)() {
 
+  unsigned int lastInterruptFrame = _frames;
+    
+  //Main Loop 
+  uint frames = 0;
+  
+  while(1){
+    
+    tuh_task();
 
-int main(){
+    hid_keyboard_report_t const *curr;
+    hid_keyboard_report_t const *prev;
+    pzx_keyscan_get_hid_reports(&curr, &prev);
+    process_picomputer_kbd_report(curr, prev);
+    
+    for (int i = 1; i < 100; ++i) {
+      if (lastInterruptFrame != _frames) {
+        lastInterruptFrame = _frames;
+        zxSpectrum.interrupt();
+      }
+      zxSpectrum.step();
+      const uint32_t l = zxSpectrum.getSpeaker();
+      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+
+    }
+
+    if (showMenu && frames != _frames) {
+      frames = _frames;
+      picoDisplay.refresh();
+    }
+  }
+}
+
+int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 	//set_sys_clock_khz(180000, true);
@@ -230,8 +262,6 @@ int main(){
     
   sem_release(&dvi_start_sem);
 
-  unsigned int lastInterruptFrame = _frames;
-
   if (quickSave.used(0)) {
     quickSave.load(&zxSpectrum, 0);
   }
@@ -240,32 +270,5 @@ int main(){
   keyboard1.setKiosk(isKiosk);
   keyboard2.setKiosk(isKiosk);
   
-  //Main Loop 
-  uint frames = 0;  
-  while(1){
-    
-    tuh_task();
-
-    hid_keyboard_report_t const *curr;
-    hid_keyboard_report_t const *prev;
-    pzx_keyscan_get_hid_reports(&curr, &prev);
-    process_picomputer_kbd_report(curr, prev);
-    
-    for (int i = 1; i < 100; ++i) {
-      if (lastInterruptFrame != _frames) {
-        lastInterruptFrame = _frames;
-        zxSpectrum.interrupt();
-      }
-      zxSpectrum.step();
-      const uint32_t l = zxSpectrum.getSpeaker();
-      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
-
-    }
-
-    if (showMenu && frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
-    }
-      
-  }
+  main_loop();
 }

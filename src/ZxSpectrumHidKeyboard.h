@@ -23,7 +23,7 @@ public:
     QuickSave* quickSave, 
     ZxSpectrumJoystick * zxSpectrumJoystick
   );
-  int processHidReport(
+  int __not_in_flash_func(processHidReport)(
     hid_keyboard_report_t const *report, 
     hid_keyboard_report_t const *prev_report
   );
