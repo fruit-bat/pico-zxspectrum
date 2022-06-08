@@ -12,6 +12,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi PRIVATE
 	DVI_VERTICAL_REPEAT=2
 	DVI_N_TMDS_BUFFERS=3
 	DVI_1BPP_BIT_REVERSE=1
+	PCS_COLS=80 
+	PCS_ROWS=30	
 )
 
 target_link_libraries(ZxSpectrumBreadboardHdmi

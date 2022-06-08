@@ -17,8 +17,8 @@ pico_generate_pio_header(ZxSpectrumPicomputerMax
 
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
-  -DPCS_COLS=40 
-  -DPCS_ROWS=30
+  PCS_COLS=40 
+  PCS_ROWS=30
 )
 
 target_link_libraries(ZxSpectrumPicomputerMax

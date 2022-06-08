@@ -12,46 +12,58 @@
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
 #define SAVED_TAPES_DIR "/zxspectrum/tapes"
 
+#if PCS_COLS == 40
+#define SZ_WIZ_COLS 40
+#define SZ_WIZ_ML 0
+#define SZ_WIZ_CW1 12
+#define SZ_WIZ_CW2 18
+#else
+#define SZ_WIZ_COLS 70
+#define SZ_WIZ_ML 5
+#define SZ_WIZ_CW1 16
+#define SZ_WIZ_CW2 40
+#endif
+
 ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave) :
- PicoWin(0, 0, 80, 30),
+ PicoWin(0, 0, PCS_COLS, PCS_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
-  _wiz(5, 6, 70, 18),
-  _main(0, 0, 70, 6, 3),
+  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, 18),
+  _main(0, 0, SZ_WIZ_COLS, 6, 3),
   _quickSavesOp("Quick saves"),
   
-  _snapMgr(0, 0, 70, 6, 3),
+  _snapMgr(0, 0, SZ_WIZ_COLS, 6, 3),
   _snapLoadOp("Load"),
   _snapRenameOp("Rename"),
   _snapDeleteOp("Delete"),
   
-  _tapePlayer(0, 0, 70, 6, 3),
+  _tapePlayer(0, 0, SZ_WIZ_COLS, 6, 3),
 
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
-  _chooseTape(0, 0, 70, 9, 2),
-  _chooseSnap(0, 0, 70, 9, 2),
+  _chooseTape(0, 0, SZ_WIZ_COLS, 9, 2),
+  _chooseSnap(0, 0, SZ_WIZ_COLS, 9, 2),
   
-  _reset(0, 0, 70, 6, 3),
+  _reset(0, 0, SZ_WIZ_COLS, 6, 3),
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
 
-  _message(0, 0, 70, 12),
-  _confirm(0, 0, 70, 6, 3),
+  _message(0, 0, SZ_WIZ_COLS, 12),
+  _confirm(0, 0, SZ_WIZ_COLS, 6, 3),
   _confirmNo("No"),
   _confirmYes("Yes"),
   
-  _quickSaves(0, 0, 70, 12, 1),
+  _quickSaves(0, 0, SZ_WIZ_COLS, 12, 1),
   
-  _quickSave(0, 0, 70, 6, 3),
+  _quickSave(0, 0, SZ_WIZ_COLS, 6, 3),
   _quickSaveLoadOp("Load"),
   _quickSaveToSnapOp("Save as SNAP"),
   _quickSaveClearOp("Clear"),
   
   _quickSaveHelper(quickSave),
   
-  _fileName(0, 0,70, 64)
+  _fileName(0, 0,SZ_WIZ_COLS, 64)
 {
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
@@ -73,25 +85,25 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Snapshot", _snapName.c_str());
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Snapshot", SZ_WIZ_CW2, _snapName.c_str());
   });
   _snapOp.toggle([=]() {
     _wiz.push(
       &_snapMgr, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Snapshot", _snapName.c_str());
+        pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Snapshot", SZ_WIZ_CW2, _snapName.c_str());
       },
       true);
   });
   _tapePlayerOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-40s]", "Tape player", _tapeName.c_str());
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Tape player", SZ_WIZ_CW2, _tapeName.c_str());
   });
   _tapePlayerOp.toggle([=]() {
     _wiz.push(
       &_tapePlayer, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"Tape player [ %-40s]", _tapeName.c_str());
+        pen->printAtF(0, 0, false,"Tape player [ %-*s]", SZ_WIZ_CW2, _tapeName.c_str());
       }, 
       true);
   });
@@ -108,7 +120,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       case 0: m = "Unmoderated" ; break;
       default: m = "Unknown" ; break;
     }
-    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "CPU Speed", m);
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "CPU Speed", SZ_WIZ_CW2, m);
   });
   _muteOp.toggle([=]() {
     _zxSpectrum->toggleMute();
@@ -116,7 +128,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   });
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Audio", _zxSpectrum->mute() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Audio", SZ_WIZ_CW2, _zxSpectrum->mute() ? "off" : "on");
   });
   _resetOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -126,7 +138,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       case ZxSpectrum128k: m = "128k ZX Spectrum" ; break;
       default: m = "" ; break;
     }
-    pen->printAtF(0, 0, false,"%-16s[ %-16s ]", "Reset", m);
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Reset", SZ_WIZ_CW2, m);
   });
   _resetOp.toggle([=]() {
     _wiz.push(
@@ -261,7 +273,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   
   _pauseTapeOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-16s[ %-12s]", "Motor", _zxSpectrum->tapePaused() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Motor", SZ_WIZ_CW2, _zxSpectrum->tapePaused() ? "off" : "on");
   });
   _pauseTapeOp.toggle([=]() {
     _zxSpectrum->togglePauseTape();
@@ -359,10 +371,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(0, 2, false, "Menu System version 0.1");
+     pen->printAt(0, 2, false, "Menu System version 0.2");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
-     pen->printAt(80-14, 29, false, "ESC to go back");
+     pen->printAt(SZ_WIZ_COLS-14, 29, false, "ESC to go back");
    }); 
 }
 
