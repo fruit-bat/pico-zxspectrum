@@ -20,6 +20,7 @@ extern "C" {
 #include "common_dvi_pin_configs.h"
 #include "tmds_encode_zxspectrum.h"
 }
+#include "ZxSpectrumFatSpiKiosk.h"
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumHidJoystick.h"
@@ -62,19 +63,48 @@ struct semaphore dvi_start_sem;
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(&sdCard0, "zxspectrum/snapshots");
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(&sdCard0, "zxspectrum/tapes");
-static QuickSave quickSave(&sdCard0, "zxspectrum/quicksaves");
+static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
+  &sdCard0,
+  "zxspectrum"
+);
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
+  &sdCard0, 
+  "zxspectrum/snapshots"
+);
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
+  &sdCard0, 
+  "zxspectrum/tapes"
+);
+static QuickSave quickSave(
+  &sdCard0, 
+  "zxspectrum/quicksaves"
+);
 static ZxSpectrumHidJoystick joystick;
-static ZxSpectrumHidKeyboard keyboard(&zxSpectrumSnaps, &zxSpectrumTapes, &quickSave, &joystick);
-static ZxSpectrum zxSpectrum(&keyboard, 0, &joystick);
+static ZxSpectrumHidKeyboard keyboard(
+  &zxSpectrumSnaps,
+  &zxSpectrumTapes,
+  &quickSave,
+  &joystick
+);
+static ZxSpectrum zxSpectrum(
+  &keyboard, 
+  0, 
+  &joystick
+);
+static ZxSpectrumMenu picoRootWin(
+  &sdCard0,
+  &zxSpectrum,
+  &quickSave
+);
+static PicoDisplay picoDisplay(
+  pcw_screen(),
+  &picoRootWin
+);
+static PicoWinHidKeyboard picoWinHidKeyboard(
+  &picoDisplay
+);
 
-// Menu system
-static ZxSpectrumMenu picoRootWin(&sdCard0, &zxSpectrum, &quickSave);
-static PicoDisplay picoDisplay(pcw_screen(), &picoRootWin);
-static PicoWinHidKeyboard picoWinHidKeyboard(&picoDisplay);
-
-static bool showMenu = true;
+static bool showMenu = false;
 static bool toggleMenu = false;
 
 extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -265,6 +295,13 @@ int main() {
 	multicore_launch_core1(core1_main);
 
 	sem_release(&dvi_start_sem);
+
+  if (quickSave.used(0)) {
+    quickSave.load(&zxSpectrum, 0);
+  }
+
+  bool isKiosk = zxSpectrumKisok.isKiosk();
+  keyboard.setKiosk(isKiosk);
 
   main_loop();
   
