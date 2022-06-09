@@ -1,25 +1,24 @@
 
 add_executable(ZxSpectrumPicomputerVga
   ${zxspectrum_common_src}
-	main.cpp
-	hw_config.c
-  ZxSpectrumPicomputerVgaJoystick.cpp
-	pzx_prepare_vga332_scanline.cpp
-	pzx_keyscan.cpp  
+  ${picomputer_common_src}
+  main.cpp
+  pzx_prepare_vga332_scanline.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
-  -DPCS_COLS=80 
-  -DPCS_ROWS=30
+  PCS_COLS=80 
+  PCS_ROWS=30
+  PICOMPUTER_VGA
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga
   ${zxspectrum_common_libs}
-	pico_emu_utils
+  pico_emu_utils
   pico_vga_menu
   pico_vga_332
-	tinyusb_host
-	tinyusb_board
+  tinyusb_host
+  tinyusb_board
   hardware_pio
   hardware_pwm
 )

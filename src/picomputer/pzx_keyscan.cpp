@@ -7,10 +7,32 @@
 #include "pzx_keyscan.h"
 
 #define SAMPLES 4 
-#define HID_KEY_HASH 0x32
 
-static uint8_t cp[] = {20, 21, 22, 26, 27, 28};  // Column pins
-static uint8_t rp[] = {14, 15, 16, 17, 18, 19};  // Row pins
+#define CP_VGA 20, 21, 22, 26, 27, 28
+#define CP_MAX 1, 2, 3, 4, 5, 14
+#define RP_VGA 14, 15, 16, 17, 18, 19
+#define RP_MAX 6, 9, 15, 8, 7, 22
+#define CP_SHIFT_VGA 20
+#define CP_SHIFT_MAX 1
+#define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
+#define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
+
+
+#ifdef PICOMPUTER_VGA
+  #define CP CP_VGA
+  #define RP RP_VGA
+  #define CP_JOIN CP_JOIN_VGA
+  #define CP_SHIFT CP_SHIFT_VGA
+#endif
+#ifdef PICOMPUTER_MAX
+  #define CP CP_MAX
+  #define RP RP_MAX
+  #define CP_JOIN CP_JOIN_MAX
+  #define CP_SHIFT CP_SHIFT_MAX
+#endif
+
+static uint8_t cp[] = {CP};                      // Column pins
+static uint8_t rp[] = {RP};                      // Row pins
 static uint8_t rs[6][SAMPLES];                   // Oversampled pins
 static uint8_t rdb[6];                           // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
@@ -101,8 +123,9 @@ void pzx_keyscan_init() {
 void __not_in_flash_func(pzx_keyscan_row)() {
   static uint32_t ri = 0;
   static uint32_t si = 0;
-  uint32_t a = ~(gpio_get_all() >> 20);
-  uint32_t r = (a & 7) | ((a >> 3) & (7 << 3));
+  uint32_t a = ~(gpio_get_all() >> CP_SHIFT);
+
+  uint32_t r = CP_JOIN(a);
   rs[ri][si] = (uint8_t)r;
   uint32_t row;
   row = rp[ri];
