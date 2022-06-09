@@ -19,13 +19,15 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * Kempston and Sinclair joystick emulation
 
 ## Experimental
-* VGA output
+* VGA output 60Hz (RGB332)
+* LCD output 50Hz (st7789)
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
 <img src="docs/retrovga.png" width="200"/>
 </a>
+* Support for PicomputerMax
 
-### RetroVGA keyboard mappings
+### RetroVGA and Picomputer keyboard mappings
 Trying to squeeze in all the key mappings is tricky but here is an attempt.
 
 These are the nomal key mappings:<br/>
@@ -208,7 +210,10 @@ make -j4
 
 Copy the relevant version to your board:
 ```sh
-cp ./bin/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+cp ./bin/picomputer/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+```
+```sh
+cp ./bin/picomputer/picomputer_max/ZxSpectrumPicomputerMax.uf2 /media/pi/RPI-RP2/
 ```
 or
 ```sh
