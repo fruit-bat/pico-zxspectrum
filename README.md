@@ -146,7 +146,10 @@ or, for the RetroVGA board use:
 ```sh
 cp ZxSpectrumPicocomputerVga.uf2 /media/pi/RPI-RP2/
 ```
-
+or, for the PicomputerMax board use:
+```sh
+cp ZxSpectrumPicocomputerMax.uf2 /media/pi/RPI-RP2/
+```
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
