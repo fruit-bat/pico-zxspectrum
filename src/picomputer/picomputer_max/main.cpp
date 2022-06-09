@@ -177,7 +177,7 @@ void __not_in_flash_func(core1_main)() {
       pzx_keyscan_row();
     }
     
-    t1 -= 20000;
+    t1 += 20000;
   }
   __builtin_unreachable();
 }
