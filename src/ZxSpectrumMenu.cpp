@@ -374,7 +374,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
      pen->printAt(0, 2, false, "Menu System version 0.2");
 
      pen->printAt(0, 29, false, "F1 to exit menu");
-     pen->printAt(SZ_WIZ_COLS-14, 29, false, "ESC to go back");
+     pen->printAt(PCS_COLS-14, 29, false, "ESC to go back");
    }); 
 }
 

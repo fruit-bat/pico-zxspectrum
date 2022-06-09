@@ -1,16 +1,15 @@
 
 add_executable(ZxSpectrumPicomputerVga
   ${zxspectrum_common_src}
-	main.cpp
-	hw_config.c
-  ZxSpectrumPicomputerVgaJoystick.cpp
-	pzx_prepare_vga332_scanline.cpp
-	pzx_keyscan.cpp  
+  ${picomputer_common_src}
+  main.cpp
+  pzx_prepare_vga332_scanline.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
   PCS_COLS=80 
   PCS_ROWS=30
+  PICOMPUTER_VGA
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga

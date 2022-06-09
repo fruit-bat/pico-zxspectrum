@@ -18,7 +18,6 @@
 #define PIN_CLK 18
 #define PIN_CS 21
 #define PIN_DC 16
-// #define PIN_RESET 4
 #define PIN_BL 20
 
 #define SERIAL_CLK_DIV 1.f
@@ -80,18 +79,14 @@ void st7789_init(PIO pio, uint sm) {
 
     gpio_init(PIN_CS);
     gpio_init(PIN_DC);
-//    gpio_init(PIN_RESET);
     gpio_init(PIN_BL);
     gpio_set_dir(PIN_CS, GPIO_OUT);
     gpio_set_dir(PIN_DC, GPIO_OUT);
-//    gpio_set_dir(PIN_RESET, GPIO_OUT);
     gpio_set_dir(PIN_BL, GPIO_OUT);
 
     gpio_put(PIN_CS, 1);
-//    gpio_put(PIN_RESET, 1);
     lcd_init(pio, sm, st7789_init_seq);
     gpio_put(PIN_BL, 1);
-
 
     st7789_start_pixels(pio, sm);
     st7789_lcd_wait_idle(pio, sm);

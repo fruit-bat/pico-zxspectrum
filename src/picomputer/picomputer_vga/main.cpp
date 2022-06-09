@@ -4,12 +4,12 @@
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 
-#include "pzx_prepare_rgb444_scanline.h"
-#include "PicoCharRendererSt7789.h"
-#include "st7789_lcd.h"
 
+#include "vga.h"
+#include "pzx_prepare_vga332_scanline.h"
 #include "pzx_keyscan.h"
 
+#include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoPen.h"
@@ -21,7 +21,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
-#include "ZxSpectrumPicomputerVgaJoystick.h"
+#include "ZxSpectrumPicomputerJoystick.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -35,13 +35,14 @@
 #include "ZxSpectrumMenu.h"
 
 #define LED_PIN 25
-#define SPK_PIN 0
+#define SPK_PIN 9
 #define PWM_WRAP (256 + 256 + 256 + 256 + 256)
 #define PWM_MID (PWM_WRAP>>1)
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
+static const sVmode* vmode = NULL;
 
 uint8_t* screenPtr;
 uint8_t* attrPtr;
@@ -62,10 +63,10 @@ static QuickSave quickSave(
   "zxspectrum/quicksaves"
 );
 static ZxSpectrumHidJoystick hidJoystick;
-static ZxSpectrumPicomputerVgaJoystick picomputerVgaJoystick;
+static ZxSpectrumPicomputerJoystick picomputerJoystick;
 static ZxSpectrumDualJoystick dualJoystick(
   &hidJoystick, 
-  &picomputerVgaJoystick
+  &picomputerJoystick
 );
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
@@ -81,7 +82,7 @@ static ZxSpectrumHidKeyboard keyboard2(
   &zxSpectrumSnaps, 
   &zxSpectrumTapes,
   &quickSave, 
-  &picomputerVgaJoystick
+  &picomputerJoystick
 );
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
@@ -127,61 +128,59 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   if (r == 1) toggleMenu = true;
 }
 
-
-static  PIO pio = pio0;
-static  uint sm = 0;
-
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
+  // TODO fetch the resolution from the mode ?
+  VgaInit(vmode,640,480);
+
   while (1) {
-    uint32_t t1 = time_us_32();
 
-    for (uint y = 0; y < 240; ++y) {
-      if (showMenu) {
-        pcw_send_st7789_scanline(
-          pio, 
-          sm,
-          y,
-          _frames);
-      }
-      else {  
-        pzx_send_rgb444_scanline(
-          pio, 
-          sm,
-          y,
-          _frames,
-          screenPtr,
-          attrPtr,
-          zxSpectrum.borderColour()); 
-      }
-
-      pzx_keyscan_row();
+    VgaLineBuf *linebuf = get_vga_line();
+    uint32_t* buf = (uint32_t*)&(linebuf->line);
+    uint32_t y = linebuf->row;
+    if (showMenu) {
+      pcw_prepare_vga332_scanline_80(
+        buf,
+        y,
+        linebuf->frame);
     }
-    _frames++;
-
-    // TODO Tidy this mechanism up
-    screenPtr = zxSpectrum.screenPtr();
-    attrPtr = screenPtr + (32 * 24 * 8);
+    else {
+      pzx_prepare_vga332_scanline(
+        buf, 
+        y, 
+        linebuf->frame,
+        screenPtr,
+        attrPtr,
+        zxSpectrum.borderColour()
+      );
+    }
+      
+    pzx_keyscan_row();
     
-    if (toggleMenu) {
-      showMenu = !showMenu;
-      toggleMenu = false;
-    }
-   
-    while((time_us_32() - t1) < 20000) {
-      sleep_us(100);
-      pzx_keyscan_row();
-    }
+    if (y == 239) { // TODO use a const / get from vmode
+      
+      // TODO Tidy this mechanism up
+      screenPtr = zxSpectrum.screenPtr();
+      attrPtr = screenPtr + (32 * 24 * 8);
+      
+      if (toggleMenu) {
+        showMenu = !showMenu;
+        toggleMenu = false;
+        picomputerJoystick.enabled(!showMenu);
+      }
+      
+      _frames = linebuf->frame;
+    }    
   }
   __builtin_unreachable();
 }
 
-void __not_in_flash_func(main_loop)() {
+void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;
-    
+
   //Main Loop 
   uint frames = 0;
   
@@ -212,10 +211,11 @@ void __not_in_flash_func(main_loop)() {
   }
 }
 
-int main() {
+int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  set_sys_clock_khz(133000, true);
+  vmode = Video(DEV_VGA, RES_HVGA);
+  sleep_ms(100);
 
   //Initialise I/O
   stdio_init_all(); 
@@ -250,12 +250,9 @@ int main() {
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
-
-  // Start up the LCD
-  st7789_init(pio, sm);
   
   sleep_ms(10);
-   
+  
   sem_init(&dvi_start_sem, 0, 1);
   
   multicore_launch_core1(core1_main);

@@ -18,11 +18,18 @@
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
 
 
-// TODO switch on board type
-#define CP CP_MAX
-#define RP RP_MAX
-#define CP_JOIN CP_JOIN_MAX
-#define CP_SHIFT CP_SHIFT_MAX
+#ifdef PICOMPUTER_VGA
+  #define CP CP_VGA
+  #define RP RP_VGA
+  #define CP_JOIN CP_JOIN_VGA
+  #define CP_SHIFT CP_SHIFT_VGA
+#endif
+#ifdef PICOMPUTER_MAX
+  #define CP CP_MAX
+  #define RP RP_MAX
+  #define CP_JOIN CP_JOIN_MAX
+  #define CP_SHIFT CP_SHIFT_MAX
+#endif
 
 static uint8_t cp[] = {CP};                      // Column pins
 static uint8_t rp[] = {RP};                      // Row pins
