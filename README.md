@@ -22,10 +22,10 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * VGA output 60Hz (RGB332)
 * LCD output 50Hz (st7789)
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
+* Support for PicomputerMax
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
 <img src="docs/retrovga.png" width="200"/>
 </a>
-* Support for PicomputerMax
 
 ### RetroVGA and Picomputer keyboard mappings
 Trying to squeeze in all the key mappings is tricky but here is an attempt.
