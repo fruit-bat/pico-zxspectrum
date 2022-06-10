@@ -188,15 +188,19 @@ void __not_in_flash_func(main_loop)() {
     
   //Main Loop 
   uint frames = 0;
+  uint c = 0;
   
   while(1){
     
-    tuh_task();
-
-    hid_keyboard_report_t const *curr;
-    hid_keyboard_report_t const *prev;
-    pzx_keyscan_get_hid_reports(&curr, &prev);
-    process_picomputer_kbd_report(curr, prev);
+    if (c++ & 1) {
+      tuh_task();
+    }
+    else {
+      hid_keyboard_report_t const *curr;
+      hid_keyboard_report_t const *prev;
+      pzx_keyscan_get_hid_reports(&curr, &prev);
+      process_picomputer_kbd_report(curr, prev);
+    }
     
     for (int i = 1; i < 100; ++i) {
       if (lastInterruptFrame != _frames) {
@@ -219,7 +223,7 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  set_sys_clock_khz(133000, true);
+  set_sys_clock_khz(166000, true);
 
   //Initialise I/O
   stdio_init_all(); 
