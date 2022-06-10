@@ -56,6 +56,7 @@ private:
   std::string _tapeName;
   std::string _snapName;
 
+  PicoWin _devices;
   PicoWin _message;
   PicoSelect _confirm;
   PicoOptionText _confirmNo;

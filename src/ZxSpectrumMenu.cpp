@@ -49,6 +49,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
 
+  _devices(0, 3, SZ_WIZ_COLS, 1),
+
   _message(0, 0, SZ_WIZ_COLS, 12),
   _confirm(0, 0, SZ_WIZ_COLS, 6, 3),
   _confirmNo("No"),
@@ -65,6 +67,14 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   
   _fileName(0, 0,SZ_WIZ_COLS, 64)
 {
+  addChild(&_devices, false);
+  _devices.onPaint([=](PicoPen *pen){
+    bool jl = _zxSpectrum->joystick()->isConnectedL();
+    bool jr = _zxSpectrum->joystick()->isConnectedR();
+    pen->printAtF(0, 0, false,"Joysticks: %s%s%s   ", (jl ? "L" : ""), (!jl && !jr ? "none" : (jl && jr ? "&" : "")), (jr ? "R" : ""));
+    _devices.repaint();
+  });
+  
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
   _wiz.onKeydown([=](uint8_t keycode, uint8_t modifiers, uint8_t ascii) {

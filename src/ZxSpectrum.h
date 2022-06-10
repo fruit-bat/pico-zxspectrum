@@ -210,4 +210,5 @@ public:
   bool tapePaused() { return _pauseTape; }
   void pauseTape(bool pause) { _pauseTape = pause; }
   void togglePauseTape() { _pauseTape = !_pauseTape; }
+  ZxSpectrumJoystick *joystick() { return _joystick; }
 };

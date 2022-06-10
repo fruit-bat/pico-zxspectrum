@@ -9,6 +9,16 @@ ZxSpectrumHidJoystick::ZxSpectrumHidJoystick() :
 {
 }
 
+bool ZxSpectrumHidJoystick::isConnectedL() {
+  tusb_hid_simple_joysick_t* simple_joysticks[2];
+  return tuh_hid_get_simple_joysticks(simple_joysticks, 2) > 0;
+}
+
+bool ZxSpectrumHidJoystick::isConnectedR() {
+  tusb_hid_simple_joysick_t* simple_joysticks[2];
+  return tuh_hid_get_simple_joysticks(simple_joysticks, 2) > 1;
+}
+
 void ZxSpectrumHidJoystick::decode() {
   tusb_hid_simple_joysick_t* simple_joysticks[2];
   uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
