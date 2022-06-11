@@ -71,15 +71,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _devices.onPaint([=](PicoPen *pen){
     bool jl = _zxSpectrum->joystick()->isConnectedL();
     bool jr = _zxSpectrum->joystick()->isConnectedR();
-    bool jp = jl & jr;
     bool k1 = _zxSpectrum->keyboard1() && _zxSpectrum->keyboard1()->isMounted();
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
-    bool kp = k1 & k2;
     pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s",
-       (jp ? "s" : ""),
-       (jl ? "L" : ""), (!jl && !jr ? "none" : (jp ? "&" : "")), (jr ? "R" : ""),
-       (kp ? "s" : ""),
-       (k1 ? "1" : ""), (!k1 && !k2 ? "none" : (kp ? "&" : "")), (k2 ? "2" : "")
+       (jl == jr ? "s" : ""),
+       (jl ? "L" : ""), (!jl && !jr ? "none" : (jl & jr ? "&" : "")), (jr ? "R" : ""),
+       (k1 == k2 ? "s" : ""),
+       (k1 ? "1" : ""), (!k1 && !k2 ? "none" : (k1 & k2 ? "&" : "")), (k2 ? "2" : "")
        );
     _devices.repaint();
   });
