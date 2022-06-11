@@ -12,6 +12,7 @@ class ZxSpectrumHidKeyboard : public ZxSpectrumKeyboard {
   ZxSpectrumFileLoop* _zxSpectrumTapeList;
   QuickSave* _quickSave;
   bool _kiosk;
+  uint8_t _mounted;
 public:
   ZxSpectrumHidKeyboard(
     ZxSpectrumFileLoop* zxSpectrumSnapList,
@@ -29,4 +30,7 @@ public:
   );
   void setZxSpectrum(ZxSpectrum *ZxSpectrum) { _ZxSpectrum = ZxSpectrum; }
   void setKiosk(bool kiosk) { _kiosk = kiosk; }
+  virtual bool isMounted() { return _mounted > 0; }
+  void mount() { _mounted++; }
+  void unmount() { _mounted--; }
 };

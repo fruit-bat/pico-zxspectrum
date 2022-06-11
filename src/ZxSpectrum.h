@@ -211,4 +211,7 @@ public:
   void pauseTape(bool pause) { _pauseTape = pause; }
   void togglePauseTape() { _pauseTape = !_pauseTape; }
   ZxSpectrumJoystick *joystick() { return _joystick; }
+  ZxSpectrumKeyboard *keyboard1() { return _keyboard1; }
+  ZxSpectrumKeyboard *keyboard2() { return _keyboard2; }
+
 };

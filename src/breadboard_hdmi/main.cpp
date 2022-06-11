@@ -107,7 +107,15 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = false;
 static bool toggleMenu = false;
 
-extern "C"  void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
+	keyboard.mount();
+}
+
+extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
+	keyboard.unmount();
+}
+
+extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);

@@ -42,4 +42,6 @@ public:
     //if (a != 0xff) printf("input %04X %02X\n", address, a);
     return a;
   }
+  
+  virtual bool isMounted() { return false; }
 };
