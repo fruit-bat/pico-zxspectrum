@@ -4,25 +4,26 @@
 <img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>
 <img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
 
-This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI output.
+This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
 Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
 
 ## Features
-* DVI over HDMI output
+* DVI over HDMI/LCD/VGA video
 * USB Keyboard & Joysticks
 * PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
-* On screen menu system (work in progress)
+* On screen menu system
 * Kempston and Sinclair joystick emulation
 
 ## Experimental
-* VGA output 60Hz (RGB332)
-* LCD output 50Hz (st7789)
+* VGA output (RGB332)
+* LCD output (ST7789 320x240)
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * Support for PicomputerMax
+* Support for PicomputerZX
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
 <img src="docs/retrovga.png" width="200"/>
 </a>
@@ -142,13 +143,17 @@ For the wiring show above use:
 ```sh
 cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
-or, for the RetroVGA board use:
+For the RetroVGA board use:
 ```sh
 cp ZxSpectrumPicocomputerVga.uf2 /media/pi/RPI-RP2/
 ```
-or, for the PicomputerMax board use:
+For the PicomputerMax board use:
 ```sh
 cp ZxSpectrumPicocomputerMax.uf2 /media/pi/RPI-RP2/
+```
+For the PicomputerZX board use:
+```sh
+cp ZxSpectrumPicocomputerZX.uf2 /media/pi/RPI-RP2/
 ```
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)

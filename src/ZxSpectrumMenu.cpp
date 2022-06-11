@@ -12,6 +12,9 @@
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
 #define SAVED_TAPES_DIR "/zxspectrum/tapes"
 
+#ifndef SZ_TITLE_MARGIN
+#define SZ_TITLE_MARGIN 0
+#endif
 #if PCS_COLS == 40
 #define SZ_WIZ_COLS 40
 #define SZ_WIZ_ML 0
@@ -49,7 +52,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
 
-  _devices(0, 3, SZ_WIZ_COLS, 1),
+  _devices(SZ_TITLE_MARGIN, 3, SZ_WIZ_COLS, 1),
 
   _message(0, 0, SZ_WIZ_COLS, 12),
   _confirm(0, 0, SZ_WIZ_COLS, 6, 3),
@@ -386,12 +389,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   });
   
   onPaint([](PicoPen *pen) {
-     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
-     pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(0, 2, false, "Menu System version 0.2");
+     pen->printAt(SZ_TITLE_MARGIN, 0, false, "ZX Spectrum 48K/128K emulator");
+     pen->printAtF(SZ_TITLE_MARGIN, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
+     pen->printAt(SZ_TITLE_MARGIN, 2, false, "Menu System version 0.2");
 
-     pen->printAt(0, 29, false, "F1 to exit menu");
-     pen->printAt(PCS_COLS-14, 29, false, "ESC to go back");
+     pen->printAt(SZ_TITLE_MARGIN, 29, false, "F1 to exit menu");
+     pen->printAt(PCS_COLS-SZ_TITLE_MARGIN-14, 29, false, "ESC to go back");
    }); 
 }
 

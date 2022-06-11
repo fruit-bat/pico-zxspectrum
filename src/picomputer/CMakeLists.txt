@@ -8,4 +8,4 @@ set(picomputer_common_src
 )
 
 add_subdirectory(picomputer_vga)
-add_subdirectory(picomputer_max)
+add_subdirectory(picomputer_st7789)

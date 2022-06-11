@@ -24,7 +24,7 @@
   #define CP_JOIN CP_JOIN_VGA
   #define CP_SHIFT CP_SHIFT_VGA
 #endif
-#ifdef PICOMPUTER_MAX
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX)
   #define CP CP_MAX
   #define RP RP_MAX
   #define CP_JOIN CP_JOIN_MAX
