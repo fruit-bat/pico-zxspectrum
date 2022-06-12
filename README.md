@@ -18,6 +18,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
+## Updates
+* 12/06/222 - Much better sound with 2 pin audio output
+
 ## Experimental
 * VGA output (RGB332)
 * LCD output (ST7789 320x240)
@@ -89,11 +92,11 @@ zxspectrum/kiosk.txt
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
 ### Audio filter
-High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio.
+High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio:
 
 ![image](docs/audio_filter_mk2.png)
 
-Designs that only have a single GPIO pin available can still have the audio mixed digitally.
+Designs that only have a single GPIO pin available can still have the audio mixed digitally:
 
 ![image](docs/audio_filter_mk1.png)
 
