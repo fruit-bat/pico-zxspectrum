@@ -19,7 +19,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * Kempston and Sinclair joystick emulation
 
 ## Updates
-* 12/06/222 - Much better sound with 2 pin audio output
+* 12/06/222 - Much better sound with 2 pin audio output (HDMI version only)
 
 ## Experimental
 * VGA output (RGB332)
