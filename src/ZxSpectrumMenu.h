@@ -25,6 +25,7 @@ private:
   PicoQuickKeyAscii _k4;
   PicoQuickKeyAscii _k5;
   PicoQuickKeyAscii _k6;
+  PicoQuickKeyAscii _k7;
 
   PicoWiz _wiz;
   PicoSelect _main;
@@ -34,6 +35,7 @@ private:
   PicoOption _freqOp;
   PicoOption _muteOp;
   PicoOption _resetOp;
+  PicoOption _joystickOp;
   PicoOptionText _quickSavesOp;
 
   PicoSelect _snapMgr;
@@ -52,6 +54,10 @@ private:
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
   PicoOptionText _reset128kOp;
+
+  PicoSelect _joystick;
+  PicoOptionText _joystickKemstonOp;
+  PicoOptionText _joystickSinclairOp;
 
   std::string _tapeName;
   std::string _snapName;
