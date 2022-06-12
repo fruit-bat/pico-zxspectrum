@@ -18,6 +18,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
+## Updates
+* 12/06/222 - Much better sound with 2 pin audio output (HDMI version only)
+
 ## Experimental
 * VGA output (RGB332)
 * LCD output (ST7789 320x240)
@@ -80,6 +83,7 @@ zxspectrum/kiosk.txt
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 | GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
+| GP21  |       | 21    | 27    |           |           |           | Digital audio out      |
 
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
@@ -88,10 +92,13 @@ zxspectrum/kiosk.txt
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
 ### Audio filter
-It's a good idea to filter out high frequencies from the PWM audio output.
-The following components were chosen as I found them in a draw... but it sounds ok.
+High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio:
 
-![image](docs/circuit.png)
+![image](docs/audio_filter_mk2.png)
+
+Designs that only have a single GPIO pin available can still have the audio mixed digitally:
+
+![image](docs/audio_filter_mk1.png)
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">

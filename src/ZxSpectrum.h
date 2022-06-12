@@ -203,6 +203,14 @@ public:
     const int32_t a2 = _ear ? 64 : -63;
     return a1 + a2 + _ay.vol();
   }
+  int32_t getAnalogueAudio() {
+    return _mute ? 0 : _ay.vol();
+  }
+  bool getBuzzer() {
+//    return _mute ? false : ((_port254 >> 4) & 1) ^ _ear;
+    return ((_port254 >> 4) & 1) != 0;
+  }
+  
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);

@@ -54,7 +54,8 @@ extern "C" {
 // Should be 25 for pico ?
 #define LED_PIN 25
 #define SPK_PIN 20
-#define PWM_WRAP (256 + 256 + 256 + 256 + 256)
+#define BZR_PIN 21
+#define PWM_WRAP (256 + 256 + 256)
 #define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;
@@ -241,8 +242,9 @@ void __not_in_flash_func(main_loop)() {
 				zxSpectrum.interrupt();
 			}
 			zxSpectrum.step();
-			const uint32_t l = zxSpectrum.getSpeaker();
+			const uint32_t l = zxSpectrum.getAnalogueAudio();
 			pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+			gpio_put(BZR_PIN, zxSpectrum.getBuzzer());
 
 		}
     if (showMenu && frames != _frames) {
@@ -267,6 +269,8 @@ int main() {
     
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, GPIO_OUT);
+	gpio_init(BZR_PIN);
+	gpio_set_dir(BZR_PIN, GPIO_OUT);
 
 	gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
 	const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
