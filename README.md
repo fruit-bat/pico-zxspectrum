@@ -95,7 +95,7 @@ High frequencies need to be filtered out of the PWM audio output and mixed with 
 
 Designs that only have a single GPIO pin available can still have the audio mixed digitally.
 
-![image](docs/circuit.png)
+![image](docs/audio_filter_mk1.png)
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
