@@ -76,7 +76,7 @@ private:
           if (_keyboard2) kb &= _keyboard2->read(address);
           return kb | (_ear ? (1<<6) : 0) ;
         }
-        case 0x1f: return _joystick ? _joystick->kempston() : 0;
+        case 0x1f: return _joystick ? _joystick->getKempston() : 0;
         default: return 0xff;
       }
     }

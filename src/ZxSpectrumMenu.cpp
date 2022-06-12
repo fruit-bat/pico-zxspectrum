@@ -31,9 +31,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
  PicoWin(0, 0, PCS_COLS, PCS_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), 
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, 18),
-  _main(0, 0, SZ_WIZ_COLS, 6, 3),
+  _main(0, 0, SZ_WIZ_COLS, 7, 2),
   _quickSavesOp("Quick saves"),
   
   _snapMgr(0, 0, SZ_WIZ_COLS, 6, 3),
@@ -51,6 +51,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _reset(0, 0, SZ_WIZ_COLS, 6, 3),
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
+  
+  _joystick(0, 0, SZ_WIZ_COLS, 6, 3),
+  _joystickKemstonOp("Kemptson"),
+  _joystickSinclairOp("Sinclair"),
 
   _devices(SZ_TITLE_MARGIN, 3, SZ_WIZ_COLS, 1),
 
@@ -101,6 +105,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _main.addOption(_freqOp.addQuickKey(&_k4));
   _main.addOption(_muteOp.addQuickKey(&_k5));
   _main.addOption(_resetOp.addQuickKey(&_k6));
+  _main.addOption(_joystickOp.addQuickKey(&_k7));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -164,6 +169,25 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     _wiz.push(
       &_reset, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Reset options"); }, 
+      true);
+  });
+  
+  _joystickOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m = "N/A";
+    if (_zxSpectrum->joystick()) {
+      switch(_zxSpectrum->joystick()->mode()) {
+        case ZxSpectrumJoystickModeKempston: m = "Kemptson" ; break;
+        case ZxSpectrumJoystickModeSinclair: m = "Sinclair" ; break;
+        default: m = "N/A" ; break;
+      }
+    }
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Joystick", SZ_WIZ_CW2, m);
+  });
+  _joystickOp.toggle([=]() {
+    _wiz.push(
+      &_joystick, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Joystick mode"); }, 
       true);
   });
   
@@ -270,6 +294,23 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _reset128kOp.toggle([=]() {
     _snapName.clear();
     _zxSpectrum->reset(ZxSpectrum128k);
+    _wiz.pop(true);
+  });
+
+  _joystick.addOption(_joystickKemstonOp.addQuickKey(&_k1));
+  _joystick.addOption(_joystickSinclairOp.addQuickKey(&_k2));
+  _joystick.enableQuickKeys();
+
+  _joystickKemstonOp.toggle([=]() {
+    if (_zxSpectrum->joystick()) {
+      _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeKempston);
+    }
+    _wiz.pop(true);
+  });
+  _joystickSinclairOp.toggle([=]() {
+    if (_zxSpectrum->joystick()) {
+      _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeSinclair);
+    }
     _wiz.pop(true);
   });
 
