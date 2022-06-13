@@ -232,9 +232,8 @@ public:
     return _reg.r8[_l];
   }
 
-  int32_t __not_in_flash_func(vol)() {
-    int32_t v = 0;
-   
+  inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
+
     const uint32_t m = mixer();
     const uint32_t nm = ~m;
     const uint32_t nme = (nm >> 3) | nm;
@@ -245,16 +244,14 @@ public:
     const uint32_t aB = _envB ? ae : _volB;
     const uint32_t aC = _envC ? ae : _volC;
     
-    if (nme & 0x01) {
-      v += mtb & 0x01 ? aA + 1: -aA;
-    }
-    if (nme & 0x02) {
-      v += mtb & 0x02 ? aB + 1: -aB;
-    }
-    if (nme & 0x04) {
-      v += mtb & 0x04 ? aC + 1: -aC;
-    }
-    
-    return v >> 1;
+    vA = nme & 0x01 ? (mtb & 0x01 ? aA + 1: -aA) : 0;
+    vB = nme & 0x02 ? (mtb & 0x02 ? aB + 1: -aB) : 0;
+    vC = nme & 0x04 ? (mtb & 0x04 ? aC + 1: -aC) : 0;
+  }
+
+  int32_t __not_in_flash_func(vol)() {
+    uint32_t vA, vB, vC;
+    vol(vA, vB, vC);
+    return (vA + vB + vC) >> 1;
   }
 };
