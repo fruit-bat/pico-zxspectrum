@@ -231,7 +231,7 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  set_sys_clock_khz(166000, true);
+  set_sys_clock_khz(200000, true);
 
   //Initialise I/O
   stdio_init_all(); 

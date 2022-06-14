@@ -12,60 +12,75 @@
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
 #define SAVED_TAPES_DIR "/zxspectrum/tapes"
 
-#ifndef SZ_TITLE_MARGIN
-#define SZ_TITLE_MARGIN 0
+#ifndef SZ_WIZ_ML
+#define SZ_WIZ_ML 3
 #endif
-#if PCS_COLS == 40
-#define SZ_WIZ_COLS 40
-#define SZ_WIZ_ML 0
-#define SZ_WIZ_CW1 12
-#define SZ_WIZ_CW2 18
-#else
-#define SZ_WIZ_COLS 70
-#define SZ_WIZ_ML 5
+#ifndef SZ_WIZ_CW1
 #define SZ_WIZ_CW1 16
+#endif
+#ifndef SZ_WIZ_CW2
 #define SZ_WIZ_CW2 40
 #endif
+#ifndef SZ_FRAME_COLS
+#define SZ_FRAME_COLS 80
+#endif
+#ifndef SZ_FRAME_ROWS
+#define SZ_FRAME_ROWS 30
+#endif
+#ifndef SZ_FRAME_X
+#define SZ_FRAME_X 0
+#endif
+#ifndef SZ_FRAME_Y
+#define SZ_FRAME_Y 0
+#endif
+#ifndef SZ_MENU_SEP
+#define SZ_MENU_SEP 2
+#endif
+#ifndef SZ_FILE_ROWS
+#define SZ_FILE_ROWS 9
+#endif
+
+#define SZ_WIZ_COLS (SZ_FRAME_COLS-(2*SZ_WIZ_ML))
 
 ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave) :
- PicoWin(0, 0, PCS_COLS, PCS_ROWS),
+ PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
-  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, 18),
-  _main(0, 0, SZ_WIZ_COLS, 7, 2),
+  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_MENU_SEP),
+  _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
   _quickSavesOp("Quick saves"),
   
-  _snapMgr(0, 0, SZ_WIZ_COLS, 6, 3),
+  _snapMgr(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _snapLoadOp("Load"),
   _snapRenameOp("Rename"),
   _snapDeleteOp("Delete"),
   
-  _tapePlayer(0, 0, SZ_WIZ_COLS, 6, 3),
+  _tapePlayer(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
 
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
-  _chooseTape(0, 0, SZ_WIZ_COLS, 9, 2),
-  _chooseSnap(0, 0, SZ_WIZ_COLS, 9, 2),
+  _chooseTape(0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
+  _chooseSnap(0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
   
-  _reset(0, 0, SZ_WIZ_COLS, 6, 3),
+  _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
   
-  _joystick(0, 0, SZ_WIZ_COLS, 6, 3),
+  _joystick(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _joystickKemstonOp("Kemptson"),
   _joystickSinclairOp("Sinclair"),
 
-  _devices(SZ_TITLE_MARGIN, 3, SZ_WIZ_COLS, 1),
+  _devices(0, 3, SZ_WIZ_COLS, 1),
 
   _message(0, 0, SZ_WIZ_COLS, 12),
-  _confirm(0, 0, SZ_WIZ_COLS, 6, 3),
+  _confirm(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _confirmNo("No"),
   _confirmYes("Yes"),
   
   _quickSaves(0, 0, SZ_WIZ_COLS, 12, 1),
   
-  _quickSave(0, 0, SZ_WIZ_COLS, 6, 3),
+  _quickSave(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _quickSaveLoadOp("Load"),
   _quickSaveToSnapOp("Save as SNAP"),
   _quickSaveClearOp("Clear"),
@@ -82,9 +97,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s",
        (jl == jr ? "s" : ""),
-       (jl ? "L" : ""), (!jl && !jr ? "none" : (jl & jr ? "&" : "")), (jr ? "R" : ""),
+       (jl ? "L" : ""), (!jl && !jr ? "0" : (jl & jr ? "&" : "")), (jr ? "R" : ""),
        (k1 == k2 ? "s" : ""),
-       (k1 ? "1" : ""), (!k1 && !k2 ? "none" : (k1 & k2 ? "&" : "")), (k2 ? "2" : "")
+       (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : "")
        );
     _devices.repaint();
   });
@@ -430,12 +445,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   });
   
   onPaint([](PicoPen *pen) {
-     pen->printAt(SZ_TITLE_MARGIN, 0, false, "ZX Spectrum 48K/128K emulator");
-     pen->printAtF(SZ_TITLE_MARGIN, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(SZ_TITLE_MARGIN, 2, false, "Menu System version 0.2");
+     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
+     pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
+     pen->printAt(0, 2, false, "Menu System version 0.2");
 
-     pen->printAt(SZ_TITLE_MARGIN, 29, false, "F1 to exit menu");
-     pen->printAt(PCS_COLS-SZ_TITLE_MARGIN-14, 29, false, "ESC to go back");
+     pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
+     pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");
    }); 
 }
 

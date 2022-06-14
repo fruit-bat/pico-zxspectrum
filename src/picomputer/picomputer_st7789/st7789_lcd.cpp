@@ -20,7 +20,7 @@
 #define PIN_DC 16
 #define PIN_BL 20
 
-#define SERIAL_CLK_DIV 1.f
+#define SERIAL_CLK_DIV (2.0f)
 
 // Format: cmd length (including cmd byte), post delay in units of 5 ms, then cmd payload
 // Note the delays have been shortened a little

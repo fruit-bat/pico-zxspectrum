@@ -16,6 +16,15 @@ pico_generate_pio_header(ZxSpectrumPicomputerMax
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   PCS_COLS=40 
   PCS_ROWS=30
+  SZ_WIZ_ML=0
+  SZ_WIZ_CW1=12
+  SZ_WIZ_CW2=18
+  SZ_FRAME_COLS=40
+  SZ_FRAME_ROWS=30
+  SZ_FRAME_X=0
+  SZ_FRAME_Y=0
+  SZ_MENU_SEP=2
+  SZ_FILE_ROWS=9
   PICOMPUTER_MAX
 )
 
@@ -50,8 +59,16 @@ pico_generate_pio_header(ZxSpectrumPicomputerZX
 target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   PCS_COLS=40 
   PCS_ROWS=30
+  SZ_WIZ_ML=0
+  SZ_WIZ_CW1=12
+  SZ_WIZ_CW2=18
+  SZ_FRAME_COLS=34
+  SZ_FRAME_ROWS=23
+  SZ_FRAME_X=3
+  SZ_FRAME_Y=3
+  SZ_MENU_SEP=1
+  SZ_FILE_ROWS=11    
   PICOMPUTER_ZX
-  SZ_TITLE_MARGIN=3
 )
 
 target_link_libraries(ZxSpectrumPicomputerZX
