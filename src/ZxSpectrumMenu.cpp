@@ -542,6 +542,18 @@ void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {
   _message.onPaint(message);
 }
 
+void ZxSpectrumMenu::showMessage(std::function<void(PicoPen *pen)> message) {
+  _wiz.push(
+    &_message, 
+    [](PicoPen *pen){ pen->printAt(0, 0, false, ""); },
+    true);
+  _message.onPaint(message);
+}
+
+void ZxSpectrumMenu::removeMessage() {
+  _wiz.pop(true);
+}
+
 void ZxSpectrumMenu::confirm(
   std::function<void(PicoPen *pen)> message,
   std::function<void()> yes
