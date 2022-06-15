@@ -82,7 +82,7 @@ static uint8_t kbits[3][6][6] = {
     // Row 4
     { HID_KEY_F8, HID_KEY_F9, HID_KEY_F10, 0, 0, 0 },
     // Row 5 (Menu, 0, ZX Symbol)
-    { HID_KEY_F1, 0, 0, 0, 0, /* HID_KEY_ALT_LEFT */ 0 }
+    { HID_KEY_F1, HID_KEY_F2, HID_KEY_F3, HID_KEY_F4, 0, /* HID_KEY_ALT_LEFT */ 0 }
   }
 };
 

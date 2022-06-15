@@ -171,7 +171,6 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   if ((m & KEYBOARD_MODIFIER_LEFTCTRL) && !_kiosk) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
-        printf("left ctrl F%d pressed\n", i);
         if (_quickSave) _quickSave->save(_ZxSpectrum, i);
       }
     }
@@ -179,7 +178,6 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   else if (m & KEYBOARD_MODIFIER_LEFTALT) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
-        printf("left alt F%d pressed\n", i);
         if (_quickSave) _quickSave->load(_ZxSpectrum, i);
       }
     }
@@ -187,6 +185,9 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   else {
     // F1 open menu
     if ((fkp & (1 << 0)) && !_kiosk) r = 1;
+    
+    // F3 toggle mute
+    if ((fkp & (1 << 2))) _ZxSpectrum->toggleMute();    
     
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
