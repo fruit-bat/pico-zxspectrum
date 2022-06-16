@@ -59,7 +59,7 @@ extern "C" {
 
 #ifdef BZR_PIN
 	#ifdef AY8912_A_PIN
-		#define PWM_WRAP (256 + 256)
+		#define PWM_WRAP (256 + 256 + 256 + 256)
 	#else
 		#define PWM_WRAP (256 + 256 + 256)
 	#endif

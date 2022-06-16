@@ -237,7 +237,7 @@ public:
     const uint32_t m = mixer();
     const uint32_t nm = ~m;
     const uint32_t nme = (nm >> 3) | nm;
-    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
+    const uint32_t mtb = (_tb | m) ^ (_tbN | (m >> 3));
     
     const uint8_t ae = _env[_indE];
     const uint32_t aA = _envA ? ae : _volA;
