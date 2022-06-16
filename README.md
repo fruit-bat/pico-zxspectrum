@@ -19,9 +19,10 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * Kempston and Sinclair joystick emulation
 
 ## Updates
-* 12/06/222 - Much better sound with 2 pin audio output (HDMI version only)
+* 18/06/22 - Dont't freeze if SD card missing
+* 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
-## Experimental
+## Newly supported
 * VGA output (RGB332)
 * LCD output (ST7789 320x240)
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
@@ -144,24 +145,20 @@ https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
 
 ## Try it
-A pre-built binary can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
+Pre-built binaries can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
 
-For the wiring show above use:
+| Board | Binary |
+| ------ | -------- |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi.uf2 |
+| RetroVGA | ZxSpectrumPicocomputerVga.uf2 |
+| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 |
+| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 |
+
+e.g. for the HDMI breadboard wiring show above use:
 ```sh
 cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
-For the RetroVGA board use:
-```sh
-cp ZxSpectrumPicocomputerVga.uf2 /media/pi/RPI-RP2/
-```
-For the PicomputerMax board use:
-```sh
-cp ZxSpectrumPicocomputerMax.uf2 /media/pi/RPI-RP2/
-```
-For the PicomputerZX board use:
-```sh
-cp ZxSpectrumPicocomputerZX.uf2 /media/pi/RPI-RP2/
-```
+
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
@@ -197,7 +194,7 @@ git clone git@github.com:raspberrypi/pico-extras.git
 git clone git@github.com:Wren6991/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
-git clone git@github.com:fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
@@ -208,7 +205,7 @@ git clone https://github.com/raspberrypi/pico-extras.git
 git clone https://github.com/Wren6991/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
-git clone https://github.com/fruit-bat/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```

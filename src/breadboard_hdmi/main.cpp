@@ -107,7 +107,7 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
   &picoDisplay
 );
 
-static bool showMenu = false;
+static bool showMenu = true;
 static bool toggleMenu = false;
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
@@ -289,10 +289,6 @@ int main() {
 	attrPtr = screenPtr + (32 * 24 * 8);
 
 	keyboard.setZxSpectrum(&zxSpectrum);
-	
-	// Set up the quick load loops
-  zxSpectrumSnaps.reload();
-  zxSpectrumTapes.reload();
 
 	// Initialise the menu renderer
 	pcw_init_renderer();
@@ -310,16 +306,34 @@ int main() {
 	printf("Core 1 start\n");
 	sem_init(&dvi_start_sem, 0, 1);
 	hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
+	
 	multicore_launch_core1(core1_main);
-
+  
+  picoRootWin.showMessage([=](PicoPen *pen) {
+    pen->printAtF(3, 1, false, "Reading from SD card...");
+  });
+          
+  picoDisplay.refresh();
+  
 	sem_release(&dvi_start_sem);
+	
+  if (sdCard0.mount()) {
+		
+		// Set up the quick load loops
+		zxSpectrumSnaps.reload();
+		zxSpectrumTapes.reload();
 
-  if (quickSave.used(0)) {
-    quickSave.load(&zxSpectrum, 0);
-  }
+    // Load quick save slot 1 if present
+		if (quickSave.used(0)) {
+			quickSave.load(&zxSpectrum, 0);
+		}
+		
+    bool isKiosk = zxSpectrumKisok.isKiosk();
+    keyboard.setKiosk(isKiosk);
+	}
 
-  bool isKiosk = zxSpectrumKisok.isKiosk();
-  keyboard.setKiosk(isKiosk);
+  showMenu = false;
+  picoRootWin.removeMessage();
 
   main_loop();
   

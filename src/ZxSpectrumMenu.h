@@ -108,6 +108,8 @@ private:
   void quickSaveToSnap(int i, const char *folder, const char *file);
   
 public:
+  void showMessage(std::function<void(PicoPen *pen)> message);
+  void removeMessage();
 
   ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
 };
