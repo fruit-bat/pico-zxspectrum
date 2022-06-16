@@ -280,17 +280,22 @@ int main() {
   
   sem_release(&dvi_start_sem);
 
-	// Set up the quick load loops
-  zxSpectrumSnaps.reload();
-  zxSpectrumTapes.reload();
+  if (sdCard0.mount()) {
+		
+		// Set up the quick load loops
+		zxSpectrumSnaps.reload();
+		zxSpectrumTapes.reload();
 
-  if (quickSave.used(0)) {
-    quickSave.load(&zxSpectrum, 0);
-  }
-
-  bool isKiosk = zxSpectrumKisok.isKiosk();
-  keyboard1.setKiosk(isKiosk);
-  keyboard2.setKiosk(isKiosk);
+    // Load quick save slot 1 if present
+		if (quickSave.used(0)) {
+			quickSave.load(&zxSpectrum, 0);
+		}
+  
+    // See if the board is in kiosk mode    
+    bool isKiosk = zxSpectrumKisok.isKiosk();
+    keyboard1.setKiosk(isKiosk);
+    keyboard2.setKiosk(isKiosk);
+	}
   
   showMenu = false;
   picoRootWin.removeMessage();
