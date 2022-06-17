@@ -199,8 +199,8 @@ public:
   inline unsigned int borderColour() { return _borderColour; }
   inline int32_t getSpeaker() {
     if (_mute) return 0;
-    const int32_t a1 = (_port254 & (1<<4)) ? 128 : -127;
-    const int32_t a2 = _ear ? 64 : -63;
+    const int32_t a1 = (_port254 & (1<<4)) ? 128 : 0;
+    const int32_t a2 = _ear ? 64 : 0;
     return a1 + a2 + _ay.vol();
   }
   inline int32_t getAnalogueAudio() {

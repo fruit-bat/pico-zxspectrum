@@ -59,7 +59,7 @@ extern "C" {
 
 #ifdef BZR_PIN
 	#ifdef AY8912_A_PIN
-		#define PWM_WRAP (256 + 256 + 256 + 256)
+		#define PWM_WRAP (256)
 	#else
 		#define PWM_WRAP (256 + 256 + 256)
 	#endif
@@ -260,9 +260,9 @@ void __not_in_flash_func(main_loop)() {
 #else
 			uint32_t vA, vB, vC;
 			zxSpectrum.vol(vA, vB, vC);
-      pwm_set_gpio_level(AY8912_A_PIN, PWM_MID + vA);
-      pwm_set_gpio_level(AY8912_B_PIN, PWM_MID + vB);
-      pwm_set_gpio_level(AY8912_C_PIN, PWM_MID + vC);
+      pwm_set_gpio_level(AY8912_A_PIN, vA);
+      pwm_set_gpio_level(AY8912_B_PIN, vB);
+      pwm_set_gpio_level(AY8912_C_PIN, vC);
 #endif
 #else
       const uint32_t l = zxSpectrum.getSpeaker();

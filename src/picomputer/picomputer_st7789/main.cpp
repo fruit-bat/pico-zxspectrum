@@ -36,7 +36,7 @@
 
 #define LED_PIN 25
 #define SPK_PIN 0
-#define PWM_WRAP (256 + 256 + 256 + 256 + 256)
+#define PWM_WRAP (256 + 256 + 256 + 256)
 #define PWM_MID (PWM_WRAP>>1)
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
@@ -217,7 +217,7 @@ void __not_in_flash_func(main_loop)() {
       }
       zxSpectrum.step();
       const uint32_t l = zxSpectrum.getSpeaker();
-      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
+      pwm_set_gpio_level(SPK_PIN, l);
 
     }
 
