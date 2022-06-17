@@ -210,8 +210,15 @@ public:
     return _mute ? false : ((_port254 >> 4) & 1) ^ _ear;
   }
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
-    return _ay.vol(vA, vB, vC);
-  }  
+    if (_mute) {
+      vA = 0;
+      vB = 0;
+      vC = 0;
+    } 
+    else {
+      _ay.vol(vA, vB, vC);
+    }
+  }
   
   void setEar(bool ear) { _ear = ear; }
   void loadZ80(InputStream *inputStream);
