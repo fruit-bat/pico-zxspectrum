@@ -16,12 +16,8 @@
 //             
 //           Split output from AY-3-8912 
 //
-
-
-// #define SPK_PIN 20
-// #define AY8912_A_PIN 20
-// #define AY8912_B_PIN 26
-// #define AY8912_C_PIN 27
+// See CMakeLists.txt files for configurations
+//
 
 #ifdef BZR_PIN
 	#ifdef AY8912_A_PIN

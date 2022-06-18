@@ -147,12 +147,14 @@ https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 ## Try it
 Pre-built binaries can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
 
-| Board | Binary |
-| ------ | -------- |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi.uf2 |
-| RetroVGA | ZxSpectrumPicocomputerVga.uf2 |
-| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 |
-| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 |
+| Board | Binary | Audio |
+| ------ | -------- | ----- |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi1PinAudio.uf2 | Digially mixed PWM audio |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi2PinAudio.uf2 | Buzzer pin and digially mixed AY-3-8912 PWM audio |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi4PinAudio.uf2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| RetroVGA | ZxSpectrumPicocomputerVga.uf2 | Digially mixed PWM audio |
+| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 | Digially mixed PWM audio |
+| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 | Digially mixed PWM audio |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -278,7 +280,7 @@ The following folders need to be created on the SD card:
 tio -m ODELBS /dev/ttyUSB0
 ```
 ## Thanks to
-[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
+[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SST7789_Datasheet.pdfPI-RPi-Pico)<br/>
 [Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
@@ -288,9 +290,9 @@ tio -m ODELBS /dev/ttyUSB0
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
 [Fonts by DamienG](https://damieng.com/typography/zx-origins/)<br/>
-http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout<br/>
-http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard<br/>
-http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts<br/>
+[breakintoprogram - Screen memory layout](http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout)<br/>
+[breakintoprogram - keyboard layout](http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard)<br/>
+[breakintoprogram - interrupts](http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts)<br/>
 http://mdfs.net/Software/Spectrum/Harston/<br/>
 https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html<br/>
 https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm<br/>
@@ -300,6 +302,7 @@ http://www.zxdesign.info/cassette.shtml<br/>
 https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
 https://mdfs.net/Software/Spectrum/ROMImages/<br/>
 https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
-https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm<br/>
-http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html<br/>
+[AY-3-8912 - manual](https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm)<br/>
+[AY-3-8912 - synth](http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html)<br/>
 [USB HID 1.1](https://www.usb.org/sites/default/files/hid1_11.pdf)<br/>
+[ST7789 LCD driver reference](docs/ST7789_Datasheet.pdf)<br/>
