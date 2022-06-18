@@ -33,11 +33,9 @@
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "ZxSpectrumMenu.h"
+#include "ZxSpectrumAudio.h"
 
 #define LED_PIN 25
-#define SPK_PIN 0
-#define PWM_WRAP (256 + 256 + 256 + 256 + 256)
-#define PWM_MID (PWM_WRAP>>1)
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
@@ -216,9 +214,7 @@ void __not_in_flash_func(main_loop)() {
         zxSpectrum.interrupt();
       }
       zxSpectrum.step();
-      const uint32_t l = zxSpectrum.getSpeaker();
-      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
-
+      zxSpectrumAudioToGpio(zxSpectrum);
     }
 
     if (showMenu && frames != _frames) {
@@ -244,12 +240,8 @@ int main() {
 
   tusb_init();
 
-  gpio_set_function(SPK_PIN, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(SPK_PIN);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
+  // Configure the GPIO pins for audio
+  zxSpectrumAudioInit();
 
   screenPtr = zxSpectrum.screenPtr();
   attrPtr = screenPtr + (32 * 24 * 8);

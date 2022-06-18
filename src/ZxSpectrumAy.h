@@ -235,8 +235,6 @@ public:
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
 
     const uint32_t m = mixer();
-    const uint32_t nm = ~m;
-    const uint32_t nme = (nm >> 3) | nm;
     const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
     
     const uint8_t ae = _env[_indE];
@@ -244,14 +242,14 @@ public:
     const uint32_t aB = _envB ? ae : _volB;
     const uint32_t aC = _envC ? ae : _volC;
     
-    vA = nme & 0x01 ? (mtb & 0x01 ? aA + 1: -aA) : 0;
-    vB = nme & 0x02 ? (mtb & 0x02 ? aB + 1: -aB) : 0;
-    vC = nme & 0x04 ? (mtb & 0x04 ? aC + 1: -aC) : 0;
+    vA =  MUL32((mtb >> 0) & 1, aA);
+    vB =  MUL32((mtb >> 1) & 1, aB);
+    vC =  MUL32((mtb >> 2) & 1, aC);
   }
 
   int32_t __not_in_flash_func(vol)() {
     uint32_t vA, vB, vC;
     vol(vA, vB, vC);
-    return (vA + vB + vC) >> 1;
+    return vA + vB + vC;
   }
 };

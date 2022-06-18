@@ -25,6 +25,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   SZ_FRAME_Y=0
   SZ_MENU_SEP=2
   SZ_FILE_ROWS=9
+  SPK_PIN=0
   PICOMPUTER_MAX
 )
 
@@ -68,6 +69,7 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   SZ_FRAME_Y=3
   SZ_MENU_SEP=1
   SZ_FILE_ROWS=11    
+  SPK_PIN=0
   PICOMPUTER_ZX
 )
 

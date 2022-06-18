@@ -196,18 +196,34 @@ public:
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
 
-  unsigned int borderColour() { return _borderColour; }
-  int32_t getSpeaker() {
+  inline unsigned int borderColour() { return _borderColour; }
+  
+  // TODO this should probably move to ZxSpectrumAudio
+  inline int32_t getSpeaker() {
     if (_mute) return 0;
-    const int32_t a1 = (_port254 & (1<<4)) ? 128 : -127;
-    const int32_t a2 = _ear ? 64 : -63;
+    const int32_t a1 = (_port254 & (1<<4)) ? 192 : 0;
+    const int32_t a2 = _ear ? 63 : 0;
     return a1 + a2 + _ay.vol();
   }
-  int32_t getAnalogueAudio() {
+  // TODO end
+  
+  inline int32_t getAnalogueAudio() {
     return _mute ? 0 : _ay.vol();
   }
-  bool getBuzzer() {
+  
+  inline bool getBuzzer() {
     return _mute ? false : ((_port254 >> 4) & 1) ^ _ear;
+  }
+  
+  inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
+    if (_mute) {
+      vA = 0;
+      vB = 0;
+      vC = 0;
+    } 
+    else {
+      _ay.vol(vA, vB, vC);
+    }
   }
   
   void setEar(bool ear) { _ear = ear; }

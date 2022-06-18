@@ -9,6 +9,7 @@ add_executable(ZxSpectrumPicomputerVga
 target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
   PCS_COLS=80 
   PCS_ROWS=30
+  SPK_PIN=9
   PICOMPUTER_VGA
 )
 
