@@ -16,6 +16,9 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi PRIVATE
   PCS_ROWS=30
   # Comment BZR_PIN definition for single pin audio 
   BZR_PIN=21
+  AY8912_A_PIN=20
+  AY8912_B_PIN=26
+  AY8912_C_PIN=27
 )
 
 target_link_libraries(ZxSpectrumBreadboardHdmi

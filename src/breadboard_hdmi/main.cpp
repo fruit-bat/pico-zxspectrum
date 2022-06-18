@@ -12,7 +12,7 @@
 #include "hardware/dma.h"
 #include "hardware/uart.h"
 #include "pico/sem.h"
-#include "hardware/pwm.h"  // pwm 
+#include "hardware/pwm.h"
 
 extern "C" {
 #include "dvi.h"
@@ -36,7 +36,7 @@ extern "C" {
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
-
+#include "ZxSpectrumAudio.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -52,21 +52,6 @@ extern "C" {
 #define DVI_TIMING dvi_timing_640x480p_60hz
 
 #define LED_PIN 25
-// #define SPK_PIN 20
-#define AY8912_A_PIN 20
-#define AY8912_B_PIN 26
-#define AY8912_C_PIN 27
-
-#ifdef BZR_PIN
-	#ifdef AY8912_A_PIN
-		#define PWM_WRAP (256)
-	#else
-		#define PWM_WRAP (256 + 256 + 256)
-	#endif
-#else
-  #define PWM_WRAP (256 + 256 + 256 + 256 + 256)
-#endif
-#define PWM_MID (PWM_WRAP>>1)
 
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
@@ -252,37 +237,13 @@ void __not_in_flash_func(main_loop)() {
         zxSpectrum.interrupt();
       }
       zxSpectrum.step();
-#ifdef BZR_PIN
-      gpio_put(BZR_PIN, zxSpectrum.getBuzzer());
-#ifdef SPK_PIN
-      const uint32_t l = zxSpectrum.getAnalogueAudio();
-      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
-#else
-			uint32_t vA, vB, vC;
-			zxSpectrum.vol(vA, vB, vC);
-      pwm_set_gpio_level(AY8912_A_PIN, vA);
-      pwm_set_gpio_level(AY8912_B_PIN, vB);
-      pwm_set_gpio_level(AY8912_C_PIN, vC);
-#endif
-#else
-      const uint32_t l = zxSpectrum.getSpeaker();
-      pwm_set_gpio_level(SPK_PIN, PWM_MID + l);
-#endif
+      zxSpectrumAudioToGpio(zxSpectrum);
     }
     if (showMenu && frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();
     }
   }
-}
-
-void init_pwm_pin(uint32_t pin) {
-  gpio_set_function(pin, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
 }
 
 int main() {
@@ -300,23 +261,10 @@ int main() {
     
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-#ifdef BZR_PIN
-  gpio_init(BZR_PIN);
-  gpio_set_dir(BZR_PIN, GPIO_OUT);
-#endif
-#ifdef SPK_PIN
-  init_pwm_pin(SPK_PIN);
-#endif
-#ifdef AY8912_A_PIN
-  init_pwm_pin(AY8912_A_PIN);
-#endif
-#ifdef AY8912_B_PIN
-  init_pwm_pin(AY8912_B_PIN);
-#endif
-#ifdef AY8912_C_PIN
-  init_pwm_pin(AY8912_C_PIN);
-#endif
   
+  // Configure the GPIO pins for audio
+  zxSpectrumAudioInit();
+ 
   screenPtr = zxSpectrum.screenPtr();
   attrPtr = screenPtr + (32 * 24 * 8);
 

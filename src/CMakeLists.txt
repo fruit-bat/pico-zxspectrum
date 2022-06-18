@@ -2,6 +2,7 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(zxspectrum_common_src
+	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Z80.cpp
