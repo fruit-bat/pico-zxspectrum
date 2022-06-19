@@ -35,8 +35,8 @@ static const uint8_t Envelopes[16][32] =
 };
 
 static const uint8_t Volumes[16] =
-//{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
-{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,254 };
+{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,254 };
+//{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,254 };
 
 
 //static int Lion17_YM_table [32] =
@@ -52,7 +52,7 @@ class ZxSpectrumAy {
   uint32_t _cntA;
   uint32_t _cntB;
   uint32_t _cntC;
-  uint32_t _cntE;
+  uint64_t _cntE;
   uint32_t _cntN;
   int32_t _tb;
   int32_t _tbN;
@@ -61,7 +61,7 @@ class ZxSpectrumAy {
   uint32_t _pmA;
   uint32_t _pmB;
   uint32_t _pmC;
-  uint32_t _pmE;
+  uint64_t _pmE;
   uint32_t _pmN;
   uint32_t _volA;
   uint32_t _volB;
@@ -92,7 +92,7 @@ public:
   ZxSpectrumAy() {
     for (uint32_t i = 0; i < 16; ++ i) {
       for (uint32_t j = 0; j < 32; ++ j) {
-        _envs[i][j] = Volumes[Envelopes[i][j] >> 1];
+        _envs[i][j] = Volumes[Envelopes[i][j]];
       }
     }
     reset();
@@ -122,12 +122,12 @@ public:
       _cntC = 0;
     }
     if (_pmE) {
-      _cntE += s >> 1;
+      _cntE += s;
       while(_cntE >= _pmE) {
         _cntE -= _pmE;
         ++_indE;
       }
-      if (_indE >= 0x20) _indE = 0x10 | (_indE & 0x0F);
+      while (_indE >= 0x20) _indE -= 0x10;
     }
     else {
       _cntE = 0;
@@ -199,7 +199,7 @@ public:
         _pmC = periodC() << 15;
         break;
       case 6:
-        _pmN = periodN() << 19;
+        _pmN = periodN() << 17; // 17
         break;
       case 8:
         _volA = volA();
@@ -213,8 +213,8 @@ public:
         _volC = volC();
         _envC = (v & 0x10);
         break;
-      case 11: case 12:
-        _pmE = periodE() << 15;
+      case 11: case 12: // 16
+        _pmE = ((uint64_t)periodE()) << 17ULL;
         break;
       case 13:
         if (v != 0xff) {
@@ -235,12 +235,14 @@ public:
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
 
     const uint32_t m = mixer();
-    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
+    const uint32_t mtb = (_tb | m) & (((_tbN & 1) ? 7 : 0) | (m >> 3));
+//    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
     
     const uint8_t ae = _env[_indE];
-    const uint32_t aA = _envA ? ae : _volA;
-    const uint32_t aB = _envB ? ae : _volB;
-    const uint32_t aC = _envC ? ae : _volC;
+    
+    const uint32_t aA = _envA != 0 ? ae : _volA;
+    const uint32_t aB = _envB != 0 ? ae : _volB;
+    const uint32_t aC = _envC != 0 ? ae : _volC;
     
     vA =  MUL32((mtb >> 0) & 1, aA);
     vB =  MUL32((mtb >> 1) & 1, aB);
