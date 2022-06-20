@@ -136,9 +136,9 @@ public:
       _cntN += s;
       while(_cntN >= _pmN) {
         _cntN -= _pmN;
-        _ns = (_ns * 2 + 1) ^ (((_ns >> 16) ^ (_ns >> 13)) & 1); 
-        _tbN = _ns & (1<<16) ? 7  : 0;
+        _ns = (_ns >> 1) | ((((_ns >> 3) ^ _ns) & 1) << 16);
       }
+      _tbN = -(_ns & 1);
     }
     else {
       _cntN = 0;
@@ -217,11 +217,11 @@ public:
         _pmE = ((uint64_t)periodE()) << 18ULL;
         break;
       case 13:
-        if (v != 0xff) {
+//        if (v != 0xff) {
           _env = (uint8_t *)&_envs[v & 0xf];
           _indE = 0;
-          _cntE = 0;
-        }
+//          _cntE = 0;
+//        }
         break;
       default:
        break;
@@ -234,7 +234,7 @@ public:
 
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
     const uint32_t m = mixer();
-    const uint32_t mtb = (_tb | m) & (-(_tbN & 1) | (m >> 3));   
+    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));   
     const uint8_t ae = _env[_indE];
     vA =  MUL32((mtb >> 0) & 1, _envA ? ae : _volA);
     vB =  MUL32((mtb >> 1) & 1, _envB ? ae : _volB);
