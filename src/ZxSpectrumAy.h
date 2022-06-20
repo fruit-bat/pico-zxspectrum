@@ -35,8 +35,8 @@ static const uint8_t Envelopes[16][32] =
 };
 
 static const uint8_t Volumes[16] =
-{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,254 };
-//{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,254 };
+{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
+//{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,255 };
 
 
 //static int Lion17_YM_table [32] =
@@ -199,7 +199,7 @@ public:
         _pmC = periodC() << 15;
         break;
       case 6:
-        _pmN = periodN() << 17; // 17
+        _pmN = periodN() << 17;
         break;
       case 8:
         _volA = volA();
@@ -214,7 +214,7 @@ public:
         _envC = (v & 0x10);
         break;
       case 11: case 12: // 16
-        _pmE = ((uint64_t)periodE()) << 17ULL;
+        _pmE = ((uint64_t)periodE()) << 18ULL;
         break;
       case 13:
         if (v != 0xff) {
@@ -233,20 +233,12 @@ public:
   }
 
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
-
     const uint32_t m = mixer();
-    const uint32_t mtb = (_tb | m) & (((_tbN & 1) ? 7 : 0) | (m >> 3));
-//    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
-    
+    const uint32_t mtb = (_tb | m) & (-(_tbN & 1) | (m >> 3));   
     const uint8_t ae = _env[_indE];
-    
-    const uint32_t aA = _envA != 0 ? ae : _volA;
-    const uint32_t aB = _envB != 0 ? ae : _volB;
-    const uint32_t aC = _envC != 0 ? ae : _volC;
-    
-    vA =  MUL32((mtb >> 0) & 1, aA);
-    vB =  MUL32((mtb >> 1) & 1, aB);
-    vC =  MUL32((mtb >> 2) & 1, aC);
+    vA =  MUL32((mtb >> 0) & 1, _envA ? ae : _volA);
+    vB =  MUL32((mtb >> 1) & 1, _envB ? ae : _volB);
+    vC =  MUL32((mtb >> 2) & 1, _envC ? ae : _volC);
   }
 
   int32_t __not_in_flash_func(vol)() {
