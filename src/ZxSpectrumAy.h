@@ -35,8 +35,8 @@ static const uint8_t Envelopes[16][32] =
 };
 
 static const uint8_t Volumes[16] =
-{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
-//{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,255 };
+//{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
+{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,255 };
 
 
 //static int Lion17_YM_table [32] =
@@ -79,14 +79,16 @@ class ZxSpectrumAy {
   uint8_t _envs[16][32];
 
   inline uint32_t mixer() { return _reg.r8[7]; }
-  inline uint32_t periodA() { return _reg.r16[0] & 0x0fff; }
-  inline uint32_t periodB() { return _reg.r16[1] & 0x0fff; }
-  inline uint32_t periodC() { return _reg.r16[2] & 0x0fff; }
-  inline uint32_t periodE() { return ((uint32_t)_reg.r8[11]) + (((uint32_t)_reg.r8[12]) << 8); }
-  inline uint32_t periodN() { return _reg.r8[6] & 0x1f; }
+  inline uint32_t oneIfZero(uint32_t v) { return v ? v : 1; }
+  inline uint32_t periodA() { return oneIfZero(_reg.r16[0] & 0x0fffUL) << 15UL; }
+  inline uint32_t periodB() { return oneIfZero(_reg.r16[1] & 0x0fffUL) << 15UL; }
+  inline uint32_t periodC() { return oneIfZero(_reg.r16[2] & 0x0fffUL) << 15UL; }
+  inline uint64_t periodE() { return (uint64_t)oneIfZero((((uint32_t)_reg.r8[11]) + (((uint32_t)_reg.r8[12]) << 8)) << 1) << 15ULL; };
+  inline uint32_t periodN() { return oneIfZero(_reg.r8[6] & 0x1fUL) << 17UL; }
   inline uint32_t volA() { return Volumes[_reg.r8[8] & 0xf]; }
   inline uint32_t volB() { return Volumes[_reg.r8[9] & 0xf]; }
   inline uint32_t volC() { return Volumes[_reg.r8[10] & 0xf]; }
+  inline uint8_t shape() { return _reg.r8[13]; }
 
 public:
   ZxSpectrumAy() {
@@ -100,49 +102,23 @@ public:
   
   void __not_in_flash_func(step)(uint32_t u32s) {
     const uint32_t s = MUL32(u32s, STEP);
-    if (_pmA) {
-      _cntA += s;
-      while(_cntA >= _pmA) { _cntA -= _pmA; _tb ^= 1; }
+    _cntA += s;
+    _cntB += s;
+    _cntC += s;
+    _cntE += s;
+    _cntN += s;
+    while(_cntA >= _pmA) { _cntA -= _pmA; _tb ^= 1; }
+    while(_cntB >= _pmB) { _cntB -= _pmB; _tb ^= 2; }
+    while(_cntC >= _pmC) { _cntC -= _pmC; _tb ^= 4; }
+    while(_cntE >= _pmE) { _cntE -= _pmE; ++_indE; }
+    if (_indE > 0x1f) {
+      _indE = ((shape() & 9) == 8) ? (_indE & 0x1f) : 0x1f;
     }
-    else {
-      _cntA = 0;
+    while(_cntN >= _pmN) {
+      _cntN -= _pmN;
+      _ns = (_ns >> 1) | ((((_ns >> 3) ^ _ns) & 1) << 16);
     }
-    if (_pmB) {
-      _cntB += s;
-      while(_cntB >= _pmB) { _cntB -= _pmB; _tb ^= 2; }
-    }
-    else {
-      _cntB = 0;
-    }
-    if (_pmC) {
-      _cntC += s;
-      while(_cntC >= _pmC) { _cntC -= _pmC; _tb ^= 4; }
-    }
-    else {
-      _cntC = 0;
-    }
-    if (_pmE) {
-      _cntE += s;
-      while(_cntE >= _pmE) {
-        _cntE -= _pmE;
-        ++_indE;
-      }
-      while (_indE >= 0x20) _indE -= 0x10;
-    }
-    else {
-      _cntE = 0;
-    }
-    if (_pmN) {
-      _cntN += s;
-      while(_cntN >= _pmN) {
-        _cntN -= _pmN;
-        _ns = (_ns >> 1) | ((((_ns >> 3) ^ _ns) & 1) << 16);
-      }
-      _tbN = -(_ns & 1);
-    }
-    else {
-      _cntN = 0;
-    }
+    _tbN = -(_ns & 1);
   }
 
   inline void reset() {
@@ -159,11 +135,6 @@ public:
     _indN = 0;
     _tb = 0;
     _tbN = 0;
-    _pmA = 0;
-    _pmB = 0;
-    _pmC = 0;
-    _pmE = 0;
-    _pmN = 0;
     _volA = 0;
     _volB = 0;
     _volC = 0;
@@ -172,6 +143,11 @@ public:
     _envB = 0;
     _envC = 0;
     _ns = 0xffff;
+    _pmA = periodA();
+    _pmB = periodB();
+    _pmC = periodC();
+    _pmN = periodN();    
+    _pmE = periodE();
   }
 
   inline void writeCtrl(uint8_t v) {
@@ -190,16 +166,16 @@ public:
     _reg.r8[_l] = v;
     switch (_l) {
       case 0: case 1:
-        _pmA = periodA() << 15;
+        _pmA = periodA();
         break;
       case 2: case 3:
-        _pmB = periodB() << 15;
+        _pmB = periodB();
         break;
       case 4: case 5:
-        _pmC = periodC() << 15;
+        _pmC = periodC();
         break;
       case 6:
-        _pmN = periodN() << 17;
+        _pmN = periodN();
         break;
       case 8:
         _volA = volA();
@@ -214,7 +190,7 @@ public:
         _envC = (v & 0x10);
         break;
       case 11: case 12: // 16
-        _pmE = ((uint64_t)periodE()) << 18ULL;
+        _pmE = periodE();
         break;
       case 13:
 //        if (v != 0xff) {
@@ -235,8 +211,8 @@ public:
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
     const uint32_t m = mixer();
     const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));   
-    const uint8_t ae = _env[_indE];
-    vA =  MUL32((mtb >> 0) & 1, _envA ? ae : _volA);
+    const uint32_t ae = _env[_indE];
+    vA =  MUL32((mtb     ) & 1, _envA ? ae : _volA);
     vB =  MUL32((mtb >> 1) & 1, _envB ? ae : _volB);
     vC =  MUL32((mtb >> 2) & 1, _envC ? ae : _volC);
   }
