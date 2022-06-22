@@ -11,7 +11,8 @@
 // ((32*1000000)/(2*2034*440)) = 17.8778939841
 
 // ((2*2034*440*(1<<12))/(32*1000000))
-#define STEP 229
+// Make this divisible by 2
+#define STEP 230
 #define MUL32 __mul_instruction
 
 static const uint8_t Envelopes[16][32] =
@@ -34,19 +35,13 @@ static const uint8_t Envelopes[16][32] =
   { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 };
 
+// See https://github.com/retrofw/speccy/blob/master/devices/sound/ay.cpp
 const uint16_t SNDR_VOL_AY_S[32] =
 { 0x0000,0x0000,0x0340,0x0340,0x04C0,0x04C0,0x06F2,0x06F2,0x0A44,0x0A44,0x0F13,0x0F13,0x1510,0x1510,0x227E,0x227E,
 	0x289F,0x289F,0x414E,0x414E,0x5B21,0x5B21,0x7258,0x7258,0x905E,0x905E,0xB550,0xB550,0xD7A0,0xD7A0,0xFFFF,0xFFFF };
 
-const uint16_t SNDR_VOL_YM_S[32] =
-{ 0x0000,0x0000,0x00EF,0x01D0,0x0290,0x032A,0x03EE,0x04D2,0x0611,0x0782,0x0912,0x0A36,0x0C31,0x0EB6,0x1130,0x13A0,
-	0x1751,0x1BF5,0x20E2,0x2594,0x2CA1,0x357F,0x3E45,0x475E,0x5502,0x6620,0x7730,0x8844,0xA1D2,0xC102,0xE0A2,0xFFFF };
-
-
 static uint8_t Volumes[16];
-//{ 0,1,2,4,6,8,11,16,23,32,45,64,90,128,180,255 };
-//{ 0,16,33,50,67,84,101,118,135,152,169,186,203,220,237,255 };
-   
+  
 class ZxSpectrumAy {
 
   uint8_t _l;
@@ -54,7 +49,7 @@ class ZxSpectrumAy {
   uint32_t _cntA;
   uint32_t _cntB;
   uint32_t _cntC;
-  uint64_t _cntE;
+  uint32_t _cntE;
   uint32_t _cntN;
   int32_t _tb;
   int32_t _tbN;
@@ -63,7 +58,7 @@ class ZxSpectrumAy {
   uint32_t _pmA;
   uint32_t _pmB;
   uint32_t _pmC;
-  uint64_t _pmE;
+  uint32_t _pmE;
   uint32_t _pmN;
   uint32_t _volA;
   uint32_t _volB;
@@ -85,7 +80,7 @@ class ZxSpectrumAy {
   inline uint32_t periodA() { return oneIfZero(_reg.r16[0] & 0x0fffUL) << 15UL; }
   inline uint32_t periodB() { return oneIfZero(_reg.r16[1] & 0x0fffUL) << 15UL; }
   inline uint32_t periodC() { return oneIfZero(_reg.r16[2] & 0x0fffUL) << 15UL; }
-  inline uint64_t periodE() { return (uint64_t)oneIfZero((((uint32_t)_reg.r8[11]) + (((uint32_t)_reg.r8[12]) << 8)) << 1) << 15ULL; };
+  inline uint32_t periodE() { return oneIfZero((((uint32_t)_reg.r8[11]) + (((uint32_t)_reg.r8[12]) << 8)) << 1) << 14UL; };
   inline uint32_t periodN() { return oneIfZero(_reg.r8[6] & 0x1fUL) << 16UL; }
   inline uint32_t volA() { return Volumes[_reg.r8[8] & 0xf]; }
   inline uint32_t volB() { return Volumes[_reg.r8[9] & 0xf]; }
@@ -111,7 +106,7 @@ public:
     _cntA += s;
     _cntB += s;
     _cntC += s;
-    _cntE += s;
+    _cntE += s >> 1;
     _cntN += s;
     while(_cntA >= _pmA) { _cntA -= _pmA; _tb ^= 1; }
     while(_cntB >= _pmB) { _cntB -= _pmB; _tb ^= 2; }
@@ -195,15 +190,12 @@ public:
         _volC = volC();
         _envC = (v & 0x10);
         break;
-      case 11: case 12: // 16
+      case 11: case 12:
         _pmE = periodE();
         break;
       case 13:
-//        if (v != 0xff) {
-          _env = (uint8_t *)&_envs[v & 0xf];
-          _indE = 0;
-//          _cntE = 0;
-//        }
+        _env = (uint8_t *)&_envs[v & 0xf];
+        _indE = 0;
         break;
       default:
        break;
@@ -218,6 +210,9 @@ public:
     const uint32_t m = mixer();
     const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));   
     const uint32_t ae = _env[_indE];
+    // See:
+    // https://github.com/retrofw/speccy/blob/master/devices/sound/ay.cpp
+    // for a possilbly nicer way to switch between the envelope and register volumes
     vA =  MUL32((mtb     ) & 1, _envA ? ae : _volA);
     vB =  MUL32((mtb >> 1) & 1, _envB ? ae : _volB);
     vC =  MUL32((mtb >> 2) & 1, _envC ? ae : _volC);
