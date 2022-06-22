@@ -19,6 +19,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+* 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
 * 18/06/22 - Dont't freeze if SD card missing
 * 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
@@ -65,6 +66,7 @@ zxspectrum/kiosk.txt
 
 ## Wiring
 
+### General
 |       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
 | ----- | ----  | ----- | ---   | --------  | --------- | --------- | ---------------------- |
 | MISO  | RX    | 4     | 6     | DO        | DO        |           | Master In, Slave Out   |
@@ -84,8 +86,21 @@ zxspectrum/kiosk.txt
 | GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
 | GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
 | GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
-| GP21  |       | 21    | 27    |           |           |           | Digital audio out      |
+| GP21  |       | 21    | 27    |           |           |           | Buzzer audio out       |
+| GP26  |       | 26    | 31    |           |           |           | PWM audio out          |
+| GP27  |       | 26    | 32    |           |           |           | PWM audio out          |
 
+### Audio pins
+Audio output comes in 3 variants 1, 2 and 4 pin:
+
+| GPIO | Pin | 1 Pin                  | 2 Pin               | 4 Pin                   |
+| ---- | --- | ---------------------- | ------------------- | ----------------------- |
+| GP20 | 26  | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
+| GP21 | 27  | -                      | Buzzer              | Buzzer                  |
+| GP26 | 31  | -                      | -                   | AY-3-8912 Channel B PWM |
+| GP27 | 32  | -                      | -                   | AY-3-8912 Channel C PWM |
+
+### Pico pinout
 
 ![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
 
@@ -93,11 +108,20 @@ zxspectrum/kiosk.txt
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
 ### Audio filter
-High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio:
+
+High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio.
+Here are some sample designs. Please note they are not carefully designed but made from components I found lying around. 
+If you create a particularly nice sounding design please let me know and I will add it to the documentation.
+
+Separating out the spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
 
 ![image](docs/audio_filter_mk2.png)
 
-Designs that only have a single GPIO pin available can still have the audio mixed digitally:
+The best audio is achieved by having separate pins for the Spetrum buzzer and AY-3-8912 A,B & C channels.
+
+![image](docs/audio_filter_4pin_mono_mk1.png)
+
+Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
 ![image](docs/audio_filter_mk1.png)
 
