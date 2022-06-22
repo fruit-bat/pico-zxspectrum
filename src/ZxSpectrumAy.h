@@ -86,7 +86,7 @@ class ZxSpectrumAy {
   inline uint32_t periodB() { return oneIfZero(_reg.r16[1] & 0x0fffUL) << 15UL; }
   inline uint32_t periodC() { return oneIfZero(_reg.r16[2] & 0x0fffUL) << 15UL; }
   inline uint64_t periodE() { return (uint64_t)oneIfZero((((uint32_t)_reg.r8[11]) + (((uint32_t)_reg.r8[12]) << 8)) << 1) << 15ULL; };
-  inline uint32_t periodN() { return oneIfZero(_reg.r8[6] & 0x1fUL) << 17UL; }
+  inline uint32_t periodN() { return oneIfZero(_reg.r8[6] & 0x1fUL) << 16UL; }
   inline uint32_t volA() { return Volumes[_reg.r8[8] & 0xf]; }
   inline uint32_t volB() { return Volumes[_reg.r8[9] & 0xf]; }
   inline uint32_t volC() { return Volumes[_reg.r8[10] & 0xf]; }
