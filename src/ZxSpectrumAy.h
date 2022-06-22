@@ -95,7 +95,8 @@ class ZxSpectrumAy {
 public:
   ZxSpectrumAy() {
     for (uint32_t j = 0; j < 16; ++ j) {
-      Volumes[j] = (((uint32_t)SNDR_VOL_AY_S[j << 1]) + 128) >> 8;
+      uint32_t v = (((uint32_t)SNDR_VOL_AY_S[j << 1]) + 128) >> 8;
+      Volumes[j] = v > 0xff ? 0xff : v;
     }
     for (uint32_t i = 0; i < 16; ++ i) {
       for (uint32_t j = 0; j < 32; ++ j) {
