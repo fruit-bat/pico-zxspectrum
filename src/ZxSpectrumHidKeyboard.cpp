@@ -66,7 +66,11 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_B,           1, { {7, 4} }},
   
   { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
-
+  
+  { HID_KEY_ARROW_LEFT,  2, { {0, 0}, {3, 4} }},
+  { HID_KEY_ARROW_DOWN,  2, { {0, 0}, {4, 4} }},
+  { HID_KEY_ARROW_UP,    2, { {0, 0}, {4, 3} }},
+  { HID_KEY_ARROW_RIGHT, 2, { {0, 0}, {4, 2} }}
 };
 
 static bool KEYS_SORTED  = false;
