@@ -51,6 +51,9 @@ SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the 
 These are the mappings with the numeric shift on:<br/>
 <img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
 
+Alt+V sets the arrow keys to behave like a Kempston joystick,
+Alt+C sets the arrow keys to operate the Spectrum cursor keys.
+
 ### RetroVGA kiosk mode
 Kiosk mode disables the menu system and quick-save buttons. 
 Kiosk mode is enabled by placing the following file on the SD-card:
