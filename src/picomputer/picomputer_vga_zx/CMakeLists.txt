@@ -3,7 +3,7 @@ add_executable(ZxSpectrumPicomputerVgaZx
   ${zxspectrum_common_src}
   ${picomputer_common_src}
   main.cpp
-  pzx_prepare_vga332_scanline.cpp
+  pzx_prepare_vga_1111_scanline.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVgaZx PRIVATE

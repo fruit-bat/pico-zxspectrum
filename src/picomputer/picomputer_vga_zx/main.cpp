@@ -6,7 +6,7 @@
 
 
 #include "vga.h"
-#include "pzx_prepare_vga332_scanline.h"
+#include "pzx_prepare_vga_1111_scanline.h"
 #include "pzx_keyscan.h"
 
 #include "PicoCharRendererVga.h"
@@ -154,7 +154,7 @@ void __not_in_flash_func(core1_main)() {
         linebuf->frame);
     }
     else {
-      pzx_prepare_vga332_scanline(
+      pzx_prepare_vga_1111_scanline(
         buf, 
         y, 
         linebuf->frame,

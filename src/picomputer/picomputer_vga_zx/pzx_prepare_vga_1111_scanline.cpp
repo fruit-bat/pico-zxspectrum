@@ -1,4 +1,4 @@
-#include "pzx_prepare_vga332_scanline.h"
+#include "pzx_prepare_vga_1111_scanline.h"
 
 #define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
 #define X4(a) (a | (a << 8) | (a << 16) | (a << 24))
@@ -34,7 +34,7 @@ static uint32_t zx_invert_masks[] = {
   0xff
 };
 
-void __not_in_flash_func(pzx_prepare_vga332_scanline)(
+void __not_in_flash_func(pzx_prepare_vga_1111_scanline)(
   uint32_t* buf, 
   uint32_t y, 
   uint32_t frame,
