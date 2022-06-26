@@ -26,21 +26,21 @@ static uint32_t zx_colour_words[16] = {
   X4(VGA_RGBY_1111(1,1,1,1))  // Bright White
 #elif defined(VGA_ENC_RGB_222)
   X4(VGA_RGB_222(0,0,0)), // Black
-  X4(VGA_RGB_222(0,0,1)), // Blue
-  X4(VGA_RGB_222(1,0,0)), // Red
-  X4(VGA_RGB_222(1,0,1)), // Magenta
-  X4(VGA_RGB_222(0,1,0)), // Green
-  X4(VGA_RGB_222(0,1,1)), // Cyan
-  X4(VGA_RGB_222(1,1,0)), // Yellow
-  X4(VGA_RGB_222(1,1,1)), // White
+  X4(VGA_RGB_222(0,0,2)), // Blue
+  X4(VGA_RGB_222(2,0,0)), // Red
+  X4(VGA_RGB_222(2,0,2)), // Magenta
+  X4(VGA_RGB_222(0,2,0)), // Green
+  X4(VGA_RGB_222(0,2,2)), // Cyan
+  X4(VGA_RGB_222(2,2,0)), // Yellow
+  X4(VGA_RGB_222(2,2,2)), // White
   X4(VGA_RGB_222(0,0,0)), // Bright Black
-  X4(VGA_RGB_222(0,0,2)), // Bright Blue
-  X4(VGA_RGB_222(2,0,0)), // Bright Red
-  X4(VGA_RGB_222(2,0,2)), // Bright Magenta
-  X4(VGA_RGB_222(0,2,0)), // Bright Green
-  X4(VGA_RGB_222(0,2,2)), // Bright Cyan
-  X4(VGA_RGB_222(2,2,0)), // Bright Yellow
-  X4(VGA_RGB_222(2,2,2))  // Bright White
+  X4(VGA_RGB_222(0,0,3)), // Bright Blue
+  X4(VGA_RGB_222(3,0,0)), // Bright Red
+  X4(VGA_RGB_222(3,0,3)), // Bright Magenta
+  X4(VGA_RGB_222(0,3,0)), // Bright Green
+  X4(VGA_RGB_222(0,3,3)), // Bright Cyan
+  X4(VGA_RGB_222(3,3,0)), // Bright Yellow
+  X4(VGA_RGB_222(3,3,3))  // Bright White
 #else // default RGB_332
   X4(VGA_RGB_332(0,0,0)), // Black
   X4(VGA_RGB_332(0,0,2)), // Blue
