@@ -11,6 +11,8 @@ target_compile_definitions(ZxSpectrumPicomputerVgaZx PRIVATE
   PCS_ROWS=30
   SPK_PIN=9
   VGA_ENC_RGBY_1111
+  VGA_GPIO_SYNC=4
+  VGA_GPIO_OUTNUM=4
   PICOMPUTER_VGA
 )
 
