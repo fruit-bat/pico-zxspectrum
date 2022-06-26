@@ -24,6 +24,10 @@ set(zxspectrum_common_src
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMenu.cpp
 )
 
+set(zxspectrum_rgb_src
+	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
+)
+
 set(zxspectrum_common_libs
 	pico_stdlib
 	pico_multicore

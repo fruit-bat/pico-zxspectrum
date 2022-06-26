@@ -1,9 +1,47 @@
-#include "pzx_prepare_vga332_scanline.h"
+#include "ZxSpectrumPrepareRgbScanline.h"
 
-#define VGA_RGB_332(r,g,b) ((r##UL<<5)|(g##UL <<2)|b##UL)
+#define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
+#define VGA_RGB_332(r,g,b) ((r##UL<<5)|(g##UL<<2)|b##UL)
+#define VGA_RGB_222(r,g,b) ((r##UL<<4)|(g##UL<<2)|b##UL)
+
 #define X4(a) (a | (a << 8) | (a << 16) | (a << 24))
 
 static uint32_t zx_colour_words[16] = {
+#if defined(VGA_ENC_RGBY_1111)
+  X4(VGA_RGBY_1111(0,0,0,0)), // Black
+  X4(VGA_RGBY_1111(0,0,1,0)), // Blue
+  X4(VGA_RGBY_1111(1,0,0,0)), // Red
+  X4(VGA_RGBY_1111(1,0,1,0)), // Magenta
+  X4(VGA_RGBY_1111(0,1,0,0)), // Green
+  X4(VGA_RGBY_1111(0,1,1,0)), // Cyan
+  X4(VGA_RGBY_1111(1,1,0,0)), // Yellow
+  X4(VGA_RGBY_1111(1,1,1,0)), // White
+  X4(VGA_RGBY_1111(0,0,0,0)), // Bright Black
+  X4(VGA_RGBY_1111(0,0,1,1)), // Bright Blue
+  X4(VGA_RGBY_1111(1,0,0,1)), // Bright Red
+  X4(VGA_RGBY_1111(1,0,1,1)), // Bright Magenta
+  X4(VGA_RGBY_1111(0,1,0,1)), // Bright Green
+  X4(VGA_RGBY_1111(0,1,1,1)), // Bright Cyan
+  X4(VGA_RGBY_1111(1,1,0,1)), // Bright Yellow
+  X4(VGA_RGBY_1111(1,1,1,1))  // Bright White
+#elif defined(VGA_ENC_RGB_222)
+  X4(VGA_RGB_222(0,0,0)), // Black
+  X4(VGA_RGB_222(0,0,1)), // Blue
+  X4(VGA_RGB_222(1,0,0)), // Red
+  X4(VGA_RGB_222(1,0,1)), // Magenta
+  X4(VGA_RGB_222(0,1,0)), // Green
+  X4(VGA_RGB_222(0,1,1)), // Cyan
+  X4(VGA_RGB_222(1,1,0)), // Yellow
+  X4(VGA_RGB_222(1,1,1)), // White
+  X4(VGA_RGB_222(0,0,0)), // Bright Black
+  X4(VGA_RGB_222(0,0,2)), // Bright Blue
+  X4(VGA_RGB_222(2,0,0)), // Bright Red
+  X4(VGA_RGB_222(2,0,2)), // Bright Magenta
+  X4(VGA_RGB_222(0,2,0)), // Bright Green
+  X4(VGA_RGB_222(0,2,2)), // Bright Cyan
+  X4(VGA_RGB_222(2,2,0)), // Bright Yellow
+  X4(VGA_RGB_222(2,2,2))  // Bright White
+#else // default RGB_332
   X4(VGA_RGB_332(0,0,0)), // Black
   X4(VGA_RGB_332(0,0,2)), // Blue
   X4(VGA_RGB_332(5,0,0)), // Red
@@ -20,6 +58,7 @@ static uint32_t zx_colour_words[16] = {
   X4(VGA_RGB_332(0,7,3)), // Bright Cyan
   X4(VGA_RGB_332(7,7,0)), // Bright Yellow
   X4(VGA_RGB_332(7,7,3))  // Bright White
+#endif
 };
 
 static uint32_t zx_bitbit_masks[4] = {
@@ -34,7 +73,7 @@ static uint32_t zx_invert_masks[] = {
   0xff
 };
 
-void __not_in_flash_func(pzx_prepare_vga332_scanline)(
+void __not_in_flash_func(zx_prepare_rgb_scanline)(
   uint32_t* buf, 
   uint32_t y, 
   uint32_t frame,
