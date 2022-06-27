@@ -1,15 +1,16 @@
 
 add_executable(ZxSpectrumPicomputerVga
   ${zxspectrum_common_src}
+  ${zxspectrum_rgb_src}  
   ${picomputer_common_src}
   main.cpp
-  pzx_prepare_vga332_scanline.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
   PCS_COLS=80 
   PCS_ROWS=30
   SPK_PIN=9
+  VGA_ENC_RGB_332
   PICOMPUTER_VGA
 )
 

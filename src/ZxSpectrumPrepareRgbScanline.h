@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void __not_in_flash_func(pzx_prepare_vga332_scanline)(
+void __not_in_flash_func(zx_prepare_rgb_scanline)(
   uint32_t* buf, 
   uint32_t y, 
   uint32_t frame,

@@ -8,4 +8,5 @@ set(picomputer_common_src
 )
 
 add_subdirectory(picomputer_vga)
+add_subdirectory(picomputer_vga_zx)
 add_subdirectory(picomputer_st7789)

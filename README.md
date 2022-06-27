@@ -9,7 +9,9 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
 
 ## Features
-* DVI over HDMI/LCD/VGA video
+* DVI over HDMI
+* LCD support (ST7789 320x240)
+* VGA video (RGB332, RGB222, RGBY1111)
 * USB Keyboard & Joysticks
 * PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
@@ -18,14 +20,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
-## Updates
-* 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
-* 18/06/22 - Dont't freeze if SD card missing
-* 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
-
-## Newly supported
-* VGA output (RGB332)
-* LCD output (ST7789 320x240)
+## Supported Boards
 * Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * Support for PicomputerMax
 * Support for PicomputerZX
@@ -33,34 +28,11 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 <img src="docs/retrovga.png" width="200"/>
 </a>
 
-### RetroVGA and Picomputer keyboard mappings
-Trying to squeeze in all the key mappings is tricky but here is an attempt.
-
-These are the nomal key mappings:<br/>
-<img src="docs/retro_vga_keyboard_normal.svg" width="500"/><br/>
-
-These are the mappings with the ALt key down.:<br/>
-<img src="docs/retro_vga_keyboard_alt_down.svg" width="500"/><br/>
-Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
-QS1, QS2, ...  save the emulator state to the appropriate Quick Save slot.
-
-If there is a save in QS1 it will load after the emulator is powered-on or reset.
-
-The SN keys load snapshots as if they are in a loop. 
-SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the next snapshot.
-
-These are the mappings with the numeric shift on:<br/>
-<img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
-
-Alt+V sets the arrow keys to behave like a Kempston joystick,
-Alt+C sets the arrow keys to operate the Spectrum cursor keys.
-
-### RetroVGA kiosk mode
-Kiosk mode disables the menu system and quick-save buttons. 
-Kiosk mode is enabled by placing the following file on the SD-card:
-```bash
-zxspectrum/kiosk.txt
-```
+## Updates
+* 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
+* 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
+* 18/06/22 - Dont't freeze if SD card missing
+* 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
 ## Screen shots
 
@@ -128,6 +100,27 @@ Designs that only have a single GPIO pin available can have the audio mixed digi
 
 ![image](docs/audio_filter_mk1.png)
 
+### VGA Support
+So far, there are three supported VGA configurations, which can be found in the various build targets.
+They have all been designed with deep admiration of existing circuits (plagiarism) and guesswork...
+so please let me know if you have better versions and I will update this document.
+#### RGBY 1111
+Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
+
+![image](docs/rgby_1111_vga.png)
+
+See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
+#### RGB 222
+
+![image](docs/rgb_222_vga.png)
+
+See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
+#### RGB 332
+
+![image](docs/rgb_332_vga.png)
+
+See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an example configuration.
+
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1043509-smol_1024x1024.jpg" width="200"/>
@@ -148,6 +141,36 @@ Designs that only have a single GPIO pin available can have the audio mixed digi
 <a href="https://shop.pimoroni.com/products/adafruit-stemma-speaker-plug-and-play-audio-amplifier">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/3885-02_630x630.jpg" width="200"/>
 </a>
+
+
+### RetroVGA and Picomputer keyboard mappings
+Trying to squeeze in all the key mappings is tricky but here is an attempt.
+
+These are the nomal key mappings:<br/>
+<img src="docs/retro_vga_keyboard_normal.svg" width="500"/><br/>
+
+These are the mappings with the ALt key down.:<br/>
+<img src="docs/retro_vga_keyboard_alt_down.svg" width="500"/><br/>
+Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
+QS1, QS2, ...  save the emulator state to the appropriate Quick Save slot.
+
+If there is a save in QS1 it will load after the emulator is powered-on or reset.
+
+The SN keys load snapshots as if they are in a loop. 
+SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the next snapshot.
+
+These are the mappings with the numeric shift on:<br/>
+<img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
+
+Alt+V sets the arrow keys to behave like a Kempston joystick,
+Alt+C sets the arrow keys to operate the Spectrum cursor keys.
+
+### RetroVGA kiosk mode
+Kiosk mode disables the menu system and quick-save buttons. 
+Kiosk mode is enabled by placing the following file on the SD-card:
+```bash
+zxspectrum/kiosk.txt
+```
 
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
