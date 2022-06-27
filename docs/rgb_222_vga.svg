@@ -7,7 +7,7 @@
 	<text x="122" y="100" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 122, 100)">Pico GP4 (R0)</text>
 	<line x1="133" y1="100" x2="210" y2="100" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="130" cy="100" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
-	<text x="438" y="60" style="font-family:Arial;font-size:12px;text-anchor:start" dominant-baseline="middle" transform="rotate(0, 438, 60)">VGA Pin 3 (B)</text>
+	<text x="438" y="60" style="font-family:Arial;font-size:12px;text-anchor:start" dominant-baseline="middle" transform="rotate(0, 438, 60)">VGA Pin 1 (R)</text>
 	<line x1="320" y1="60" x2="427" y2="60" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="430" cy="60" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
 	<text x="122" y="60" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 122, 60)">Pico GP5  (R1)</text>
@@ -26,7 +26,7 @@
 	<text x="122" y="180" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 122, 180)">Pico GP2 (G0)</text>
 	<line x1="133" y1="180" x2="210" y2="180" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="130" cy="180" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
-	<text x="438" y="140" style="font-family:Arial;font-size:12px;text-anchor:start" dominant-baseline="middle" transform="rotate(0, 438, 140)">VGA Pin 3 (B)</text>
+	<text x="438" y="140" style="font-family:Arial;font-size:12px;text-anchor:start" dominant-baseline="middle" transform="rotate(0, 438, 140)">VGA Pin 2 (G)</text>
 	<line x1="320" y1="140" x2="427" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="430" cy="140" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
 	<text x="122" y="140" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 122, 140)">Pico GP3  (G1)</text>
