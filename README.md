@@ -1,8 +1,7 @@
 # pico-zxspectrum
 48k/128k ZX Spectrum for Raspberry Pico Pi RP2040
 
-<img src="docs/1200px-ZXSpectrum48k.jpg" height="200"/>
-<img src="docs/sinclair-zx-spectrum-128k.jpg" height="200"/>
+<a href="docs/1280px-ZXSpectrum48k.jpg"><img src="docs/640px-ZXSpectrum48k.png" height="200"/></a><a href="docs/1280px-ZX_Spectrum128K.jpg"><img src="docs/640px-ZX_Spectrum128K.png" height="200"/></a>
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
@@ -21,12 +20,16 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * Kempston and Sinclair joystick emulation
 
 ## Supported Boards
-* Support for [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
-* Support for PicomputerMax
-* Support for PicomputerZX
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
-<img src="docs/retrovga.png" width="200"/>
+* Breadboard
+* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
+* PicomputerMax
+* PicomputerZX
+
+<img src="docs/breadboard.png" width="200"/><a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
+<img src="docs/retrovga.png" width="200"/><img src="docs/picomputermax.png" width="200"/><img src="docs/picomputerzx.png" width="200"/>
 </a>
+
+
 
 ## Updates
 * 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
