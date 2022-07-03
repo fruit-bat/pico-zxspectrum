@@ -359,3 +359,5 @@ https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
 [AY-3-8912 - synth](http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html)<br/>
 [USB HID 1.1](https://www.usb.org/sites/default/files/hid1_11.pdf)<br/>
 [ST7789 LCD driver reference](docs/ST7789_Datasheet.pdf)<br/>
+[RGB for 128k ZX Spectrum](docs/128_rgb.pdf)<br/>
+
