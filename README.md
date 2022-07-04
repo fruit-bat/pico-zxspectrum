@@ -346,15 +346,14 @@ tio -m ODELBS /dev/ttyUSB0
 [breakintoprogram - Screen memory layout](http://www.breakintoprogram.co.uk/computers/zx-spectrum/screen-memory-layout)<br/>
 [breakintoprogram - keyboard layout](http://www.breakintoprogram.co.uk/computers/zx-spectrum/keyboard)<br/>
 [breakintoprogram - interrupts](http://www.breakintoprogram.co.uk/computers/zx-spectrum/interrupts)<br/>
-http://mdfs.net/Software/Spectrum/Harston/<br/>
-https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html<br/>
-https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm<br/>
-https://worldofspectrum.org/faq/reference/48kreference.htm<br/>
-https://worldofspectrum.org/faq/reference/128kreference.htm<br/>
-http://www.zxdesign.info/cassette.shtml<br/>
-https://uelectronics.info/2015/03/21/zx-spectrum-and-loaders-part-one/<br/>
-https://mdfs.net/Software/Spectrum/ROMImages/<br/>
-https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html<br/>
+[worldofspectrum - 48k ZX Spectrum reference](https://worldofspectrum.org/faq/reference/48kreference.htm)<br/>
+[worldofspectrum - 128k ZX Spectrum reference](https://worldofspectrum.org/faq/reference/128kreference.htm)<br/>
+[worldofspectrum - AY-3-8912 reference](https://worldofspectrum.org/ZXSpectrum128Manual/sp128p13.html)<br/>
+[JGH Spectrum ROM](http://mdfs.net/Software/Spectrum/Harston/)<br/>
+[48k ZX Spectrum service manual](https://www.1000bit.it/support/manuali/sinclair/zxspectrum/sm/section1.html)<br/>
+[GOSH ZX Spectrum ROM](https://k1.spdns.de/Vintage/Sinclair/82/Sinclair%20ZX%20Spectrum/ROMs/gw03%20'gosh%2C%20wonderful'%20(Geoff%20Wearmouth)/gw03%20info.htm)<br/>
+[Cassette input circuit design](http://www.zxdesign.info/cassette.shtml)<br/>
+[ZX Spectrum ROM Images](https://mdfs.net/Software/Spectrum/ROMImages/)<br/>
 [AY-3-8912 - manual](https://cpctech.cpc-live.com/docs/ay38912/psgspec.htm)<br/>
 [AY-3-8912 - synth](http://www.armory.com/~rstevew/Public/SoundSynth/Novelty/AY3-8910/start.html)<br/>
 [USB HID 1.1](https://www.usb.org/sites/default/files/hid1_11.pdf)<br/>
