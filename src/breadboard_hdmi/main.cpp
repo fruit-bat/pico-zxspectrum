@@ -236,7 +236,7 @@ void __not_in_flash_func(main_loop)() {
   
   while (1) {
     tuh_task();
-    ps2kbd.ps2_kbd_test();
+    ps2kbd.tick();
     for (int i = 1; i < 100; ++i) {
       if (lastInterruptFrame != _frames) {
         lastInterruptFrame = _frames;
