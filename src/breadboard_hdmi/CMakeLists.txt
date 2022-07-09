@@ -60,8 +60,6 @@ set(zxspectrum_hdmi_libs
   tinyusb_board
   pico_emu_utils
   pico_dvi_menu
-#  ps2
-  ps2kbd-lib
 )
 
 target_link_libraries(ZxSpectrumBreadboardHdmi1PinAudio

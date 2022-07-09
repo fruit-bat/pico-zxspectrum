@@ -59,6 +59,10 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
+static Ps2Kbd ps2kbd(
+  pio1,
+  6
+);
 // ZX Spectrum emulator
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
@@ -232,7 +236,7 @@ void __not_in_flash_func(main_loop)() {
   
   while (1) {
     tuh_task();
-    ps2_kbd_test();
+    ps2kbd.ps2_kbd_test();
     for (int i = 1; i < 100; ++i) {
       if (lastInterruptFrame != _frames) {
         lastInterruptFrame = _frames;
@@ -260,7 +264,7 @@ int main() {
 
   setup_default_uart();
   tusb_init();
-  kbd_init(1, 6);
+  ps2kbd.init_gpio();
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);

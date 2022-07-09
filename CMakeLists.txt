@@ -26,8 +26,6 @@ add_subdirectory(${PICO_FOLDER}/pico-vga-332/ "${CMAKE_CURRENT_BINARY_DIR}/pico-
 add_subdirectory(${PICO_FOLDER}/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI "${CMAKE_CURRENT_BINARY_DIR}/FatFs_SPI")
 add_subdirectory(${PICO_FOLDER}/pico-dvi-menu "${CMAKE_CURRENT_BINARY_DIR}/pico-dvi-menu")
 add_subdirectory(${PICO_FOLDER}/pico-emu-utils "${CMAKE_CURRENT_BINARY_DIR}/pico-emu-utils")
-#add_subdirectory(${PICO_FOLDER}/pico-ps2Driv "${CMAKE_CURRENT_BINARY_DIR}/pico-ps2Driv")
-add_subdirectory(${PICO_FOLDER}/ps2kbd-lib "${CMAKE_CURRENT_BINARY_DIR}/ps2kbd-lib")
 
 add_subdirectory(src  "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
