@@ -96,11 +96,11 @@ High frequencies need to be filtered out of the PWM audio output and mixed with 
 Here are some sample designs. Please note they are not carefully designed but made from components I found lying around. 
 If you create a particularly nice sounding design please let me know and I will add it to the documentation.
 
-Separating out the spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
+Separating out the Spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
 
 ![image](docs/audio_filter_mk2.png)
 
-The best audio is achieved by having separate pins for the Spetrum buzzer and AY-3-8912 A,B & C channels.
+The best audio is achieved by having separate pins for the Spectrum buzzer and AY-3-8912 A,B & C channels.
 
 ![image](docs/audio_filter_4pin_mono_mk1.png)
 
@@ -110,7 +110,7 @@ Designs that only have a single GPIO pin available can have the audio mixed digi
 
 ### VGA Support
 So far, there are three supported VGA configurations, which can be found in the various build targets.
-They have all been designed with deep admiration of existing circuits (plagiarism) and guesswork...
+They have all been designed with a combination of plagiarism and guesswork,
 so please let me know if you have better versions and I will update this document.
 #### RGBY 1111
 Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
