@@ -59,10 +59,6 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
-static Ps2Kbd ps2kbd(
-  pio1,
-  6
-);
 // ZX Spectrum emulator
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
@@ -108,6 +104,12 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 
+void print(hid_keyboard_report_t const *report) {
+	printf("HID key report modifiers %2.2X report ", report->modifier);
+	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+	printf("\n");
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
   keyboard.mount();
 }
@@ -117,6 +119,9 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+	printf("CURR ");print(report);
+	printf("PREV ");print(prev_report);
+	
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -127,6 +132,11 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   if (r == 1) toggleMenu = true;
 }
 
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
 
 unsigned char* screenPtr;
 unsigned char* attrPtr;
