@@ -36,7 +36,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * 10/07/22 - Added basic support for PS/2 keyboards
 * 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
 * 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
-* 18/06/22 - Dont't freeze if SD card missing
+* 18/06/22 - Don't freeze if SD card missing
 * 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
 ## Screen shots
