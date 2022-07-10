@@ -13,6 +13,7 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
+#include "ps2kbd.h"
 
 extern "C" {
 #include "dvi.h"
@@ -103,6 +104,12 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 
+void print(hid_keyboard_report_t const *report) {
+	printf("HID key report modifiers %2.2X report ", report->modifier);
+	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+	printf("\n");
+}
+
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
   keyboard.mount();
 }
@@ -112,6 +119,12 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+#if 0
+  // Some help debugging keyboard input/drivers
+	printf("PREV ");print(prev_report);
+	printf("CURR ");print(report);
+#endif
+
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -122,6 +135,11 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   if (r == 1) toggleMenu = true;
 }
 
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
 
 unsigned char* screenPtr;
 unsigned char* attrPtr;
@@ -231,6 +249,7 @@ void __not_in_flash_func(main_loop)() {
   
   while (1) {
     tuh_task();
+    ps2kbd.tick();
     for (int i = 1; i < 100; ++i) {
       if (lastInterruptFrame != _frames) {
         lastInterruptFrame = _frames;
@@ -258,7 +277,8 @@ int main() {
 
   setup_default_uart();
   tusb_init();
-    
+  ps2kbd.init_gpio();
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
