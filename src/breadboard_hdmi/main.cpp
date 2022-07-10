@@ -119,9 +119,12 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-	printf("CURR ");print(report);
+#if 0
+  // Some help debugging keyboard input/drivers
 	printf("PREV ");print(prev_report);
-	
+	printf("CURR ");print(report);
+#endif
+
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);

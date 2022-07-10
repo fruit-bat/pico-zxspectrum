@@ -12,6 +12,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * LCD support (ST7789 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB Keyboard & Joysticks
+* PS/2 Keyboard
 * PWM sound for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
@@ -32,6 +33,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 
 ## Updates
+* 27/06/22 - Added basic support for PS/2 keyboards
 * 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
 * 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
 * 18/06/22 - Dont't freeze if SD card missing
@@ -67,6 +69,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 | GP21  |       | 21    | 27    |           |           |           | Buzzer audio out       |
 | GP26  |       | 26    | 31    |           |           |           | PWM audio out          |
 | GP27  |       | 26    | 32    |           |           |           | PWM audio out          |
+| GP6   |       | 6     | 9     |           |           |           | PS/2 keyboard data     |
+| GP7   |       | 7     | 10    |           |           |           | PS/2 keyboard clock    |
+
 
 ### Audio pins
 Audio output comes in 3 variants 1, 2 and 4 pin:
@@ -123,6 +128,19 @@ See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for a
 ![image](docs/rgb_332_vga.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an example configuration.
+
+### PS/2 Keyboards
+The emulator can accept input from a PS/2 keyboard wired to GP6 and GP7.
+A suggested circuit is shown below:
+![image](docs/ps2_interface_mk1.png)
+
+The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
+the data and clock lines are, in theory, open-collector with no pull-up.
+
+I'm told most PS/2 keyboards can be run at 3.3v and the the extra components become redundant... but I've not tried with mine. 
+You may find the Pico struggles to deliver enough power at 3.3v for the SD card writes and running a keyboard.
+
+Currently there is no toggling on the lock keys (caps/num lock) and the indicator leds are not used.
 
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
@@ -359,4 +377,4 @@ tio -m ODELBS /dev/ttyUSB0
 [USB HID 1.1](https://www.usb.org/sites/default/files/hid1_11.pdf)<br/>
 [ST7789 LCD driver reference](docs/ST7789_Datasheet.pdf)<br/>
 [RGB for 128k ZX Spectrum](docs/128_rgb.pdf)<br/>
-
+[PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
