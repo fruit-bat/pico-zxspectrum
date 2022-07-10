@@ -132,6 +132,7 @@ See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an e
 ### PS/2 Keyboards
 The emulator can accept input from a PS/2 keyboard wired to GP6 and GP7.
 A suggested circuit is shown below:
+
 ![image](docs/ps2_interface_mk1.png)
 
 The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
