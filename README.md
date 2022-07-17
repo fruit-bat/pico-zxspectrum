@@ -379,3 +379,4 @@ tio -m ODELBS /dev/ttyUSB0
 [ST7789 LCD driver reference](docs/ST7789_Datasheet.pdf)<br/>
 [RGB for 128k ZX Spectrum](docs/128_rgb.pdf)<br/>
 [PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
+[RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>
