@@ -25,9 +25,9 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
 * PicomputerZX
-* Pimoroni Pico DV Demo Base 
+* [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
 
-<img src="docs/breadboard.png" width="200"/>
+<a><img src="docs/breadboard.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
@@ -38,6 +38,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 
 ## Updates
 * 23/07/22 - Added target for Pico DV board
+* 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
 * 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
