@@ -13,7 +13,7 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB Keyboard & Joysticks
 * PS/2 Keyboard
-* PWM sound for ear, mic and AY-3-8912
+* PWM/I2S DAC audio for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
