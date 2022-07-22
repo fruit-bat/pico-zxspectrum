@@ -168,7 +168,7 @@ Currently there is no toggling on the lock keys (caps/num lock) and the indicato
 </a>
 
 <a href="https://shop.pimoroni.com/products/adafruit-stemma-speaker-plug-and-play-audio-amplifier">
-<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/3885-02_630x630.jpg" width="200"/>
+<img src="https://cdn.shopify.com/s/files/1/0174/1800/products/P1040672_1500x1500.png" width="200"/>
 </a>
 
 
