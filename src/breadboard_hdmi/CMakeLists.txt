@@ -2,7 +2,6 @@ set(zxspectrum_hdmi_src
   main.cpp
   tmds_encode_zxspectrum.S
   tmds_encode_zxspectrum.h
-  hw_config.c
 )
 
 add_executable(ZxSpectrumBreadboardHdmi1PinAudio

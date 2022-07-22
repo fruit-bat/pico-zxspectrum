@@ -1,6 +1,7 @@
 #include "ZxSpectrumAudio.h"
 
-static void init_pwm_pin(uint32_t pin) {
+#ifndef AUDIO_I2S
+static void init_pwm_pin(uint32_t pin) { 
   gpio_set_function(pin, GPIO_FUNC_PWM);
   const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
   pwm_config config = pwm_get_default_config();
@@ -8,8 +9,12 @@ static void init_pwm_pin(uint32_t pin) {
   pwm_config_set_wrap(&config, PWM_WRAP);
   pwm_init(audio_pin_slice, &config, true);
 }
+#endif
 
 void zxSpectrumAudioInit() {
+#ifdef AUDIO_I2S
+  init_is2_audio();
+#else  
   #ifdef BZR_PIN
     gpio_init(BZR_PIN);
     gpio_set_dir(BZR_PIN, GPIO_OUT);
@@ -26,4 +31,5 @@ void zxSpectrumAudioInit() {
   #ifdef AY8912_C_PIN
     init_pwm_pin(AY8912_C_PIN);
   #endif
+#endif
 }
