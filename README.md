@@ -5,10 +5,8 @@
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
-Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
-
 ## Features
-* DVI over HDMI
+* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB Keyboard & Joysticks
@@ -371,6 +369,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
+[Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
