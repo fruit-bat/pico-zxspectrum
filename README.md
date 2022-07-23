@@ -273,7 +273,7 @@ git clone git@github.com:raspberrypi/pico-extras.git
 git clone git@github.com:Wren6991/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
-git clone git@github.com:carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
@@ -284,10 +284,19 @@ git clone https://github.com/raspberrypi/pico-extras.git
 git clone https://github.com/Wren6991/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
-git clone https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```
+Edit:
+```sh
+pimoroni-pico/drivers/fatfs/ffconf.h
+```
+and set FF_USE_FIND to 1
+```
+#define FF_USE_FIND            1
+```
+
 
 Perform the build:
 ```sh
