@@ -1,8 +1,6 @@
 set(zxspectrum_hdmi_src
   main.cpp
-  tmds_encode_zxspectrum.S
-  tmds_encode_zxspectrum.h
-  audio_i2s.cpp
+  ${zxspectrum_dvi_src}
 )
 
 add_executable(ZxSpectrumPicoDv
@@ -11,7 +9,7 @@ add_executable(ZxSpectrumPicoDv
 )
 
 pico_generate_pio_header(ZxSpectrumPicoDv 
-  ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
+  ${zxspectrum_audio_i2s_pio}
 )
 
 target_compile_definitions(ZxSpectrumPicoDv PRIVATE

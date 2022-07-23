@@ -1,7 +1,6 @@
 set(zxspectrum_hdmi_src
   main.cpp
-  tmds_encode_zxspectrum.S
-  tmds_encode_zxspectrum.h
+  ${zxspectrum_dvi_src}
 )
 
 add_executable(ZxSpectrumBreadboardHdmi1PinAudio
@@ -19,34 +18,37 @@ add_executable(ZxSpectrumBreadboardHdmi4PinAudio
   ${zxspectrum_hdmi_src}
 )
 
-target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
+set(zxspectrum_hdmi_defines
+  # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
+  # Set the resolution of the menu screen
   PCS_COLS=80
   PCS_ROWS=30
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1  
+  # Configure the SPI cd card to use SPI0
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=2
+  SDCARD_PIN_SPI0_MOSI=3
+  SDCARD_PIN_SPI0_MISO=4  
+)
+
+target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
+  ${zxspectrum_hdmi_defines}
   SPK_PIN=20
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
-  DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-  DVI_VERTICAL_REPEAT=2
-  DVI_N_TMDS_BUFFERS=3
-  DVI_1BPP_BIT_REVERSE=1
-  PCS_COLS=80
-  PCS_ROWS=30
+  ${zxspectrum_hdmi_defines}
   SPK_PIN=20
   BZR_PIN=21
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
-  DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-  DVI_VERTICAL_REPEAT=2
-  DVI_N_TMDS_BUFFERS=3
-  DVI_1BPP_BIT_REVERSE=1
-  PCS_COLS=80
-  PCS_ROWS=30
+  ${zxspectrum_hdmi_defines}
   BZR_PIN=21
   AY8912_A_PIN=20
   AY8912_B_PIN=26

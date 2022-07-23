@@ -4,7 +4,7 @@
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 //
-// AUDIO_I2S I2S audio
+// PICO_AUDIO_I2S I2S audio
 //
 // SPK_PIN   combined audio from AY-3-8912 and buzzer
 //
@@ -20,7 +20,16 @@
 // See CMakeLists.txt files for configurations
 //
 #ifdef PICO_AUDIO_I2S
-#include "pico_dv/audio_i2s.h"
+#include "hardware/pio.h"
+
+inline bool is2_audio_ready() {
+  return !pio_sm_is_tx_fifo_full(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
+}
+
+inline void is2_audio_put(uint32_t x) {
+  *(volatile uint32_t*)&PICO_AUDIO_I2S_PIO->txf[PICO_AUDIO_I2S_SM] = x;
+}
+
 #else
   #ifdef BZR_PIN
     #ifdef AY8912_A_PIN

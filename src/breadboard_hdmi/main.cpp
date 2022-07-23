@@ -260,7 +260,7 @@ void __not_in_flash_func(main_loop)() {
 				zxSpectrumAudioToGpio(zxSpectrum);
 			}
     }
-    else (frames != _frames) {
+    else if (frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();
     }
