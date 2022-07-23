@@ -1,6 +1,6 @@
 #include "ZxSpectrumAudio.h"
 
-#ifndef AUDIO_I2S
+#ifndef PICO_AUDIO_I2S
 static void init_pwm_pin(uint32_t pin) { 
   gpio_set_function(pin, GPIO_FUNC_PWM);
   const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
@@ -12,7 +12,7 @@ static void init_pwm_pin(uint32_t pin) {
 #endif
 
 void zxSpectrumAudioInit() {
-#ifdef AUDIO_I2S
+#ifdef PICO_AUDIO_I2S
   init_is2_audio();
 #else  
   #ifdef BZR_PIN

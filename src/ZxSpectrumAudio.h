@@ -19,7 +19,7 @@
 //
 // See CMakeLists.txt files for configurations
 //
-#ifdef AUDIO_I2S
+#ifdef PICO_AUDIO_I2S
 #include "pico_dv/audio_i2s.h"
 #else
   #ifdef BZR_PIN
@@ -36,7 +36,7 @@
 void zxSpectrumAudioInit();
 
 inline void zxSpectrumAudioToGpio(ZxSpectrum& zxSpectrum) {
-#ifdef AUDIO_I2S
+#ifdef PICO_AUDIO_I2S
   if (is2_audio_ready()) {
     uint32_t vA, vB, vC;
     zxSpectrum.vol(vA, vB, vC);

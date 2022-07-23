@@ -18,23 +18,11 @@ static void update_pio_frequency(uint32_t sample_freq, PIO audio_pio, uint pio_s
 }
 
 void init_is2_audio() {
-  
-  PIO pio = pio1;
-  uint sm = 2;
-  uint data_pin = 26;
-  uint clock_pin_base = 27;
-  
-  gpio_set_function(data_pin, GPIO_FUNC_PIO1);
-  gpio_set_function(clock_pin_base, GPIO_FUNC_PIO1);
-  gpio_set_function(clock_pin_base + 1, GPIO_FUNC_PIO1);
-  
-  // get a state machine
-  // sm = pio_claim_unused_sm(pio, true);
-  
-  uint offset = pio_add_program(pio, &audio_i2s_program);
-
-  audio_i2s_program_init(pio, sm, offset, data_pin, clock_pin_base);
-  update_pio_frequency(96000, pio, sm);
-  
-  pio_sm_set_enabled(pio, sm, true);
+  gpio_set_function(PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_PIO_FUNC);
+  gpio_set_function(PICO_AUDIO_I2S_BCLK, PICO_AUDIO_I2S_PIO_FUNC);
+  gpio_set_function(PICO_AUDIO_I2S_BCLK + 1, PICO_AUDIO_I2S_PIO_FUNC);
+  uint offset = pio_add_program(PICO_AUDIO_I2S_PIO, &audio_i2s_program);
+  audio_i2s_program_init(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, offset, PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_BCLK);
+  update_pio_frequency(96000, PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
+  pio_sm_set_enabled(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, true);
 }
