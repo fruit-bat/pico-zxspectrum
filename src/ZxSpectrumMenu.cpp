@@ -68,7 +68,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _reset128kOp("Reset 128K ZX Spectrum"),
   
   _joystick(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  _joystickKemstonOp("Kemptson"),
+  _joystickKemstonOp("Kempston"),
   _joystickSinclairOp("Sinclair"),
 
   _devices(0, 3, SZ_WIZ_COLS, 1),
