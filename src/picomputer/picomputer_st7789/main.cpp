@@ -217,7 +217,7 @@ void __not_in_flash_func(main_loop)() {
         zxSpectrumAudioToGpio(zxSpectrum);
       }
     }
-    else (frames != _frames) {
+    else if (frames != _frames) {
       frames = _frames;
       picoDisplay.refresh();
     }
@@ -234,9 +234,6 @@ int main() {
   
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-
-  // Don't use the same DMA channel as the screen  
-  set_spi_dma_irq_channel(true, true);
 
   tusb_init();
 

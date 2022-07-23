@@ -23,7 +23,7 @@ target_compile_definitions(ZxSpectrumPicoDv PRIVATE
   PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
-  # Configure the SPI cd card to use PIO
+  # Configure the SPI sd card to use PIO
   SDCARD_PIO=pio1
   SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=22

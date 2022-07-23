@@ -1,4 +1,12 @@
 
+set(picomputer_vgazx_defines
+  ${picomputer_common_defines}
+  PCS_COLS=80 
+  PCS_ROWS=30
+  SPK_PIN=9
+  PICOMPUTER_VGA
+)
+
 add_executable(ZxSpectrumPicomputerVga1111Zx
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
@@ -7,13 +15,10 @@ add_executable(ZxSpectrumPicomputerVga1111Zx
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga1111Zx PRIVATE
-  PCS_COLS=80 
-  PCS_ROWS=30
-  SPK_PIN=9
+  ${picomputer_vgazx_defines}
   VGA_ENC_RGBY_1111
   VGA_GPIO_SYNC=4
   VGA_GPIO_OUTNUM=4
-  PICOMPUTER_VGA
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga1111Zx
@@ -34,7 +39,6 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerVga1111Zx 0)
 pico_add_extra_outputs(ZxSpectrumPicomputerVga1111Zx)
 
 
-
 add_executable(ZxSpectrumPicomputerVga222Zx
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
@@ -43,13 +47,10 @@ add_executable(ZxSpectrumPicomputerVga222Zx
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga222Zx PRIVATE
-  PCS_COLS=80 
-  PCS_ROWS=30
-  SPK_PIN=9
+  ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
   VGA_GPIO_OUTNUM=6
-  PICOMPUTER_VGA
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga222Zx
