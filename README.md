@@ -42,6 +42,11 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 18/06/22 - Don't freeze if SD card missing
 * 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
+The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
+[Pimoroni's](https://github.com/pimoroni/pimoroni-pico) was due to the SD card pins on the 
+[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) not matching up with the
+RP2040 SPI harware support. The Pimoroni library support the use of PIO SPI, which gets around the problem.
+
 ## Screen shots
 
 <img src="docs/swarm_loading.jpg" height="200"/>
@@ -364,7 +369,7 @@ The following folders need to be created on the SD card:
 tio -m ODELBS /dev/ttyUSB0
 ```
 ## Thanks to
-[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SST7789_Datasheet.pdfPI-RPi-Pico)<br/>
+[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
 [Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
