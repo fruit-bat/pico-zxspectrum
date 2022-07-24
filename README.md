@@ -93,7 +93,7 @@ Audio output comes in 3 variants 1, 2 and 4 pin:
 
 ### Pico pinout
 
-![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
+![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
 ### Prototype
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
