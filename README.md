@@ -43,9 +43,9 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
 The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
-[Pimoroni's](https://github.com/pimoroni/pimoroni-pico) was due to the SD card pins on the 
-[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) not matching up with the
-RP2040 SPI harware support. The Pimoroni library support the use of PIO SPI, which gets around the problem.
+[Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
+[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) do not match up with the
+RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
 
 ## Screen shots
 
