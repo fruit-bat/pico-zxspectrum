@@ -172,17 +172,11 @@ public:
       int c = _Z80.step();
 #ifdef BZR_PIN
       gpio_put(BZR_PIN, getBuzzer());
-#endif
       c += _Z80.step();
-#ifdef BZR_PIN
       gpio_put(BZR_PIN, getBuzzer());
-#endif
-     c += _Z80.step();
-#ifdef BZR_PIN
+      c += _Z80.step();
       gpio_put(BZR_PIN, getBuzzer());
-#endif
-     c += _Z80.step();
-#ifdef BZR_PIN
+      c += _Z80.step();
       gpio_put(BZR_PIN, getBuzzer());
 #endif
       const uint32_t tu32 = time_us_32() << 5;
