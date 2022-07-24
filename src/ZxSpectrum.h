@@ -184,7 +184,7 @@ public:
           if (_ta32 < -500 * 4 * 32)  _ta32 = -500 * 4 * 32;
         }
       }
-      _ay.step(tud);
+      if (tud) _ay.step(tud);
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
   }
 

@@ -44,16 +44,22 @@ inline void is2_audio_put(uint32_t x) {
 
 void zxSpectrumAudioInit();
 
+inline bool zxSpectrumAudioReady() {
+#ifdef PICO_AUDIO_I2S
+  return is2_audio_ready();
+#else
+  return true;
+#endif
+}
+
 inline void zxSpectrumAudioToGpio(ZxSpectrum& zxSpectrum) {
 #ifdef PICO_AUDIO_I2S
-  if (is2_audio_ready()) {
-    uint32_t vA, vB, vC;
-    zxSpectrum.vol(vA, vB, vC);
-    uint32_t s = zxSpectrum.getBuzzer() ? 255 : 0;
-    uint32_t l = ((((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
-    uint32_t r = ((((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
-    is2_audio_put((l << 16) | r);
-  }
+  uint32_t vA, vB, vC;
+  zxSpectrum.vol(vA, vB, vC);
+  uint32_t s = zxSpectrum.getBuzzer() ? 255 : 0;
+  uint32_t l = ((((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
+  uint32_t r = ((((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
+  is2_audio_put((l << 16) | r);
 #else
   #ifdef BZR_PIN
         gpio_put(BZR_PIN, zxSpectrum.getBuzzer());

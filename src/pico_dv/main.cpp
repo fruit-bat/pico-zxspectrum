@@ -249,7 +249,7 @@ void __not_in_flash_func(main_loop)() {
           zxSpectrum.interrupt();
         }
         zxSpectrum.step();
-        zxSpectrumAudioToGpio(zxSpectrum);
+        if (zxSpectrumAudioReady()) zxSpectrumAudioToGpio(zxSpectrum);
       }
     }
     else if (frames != _frames) {
