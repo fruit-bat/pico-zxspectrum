@@ -169,7 +169,22 @@ public:
   ZxSpectrumType type() { return _type; }
   inline void step()
   {
-      const int c = _Z80.step();
+      int c = _Z80.step();
+#ifdef BZR_PIN
+      gpio_put(BZR_PIN, getBuzzer());
+#endif
+      c += _Z80.step();
+#ifdef BZR_PIN
+      gpio_put(BZR_PIN, getBuzzer());
+#endif
+     c += _Z80.step();
+#ifdef BZR_PIN
+      gpio_put(BZR_PIN, getBuzzer());
+#endif
+     c += _Z80.step();
+#ifdef BZR_PIN
+      gpio_put(BZR_PIN, getBuzzer());
+#endif
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
       _tu32 = tu32;
