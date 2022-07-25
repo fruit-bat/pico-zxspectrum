@@ -14,8 +14,11 @@ pico_generate_pio_header(ZxSpectrumPicomputerMax
 )
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
+  ${picomputer_common_defines}
+  # Set the resolution of the menu screen
   PCS_COLS=40 
   PCS_ROWS=30
+  # Set the size of the menus
   SZ_WIZ_ML=0
   SZ_WIZ_CW1=12
   SZ_WIZ_CW2=18
@@ -58,8 +61,11 @@ pico_generate_pio_header(ZxSpectrumPicomputerZX
 )
 
 target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
+  ${picomputer_common_defines}
+  # Set the resolution of the menu screen
   PCS_COLS=40 
   PCS_ROWS=30
+  # Set the size of the menus
   SZ_WIZ_ML=0
   SZ_WIZ_CW1=12
   SZ_WIZ_CW2=18

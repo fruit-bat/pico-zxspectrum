@@ -5,15 +5,13 @@
 
 This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
-Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's Super no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) libraries.
-
 ## Features
-* DVI over HDMI
+* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB Keyboard & Joysticks
 * PS/2 Keyboard
-* PWM sound for ear, mic and AY-3-8912
+* PWM/I2S DAC audio for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
@@ -25,19 +23,29 @@ Uses [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI) and [CarlK's 
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
 * PicomputerZX
+* [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
 
-<img src="docs/breadboard.png" width="200"/><a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer">
-<img src="docs/retrovga.png" width="200"/><img src="docs/picomputermax.png" width="200"/><img src="docs/picomputerzx.png" width="200"/>
-</a>
-
+<a><img src="docs/breadboard.png" width="200"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 
 ## Updates
+* 23/07/22 - Added target for Pico DV board
+* 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
+* 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
 * 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
 * 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
 * 18/06/22 - Don't freeze if SD card missing
 * 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
+
+The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
+[Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
+[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) do not match up with the
+RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
 
 ## Screen shots
 
@@ -85,7 +93,7 @@ Audio output comes in 3 variants 1, 2 and 4 pin:
 
 ### Pico pinout
 
-![image](https://www.raspberrypi.org/documentation/microcontrollers/images/Pico-R3-SDK11-Pinout.svg "Pinout")
+![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
 ### Prototype
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
@@ -217,7 +225,7 @@ https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
 
 ## Try it
-Pre-built binaries can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
+Pre-built binaries, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
 
 | Board | Binary | Audio |
 | ------ | -------- | ----- |
@@ -268,7 +276,7 @@ git clone git@github.com:raspberrypi/pico-extras.git
 git clone git@github.com:Wren6991/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
-git clone git@github.com:carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
 
@@ -279,10 +287,19 @@ git clone https://github.com/raspberrypi/pico-extras.git
 git clone https://github.com/Wren6991/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
-git clone https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 ```
+Edit:
+```sh
+pimoroni-pico/drivers/fatfs/ffconf.h
+```
+and set FF_USE_FIND to 1
+```
+#define FF_USE_FIND            1
+```
+
 
 Perform the build:
 ```sh
@@ -352,11 +369,12 @@ The following folders need to be created on the SD card:
 tio -m ODELBS /dev/ttyUSB0
 ```
 ## Thanks to
-[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SST7789_Datasheet.pdfPI-RPi-Pico)<br/>
+[CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
 [Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
 [Wren](https://github.com/Wren6991/) for the amazing [PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
+[Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 
 ## References
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
@@ -379,4 +397,5 @@ tio -m ODELBS /dev/ttyUSB0
 [ST7789 LCD driver reference](docs/ST7789_Datasheet.pdf)<br/>
 [RGB for 128k ZX Spectrum](docs/128_rgb.pdf)<br/>
 [PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
+[PCM 5100A DAC](PCM510xA.pdf)<br/>
 [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>

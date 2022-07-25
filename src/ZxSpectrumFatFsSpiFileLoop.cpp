@@ -4,6 +4,12 @@
 #include "BufferedInputStream.h"
 #include <string.h>
 
+#ifdef DEBUG_FAT_SPI
+#define DBG_PRINTF(...) printf(__VA_ARGS__)
+#else
+#define DBG_PRINTF(...)
+#endif
+
 ZxSpectrumFatFsSpiFileLoop::ZxSpectrumFatFsSpiFileLoop(SdCardFatFsSpi* sdCard, const char *folder) :
   _sdCard(sdCard),
   _folder(folder),
@@ -26,7 +32,7 @@ void ZxSpectrumFatFsSpiFileLoop::reload() {
     // TODO clear down existing list
     
     if (!_sdCard->mount()) {
-      printf("Failed to mount SD card\n");
+      DBG_PRINTF("Failed to mount SD card\n");
       return;
     }
   }
@@ -36,7 +42,7 @@ void ZxSpectrumFatFsSpiFileLoop::reload() {
   FRESULT dfr = f_findfirst(&dj, &fno, _folder, "*.*");
 
   while (dfr == FR_OK && fno.fname[0]) {
-    printf("file %s\n", fno.fname);
+    DBG_PRINTF("file %s\n", fno.fname);
     ZxSpectrumFile *fsi = new ZxSpectrumFile(fno.fname);
     add(fsi);
     dfr = f_findnext(&dj, &fno); // Search for next item
@@ -52,13 +58,13 @@ const char *ZxSpectrumFatFsSpiFileLoop::fext(const char *filename) {
 void ZxSpectrumFatFsSpiFileLoop::load(ZxSpectrum* zxSpectrum) {
   if (!_sdCard->mounted()) { 
     if (!_sdCard->mount()) {
-      printf("Failed to mount SD card\n");
+      DBG_PRINTF("Failed to mount SD card\n");
       return;
     }
   }
   char name[280];
   sprintf(name, "%s/%s", _folder, curr()->name());
-  printf("File to load %s\n", name);
+  DBG_PRINTF("File to load %s\n", name);
   
   if (_is) {
     zxSpectrum->loadTap(0);

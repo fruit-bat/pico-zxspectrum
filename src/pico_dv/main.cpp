@@ -13,7 +13,6 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
-#include "ps2kbd.h"
 
 extern "C" {
 #include "dvi.h"
@@ -135,12 +134,6 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   if (r == 1) toggleMenu = true;
 }
 
-static Ps2Kbd ps2kbd(
-  pio1,
-  6,
-  process_kbd_report
-);
-
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
@@ -249,16 +242,15 @@ void __not_in_flash_func(main_loop)() {
   
   while (1) {
     tuh_task();
-    ps2kbd.tick();
     if (!showMenu) {
-			for (int i = 1; i < 100; ++i) {
-				if (lastInterruptFrame != _frames) {
-					lastInterruptFrame = _frames;
-					zxSpectrum.interrupt();
-				}
-				zxSpectrum.step();
-				zxSpectrumAudioToGpio(zxSpectrum);
-			}
+      for (int i = 1; i < 100; ++i) {
+        if (lastInterruptFrame != _frames) {
+          lastInterruptFrame = _frames;
+          zxSpectrum.interrupt();
+        }
+        zxSpectrum.step();
+        if (zxSpectrumAudioReady()) zxSpectrumAudioToGpio(zxSpectrum);
+      }
     }
     else if (frames != _frames) {
       frames = _frames;
@@ -279,7 +271,6 @@ int main() {
 
   setup_default_uart();
   tusb_init();
-  ps2kbd.init_gpio();
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);

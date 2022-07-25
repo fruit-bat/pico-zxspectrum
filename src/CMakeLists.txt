@@ -28,14 +28,26 @@ set(zxspectrum_rgb_src
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
 )
 
+set(zxspectrum_dvi_src
+	${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.S
+	${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.h
+)
+
 set(zxspectrum_common_libs
 	pico_stdlib
 	pico_multicore
 	pico_util
-	FatFs_SPI
 	pico_emu_utils
+  sdcard
+  fatfs
+  hardware_dma	
+)
+
+set(zxspectrum_audio_i2s_pio
+  ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
 )
 
 add_subdirectory(breadboard_hdmi)
 add_subdirectory(picomputer)
+add_subdirectory(pico_dv)
 
