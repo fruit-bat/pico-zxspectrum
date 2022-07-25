@@ -16,7 +16,8 @@ ZxSpectrum::ZxSpectrum(
   _keyboard2(keyboard2),
   _joystick(joystick),
   _borderColour(7),
-  _ear(false)
+  _ear(false),
+  _buzzer(0)
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
   reset(ZxSpectrum128k);

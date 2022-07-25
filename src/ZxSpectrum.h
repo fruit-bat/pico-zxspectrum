@@ -12,6 +12,11 @@
 #include "128k_rom_2.h"
 #include "ZxSpectrumAy.h"
 
+#include "hardware/pwm.h"
+
+class ZxSpectrum;
+void __not_in_flash_func(zxSpectrumAudioHandler)(ZxSpectrum* zxSpectrum);
+
 enum ZxSpectrumType {
   ZxSpectrum48k,
   ZxSpectrum128k
@@ -37,6 +42,7 @@ private:
   uint32_t _modMul;
   bool _mute;
   bool _pauseTape;
+  uint32_t _buzzer;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
@@ -158,6 +164,13 @@ private:
   int writeZ80MemV2(OutputStream *os);
   int z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
 
+  void __not_in_flash_func(stepBuzzer)() {
+    uint32_t d = (_port254 >> 4) & 1;
+    if (d == 0 && _buzzer > 0) --_buzzer;
+    else if (d == 1 && _buzzer < 15) ++_buzzer;
+    zxSpectrumAudioHandler(this);
+  }
+  
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
@@ -170,15 +183,12 @@ public:
   inline void step()
   {
       int c = _Z80.step();
-#ifdef BZR_PIN
-      gpio_put(BZR_PIN, getBuzzer());
+      stepBuzzer();
       c += _Z80.step();
-      gpio_put(BZR_PIN, getBuzzer());
+      stepBuzzer();
       c += _Z80.step();
-      gpio_put(BZR_PIN, getBuzzer());
-      c += _Z80.step();
-      gpio_put(BZR_PIN, getBuzzer());
-#endif
+      stepBuzzer();
+      
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
       _tu32 = tu32;
@@ -207,21 +217,26 @@ public:
 
   inline unsigned int borderColour() { return _borderColour; }
   
-  // TODO this should probably move to ZxSpectrumAudio
   inline int32_t getSpeaker() {
     if (_mute) return 0;
-    const int32_t a1 = (_port254 & (1<<4)) ? 192 : 0;
+    const int32_t a1 = __mul_instruction(_buzzer, 12);
     const int32_t a2 = _ear ? 63 : 0;
     return a1 + a2 + _ay.vol();
   }
-  // TODO end
   
   inline int32_t getAnalogueAudio() {
     return _mute ? 0 : _ay.vol();
   }
   
-  inline bool getBuzzer() {
+  inline int32_t getBuzzer() {
     return _mute ? false : ((_port254 >> 4) & 1) ^ _ear;
+  }
+  
+  inline int32_t getBuzzerSmoothed() {
+    if (_mute) return 0;
+    const int32_t a1 = __mul_instruction(_buzzer, 12);
+    const int32_t a2 = _ear ? 63 : 0;
+    return a1 + a2;
   }
   
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
@@ -236,6 +251,7 @@ public:
   }
   
   void setEar(bool ear) { _ear = ear; }
+  bool getEar() { return _ear; }
   void loadZ80(InputStream *inputStream);
   void saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
