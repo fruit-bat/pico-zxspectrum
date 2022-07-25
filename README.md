@@ -225,7 +225,7 @@ https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
 
 ## Try it
-Pre-built binaries can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
+Pre-built binaries, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
 
 | Board | Binary | Audio |
 | ------ | -------- | ----- |
