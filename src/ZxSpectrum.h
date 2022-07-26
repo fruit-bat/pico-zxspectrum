@@ -11,11 +11,8 @@
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
 #include "ZxSpectrumAy.h"
-
 #include "hardware/pwm.h"
-
-class ZxSpectrum;
-void __not_in_flash_func(zxSpectrumAudioHandler)(ZxSpectrum* zxSpectrum);
+#include "ZxSpectrumAudio.h"
 
 enum ZxSpectrumType {
   ZxSpectrum48k,
@@ -168,8 +165,17 @@ private:
     uint32_t d = (_port254 >> 4) & 1;
     if (d == 0 && _buzzer > 0) --_buzzer;
     else if (d == 1 && _buzzer < 15) ++_buzzer;
-    zxSpectrumAudioHandler(this);
   }
+  
+  inline int32_t getBuzzerSmoothed() {
+    const int32_t a1 = __mul_instruction(_buzzer, 14);
+    const int32_t a2 = _ear ? 31 : 0;
+    return a1 + a2;
+  }
+  
+  inline uint32_t getBuzzer() {
+    return ((_port254 >> 4) ^ _ear) & 1;
+  }  
   
 public:
   ZxSpectrum(
@@ -180,15 +186,31 @@ public:
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
-  inline void step()
+    
+  void __not_in_flash_func(step)()
   {
-      int c = _Z80.step();
-      stepBuzzer();
-      c += _Z80.step();
-      stepBuzzer();
-      c += _Z80.step();
-      stepBuzzer();
-      
+      int c;
+      if (_mute) {
+        c = _Z80.step();
+        zxSpectrumAudioHandler(0,0,0,0,0);
+        c += _Z80.step();
+        zxSpectrumAudioHandler(0,0,0,0,0);
+        c += _Z80.step();
+        zxSpectrumAudioHandler(0,0,0,0,0);
+      }
+      else {
+        uint32_t vA, vB, vC;
+        _ay.vol(vA, vB, vC);
+        c = _Z80.step();
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        c += _Z80.step();
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        c += _Z80.step();
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+      }
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
       _tu32 = tu32;
@@ -216,40 +238,7 @@ public:
   bool mute() { return _mute; }
 
   inline unsigned int borderColour() { return _borderColour; }
-  
-  inline int32_t getSpeaker() {
-    if (_mute) return 0;
-    const int32_t a1 = __mul_instruction(_buzzer, 12);
-    const int32_t a2 = _ear ? 63 : 0;
-    return a1 + a2 + _ay.vol();
-  }
-  
-  inline int32_t getAnalogueAudio() {
-    return _mute ? 0 : _ay.vol();
-  }
-  
-  inline int32_t getBuzzer() {
-    return _mute ? false : ((_port254 >> 4) & 1) ^ _ear;
-  }
-  
-  inline int32_t getBuzzerSmoothed() {
-    if (_mute) return 0;
-    const int32_t a1 = __mul_instruction(_buzzer, 12);
-    const int32_t a2 = _ear ? 63 : 0;
-    return a1 + a2;
-  }
-  
-  inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
-    if (_mute) {
-      vA = 0;
-      vB = 0;
-      vC = 0;
-    } 
-    else {
-      _ay.vol(vA, vB, vC);
-    }
-  }
-  
+
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
   void loadZ80(InputStream *inputStream);

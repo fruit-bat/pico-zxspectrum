@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ZxSpectrum.h"
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 //
@@ -21,6 +20,6 @@
 //
 void zxSpectrumAudioInit();
 
-void zxSpectrumAudioHandler(ZxSpectrum* zxSpectrum);
+void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t buzzerSmoothed, uint32_t buzzer);
 
 
