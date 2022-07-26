@@ -33,6 +33,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 
 
 ## Updates
+* 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
