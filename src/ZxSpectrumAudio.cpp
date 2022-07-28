@@ -11,7 +11,7 @@
 static void update_pio_frequency(uint32_t sample_freq, PIO audio_pio, uint pio_sm) {
   uint32_t system_clock_frequency = clock_get_hz(clk_sys);
   assert(system_clock_frequency < 0x40000000);
-  uint32_t divider = system_clock_frequency * 4 / sample_freq; // avoid arithmetic overflow
+  uint32_t divider = system_clock_frequency * 4 / (sample_freq * 3); // avoid arithmetic overflow
   assert(divider < 0x1000000);
   pio_sm_set_clkdiv_int_frac(audio_pio, pio_sm, divider >> 8u, divider & 0xffu);
 }
