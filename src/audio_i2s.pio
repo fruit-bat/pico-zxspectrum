@@ -30,17 +30,19 @@
                     ;        /--- LRCLK
                     ;        |/-- BCLK
 bitloop1:           ;        ||
-    out pins, 1       side 0b10
-    jmp x-- bitloop1  side 0b11
-    out pins, 1       side 0b00
-    set x, 14         side 0b01
+    out pins, 1       side 0b10 [2]
+    jmp y-- bitloop1  side 0b11 [2]
+    out pins, 1       side 0b00 [2]
+    set y, 14         side 0b01 [2]
 
 bitloop0:
-    out pins, 1       side 0b00
-    jmp x-- bitloop0  side 0b01
-    out pins, 1       side 0b10
+    out pins, 1       side 0b00 [2]
+    jmp y-- bitloop0  side 0b01 [2]
+    out pins, 1       side 0b10 [2]
 public entry_point:
-    set x, 14         side 0b11
+    pull noblock      side 0b11 
+    mov x, osr        side 0b11 
+    set y, 14         side 0b11
 
 % c-sdk {
 
@@ -49,7 +51,7 @@ static inline void audio_i2s_program_init(PIO pio, uint sm, uint offset, uint da
     
     sm_config_set_out_pins(&sm_config, data_pin, 1);
     sm_config_set_sideset_pins(&sm_config, clock_pin_base);
-    sm_config_set_out_shift(&sm_config, false, true, 32);
+    sm_config_set_out_shift(&sm_config, false, false, 32);
     sm_config_set_fifo_join(&sm_config, PIO_FIFO_JOIN_TX);
 
     pio_sm_init(pio, sm, offset, &sm_config);
