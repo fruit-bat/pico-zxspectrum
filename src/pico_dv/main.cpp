@@ -31,6 +31,7 @@ extern "C" {
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
 #include "ZxSpectrumFatFsSpiFileLoop.h"
+#include "ZxSpectrumPrepareDviScanline.h"
 
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -138,60 +139,6 @@ unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
 
-// Screen handler
-//
-// 256×192 Pixels
-// 32x24 Charaters
-//
-// 240-192 = 48 => 24 border rows top and bottom
-// 320-256 = 64 => 64 border pixels left and right
-//
-static inline void prepare_scanline(const uint y, uint f) {
-  
-  const uint8_t borderColor = zxSpectrum.borderColour();
-  uint32_t *tmdsbuf;
-  queue_remove_blocking(&dvi0.q_tmds_free, &tmdsbuf);
-  uint32_t *p = tmdsbuf;
-  const uint v = y - 24;
-  const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
-  const uint8_t *a = attrPtr+((v>>3)<<5);
-  const int m = (f >> 5) & 1 ? 0xff : 0x7f;
-  
-  if (y < 24 || y >= (24+192)) {
-    for (int plane = 0; plane < 3; ++plane) {
-      p = tmds_encode_border(
-        40,          // r0 is width in characters
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
-      );    
-    }
-  }
-  else {
-    for (int plane = 0; plane < 3; ++plane) {
-      p = tmds_encode_border(
-        4,           // r0 is width in characters
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
-      );
-      p = tmds_encode_screen(
-        (const uint8_t*)s,
-        a,
-        p,
-        m,
-        plane
-      );  
-      p = tmds_encode_border(
-        4,           // r0 is width in characters
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
-      );
-    }
-  }
-  queue_add_blocking(&dvi0.q_tmds_valid, &tmdsbuf);
-}
 
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
@@ -203,7 +150,7 @@ void __not_in_flash_func(core1_scanline_callback)() {
     }
   }
   else {
-    prepare_scanline(y++, _frames);
+    zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
   }
   if (y == FRAME_HEIGHT) {
     _frames++;
@@ -293,7 +240,7 @@ int main() {
 
   printf("Prepare first scanline\n");
 
-  prepare_scanline(0, 0);
+  zx_prepare_hdmi_scanline(&dvi0, 0, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);

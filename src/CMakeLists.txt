@@ -31,6 +31,7 @@ set(zxspectrum_rgb_src
 set(zxspectrum_dvi_src
 	${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.S
 	${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.h
+	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareDviScanline.cpp
 )
 
 set(zxspectrum_common_libs
