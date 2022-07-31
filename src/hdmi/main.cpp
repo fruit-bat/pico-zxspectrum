@@ -13,6 +13,7 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
+#include "ps2kbd.h"
 
 extern "C" {
 #include "dvi.h"
@@ -135,10 +136,17 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   if (r == 1) toggleMenu = true;
 }
 
+#ifdef USE_PS2_KBD
+static Ps2Kbd ps2kbd(
+  pio1,
+  6,
+  process_kbd_report
+);
+#endif
+
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-
 
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
@@ -189,6 +197,9 @@ void __not_in_flash_func(main_loop)() {
   
   while (1) {
     tuh_task();
+#ifdef USE_PS2_KBD
+    ps2kbd.tick();
+#endif
     if (!showMenu) {
       for (int i = 1; i < 100; ++i) {
         if (lastInterruptFrame != _frames) {
@@ -217,6 +228,9 @@ int main() {
 
   setup_default_uart();
   tusb_init();
+#ifdef USE_PS2_KBD
+  ps2kbd.init_gpio();
+#endif
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
