@@ -178,16 +178,13 @@ Here are the pin asignments:
 
 ![image](docs/ZxSpectrumPicomputerVga1111Zx.png)
 
+## Audio pins
+There are two techniques for audio output. 
+The first is a mixture of digital sound and PWM output, which comes in three variants.
+The second is is using a DAC connected to the Pico using I2S.
 
-
-
-
-
-
-
-
-### Audio pins
-Audio output comes in 3 variants 1, 2 and 4 pin:
+### PWM/Digital Audio
+PWM audio output comes in 3 variants 1, 2 and 4 pin:
 
 | Labeo     | 1 Pin                  | 2 Pin               | 4 Pin                   |
 | ----      | ---------------------- | ------------------- | ----------------------- |
@@ -196,30 +193,23 @@ Audio output comes in 3 variants 1, 2 and 4 pin:
 | RP AUDIO3  | -                      | -                  | AY-3-8912 Channel B PWM |
 | RP AUDIO4  | -                      | -                  | AY-3-8912 Channel C PWM |
 
-
-
-
-
-
-
-
-### Audio filter
-
 High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio.
 Here are some sample designs. Please note they are not carefully designed but made from components I found lying around. 
 If you create a particularly nice sounding design please let me know and I will add it to the documentation.
 
 Separating out the Spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
 
-![image](docs/audio_filter_mk2.png)
+![image](docs/Pico 2 pin PWM audio filter mono.png)
 
 The best audio is achieved by having separate pins for the Spectrum buzzer and AY-3-8912 A,B & C channels.
 
-![image](docs/audio_filter_4pin_mono_mk1.png)
+![image](docs/Pico 4 pin PWM audio filter mono.png)
+
+The sound is actually quite good from the 4 pin filer and at some point I will do a stero version. 
 
 Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
-![image](docs/audio_filter_mk1.png)
+![image](docs/Pico 1 pin PWM audio filter mono.png)
 
 ### VGA Support
 So far, there are three supported VGA configurations, which can be found in the various build targets.
@@ -228,25 +218,25 @@ so please let me know if you have better versions and I will update this documen
 #### RGBY 1111
 Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
 
-![image](docs/rgby_1111_vga.png)
+![image](docs/Pico VGA RGBY1111.png)
 
-See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
+See this [CMakeLists.txt](src/vga/CMakeLists.txt) for an example configuration.
 #### RGB 222
 
-![image](docs/rgb_222_vga.png)
+![image](docs/Pico VGA RGB222.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
 #### RGB 332
 
-![image](docs/rgb_332_vga.png)
+![image](docs/Pico VGA RGB332.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an example configuration.
 
 ### PS/2 Keyboards
-The emulator can accept input from a PS/2 keyboard wired to GP6 and GP7.
+The emulator targets can accept input from a PS/2 keyboard wired to RP_PS2_DATA and RP_PS2_CLK.
 A suggested circuit is shown below:
 
-![image](docs/ps2_interface_mk1.png)
+![image](docs/Pico PS2 interface.png)
 
 The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
 the data and clock lines are, in theory, open-collector with no pull-up.
@@ -311,12 +301,6 @@ zxspectrum/kiosk.txt
 ### Pico pinout
 
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
-
-### Prototype
-<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
-
-
-
 
 
 ## Issues
