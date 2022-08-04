@@ -51,14 +51,14 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Screen shots
 
-<img src="docs/swarm_loading.jpg" height="200"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
+<img src="docs/swarm_loading.jpg" height="200" style="padding:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
 ## Targets
 TODO general discussion of targets
 TODO explain how to build a specific target
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
-These are a series of targets based around my original breadboard prototype.
+These are a series of targets based around my original breadboard prototype:
 
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
@@ -80,7 +80,7 @@ All of the target share the same pinout but make different use of the 4 audio pi
 ![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
 
 ### ZxSpectrumPicoDv
-This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board.
+This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board:
 
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
@@ -91,10 +91,12 @@ It supports the following:
 * I2S sound
 * SPI SD card
 
+Here are the pin asignments:
+
 ![image](docs/ZxSpectrumPicoDv.png)
 
 ### ZxSpectrumPicomputerVga
-This is the target for Bobricius' Retro VGA board
+This is the target for Bobricius' Retro VGA board:
 
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
 
@@ -107,12 +109,24 @@ It supports the following:
 * SPI SD card
 
 Here are the pin asignments:
+
 ![image](docs/ZxSpectrumPicomputerVga.png)
 
-### ZxSpectrumPicomputerMax
-This is the target for Bobricius' Retro PICOmputerMAX
+### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
+These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
+The LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
 
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* Matrix keyboard (6x6)
+* LCD video (ST7789)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
 
 ![image](docs/ZxSpectrumPicomputerMax.png)
 
