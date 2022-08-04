@@ -54,8 +54,27 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 <img src="docs/swarm_loading.jpg" height="200" style="margin:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
 ## Targets
-* TODO general discussion of targets
-* TODO explain how to build a specific target
+Pre-built binary target, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button:
+
+| Board | Binary | Audio |
+| ------ | -------- | ----- |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi1PinAudio.uf2 | Digially mixed PWM audio |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi2PinAudio.uf2 | Buzzer pin and digially mixed AY-3-8912 PWM audio |
+| HDMI breadboard | ZxSpectrumBreadboardHdmi4PinAudio.uf2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| VGA breadboard | ZxSpectrum4PinAudioVga1111Ps2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| RetroVGA | ZxSpectrumPicocomputerVga.uf2 | Digially mixed PWM audio |
+| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 | Digially mixed PWM audio |
+| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 | Digially mixed PWM audio |
+| breadboard | ZxSpectrum4PinAudioVga1111Ps2 | Digially mixed PWM audio |
+| breadboard | ZxSpectrumPicomputerVga222Zx | Digially mixed PWM audio |
+| Pimoroni Pico DV | ZxSpectrumPicoDv | I2S DAC audio |
+
+e.g. for the HDMI breadboard wiring show above use:
+```sh
+cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
+```
+
+These targets are discussed in more detail in the following sections.
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
 These are a series of targets based around my original breadboard prototype:
@@ -324,23 +343,6 @@ The combined efforts were here, but are now out of date:
 
 https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
-
-## Try it
-Pre-built binaries, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
-
-| Board | Binary | Audio |
-| ------ | -------- | ----- |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi1PinAudio.uf2 | Digially mixed PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi2PinAudio.uf2 | Buzzer pin and digially mixed AY-3-8912 PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi4PinAudio.uf2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| RetroVGA | ZxSpectrumPicocomputerVga.uf2 | Digially mixed PWM audio |
-| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 | Digially mixed PWM audio |
-| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 | Digially mixed PWM audio |
-
-e.g. for the HDMI breadboard wiring show above use:
-```sh
-cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
-```
 
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
