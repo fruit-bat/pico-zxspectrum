@@ -75,7 +75,7 @@ They support the following:
 * PWM sound
 * SPI SD card
 
-All of the targets share the same pinout but make different use of the 4 audio pins:
+All of these targets share the same pinout but make different use of the 4 audio pins:
 
 ![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
 
@@ -114,10 +114,10 @@ Here are the pin asignments:
 
 ### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
 These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
-The LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
+The target are very similar except the LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
 
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" height="170"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" height="170"/></a>
 
 It supports the following:
 * USB keyboard
