@@ -75,7 +75,7 @@ They support the following:
 * PWM sound
 * SPI SD card
 
-All of the target share the same pinout but make different use of the 4 audio pins.
+All of the targets share the same pinout but make different use of the 4 audio pins:
 
 ![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
 
@@ -104,7 +104,7 @@ It supports the following:
 * USB keyboard
 * USB joysticks
 * Matrix keyboard (6x6)
-* VGA video
+* VGA video (RGB332)
 * PWM sound (1 pin)
 * SPI SD card
 
@@ -131,6 +131,20 @@ Here are the pin asignments:
 
 ![image](docs/ZxSpectrumPicomputerMax.png)
 
+### ZxSpectrum4PinAudioVga1111Ps2
+This is a target similar to the HDMI prototype but uses VGA video output.
+
+It supports the following:
+* USB keyboard
+* PS/2 keyboard
+* USB joysticks
+* VGA video (RGBY111)
+* PWM sound (4 pin)
+* SPI SD card
+
+This target uses 4 audio pins:
+
+![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
 
 
 
