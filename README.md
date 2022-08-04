@@ -58,16 +58,16 @@ Pre-built binary target, found in the uf2 folder, can be copied directly to a Pi
 
 | Board | Binary | Audio |
 | ------ | -------- | ----- |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi1PinAudio.uf2 | Digially mixed PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi2PinAudio.uf2 | Buzzer pin and digially mixed AY-3-8912 PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi4PinAudio.uf2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| VGA breadboard | ZxSpectrum4PinAudioVga1111Ps2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| RetroVGA | ZxSpectrumPicocomputerVga.uf2 | Digially mixed PWM audio |
-| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 | Digially mixed PWM audio |
-| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 | Digially mixed PWM audio |
-| breadboard | ZxSpectrum4PinAudioVga1111Ps2 | Digially mixed PWM audio |
-| breadboard | ZxSpectrumPicomputerVga222Zx | Digially mixed PWM audio |
-| Pimoroni Pico DV | ZxSpectrumPicoDv | I2S DAC audio |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) | Digially mixed PWM audio |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) | Buzzer pin and digially mixed AY-3-8912 PWM audio |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) | Digially mixed PWM audio |
+| PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) | Digially mixed PWM audio |
+| PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) | Digially mixed PWM audio |
+| breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | Digially mixed PWM audio |
+| breadboard | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) | Digially mixed PWM audio |
+| Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) | I2S DAC audio |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
