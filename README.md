@@ -146,6 +146,39 @@ This target uses 4 audio pins:
 
 ![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
 
+### ZxSpectrumPicomputerVga222Zx
+This is an experimental target written for Bobricius in anticipation of the PICOZX.
+
+**Please not that this target is subject to change.**
+
+Currently, it supports:
+* USB keyboard
+* USB joysticks
+* VGA video (RGB222)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerVga222Zx.png)
+
+### ZxSpectrumPicomputerVga1111Zx
+This is an experimental target written for Bobricius in anticipation of the PICOZX.
+
+**Please not that this target is subject to change.**
+
+Currently, it supports:
+* USB keyboard
+* USB joysticks
+* VGA video (RGBY1111)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerVga1111Zx.png)
+
+
 
 
 
