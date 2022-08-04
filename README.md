@@ -33,6 +33,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 
 
 ## Updates
+* 04/08/22 - Update wiring documentation
 * 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
@@ -53,51 +54,52 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 <img src="docs/swarm_loading.jpg" height="200"/>
 <img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
-## Wiring
+## Targets
+TODO general discussion of targets
+TODO explain how to build a specific target
 
-### General
-|       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
-| ----- | ----  | ----- | ---   | --------  | --------- | --------- | ---------------------- |
-| MISO  | RX    | 4     | 6     | DO        | DO        |           | Master In, Slave Out   |
-| CS0   | CSn   | 5     | 7     | SS or CS  | CS        |           | Slave (or Chip) Select |
-| SCK   | SCK   | 2     | 4     | SCLK      | CLK       |           | SPI clock              |
-| MOSI  | TX    | 3     | 5     | DI        | DI        |           | Master Out, Slave In   |
-| CD    |       | 22    | 29    |           | CD        |           | Card Detect            |
-| GND   |       |       | 3     |           | GND       |           | Ground                 |
-| 3v3   |       |       | 36    |           | 3v3       |           | 3.3 volt power         |
-| GND   |       |       | 18,23 |           |           | GND       | Ground                 |
-| GP16  |       | 16    | 21    |           |           | TX2+      | Data channel 2+        |
-| GP17  |       | 17    | 22    |           |           | TX2-      | Data channel 2-        |
-| GP18  |       | 18    | 24    |           |           | TX1+      | Data channel 1+        |
-| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1-        |
-| GP12  |       | 12    | 16    |           |           | TX0+      | Data channel 0+        |
-| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
-| GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
-| GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
-| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
-| GP21  |       | 21    | 27    |           |           |           | Buzzer audio out       |
-| GP26  |       | 26    | 31    |           |           |           | PWM audio out          |
-| GP27  |       | 26    | 32    |           |           |           | PWM audio out          |
-| GP6   |       | 6     | 9     |           |           |           | PS/2 keyboard data     |
-| GP7   |       | 7     | 10    |           |           |           | PS/2 keyboard clock    |
+### ZxSpectrumBreadboardHdmiNPinAudio
+Targets 
+* ZxSpectrumBreadboardHdmi4PinAudio
+* ZxSpectrumBreadboardHdmi2PinAudio
+* ZxSpectrumBreadboardHdmi1PinAudio
+
+share the same pinout with different use of the 4 audio pins.
+
+![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
+
+### ZxSpectrumPicoDv
+This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board.
+
+![image](docs/ZxSpectrumPicoDv.png)
+
+### ZxSpectrumPicomputerVga
+TODO Target for Bobricius' Retro VGA board
+
+![image](docs/ZxSpectrumPicomputerVga.png)
+
+### ZxSpectrumPicomputerMax
+TODO Target for Bobricius' Retro PICOmputerMAX and PICOmputerZX
+
+![image](docs/ZxSpectrumPicomputerMax.png)
 
 
 ### Audio pins
 Audio output comes in 3 variants 1, 2 and 4 pin:
 
-| GPIO | Pin | 1 Pin                  | 2 Pin               | 4 Pin                   |
-| ---- | --- | ---------------------- | ------------------- | ----------------------- |
-| GP20 | 26  | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
-| GP21 | 27  | -                      | Buzzer              | Buzzer                  |
-| GP26 | 31  | -                      | -                   | AY-3-8912 Channel B PWM |
-| GP27 | 32  | -                      | -                   | AY-3-8912 Channel C PWM |
+| Labeo     | 1 Pin                  | 2 Pin               | 4 Pin                   |
+| ----      | ---------------------- | ------------------- | ----------------------- |
+| RP AUDIO1 | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
+| RP AUDIO2  | -                      | Buzzer             | Buzzer                  |
+| RP AUDIO3  | -                      | -                  | AY-3-8912 Channel B PWM |
+| RP AUDIO4  | -                      | -                  | AY-3-8912 Channel C PWM |
 
-### Pico pinout
 
-![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
-### Prototype
-<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
+
+
+
+
 
 ### Audio filter
 
@@ -202,6 +204,18 @@ Kiosk mode is enabled by placing the following file on the SD-card:
 ```bash
 zxspectrum/kiosk.txt
 ```
+
+
+### Pico pinout
+
+![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
+
+### Prototype
+<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
+
+
+
+
 
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
