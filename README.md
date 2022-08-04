@@ -51,37 +51,77 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Screen shots
 
-<img src="docs/swarm_loading.jpg" height="200"/>
-<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
+<img src="docs/swarm_loading.jpg" height="200"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
 
 ## Targets
 TODO general discussion of targets
 TODO explain how to build a specific target
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
-Targets 
+These are a series of targets based around my original breadboard prototype.
+
+<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
+
+They support the following:
+* USB keyboard
+* PS/2 keyboard
+* USB joysticks
+* HDMI video
+* PWM sound
+* SPI SD card
+
+The actual target are: 
 * ZxSpectrumBreadboardHdmi4PinAudio
 * ZxSpectrumBreadboardHdmi2PinAudio
 * ZxSpectrumBreadboardHdmi1PinAudio
 
-share the same pinout with different use of the 4 audio pins.
+All of the target share the same pinout but make different use of the 4 audio pins.
 
 ![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
 
 ### ZxSpectrumPicoDv
 This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board.
 
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* HDMI video
+* I2S sound
+* SPI SD card
+
 ![image](docs/ZxSpectrumPicoDv.png)
 
 ### ZxSpectrumPicomputerVga
-TODO Target for Bobricius' Retro VGA board
+This is the target for Bobricius' Retro VGA board
 
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* Matrix keyboard (6x6)
+* VGA video
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
 ![image](docs/ZxSpectrumPicomputerVga.png)
 
 ### ZxSpectrumPicomputerMax
-TODO Target for Bobricius' Retro PICOmputerMAX and PICOmputerZX
+This is the target for Bobricius' Retro PICOmputerMAX
+
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 
 ![image](docs/ZxSpectrumPicomputerMax.png)
+
+
+
+
+
+
+
 
 
 ### Audio pins
