@@ -51,7 +51,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Screen shots
 
-<img src="docs/swarm_loading.jpg" height="200" style="padding:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
+<img src="docs/swarm_loading.jpg" height="200" style="margin:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
 ## Targets
 TODO general discussion of targets
@@ -62,6 +62,11 @@ These are a series of targets based around my original breadboard prototype:
 
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
+The actual target are: 
+* ZxSpectrumBreadboardHdmi4PinAudio
+* ZxSpectrumBreadboardHdmi2PinAudio
+* ZxSpectrumBreadboardHdmi1PinAudio
+
 They support the following:
 * USB keyboard
 * PS/2 keyboard
@@ -69,11 +74,6 @@ They support the following:
 * HDMI video
 * PWM sound
 * SPI SD card
-
-The actual target are: 
-* ZxSpectrumBreadboardHdmi4PinAudio
-* ZxSpectrumBreadboardHdmi2PinAudio
-* ZxSpectrumBreadboardHdmi1PinAudio
 
 All of the target share the same pinout but make different use of the 4 audio pins.
 
@@ -117,6 +117,7 @@ These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
 The LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
 
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 
 It supports the following:
 * USB keyboard
