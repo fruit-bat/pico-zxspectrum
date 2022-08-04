@@ -54,8 +54,8 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 <img src="docs/swarm_loading.jpg" height="200" style="margin:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
 ## Targets
-TODO general discussion of targets
-TODO explain how to build a specific target
+* TODO general discussion of targets
+* TODO explain how to build a specific target
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
 These are a series of targets based around my original breadboard prototype:
@@ -199,17 +199,17 @@ If you create a particularly nice sounding design please let me know and I will 
 
 Separating out the Spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
 
-![image](docs/Pico 2 pin PWM audio filter mono.png)
+![image](docs/Pico%202%20pin%20PWM%20audio%20filter%20mono.png)
 
 The best audio is achieved by having separate pins for the Spectrum buzzer and AY-3-8912 A,B & C channels.
 
-![image](docs/Pico 4 pin PWM audio filter mono.png)
+![image](docs/Pico%204%20pin%20PWM%20audio%20filter%20mono.png)
 
 The sound is actually quite good from the 4 pin filer and at some point I will do a stero version. 
 
 Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
-![image](docs/Pico 1 pin PWM audio filter mono.png)
+![image](docs/Pico%201%20pin%20PWM%20audio%20filter%20mono.png)
 
 ### VGA Support
 So far, there are three supported VGA configurations, which can be found in the various build targets.
@@ -218,17 +218,17 @@ so please let me know if you have better versions and I will update this documen
 #### RGBY 1111
 Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
 
-![image](docs/Pico VGA RGBY1111.png)
+![image](docs/Pico%20VGA%20RGBY1111.png)
 
 See this [CMakeLists.txt](src/vga/CMakeLists.txt) for an example configuration.
 #### RGB 222
 
-![image](docs/Pico VGA RGB222.png)
+![image](docs/Pico%20VGA%20RGB222.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
 #### RGB 332
 
-![image](docs/Pico VGA RGB332.png)
+![image](docs/Pico%20VGA%20RGB332.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an example configuration.
 
@@ -236,7 +236,7 @@ See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an e
 The emulator targets can accept input from a PS/2 keyboard wired to RP_PS2_DATA and RP_PS2_CLK.
 A suggested circuit is shown below:
 
-![image](docs/Pico PS2 interface.png)
+![image](docs/Pico%20PS2%20interface.png)
 
 The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
 the data and clock lines are, in theory, open-collector with no pull-up.
