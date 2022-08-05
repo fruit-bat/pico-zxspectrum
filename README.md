@@ -205,7 +205,7 @@ The second is is using a DAC connected to the Pico using I2S.
 ### PWM/Digital Audio
 PWM audio output comes in 3 variants 1, 2 and 4 pin:
 
-| Labeo     | 1 Pin                  | 2 Pin               | 4 Pin                   |
+| Label     | 1 Pin                  | 2 Pin               | 4 Pin                   |
 | ----      | ---------------------- | ------------------- | ----------------------- |
 | RP AUDIO1 | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
 | RP AUDIO2  | -                      | Buzzer             | Buzzer                  |
@@ -229,6 +229,11 @@ The sound is actually quite good from the 4 pin filer and at some point I will d
 Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
 ![image](docs/Pico%201%20pin%20PWM%20audio%20filter%20mono.png)
+
+### I2S DAC Audio
+The emulation can drive a PCM5100A DAC for line out audio over I2S.
+It uses the RP_DAC_DATA, RP_DAC_BCLK and RP_DAC_LRCLK pin on the Pico.
+Currently, only tested on the Pimoroni Pico DV board.
 
 ### VGA Support
 So far, there are three supported VGA configurations, which can be found in the various build targets.
