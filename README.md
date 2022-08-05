@@ -33,6 +33,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 
 
 ## Updates
+* 04/08/22 - Update wiring documentation
 * 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
@@ -50,56 +51,166 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Screen shots
 
-<img src="docs/swarm_loading.jpg" height="200"/>
-<img src="docs/pico_zxspectrum_main_menu.jpg" height="200"/>
+<img src="docs/swarm_loading.jpg" height="200" style="margin:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
-## Wiring
+## Targets
+Pre-built binary target, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button:
 
-### General
-|       | SPI0  | GPIO  | Pin   | SPI       | MicroSD 0 | HDMI/DVI  |      Description       | 
-| ----- | ----  | ----- | ---   | --------  | --------- | --------- | ---------------------- |
-| MISO  | RX    | 4     | 6     | DO        | DO        |           | Master In, Slave Out   |
-| CS0   | CSn   | 5     | 7     | SS or CS  | CS        |           | Slave (or Chip) Select |
-| SCK   | SCK   | 2     | 4     | SCLK      | CLK       |           | SPI clock              |
-| MOSI  | TX    | 3     | 5     | DI        | DI        |           | Master Out, Slave In   |
-| CD    |       | 22    | 29    |           | CD        |           | Card Detect            |
-| GND   |       |       | 3     |           | GND       |           | Ground                 |
-| 3v3   |       |       | 36    |           | 3v3       |           | 3.3 volt power         |
-| GND   |       |       | 18,23 |           |           | GND       | Ground                 |
-| GP16  |       | 16    | 21    |           |           | TX2+      | Data channel 2+        |
-| GP17  |       | 17    | 22    |           |           | TX2-      | Data channel 2-        |
-| GP18  |       | 18    | 24    |           |           | TX1+      | Data channel 1+        |
-| GP19  |       | 19    | 25    |           |           | TX1-      | Data channel 1-        |
-| GP12  |       | 12    | 16    |           |           | TX0+      | Data channel 0+        |
-| GP13  |       | 13    | 17    |           |           | TX0-      | Data channel 0-        |
-| GP14  |       | 14    | 19    |           |           | TXC+      | Clock +                |
-| GP15  |       | 15    | 20    |           |           | TXC-      | Clock -                |
-| GP20  |       | 20    | 26    |           |           |           | PWM audio out          |
-| GP21  |       | 21    | 27    |           |           |           | Buzzer audio out       |
-| GP26  |       | 26    | 31    |           |           |           | PWM audio out          |
-| GP27  |       | 26    | 32    |           |           |           | PWM audio out          |
-| GP6   |       | 6     | 9     |           |           |           | PS/2 keyboard data     |
-| GP7   |       | 7     | 10    |           |           |           | PS/2 keyboard clock    |
+| Board | Binary | Audio |
+| ------ | -------- | ----- |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) | Digially mixed PWM audio |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) | Buzzer pin and digially mixed AY-3-8912 PWM audio |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
+| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) | Digially mixed PWM audio |
+| PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) | Digially mixed PWM audio |
+| PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) | Digially mixed PWM audio |
+| breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | Digially mixed PWM audio |
+| breadboard | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) | Digially mixed PWM audio |
+| Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) | I2S DAC audio |
 
+e.g. for the HDMI breadboard wiring show above use:
+```sh
+cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
+```
 
-### Audio pins
-Audio output comes in 3 variants 1, 2 and 4 pin:
+These targets are discussed in more detail in the following sections.
 
-| GPIO | Pin | 1 Pin                  | 2 Pin               | 4 Pin                   |
-| ---- | --- | ---------------------- | ------------------- | ----------------------- |
-| GP20 | 26  | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
-| GP21 | 27  | -                      | Buzzer              | Buzzer                  |
-| GP26 | 31  | -                      | -                   | AY-3-8912 Channel B PWM |
-| GP27 | 32  | -                      | -                   | AY-3-8912 Channel C PWM |
+### ZxSpectrumBreadboardHdmiNPinAudio
+These are a series of targets based around my original breadboard prototype:
 
-### Pico pinout
-
-![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
-
-### Prototype
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
-### Audio filter
+The actual target are: 
+* ZxSpectrumBreadboardHdmi4PinAudio
+* ZxSpectrumBreadboardHdmi2PinAudio
+* ZxSpectrumBreadboardHdmi1PinAudio
+
+They support the following:
+* USB keyboard
+* PS/2 keyboard
+* USB joysticks
+* HDMI video
+* PWM sound
+* SPI SD card
+
+All of these targets share the same pinout but make different use of the 4 audio pins:
+
+![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
+
+### ZxSpectrumPicoDv
+This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board:
+
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* HDMI video
+* I2S sound
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicoDv.png)
+
+### ZxSpectrumPicomputerVga
+This is the target for Bobricius' Retro VGA board:
+
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* Matrix keyboard (6x6)
+* VGA video (RGB332)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerVga.png)
+
+### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
+These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
+The target are very similar except the LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
+
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" height="170"/></a>
+<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" height="170"/></a>
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* Matrix keyboard (6x6)
+* LCD video (ST7789)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerMax.png)
+
+### ZxSpectrum4PinAudioVga1111Ps2
+This is a target similar to the HDMI prototype but uses VGA video output.
+
+It supports the following:
+* USB keyboard
+* PS/2 keyboard
+* USB joysticks
+* VGA video (RGBY111)
+* PWM sound (4 pin)
+* SPI SD card
+
+This target uses 4 audio pins:
+
+![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
+
+### ZxSpectrumPicomputerVga222Zx
+This is an experimental target written for Bobricius in anticipation of the PICOZX.
+
+**Please not that this target is subject to change.**
+
+Currently, it supports:
+* USB keyboard
+* USB joysticks
+* VGA video (RGB222)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerVga222Zx.png)
+
+### ZxSpectrumPicomputerVga1111Zx
+This is an experimental target written for Bobricius in anticipation of the PICOZX.
+
+**Please not that this target is subject to change.**
+
+Currently, it supports:
+* USB keyboard
+* USB joysticks
+* VGA video (RGBY1111)
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin asignments:
+
+![image](docs/ZxSpectrumPicomputerVga1111Zx.png)
+
+## Audio pins
+There are two techniques for audio output. 
+The first is a mixture of digital sound and PWM output, which comes in three variants.
+The second is is using a DAC connected to the Pico using I2S.
+
+### PWM/Digital Audio
+PWM audio output comes in 3 variants 1, 2 and 4 pin:
+
+| Label     | 1 Pin                  | 2 Pin               | 4 Pin                   |
+| ----      | ---------------------- | ------------------- | ----------------------- |
+| RP AUDIO1 | Buzzer & AY-3-8912 PWM | AY-3-8912 PWM       | AY-3-8912 Channel A PWM |
+| RP AUDIO2  | -                      | Buzzer             | Buzzer                  |
+| RP AUDIO3  | -                      | -                  | AY-3-8912 Channel B PWM |
+| RP AUDIO4  | -                      | -                  | AY-3-8912 Channel C PWM |
 
 High frequencies need to be filtered out of the PWM audio output and mixed with the Spectrum's digital audio.
 Here are some sample designs. Please note they are not carefully designed but made from components I found lying around. 
@@ -107,15 +218,22 @@ If you create a particularly nice sounding design please let me know and I will 
 
 Separating out the Spectrum buzzer from the AY-3-8912 improves the fidelity of the Spectrum beeps.
 
-![image](docs/audio_filter_mk2.png)
+![image](docs/Pico%202%20pin%20PWM%20audio%20filter%20mono.png)
 
 The best audio is achieved by having separate pins for the Spectrum buzzer and AY-3-8912 A,B & C channels.
 
-![image](docs/audio_filter_4pin_mono_mk1.png)
+![image](docs/Pico%204%20pin%20PWM%20audio%20filter%20mono.png)
+
+The sound is actually quite good from the 4 pin filer and at some point I will do a stero version. 
 
 Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
-![image](docs/audio_filter_mk1.png)
+![image](docs/Pico%201%20pin%20PWM%20audio%20filter%20mono.png)
+
+### I2S DAC Audio
+The emulation can drive a PCM5100A DAC for line out audio over I2S.
+It uses the RP_DAC_DATA, RP_DAC_BCLK and RP_DAC_LRCLK pin on the Pico.
+Currently, only tested on the Pimoroni Pico DV board.
 
 ### VGA Support
 So far, there are three supported VGA configurations, which can be found in the various build targets.
@@ -124,25 +242,25 @@ so please let me know if you have better versions and I will update this documen
 #### RGBY 1111
 Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
 
-![image](docs/rgby_1111_vga.png)
+![image](docs/Pico%20VGA%20RGBY1111.png)
 
-See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
+See this [CMakeLists.txt](src/vga/CMakeLists.txt) for an example configuration.
 #### RGB 222
 
-![image](docs/rgb_222_vga.png)
+![image](docs/Pico%20VGA%20RGB222.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
 #### RGB 332
 
-![image](docs/rgb_332_vga.png)
+![image](docs/Pico%20VGA%20RGB332.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga/CMakeLists.txt) for an example configuration.
 
 ### PS/2 Keyboards
-The emulator can accept input from a PS/2 keyboard wired to GP6 and GP7.
+The emulator targets can accept input from a PS/2 keyboard wired to RP_PS2_DATA and RP_PS2_CLK.
 A suggested circuit is shown below:
 
-![image](docs/ps2_interface_mk1.png)
+![image](docs/Pico%20PS2%20interface.png)
 
 The resistors and Zeners are there in case the keyboard contains a pull-up resistor to 5v on either the data or clock lines;
 the data and clock lines are, in theory, open-collector with no pull-up.
@@ -203,6 +321,12 @@ Kiosk mode is enabled by placing the following file on the SD-card:
 zxspectrum/kiosk.txt
 ```
 
+
+### Pico pinout
+
+![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
+
+
 ## Issues
 The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
 
@@ -224,23 +348,6 @@ The combined efforts were here, but are now out of date:
 
 https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
 
-
-## Try it
-Pre-built binaries, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button.
-
-| Board | Binary | Audio |
-| ------ | -------- | ----- |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi1PinAudio.uf2 | Digially mixed PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi2PinAudio.uf2 | Buzzer pin and digially mixed AY-3-8912 PWM audio |
-| HDMI breadboard | ZxSpectrumBreadboardHdmi4PinAudio.uf2 | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| RetroVGA | ZxSpectrumPicocomputerVga.uf2 | Digially mixed PWM audio |
-| PicomputerMax | ZxSpectrumPicocomputerMax.uf2 | Digially mixed PWM audio |
-| PicomputerZX | ZxSpectrumPicocomputerZX.uf2 | Digially mixed PWM audio |
-
-e.g. for the HDMI breadboard wiring show above use:
-```sh
-cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
-```
 
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
