@@ -50,4 +50,5 @@ set(zxspectrum_audio_i2s_pio
 
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
+add_subdirectory(vga)
 
