@@ -157,7 +157,7 @@ It supports the following:
 * USB keyboard
 * PS/2 keyboard
 * USB joysticks
-* VGA video (RGBY111)
+* VGA video (RGBY1111)
 * PWM sound (4 pin)
 * SPI SD card
 
