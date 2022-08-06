@@ -224,7 +224,7 @@ The best audio is achieved by having separate pins for the Spectrum buzzer and A
 
 ![image](docs/Pico%204%20pin%20PWM%20audio%20filter%20mono.png)
 
-The sound is actually quite good from the 4 pin filer and at some point I will do a stero version. 
+The sound is actually quite good from the 4 pin filter and at some point I will do a stero version. 
 
 Designs that only have a single GPIO pin available can have the audio mixed digitally:
 
