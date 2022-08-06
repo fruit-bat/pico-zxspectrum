@@ -54,7 +54,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 <img src="docs/swarm_loading.jpg" height="200" style="margin:5px;"/><img src="docs/pico_zxspectrum_main_menu.jpg" height="200" style="padding:5px;"/>
 
 ## Targets
-Pre-built binary target, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button:
+Pre-built binary targets, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button:
 
 | Board | Binary | Audio |
 | ------ | -------- | ----- |
