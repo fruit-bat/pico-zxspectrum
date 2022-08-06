@@ -235,22 +235,39 @@ The emulation can drive a PCM5100A DAC for line out audio over I2S.
 It uses the RP_DAC_DATA, RP_DAC_BCLK and RP_DAC_LRCLK pin on the Pico.
 Currently, only tested on the Pimoroni Pico DV board.
 
-### VGA Support
+### Video output
+
+#### DVI/HDMI
+The following circuit shows roughly how to connect an HDMI socket; 
+I have always used a breakout board... 
+
+<a href="https://buyzero.de/products/raspberry-pi-pico-dvi-sock-videoausgabe-fur-den-pico">
+<img src="https://cdn.shopify.com/s/files/1/1560/1473/products/Raspberry-Pi-Pico-Video-Output-DVI-Sock-topview_1200x.jpg" width="200"/>
+</a>
+
+<a href="https://thepihut.com/products/adafruit-dvi-breakout-board-for-hdmi-source-devices">
+<img src="https://cdn.shopify.com/s/files/1/0176/3274/products/adafruit-dvi-breakout-board-for-hdmi-source-devices-adafruit-ada4984-28814829158595_600x.jpg" width="200"/>
+</a>
+
+...but this is what I think it boils down to:
+
+![image](docs/Pico%20DVI%20over%20HDMI.png)
+
 So far, there are three supported VGA configurations, which can be found in the various build targets.
 They have all been designed with a combination of plagiarism and guesswork,
 so please let me know if you have better versions and I will update this document.
-#### RGBY 1111
+#### VGA RGBY 1111
 Although this is the most complicated, it is my favourite as it only uses 5 pins on the Pico. The display is slightly paler than the other two versions, which is easier on the eyes.
 
 ![image](docs/Pico%20VGA%20RGBY1111.png)
 
 See this [CMakeLists.txt](src/vga/CMakeLists.txt) for an example configuration.
-#### RGB 222
+#### VGA RGB 222
 
 ![image](docs/Pico%20VGA%20RGB222.png)
 
 See this [CMakeLists.txt](src/picomputer/picomputer_vga_zx/CMakeLists.txt) for an example configuration.
-#### RGB 332
+#### VGA RGB 332
 
 ![image](docs/Pico%20VGA%20RGB332.png)
 
