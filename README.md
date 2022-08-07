@@ -110,7 +110,7 @@ It supports the following:
 * I2S sound
 * SPI SD card
 
-Here are the pin asignments:
+Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicoDv.png)
 
@@ -127,7 +127,7 @@ It supports the following:
 * PWM sound (1 pin)
 * SPI SD card
 
-Here are the pin asignments:
+Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga.png)
 
@@ -146,7 +146,7 @@ It supports the following:
 * PWM sound (1 pin)
 * SPI SD card
 
-Here are the pin asignments:
+Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerMax.png)
 
@@ -177,7 +177,7 @@ Currently, it supports:
 * PWM sound (1 pin)
 * SPI SD card
 
-Here are the pin asignments:
+Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga222Zx.png)
 
@@ -193,7 +193,7 @@ Currently, it supports:
 * PWM sound (1 pin)
 * SPI SD card
 
-Here are the pin asignments:
+Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga1111Zx.png)
 
