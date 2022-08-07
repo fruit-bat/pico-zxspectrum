@@ -133,7 +133,7 @@ Here are the pin assignments:
 
 ### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
 These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
-The target are very similar except the LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
+The targets are very similar except the LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
 
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" height="170"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" height="170"/></a>
@@ -151,7 +151,7 @@ Here are the pin assignments:
 ![image](docs/ZxSpectrumPicomputerMax.png)
 
 ### ZxSpectrum4PinAudioVga1111Ps2
-This is a target similar to the HDMI prototype but uses VGA video output.
+This is a target similar to the HDMI prototype which uses VGA video output.
 
 It supports the following:
 * USB keyboard
