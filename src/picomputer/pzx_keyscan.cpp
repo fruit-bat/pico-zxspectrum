@@ -8,36 +8,63 @@
 
 #define SAMPLES 4 
 
+#define CN_VGA 6
+#define CN_MAX 6
+#define CN_PZX 7
+#define RN_VGA 6
+#define RN_MAX 6
+#define RN_PZX 7
 #define CP_VGA 20, 21, 22, 26, 27, 28
 #define CP_MAX 1, 2, 3, 4, 5, 14
+#define CP_PZX 19, 20, 21, 22, 26, 27, 28
 #define RP_VGA 14, 15, 16, 17, 18, 19
 #define RP_MAX 6, 9, 15, 8, 7, 22
+#define RP_PZX 8, 9, 14, 15, 16, 17, 18
 #define CP_SHIFT_VGA 20
 #define CP_SHIFT_MAX 1
+#define CP_SHIFT_PZX 19
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
-
+#define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (3 << 4)))
 
 #ifdef PICOMPUTER_VGA
   #define CP CP_VGA
   #define RP RP_VGA
   #define CP_JOIN CP_JOIN_VGA
   #define CP_SHIFT CP_SHIFT_VGA
+  #define RN RN_VGA
+  #define CN CN_VGA
 #endif
 #if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX)
   #define CP CP_MAX
   #define RP RP_MAX
   #define CP_JOIN CP_JOIN_MAX
   #define CP_SHIFT CP_SHIFT_MAX
+  #define RN RN_MAX
+  #define CN CN_MAX
+#endif
+#ifdef PICOMPUTER_PICOZX
+  #define CP CP_PZX
+  #define RP RP_PZX
+  #define CP_JOIN CP_JOIN_PZX
+  #define CP_SHIFT CP_SHIFT_PZX
+  #define RN RN_PZX
+  #define CN CN_PZX
 #endif
 
 static uint8_t cp[] = {CP};                      // Column pins
 static uint8_t rp[] = {RP};                      // Row pins
-static uint8_t rs[6][SAMPLES];                   // Oversampled pins
-static uint8_t rdb[6];                           // Debounced pins
+static uint8_t rs[RN][SAMPLES];                  // Oversampled pins
+static uint8_t rdb[RN];                          // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
 static uint8_t hri = 0;                          // Currenct hid report index
 static uint8_t kbi = 0;
+
+#ifdef PICOMPUTER_PICOZX
+static uint8_t kbits[5][7][7] = { 
+  0
+};
+#else
 static uint8_t kbits[5][6][6] = { 
   // Normal mappings + cursor joystick
   {
@@ -115,6 +142,7 @@ static uint8_t kbits[5][6][6] = {
     { HID_KEY_F1, HID_KEY_F2, HID_KEY_F3, HID_KEY_F4, 0, /* HID_KEY_ALT_LEFT */ 0 }
   }
 };
+#endif
 
 #define KEY_ALT_ROW 5
 #define KEY_ALT_BIT 0x20
@@ -133,13 +161,13 @@ static uint8_t kbits[5][6][6] = {
 
 void pzx_keyscan_init() {
   
-    for(int i = 0; i < 6; ++i) {
+    for(int i = 0; i < RN; ++i) {
       gpio_init(rp[i]);
       gpio_set_dir(rp[i], GPIO_IN);    
       gpio_disable_pulls(rp[i]);
    }  
     
-   for(int i = 0; i < 6; ++i) {
+   for(int i = 0; i < CN; ++i) {
       gpio_init(cp[i]);
       gpio_set_dir(cp[i], GPIO_IN);    
       gpio_pull_up(cp[i]);
@@ -161,7 +189,7 @@ void __not_in_flash_func(pzx_keyscan_row)() {
   row = rp[ri];
   gpio_set_dir(row, GPIO_IN);
   gpio_disable_pulls(row);
-  if (++ri >= 6) {
+  if (++ri >= RN) {
     ri = 0;
     if (++si >= SAMPLES) si = 0;
   }
@@ -239,7 +267,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   chr->modifier = modifier;
   // Press ctrl for quick save
   if (alt_down && (((rdb[0] | rdb[1] | rdb[2]) & 31) != 0)) chr->modifier |= 1;
-  for(int ri = 0; ri < 6; ++ri) {
+  for(int ri = 0; ri < RN; ++ri) {
     uint8_t r = rdb[ri];
     uint32_t ci = 0;
     while(r) {
