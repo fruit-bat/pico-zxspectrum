@@ -87,7 +87,7 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
 #else
   #ifdef BZR_PIN
     gpio_put(BZR_PIN, buzzer);
-    #ifdef SPK_PIN        
+    #ifdef SPK_PIN
       pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
     #else
       pwm_set_gpio_level(AY8912_A_PIN, vA);
