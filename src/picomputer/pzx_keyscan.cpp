@@ -25,7 +25,7 @@
 #define CP_SHIFT_PZX 19
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
-#define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (3 << 4)))
+#define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (7 << 4)))
 
 #ifdef PICOMPUTER_VGA
   #define CP CP_VGA
@@ -62,7 +62,16 @@ static uint8_t kbi = 0;
 
 #ifdef PICOMPUTER_PICOZX
 static uint8_t kbits[5][7][7] = { 
-  0
+  // Normal mappings + cursor joystick
+  {
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
+    { HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_6, HID_KEY_7 },
+    { HID_KEY_8, HID_KEY_9, HID_KEY_0, HID_KEY_Q, HID_KEY_W, HID_KEY_E, HID_KEY_R },
+    { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
+    { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
+    { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, 0, 0, 0 },
+  }
 };
 #else
 static uint8_t kbits[5][6][6] = { 
@@ -144,20 +153,34 @@ static uint8_t kbits[5][6][6] = {
 };
 #endif
 
-#define KEY_ALT_ROW 5
-#define KEY_ALT_BIT 0x20
-#define KEY_ESC_ROW 4
-#define KEY_ESC_BIT 0x20
-#define KEY_UP_ROW 2
-#define KEY_UP_BIT 0x20
-#define KEY_DOWN_ROW 0
-#define KEY_DOWN_BIT 0x20
-#define KEY_LEFT_ROW 1
-#define KEY_LEFT_BIT 0x20
-#define KEY_RIGHT_ROW 3
-#define KEY_RIGHT_BIT 0x20
-#define KEY_ENTER_ROW 1
-#define KEY_ENTER_BIT 0x01
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
+  #define KEY_ALT_ROW 5
+  #define KEY_ALT_BIT 0x20
+  #define KEY_FIRE_ROW 4
+  #define KEY_FIRE_BIT 0x20
+  #define KEY_UP_ROW 2
+  #define KEY_UP_BIT 0x20
+  #define KEY_DOWN_ROW 0
+  #define KEY_DOWN_BIT 0x20
+  #define KEY_LEFT_ROW 1
+  #define KEY_LEFT_BIT 0x20
+  #define KEY_RIGHT_ROW 3
+  #define KEY_RIGHT_BIT 0x20
+  #define KEY_ENTER_ROW 1
+  #define KEY_ENTER_BIT 0x01
+#else
+  #define KEY_UP_ROW 0
+  #define KEY_UP_BIT 0x04
+  #define KEY_DOWN_ROW 0
+  #define KEY_DOWN_BIT 0x10
+  #define KEY_LEFT_ROW 0
+  #define KEY_LEFT_BIT 0x02
+  #define KEY_RIGHT_ROW 0
+  #define KEY_RIGHT_BIT 0x80
+  #define KEY_FIRE_ROW 0
+  #define KEY_FIRE_BIT 0x01
+#endif
+
 
 void pzx_keyscan_init() {
   
@@ -212,7 +235,7 @@ static uint8_t kempstonJoystick = 0;
 
 uint8_t __not_in_flash_func(pzx_kempston)() {
   return kempstonJoystick ?
-    ((rdb[KEY_ESC_ROW] & KEY_ESC_BIT) >> 1)      // Kempston fire
+    ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) >> 1)      // Kempston fire
   | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) >> 2)        // Kempston up
   | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 3)    // Kempston down
   | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) >> 4)    // Kempston left
@@ -224,6 +247,8 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
 
   // Key modifier (shift, alt, ctrl, etc.)
   static uint8_t modifier = 0;
+
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   
   bool alt_down = rdb[KEY_ALT_ROW] & KEY_ALT_BIT;
   
@@ -260,13 +285,17 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
     rdb[KEY_LEFT_ROW] &= ~KEY_LEFT_BIT;
     rdb[3] &= ~((1<<3) | (1<<4));
   }
+#endif
+
   
   // Build the current hid report
   uint32_t ki = 0;
   hid_keyboard_report_t *chr = &hr[hri & 1];
   chr->modifier = modifier;
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   // Press ctrl for quick save
   if (alt_down && (((rdb[0] | rdb[1] | rdb[2]) & 31) != 0)) chr->modifier |= 1;
+#endif
   for(int ri = 0; ri < RN; ++ri) {
     uint8_t r = rdb[ri];
     uint32_t ci = 0;
@@ -278,7 +307,11 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
           while(ki < sizeof(chr->keycode)) chr->keycode[ki++] = 1;
           break;  
         }
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
         uint8_t kc = kbits[alt_down ? 4 : kbi][ri][ci];
+#else
+        uint8_t kc = kbits[kbi][ri][ci];
+#endif
         if (kc) chr->keycode[ki++] = kc;
       }
       ++ci;
