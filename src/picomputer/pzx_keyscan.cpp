@@ -221,7 +221,7 @@ void __not_in_flash_func(pzx_keyscan_row)() {
   gpio_put(row, 0);
   
   uint32_t om = 0;
-  uint32_t am = 0x3f;
+  uint32_t am = (1 << CN) - 1;
   for(int si = 0; si < SAMPLES; ++si) {
     uint8_t s = rs[ri][si];
     om |= s; // bits 0 if no samples have the button pressed
