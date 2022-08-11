@@ -179,6 +179,8 @@ static uint8_t kbits[5][6][6] = {
   #define KEY_RIGHT_BIT 0x80
   #define KEY_FIRE_ROW 0
   #define KEY_FIRE_BIT 0x01
+  #define KEY_SHIFT_ROW 0
+  #define KEY_SHIFT_BIT 0x20
 #endif
 
 
@@ -295,6 +297,8 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
 #if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   // Press ctrl for quick save
   if (alt_down && (((rdb[0] | rdb[1] | rdb[2]) & 31) != 0)) chr->modifier |= 1;
+#else
+  if (rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT) chr->modifier |= 2;
 #endif
   for(int ri = 0; ri < RN; ++ri) {
     uint8_t r = rdb[ri];
