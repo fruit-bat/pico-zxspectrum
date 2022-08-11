@@ -70,8 +70,18 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, 0, 0, 0 },
-  }
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, 0, 0, 0, 0 },
+  },
+  // Shifted normal mappings + cursor joystick
+  {
+    { HID_KEY_ESCAPE, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
+    { HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_6, HID_KEY_7 },
+    { HID_KEY_8, HID_KEY_9, HID_KEY_0, HID_KEY_Q, HID_KEY_W, HID_KEY_E, HID_KEY_R },
+    { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
+    { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
+    { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
+  }  
 };
 #else
 static uint8_t kbits[5][6][6] = { 
@@ -287,6 +297,9 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
     rdb[KEY_LEFT_ROW] &= ~KEY_LEFT_BIT;
     rdb[3] &= ~((1<<3) | (1<<4));
   }
+#else
+  bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
+  kbi = shift ? 1 : 0;
 #endif
 
   
@@ -298,7 +311,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   // Press ctrl for quick save
   if (alt_down && (((rdb[0] | rdb[1] | rdb[2]) & 31) != 0)) chr->modifier |= 1;
 #else
-  if (rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT) chr->modifier |= 2;
+  if (shift) chr->modifier |= 2;
 #endif
   for(int ri = 0; ri < RN; ++ri) {
     uint8_t r = rdb[ri];
