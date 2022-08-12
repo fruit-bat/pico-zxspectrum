@@ -27,7 +27,7 @@ public:
     _line[line] |= 1 << key;
   }
 
-  inline unsigned char read(int address) {
+  unsigned char __not_in_flash_func(read)(int address) {
     int rs = address >> 8;
     unsigned int a = 0xff;
     

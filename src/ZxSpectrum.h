@@ -164,11 +164,11 @@ private:
   void __not_in_flash_func(stepBuzzer)() {
     uint32_t d = (_port254 >> 4) & 1;
     if (d == 0 && _buzzer > 0) --_buzzer;
-    else if (d == 1 && _buzzer < 15) ++_buzzer;
+    else if (d == 1 && _buzzer < 10) ++_buzzer;
   }
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = __mul_instruction(_buzzer, 14);
+    const int32_t a1 = __mul_instruction(_buzzer, 21);
     const int32_t a2 = _ear ? 31 : 0;
     return a1 + a2;
   }

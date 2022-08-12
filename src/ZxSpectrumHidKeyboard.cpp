@@ -154,7 +154,7 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
     
-    for (int fk = 0; fk < 12; ++fk) {
+    for (int fk = 0; fk < 14; ++fk) {
       const unsigned int fkb = 1 << fk;
       const unsigned char fkc = HID_KEY_F1 + fk;
       if (hidKeyCode == fkc) {
@@ -193,6 +193,9 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     // F3 toggle mute
     if ((fkp & (1 << 2))) _ZxSpectrum->toggleMute();    
     
+    if ((fkp & (1 << 12)) && _quickSave) _quickSave->save(_ZxSpectrum, 0);
+    if ((fkp & (1 << 14)) && _quickSave) _quickSave->load(_ZxSpectrum, 0);
+
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
     // F11 reset to 128k
