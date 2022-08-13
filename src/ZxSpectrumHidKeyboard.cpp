@@ -137,6 +137,23 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   sort_keys();
 }
 
+static uint8_t func_keys[] = {
+  HID_KEY_F1,
+  HID_KEY_F2,
+  HID_KEY_F3,
+  HID_KEY_F4,
+  HID_KEY_F5,
+  HID_KEY_F6,
+  HID_KEY_F7,
+  HID_KEY_F8,
+  HID_KEY_F9,
+  HID_KEY_F10,
+  HID_KEY_F11,
+  HID_KEY_F12,
+  HID_KEY_F13,
+  HID_KEY_F14  
+};
+
 int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r = 0;
 
@@ -148,15 +165,15 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   if (m & 0x22) press(0, 0); // Shift
   if (m & 0x40) press(7, 1); // AtlGr -> Symbol
 
-  unsigned int fkd = 0;
-  unsigned int fkp = 0;
+  uint32_t fkd = 0;
+  uint32_t fkp = 0;
   
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
     
-    for (int fk = 0; fk < 14; ++fk) {
-      const unsigned int fkb = 1 << fk;
-      const unsigned char fkc = HID_KEY_F1 + fk;
+    for (unsigned int fk = 0; fk < sizeof(func_keys); ++fk) {
+      const uint32_t fkb = 1 << fk;
+      const unsigned char fkc = func_keys[fk];
       if (hidKeyCode == fkc) {
         fkd |= fkb;
         if (!isInReport(prev_report, fkc)) fkp |= fkb;
@@ -194,7 +211,7 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     if ((fkp & (1 << 2))) _ZxSpectrum->toggleMute();    
     
     if ((fkp & (1 << 12)) && _quickSave) _quickSave->save(_ZxSpectrum, 0);
-    if ((fkp & (1 << 14)) && _quickSave) _quickSave->load(_ZxSpectrum, 0);
+    if ((fkp & (1 << 13)) && _quickSave) _quickSave->load(_ZxSpectrum, 0);
 
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);

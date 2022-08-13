@@ -70,7 +70,7 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
   },
   // Shifted normal mappings + cursor
   {
@@ -80,7 +80,7 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
   },
   // Normal mappings + joystick
   {
@@ -90,7 +90,7 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
   },
   // Shifted normal mappings + joystick
   {
@@ -100,7 +100,7 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
   }
 };
 #else
@@ -337,7 +337,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
 #else
   bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
   // Cursor mode 
-  if (!shift) {
+  if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
       kempstonJoystick = 0;
       gpio_put(LED_PIN, 0);

@@ -161,7 +161,7 @@ private:
   int writeZ80MemV2(OutputStream *os);
   int z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
 
-  void __not_in_flash_func(stepBuzzer)() {
+  inline void stepBuzzer() {
     uint32_t d = (_port254 >> 4) & 1;
     if (d == 0 && _buzzer > 0) --_buzzer;
     else if (d == 1 && _buzzer < 10) ++_buzzer;
@@ -192,11 +192,8 @@ public:
       int c;
       if (_mute) {
         c = _Z80.step();
-        zxSpectrumAudioHandler(0,0,0,0,0);
         c += _Z80.step();
-        zxSpectrumAudioHandler(0,0,0,0,0);
         c += _Z80.step();
-        zxSpectrumAudioHandler(0,0,0,0,0);
       }
       else {
         uint32_t vA, vB, vC;
@@ -209,7 +206,7 @@ public:
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
         c += _Z80.step();
         stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());        
       }
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
