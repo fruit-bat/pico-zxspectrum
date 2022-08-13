@@ -20,29 +20,27 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 
 ## Supported Boards
 * Breadboard
+* [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
 * PicomputerZX
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
+<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
-
 ## Updates
+* 13/08/22 - Added support for PICOZX
 * 04/08/22 - Update wiring documentation
 * 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
-* 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
-* 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
-* 18/06/22 - Don't freeze if SD card missing
-* 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
 The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
 [Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
