@@ -68,7 +68,7 @@ Pre-built binary targets, found in the uf2 folder, can be copied directly to a P
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
-cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
+cp uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
 
 These targets are discussed in more detail in the following sections.
