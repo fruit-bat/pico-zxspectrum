@@ -9,8 +9,9 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
-* USB Keyboard & Joysticks
-* PS/2 Keyboard
+* USB keyboard & Joysticks
+* PS/2 keyboard
+* Martix keyboard
 * PWM/I2S DAC audio for ear, mic and AY-3-8912
 * 12 quick save slots
 * Load from .z80 snapshot files
@@ -65,6 +66,7 @@ Pre-built binary targets, found in the uf2 folder, can be copied directly to a P
 | PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
+| HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -74,11 +76,11 @@ cp ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 These targets are discussed in more detail in the following sections.
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
-These are a series of targets based around my original breadboard prototype:
+This is a series of targets based around my original breadboard prototype:
 
 <img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
 
-The actual target are: 
+The targets are: 
 * ZxSpectrumBreadboardHdmi4PinAudio
 * ZxSpectrumBreadboardHdmi2PinAudio
 * ZxSpectrumBreadboardHdmi1PinAudio
@@ -90,6 +92,7 @@ They support the following:
 * HDMI video
 * PWM sound
 * SPI SD card
+* Serial port debug
 
 All of these targets share the same pinout but make different use of the 4 audio pins:
 
@@ -105,6 +108,7 @@ It supports the following:
 * VGA video (RGBY1111)
 * PWM sound (4 pin)
 * SPI SD card
+* Serial port debug
 
 This target uses 4 audio pins:
 
@@ -178,6 +182,28 @@ It supports the following:
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicoDv.png)
+
+### ZxSpectrumBreadboardHdmiKbd1PinAudio
+This is a target similar to the HDMI prototype which uses can read from an original Spectrum keyboard matrix.
+
+It is a work in progress and there is currently no way to open the menu's from the Spectrum keyboard; 
+you can still open them by attaching a USB keyboard.
+
+<a href=""><img src="docs/proto_kbd.jpg" width="300"/></a>
+
+It supports the following:
+* USB keyboard
+* Matrix keyboard
+* USB joysticks
+* HDMI video
+* PWM sound (1 pin)
+* SPI SD card
+
+Here are the pin assignments:
+
+![image](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.png)
+
+I don't know how the original keyboard pins were numbered but mine go from left to right with the keyboard oriented as you would type on it.
 
 ## Audio pins
 There are two techniques for audio output. 
