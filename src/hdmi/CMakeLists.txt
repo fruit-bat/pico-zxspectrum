@@ -25,6 +25,7 @@ add_executable(ZxSpectrumBreadboardHdmi4PinAudio
 add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
   ${zxspectrum_common_src}
   ${zxspectrum_hdmi_src}
+  ${zxspectrum_kbd_src}
 )
 
 set(zxspectrum_hdmi_defines
@@ -73,6 +74,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiKbd1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   SPK_PIN=20
+  USE_KEY_MATRIX
 )
 
 set(zxspectrum_hdmi_libs
