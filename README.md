@@ -20,29 +20,27 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 
 ## Supported Boards
 * Breadboard
+* [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
 * PicomputerZX
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
+<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
-
 ## Updates
+* 13/08/22 - Added support for PICOZX
 * 04/08/22 - Update wiring documentation
 * 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
 * 23/07/22 - Added target for Pico DV board
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
-* 27/06/22 - Added support for RGB222 and RGBY1111 over VGA
-* 22/06/22 - Even better sound with 4 pin audio output (HDMI version only)
-* 18/06/22 - Don't freeze if SD card missing
-* 12/06/22 - Much better sound with 2 pin audio output (HDMI version only)
 
 The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
 [Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
@@ -56,18 +54,17 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 ## Targets
 Pre-built binary targets, found in the uf2 folder, can be copied directly to a Pico Pi. Connect your Pico Pi with a USB cable, while holding down the program button:
 
-| Board | Binary | Audio |
-| ------ | -------- | ----- |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) | Digially mixed PWM audio |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) | Buzzer pin and digially mixed AY-3-8912 PWM audio |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | Buzzer pin and separate PWM pins for AY-3-8912 A, B & C channles |
-| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) | Digially mixed PWM audio |
-| PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) | Digially mixed PWM audio |
-| PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) | Digially mixed PWM audio |
-| breadboard | [ZxSpectrumPicomputerVga1111Zx.uf2](uf2/ZxSpectrumPicomputerVga1111Zx.uf2) | Digially mixed PWM audio |
-| breadboard | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) | Digially mixed PWM audio |
-| Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) | I2S DAC audio |
+| Board | Binary |
+| ------ | -------- |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
+| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
+| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
+| PICOZX | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
+| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
+| PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
+| PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
+| Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -98,21 +95,37 @@ All of these targets share the same pinout but make different use of the 4 audio
 
 ![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
 
-### ZxSpectrumPicoDv
-This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board:
-
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+### ZxSpectrum4PinAudioVga1111Ps2
+This is a target similar to the HDMI prototype which uses VGA video output.
 
 It supports the following:
 * USB keyboard
+* PS/2 keyboard
 * USB joysticks
-* HDMI video
-* I2S sound
+* VGA video (RGBY1111)
+* PWM sound (4 pin)
+* SPI SD card
+
+This target uses 4 audio pins:
+
+![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
+
+### ZxSpectrumPicomputerVga222Zx
+This is a target written for Bobricius' PICOZX
+
+<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
+
+It supports:
+* USB keyboard
+* Keyboard martix
+* USB joysticks
+* VGA video (RGB222)
+* PWM sound (1 pin)
 * SPI SD card
 
 Here are the pin assignments:
 
-![image](docs/ZxSpectrumPicoDv.png)
+![image](docs/ZxSpectrumPicomputerVga222Zx.png)
 
 ### ZxSpectrumPicomputerVga
 This is the target for Bobricius' Retro VGA board:
@@ -150,52 +163,21 @@ Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerMax.png)
 
-### ZxSpectrum4PinAudioVga1111Ps2
-This is a target similar to the HDMI prototype which uses VGA video output.
+### ZxSpectrumPicoDv
+This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board:
+
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 It supports the following:
 * USB keyboard
-* PS/2 keyboard
 * USB joysticks
-* VGA video (RGBY1111)
-* PWM sound (4 pin)
-* SPI SD card
-
-This target uses 4 audio pins:
-
-![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
-
-### ZxSpectrumPicomputerVga222Zx
-This is an experimental target written for Bobricius in anticipation of the PICOZX.
-
-**Please not that this target is subject to change.**
-
-Currently, it supports:
-* USB keyboard
-* USB joysticks
-* VGA video (RGB222)
-* PWM sound (1 pin)
+* HDMI video
+* I2S sound
 * SPI SD card
 
 Here are the pin assignments:
 
-![image](docs/ZxSpectrumPicomputerVga222Zx.png)
-
-### ZxSpectrumPicomputerVga1111Zx
-This is an experimental target written for Bobricius in anticipation of the PICOZX.
-
-**Please not that this target is subject to change.**
-
-Currently, it supports:
-* USB keyboard
-* USB joysticks
-* VGA video (RGBY1111)
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerVga1111Zx.png)
+![image](docs/ZxSpectrumPicoDv.png)
 
 ## Audio pins
 There are two techniques for audio output. 

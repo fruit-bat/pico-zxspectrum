@@ -42,7 +42,7 @@ inline void is2_audio_put(uint32_t x) {
       #define PWM_WRAP (255 + 255 + 255)
     #endif
   #else
-    #define PWM_WRAP (255 + 255 + 255 + 255)
+    #define PWM_WRAP (255 + 255 + 255)
   #endif
 
 static void init_pwm_pin(uint32_t pin) { 
@@ -87,7 +87,7 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
 #else
   #ifdef BZR_PIN
     gpio_put(BZR_PIN, buzzer);
-    #ifdef SPK_PIN        
+    #ifdef SPK_PIN
       pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
     #else
       pwm_set_gpio_level(AY8912_A_PIN, vA);
@@ -95,7 +95,8 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
       pwm_set_gpio_level(AY8912_C_PIN, vC);
     #endif
   #else
-      pwm_set_gpio_level(SPK_PIN, vA + vB + vC + s);
+      uint32_t ayt = vA + vB + vC;
+      pwm_set_gpio_level(SPK_PIN, ayt >= 255 + 255 + 255 ? ayt - s : ayt + s);
   #endif
 #endif
 }
