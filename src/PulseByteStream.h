@@ -14,14 +14,14 @@ public:
     _n(0)
   {}
 
-  void reset(InputStream* is, int n) {
+  void __not_in_flash_func(reset)(InputStream* is, int n) {
     _is = is;
     _n = n == 0 ? 0 : n + 1;
     _pulseByte.clear();
   }
 
   // Can return -ve for error
-  int advance(int *tstates, bool *pstate) {
+  int __not_in_flash_func(advance)(int *tstates, bool *pstate) {
     if (end()) return 0;
     while(*tstates > 0) {
       if (_pulseByte.end()) {
@@ -40,7 +40,7 @@ public:
     return 0;
   }
 
-  bool end() {
+  bool __not_in_flash_func(end)() {
     return (_n == 0) || (_is == 0);
   }
 };

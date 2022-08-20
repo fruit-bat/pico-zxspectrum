@@ -13,11 +13,11 @@ class PulseBlock {
 public:
   PulseBlock() {}
   
-  inline bool end() {
+  bool __not_in_flash_func(end)() {
     return (_is == 0) || (_r < 0) || _pulseByteStream.end();
   }
   
-  inline void reset(InputStream* is) {
+  void __not_in_flash_func(reset)(InputStream* is) {
     if ((_is != 0) && (_is != is)) _is->close();
     if (is) {
       int length = is->readWord();
@@ -35,7 +35,7 @@ public:
     _r = 0;
   }
 
-  inline int advance(int tstates, bool *pstate) {
+  int __not_in_flash_func(advance)(int tstates, bool *pstate) {
     if (end()) return -1;
     _tstates += tstates;
     _pulsePreamble.advance(&_tstates, pstate);

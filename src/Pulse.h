@@ -37,7 +37,7 @@ public:
     }
   }
 
-  bool end() {
+  inline bool end() {
     return _pulses == 0;
   }
 };

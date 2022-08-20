@@ -15,12 +15,12 @@ public:
     _data(0x100)
   {}
 
-  void reset(int data) {
+  void __not_in_flash_func(reset)(int data) {
     _data = (data << 1) | 1;
     bitset();
   }
 
-  void clear() {
+  void __not_in_flash_func(clear)() {
     _data = 0x100;
   }
   
