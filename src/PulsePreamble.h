@@ -13,14 +13,14 @@ class PulsePreamble {
   PulseByte _marker;
 public:
   // 0x00 for header, 0xff for data
-  void reset(int marker) {
+  void __not_in_flash_func(reset)(int marker) {
     _pilot.reset(marker ? 3223 : 8063, 2168);
     _sync1.reset(1, 667);
     _sync2.reset(1, 735);
     _marker.reset(marker);
   }
   
-  void advance(int *tstates, bool *pstate) {
+  void __not_in_flash_func(advance)(int *tstates, bool *pstate) {
     if (end()) return;
     _pilot.advance(tstates, pstate);
     _sync1.advance(tstates, pstate);
@@ -28,7 +28,7 @@ public:
     _marker.advance(tstates, pstate);
   }
 
-  bool end() {
+  bool __not_in_flash_func(end)() {
     return _marker.end();
   }
 };

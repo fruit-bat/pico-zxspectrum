@@ -4,6 +4,9 @@
 #include "ZxSpectrumHidJoystick.h"
 
 ZxSpectrumHidJoystick::ZxSpectrumHidJoystick() :
+  _updatedL(0),
+  _updatedR(0),
+  _kempston(0),
   _sinclairL(0xff),
   _sinclairR(0xff)
 {
