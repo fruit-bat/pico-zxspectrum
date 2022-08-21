@@ -8,6 +8,6 @@ EXTRAS
 =
 
   * IM2 mode uses a fixed `data_on_bus` of `0xff` and uses `(i<<8+0xff)` Indirect for both bytes of the vector.
-  * Made `IM 0` a `ED 46` prefix for own use.
+  * Made `IM 0` an `ED 46` prefix for own use.
   * Still some `DD (IX)` and `FD (IY)` opcode space available.
   * Still some `ED (Misc)` opcode space available.

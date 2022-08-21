@@ -41,7 +41,7 @@ const uint16_t SNDR_VOL_AY_S[32] =
 	0x289F,0x289F,0x414E,0x414E,0x5B21,0x5B21,0x7258,0x7258,0x905E,0x905E,0xB550,0xB550,0xD7A0,0xD7A0,0xFFFF,0xFFFF };
 
 static uint8_t Volumes[16];
-  
+
 class ZxSpectrumAy {
 
   uint8_t _l;
@@ -70,7 +70,7 @@ class ZxSpectrumAy {
   int32_t _ns;
 
   union  {
-    uint8_t r8[16];
+    uint8_t r8[16];// so 14 used => 2 more registers??
     uint16_t r16[8];
   } _reg;
   uint8_t _envs[16][32];
@@ -100,7 +100,7 @@ public:
     }
     reset();
   }
-  
+
   void __not_in_flash_func(step)(uint32_t u32s) {
     const uint32_t s = MUL32(u32s, STEP);
     _cntA += s;
@@ -147,7 +147,7 @@ public:
     _pmA = periodA();
     _pmB = periodB();
     _pmC = periodC();
-    _pmN = periodN();    
+    _pmN = periodN();
     _pmE = periodE();
   }
 
@@ -158,11 +158,11 @@ public:
   uint8_t readCtrl() {
     return _l;
   }
-  
+
   uint8_t readData(uint8_t r) {
     return _reg.r8[r];
   }
-  
+
   inline void writeData(uint8_t v) {
     _reg.r8[_l] = v;
     switch (_l) {
@@ -208,7 +208,7 @@ public:
 
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
     const uint32_t m = mixer();
-    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));   
+    const uint32_t mtb = (_tb | m) & (_tbN | (m >> 3));
     const uint32_t ae = _env[_indE];
     // See:
     // https://github.com/retrofw/speccy/blob/master/devices/sound/ay.cpp
