@@ -11,4 +11,4 @@ EXTRAS
   * Made `IM 0` an `ED 46` prefix for own use.
   * Still some `DD (IX)` and `FD (IY)` opcode space available.
   * Still some `ED (Misc)` opcode space available.
-  * The Jupiter Ace was a Z80 based machine, so perhaps a replacement of `128k_rom_1.h` as a forth boot leaving the `128k_rom_2.h` as the BASIC ROM.
+  * The Jupiter Ace was a Z80 based machine, so perhaps a replacement of `128k_rom_1.h` (ROM0) as a forth boot leaving the `128k_rom_2.h` (ROM1) as the BASIC ROM. Needs `sudo apt install hxtools z80asm`.
