@@ -77,7 +77,7 @@ private:
         case 0xFE: {
           uint8_t kb = _keyboard1->read(address);
           if (_keyboard2) kb &= _keyboard2->read(address);
-          return kb | (_ear ? (1<<6) : 0) ;
+          return kb ^ (_ear ? (1<<6) : 0) ;
         }
         case 0x1f: return _joystick ? _joystick->getKempston() : 0;
         default: return 0xff;
