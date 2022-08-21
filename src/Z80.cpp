@@ -104,7 +104,15 @@
   m_writeWord(m_context, (address) & 0xffff, (x));                 \
 }
 
-#define Z80_READ_WORD_INTERRUPT(address, x)  Z80_READ_WORD((address), (x))
+/*
+  Alter to free  bytes for demos. As should be true unless hardware
+  is designed wrong in a ZX Spectrum context.
+*/
+#define Z80_READ_WORD_INTERRUPT(address, x)                       \
+{                                                                 \
+  Z80_READ_BYTE((address), (x));                                  \
+  Z80_READ_BYTE((address), (x+1))                                 \
+}
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)  Z80_WRITE_WORD((address), (x))
 
@@ -1828,6 +1836,7 @@ int Z80::IRQ(int data_on_bus)
     state.r = (state.r & 0x80) | ((state.r + 1) & 0x7f);
     switch (state.im) {
 
+      /* This case will only occur on hard reset */
       case Z80_INTERRUPT_MODE_0: {
 
         /* Assuming the opcode in data_on_bus is an
@@ -1859,7 +1868,8 @@ int Z80::IRQ(int data_on_bus)
         elapsed_cycles = 0;
         SP -= 2;
         Z80_WRITE_WORD_INTERRUPT(SP, state.pc);
-        vector = state.i << 8 | data_on_bus;
+        //vector = state.i << 8 | data_on_bus;
+        vector = state.i << 8 | 0xff;
 
 #ifdef Z80_MASK_IM2_VECTOR_ADDRESS
 
@@ -1867,6 +1877,10 @@ int Z80::IRQ(int data_on_bus)
 
 #endif
 
+        /* Altered elsewhere to recall defined 0xff from Because
+            and only use a duplicate of the leading vector bytes
+            at i*256+255. Fully compatible with previous usages in ZX.
+        */
         Z80_READ_WORD_INTERRUPT(vector, state.pc);
         return elapsed_cycles + 19;
 
@@ -1901,7 +1915,7 @@ int Z80::NMI()
 
 int Z80::step()
 {
-  if (state.status != 0) return 0; 
+  if (state.status != 0) return 0;
   int elapsed_cycles = 0;
   int pc = state.pc;
   int opcode;
@@ -4149,5 +4163,3 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
   return elapsed_cycles;
 }
-
-
