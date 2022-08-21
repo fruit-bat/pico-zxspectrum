@@ -1,0 +1,272 @@
+/* Jupiter Ace Defualt CSS  */
+/* New CSS file for CSS pages with out tables */ 
+/* Date: 2018 test */
+
+* { padding: 0px; margin: 0px; }  
+#wrapper { 
+width: 960px;
+    /* changed from 900 */
+    /* changed from 700   */
+margin-right: auto;
+margin-left: auto;
+}
+
+/*
+#faux {
+margin-bottom: 0px;
+overflow: auto;
+width: 100%;
+background-color: pink;
+margin-top: 0px;
+border: 0px;
+}
+  */
+
+body {margin: 0px;font-size: 12px; color: black;
+background-color: #FFFFFF;
+background-image: url(graphics/background.gif); text-align: center;
+margin-left: auto;
+  margin-right: auto;
+  padding-top: 10px;
+  background-repeat: repeat;
+  font-family: Verdana
+}
+
+#header {clear: both; background-color: white; height: 125px;background-image: url(graphics/ja_logoheader2018.png); background-repeat: no-repeat; background-position: center; }
+
+/* changed to 100px */
+
+
+#menu {color: black; width: 900px; margin-left: auto; margin-right: auto; ; margin-top: 10px;}
+
+#bar { color: red;  font-weight: bold; text-align: left; background: black; padding-bottom: .2em; padding-left: 2em; }
+
+#acepic {padding: 6px; background-color: white; background-image: url(graphics/jup_image_1.gif); background-repeat: no-repeat; background-position: center; height: 130px; margin-right: auto; margin-left: auto; text-align: center;  }
+					  
+#space {height: 12px;}
+
+
+
+/* gray magazine page number */
+.magpage {color: #C0C0C0; text-align: left; padding-bottom: 1em}
+
+/* text formatting */
+.bolditalic {font-style: italic; font-weight: bold;}
+.bold {font-weight: bold;}
+.italic {font-style: italic;}
+
+.alignleft{text-align: left ;padding-bottom: .5em; padding-top: .5em;}
+/* indent and justify */
+.indentjust {text-indent: 2em; text-align: justify; padding-bottom: 1em}
+
+
+
+/* justify */
+.just {text-align: justify; padding-bottom: 1em}
+
+/* page titles and headings */
+.paratitles {text-align: left; font-size: medium; font-weight: bold; padding-bottom: .5em; padding-top: .5em}
+.paratitles2 {text-align: left; font-size: 14px; font-weight: bold; padding-top: .5em; text-indent: 26px }
+/* Center txt with padding */
+.center {text-align: center; padding-bottom: .5em; padding-top: .5em }
+ 
+
+
+ /* content columns */
+.main {padding: 4px; clear: both; background-color: white;
+
+}
+
+/* bar link */
+a.bar:link {color: red; text-decoration: none;}
+a.bar:visited {color: red; text-decoration: none;}
+a.bar:hover {color: #FFFFFF; text-decoration: underline; background-color: #000000}
+a.bar:active {color: red;} 
+
+/* normal links  */
+a:link{color: blue; text-decoration: none;font-size: 12px;}
+a:visited {color: purple; text-decoration: none;font-size: 12px;}
+a:hover {color: green; text-decoration: underline;font-size: 12px;}
+a:active {color: blue;font-size: 12px;}
+
+/* small links  */
+a.slink:link{color: blue; text-decoration: none;font-size: 10px;}
+a.slink:visited {color: purple; text-decoration: none;font-size: 10px;}
+a.slink:hover {color: green; text-decoration: underline;font-size: 10px;}
+a.slink:active {color: blue;font-size: 10px;}
+
+
+
+/*  What's new container start ------------------------------------------------ */
+ #whats_new
+ { width:870px; padding: 10px;}
+
+ .whats_new_link { float:left; width:620px; height:50px; margin-right: 20px;
+  margin-left: 21px;
+  text-align: left;
+
+  border-bottom: 1px dashed #000000;
+  padding-bottom: .5em ;  padding-top: .5em
+}
+ .whats_new_date { float:left; width:150px; height:50px;
+  text-align: right;
+  font-size: 12px;
+
+  border-bottom: 1px dashed #000000;
+  padding-bottom: .5em ;  padding-top: .5em
+}
+/* What's new container end ---------------------------------------------------------------------*/
+
+/*  3 column    start -------------------------------------------------------------------------- */
+ .column_container3
+ { width:870px; padding: 10px;
+ /* see dev file */
+
+}
+ .leftColumn3 { float:left; width:250px; margin-right: 20px;
+  margin-left: 41px
+}
+ .centerColumn3 { float:left; width:250px;  margin-right: 20px; }
+ .rightColumn3 { float:left; width:250px;
+  }
+/*3 column end -----------------------------------------------------------------------------*/
+
+
+
+  /* software page information 2017 */
+ td.sw_table
+ {
+  text-align: left;
+  vertical-align: top;
+  width: 300px;
+  padding-bottom:10px;
+ }
+
+ p.sw_info
+ {
+     text-align: justify;
+     padding-right: 100px;
+     padding-bottom: 12px
+         
+
+ }
+
+ .todo_info
+ {
+     background-color: #FFCC66;
+ }
+
+
+
+
+
+.footer, .line {clear: both; margin: 0px 0px 0px 0px; height: 20px; color: black; background-color: white; padding: 5px; background-image: url(graphics/line400.gif); background-repeat: no-repeat; background-position: center}
+
+
+
+ /* JA software page */
+/* softography list */
+.list {list-style-type: circle; list-style: circle; text-indent: 5em; text-align: left; list-style-position: inside}
+.listindent {list-style-type: disc; list-style: disc; text-indent: 8em; text-align: left; list-style-position: inside;}
+
+
+/* columns in software download pages  new version 2016*/
+.SWColLeft {display: inline; color: black; margin: 0px; padding: 0px; width: 150px; float: left;
+ padding-left: .5em; background-color: white; text-align: left; padding-Bottom: .3em;padding-top: .3em;}
+
+.SWColRight {float: left; color: black; margin: 0px; padding: 0px; width: 500px; padding-left:
+.5em; background-color: white; text-align: left; padding-Bottom: .3em; padding-top: .3em;
+}
+
+
+table.sw_page
+{
+width: 100%
+background-color: lightblue;
+
+}
+td.sw_page
+{
+    height: 50px;
+    vertical-align: :bottom;
+
+}
+
+
+
+ /* columns in software download links */
+.archiveleft {display: inline; color: black; margin: 0px; padding: 0px; width: 200px; float: left; padding-left: .5em; background-color: white; text-align: left; padding-Bottom: .5em; padding-top: .5em}
+
+.archiveright{float: right; color: black; margin: 0px; padding: 0px; width: 200px; padding-left: .5em; background-color: white; text-align: left;  padding-Bottom: .5em; padding-top: .5em;}
+ 
+/* SW archive Page styles */ 
+.arc_bold {font-weight: bold; padding-Bottom: .2em; padding-top: .2em}
+.arc_alignleft {text-align: left; padding-Bottom: .2em; padding-top: .2em }
+.arc_instructions {text-indent: 2em; text-align: justify; padding-bottom: .5em; padding-right: 1em; padding-top: .5em} 
+ 
+ 
+/* columns in What's New page */
+.whatsnewleft { color: black;  width: 125px; float: left; padding-left: .5em; background-color: white; text-align: left; padding-Bottom: .5em; padding-top: .6em} 
+
+.whatsnewmid {color: black; margin-left: 130px; margin-right: 100px;  width: 425px; padding-left: .5em; background-color: white; padding-Bottom: .5em; padding-top: .5em; text-align: justify;}	
+
+.whatsnewright {color: black;  width: 120px; float: right; padding-left: .5em; background-color: white ; text-align: center; font-size: x-small;padding-top: .6em} 
+  
+
+ 
+ 
+/* drop the capital letter */
+.dropthecap {float: left; margin-top: 2px;   font-size: 38pt;  line-height:40px; height: 1em;  font-weight: bold;}
+
+ 
+.clear { clear: both; background: none; }
+ 
+ /* small text */
+.smalltext {font-size: 9px;}
+
+
+
+.ace_code
+{
+
+  background: #DDDDDD;
+  color: #000000;
+  margin-left: 200px;
+  margin-right: 200px;
+  text-align: left;
+  padding-left: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px
+}
+
+
+ .acecode2
+{
+  color: #000000;
+  text-align: left;
+
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-left: 20px
+}
+
+/* List styles */
+
+dt
+    {
+
+      font-size: 14px;
+      font-weight: bold;
+      padding-bottom: 5px;
+      padding-left: 5px;
+      text-align: left
+}
+
+dd {
+    text-align: left;
+    padding-left: 15px;
+}
+
+/* End of style */
+
+
