@@ -1,17 +1,11 @@
 ; Disassembly of the file "C:\ACE\JupiterAce.rom"
-;
-; CPU Type: Z80
-;
-; Created with dZ80 1.50
-;
-; on Monday, 21 of January 2002 at 07:11 PM
-;
-; last updated 02-NOV-2002
-;
-; Cross-assembles to an 8K ROM file.
-;
-; Note. A Low-level Assembly Listing only.
-; TODO Adapt IO for ZX Spectrum
+; to adapt for spectrum architecture 16 kB ROM
+
+;==================================================
+; SPECTRUM FORTH ROM (IO CONVERSION IN PROGRESS)
+;==================================================
+
+; TODO Adapt IO
 
 #define DEFB    .BYTE
 #define DEFW    .WORD

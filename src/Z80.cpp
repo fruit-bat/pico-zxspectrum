@@ -85,12 +85,6 @@
   (x) = (m_readByte(m_context, (address) & 0xffff));                    \
 }
 
-#define Z80_READ_BYTE_DUAL(address, x)                                       \
-{                                                                       \
-  (x) = (m_readByte(m_context, (address) & 0xffff)) << 8 |              \
-  (m_readByte(m_context, (address) & 0xffff));                    \
-}
-
 #define Z80_FETCH_BYTE(address, x)    Z80_READ_BYTE((address), (x))
 
 #define Z80_READ_WORD(address, x)                                       \
@@ -114,7 +108,7 @@
   Alter to free  bytes for demos. As should be true unless hardware
   is designed wrong in a ZX Spectrum context.
 */
-#define Z80_READ_WORD_INTERRUPT(address, x) Z80_READ_BYTE_DUAL((address), (x))
+#define Z80_READ_WORD_INTERRUPT(address, x) Z80_READ_WORD((address), (x))
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)  Z80_WRITE_WORD((address), (x))
 
