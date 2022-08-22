@@ -2156,7 +2156,7 @@ int Z80::IRQ(int data_on_bus)
       }
 
       case Z80_INTERRUPT_MODE_2:
-      default: {
+      default: {//technically covers the case of IM 3 which can be loaded as &3 used.
 
         int	elapsed_cycles, vector;
 

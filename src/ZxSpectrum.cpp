@@ -111,7 +111,7 @@ int ZxSpectrum::writeZ80(OutputStream *os, int version) {
       if (r < 0) {
         printf("Failed to write Z80 memory V2\n");
         return r;
-      }         
+      }
       break;
     }
     default: {
@@ -308,7 +308,7 @@ int ZxSpectrum::writeZ80Header(
   buf[26] = _Z80.getIXH();
   buf[27] = _Z80.getIFF1();
   buf[28] = _Z80.getIFF2();
-  buf[29] = _Z80.getIM();
+  buf[29] = _Z80.getIM();//extending format by IM indication of 4 or more.
 
   return os->write(buf, 30);
 }
@@ -392,7 +392,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIXH(buf[26]);
   _Z80.setIFF1(buf[27] ? 1 : 0);
   _Z80.setIFF2(buf[28] ? 1 : 0);
-  _Z80.setIM(buf[29] & 3);
+  _Z80.setIM(buf[29] & 3);//technically can load 4 and indicate format extension ... ?
   if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
   printf("PC %04X\n", pc);
   printf("IFF1 %02X\n", buf[27]);
@@ -503,7 +503,7 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
         4             128k + If.1             128k
         5             -                       128k + If.1
         6             -                       128k + M.G.T.
-*/ 
+*/
   const int hm = buf[34-32];
   *type = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3)) ? ZxSpectrum48k : ZxSpectrum128k;
   printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
@@ -548,7 +548,7 @@ int ZxSpectrum::z80BlockToPage(const uint8_t b, const ZxSpectrumType type) {
     case ZxSpectrum48k:  p = z80p48k[b];  break;
     case ZxSpectrum128k: p = z80p128k[b]; break;
     default: break;
-  }  
+  }
   return p;
 }
 
@@ -559,9 +559,9 @@ int ZxSpectrum::z80BlockToPage(const uint8_t b, const ZxSpectrumType type) {
                     If length=0xffff, data is 16384 bytes long and not compressed
     2       1       Page number of block
     3       [0]     Data
-*/   
+*/
 int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
- 
+
   int l = is->readWord();
   if (l < 0) return l;
   printf("Found Z80 V2 block of length %d\n", l);
@@ -578,12 +578,12 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
   }
 
   int p = z80BlockToPage(b, type);
-  
+
   if (p == -1) {
       printf("Failed to translate Z80 V2 block %d\n", b);
       return -2;
   }
-  
+
   uint8_t *m = (uint8_t *)&_RAM[p];
   if (l == 0xffff) {
     int r = is->read(m, 1<<14);
