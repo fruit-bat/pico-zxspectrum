@@ -9,6 +9,7 @@ EXTRAS
 
   * IM2 mode uses a fixed `data_on_bus` of `0xff` and uses `(i<<8+0xff)` for the vector.
   * Made `IM 0` an `ED 46` prefix for own use.
+  * Fixed AY sound buffer access violation potential before Z80 hacking starts.
 
 STILL TODO
 =
