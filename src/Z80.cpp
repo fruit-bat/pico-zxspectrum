@@ -1324,6 +1324,9 @@ static const unsigned char CB_INSTRUCTION_TABLE[256] = {
 
 };
 
+//========================================
+// MISC Instructions
+//========================================
 
 static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 
@@ -1616,6 +1619,10 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
 
 };
+
+//=================================================
+// ED 46 Prefixed IM 0 replacement Instructions
+//=================================================
 
 static const unsigned char IM_INSTRUCTION_TABLE[256] = {
 

@@ -44,7 +44,7 @@ static uint8_t Volumes[16];
 
 class ZxSpectrumAy {
 
-  uint8_t _l;
+  uint8_t _l;// 8 bit index and only 16 registers
 
   uint32_t _cntA;
   uint32_t _cntB;
@@ -164,7 +164,7 @@ public:
   }
 
   inline void writeData(uint8_t v) {
-    _reg.r8[_l] = v;
+    if(_l < sizeof(_reg) / sizeof(uint8_t)) _reg.r8[_l] = v;//catch buffer attack from z80 code
     switch (_l) {
       case 0: case 1:
         _pmA = periodA();
@@ -203,7 +203,7 @@ public:
   }
 
   inline uint8_t readData() {
-    return _reg.r8[_l];
+    return (_l < sizeof(_reg) / sizeof(uint8_t)) ?_reg.r8[_l] : 0x00;//sensible default no access violate
   }
 
   inline void vol(uint32_t& vA, uint32_t& vB, uint32_t& vC) {
