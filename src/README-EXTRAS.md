@@ -18,3 +18,10 @@ STILL TODO
   * Add extra features to AY sound chip. Two extra registers are available.
   * Still some `DD (IX)` and `FD (IY)` opcode space available.
   * Still some `ED (Misc)` opcode space available.
+
+POSSIBLE VIDEO EXTENSION
+=
+
+A port allocation to set mode and a layout. E.G. 16 kB @ 3 * 4 kB vertical sections.
+So 4 kB is 256 * 64 pixels. 4096 * 4 => same number of pixels in 4 kB => 2 bits per pixel.
+VGA easier than `tmds` arm assembly.

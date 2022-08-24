@@ -62,6 +62,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
 
 void ZxSpectrum::interrupt() {
   _Z80.IRQ(0xff);
+  _ay.sync();//AY-3 timing register additions
 }
 
 // 0 - Z80 unmoderated
@@ -392,7 +393,8 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIXH(buf[26]);
   _Z80.setIFF1(buf[27] ? 1 : 0);
   _Z80.setIFF2(buf[28] ? 1 : 0);
-  _Z80.setIM(buf[29] & 3);//technically can load 4 and indicate format extension ... ?
+  _Z80.setIM(buf[29] & 3);//technically can load 3 and indicate format extension ... ?
+  if (buf[29] & 3 == 3) printf("Z80X mode architecture enabled\n");
   if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
   printf("PC %04X\n", pc);
   printf("IFF1 %02X\n", buf[27]);
