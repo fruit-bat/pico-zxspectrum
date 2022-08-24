@@ -7,9 +7,9 @@ but use this `pico-spectrum` repository when cloning in the instructions.
 EXTRAS
 =
 
-  * Added registers `14` and `15` to `AY` sound chip as a tick counter reset on `IRQ`.
+  * Added registers `14` and `15` to `AY-3-8912` sound chip as a tick counter reset on `IRQ`. This follows the general endian order of the frequencies. These supposedly were serial bit bang interfaces but I think the `AY-3-8913` was better and pin `16` could have been an `IRQ` input.
   * Made `IM 3` be `ED 4E` enter into an architecture extension mode. It also is a direct on a page boundary vectored by `I` interrupt mode.
-  * Made `IM 0` an `ED 46` prefix for architecture extensions in the `IM 3` mode.
+    * Made `IM 0` an `ED 46` prefix for architecture extensions in the `IM 3` mode.
 
 STILL TODO
 =
