@@ -346,16 +346,28 @@ enum {
 
   /* Prefix group. */
 
-  CB_PREFIX,
-  DD_PREFIX,
-  FD_PREFIX,
-  ED_PREFIX,
+  CB_PREFIX,//BIT
+  DD_PREFIX,//IX
+  FD_PREFIX,//IY
+  ED_PREFIX,//MISC
 
   /* Special instruction group. */
 
   ED_UNDEFINED            /* ED_UNDEFINED is used to catch undefined
                            * 0xed prefixed opcodes.
                            */
+
+//=====================================================
+// Z80X EXTENSIONS (ALWAYS AVAILABLE ED xx GROUP)
+//=====================================================
+
+
+//=====================================================
+// Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
+//=====================================================
+// note is impossible to exit to IM 0 directly from IM 3
+// these extensions alter architecture so IM 3 resets the extensions
+// to avoid needing to save Z80X extra state in the Z80 header
 
 };
 
@@ -509,6 +521,44 @@ WRITE_WORD(SP, (x));                                            \
 {                                                                       \
 READ_WORD(SP, (x));                                             \
 SP += 2;                                                        \
+}
+
+//=========================================
+// Added as part of Z80X extensions
+//=========================================
+
+#define PUHL(x)                                                         \
+{                                                                       \
+  if (registers == state.register_table) {			\
+    WRITE_BYTE(--HL, (x));                                    \
+  } else {                                                        \
+  \
+  int     d;                                              \
+  \
+  READ_D(d);                                              \
+  d += --HL_IX_IY;                                          \
+  WRITE_BYTE(d, (x));                                     \
+  \
+  elapsed_cycles += 5;                                    \
+  \
+  }                                          \
+}
+
+#define POHL(x)                                                          \
+{                                                                       \
+  if (registers == state.register_table) {			\
+    READ_BYTE(HL++, (x));                                    \
+  } else {                                                        \
+  \
+  int     d;                                              \
+  \
+  READ_D(d);                                              \
+  d += HL_IX_IY++;                                          \
+  READ_BYTE(d, (x));                                     \
+  \
+  elapsed_cycles += 5;                                    \
+  \
+  }                                                           \
 }
 
 /* Exchange macro. */
@@ -1324,12 +1374,13 @@ static const unsigned char CB_INSTRUCTION_TABLE[256] = {
 
 };
 
-//========================================
-// MISC Instructions
-//========================================
+//======================================================
+// MISC Instructions (includes some Z80X extensions)
+//======================================================
 
 static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 
+//0
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1347,7 +1398,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//1
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1365,7 +1416,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//2
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1383,7 +1434,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//3
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1401,14 +1452,14 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//4
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
   NEG,
   RETI_RETN,
-  IM_N,
+  IM_N,//IM 0
   LD_I_A_LD_R_A,
 
   IN_R_C,
@@ -1417,16 +1468,16 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_RR_INDIRECT_NN,
   NEG,
   RETI_RETN,
-  IM_N,
+  IM_N,//IM 3
   LD_I_A_LD_R_A,
-
+//5
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
   NEG,
   RETI_RETN,
-  IM_N,
+  IM_N,//IM 1
   LD_A_I_LD_A_R,
 
   IN_R_C,
@@ -1435,9 +1486,9 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_RR_INDIRECT_NN,
   NEG,
   RETI_RETN,
-  IM_N,
+  IM_N,//IM 2
   LD_A_I_LD_A_R,
-
+//6
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
@@ -1455,7 +1506,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   RETI_RETN,
   IM_N,
   RLD_RRD,
-
+//7
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
@@ -1473,7 +1524,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   RETI_RETN,
   IM_N,
   ED_UNDEFINED,
-
+//8
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1491,7 +1542,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//9
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1509,7 +1560,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//A
   LDI_LDD,
   CPI_CPD,
   INI_IND,
@@ -1527,7 +1578,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//B
   LDIR_LDDR,
   CPIR_CPDR,
   INIR_INDR,
@@ -1545,7 +1596,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//C
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1563,7 +1614,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//D
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1581,7 +1632,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//E
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1599,7 +1650,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//F
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1623,9 +1674,10 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 //=================================================
 // ED 46 Prefixed IM 0 replacement Instructions
 //=================================================
+// these only work when in IM mode 3
 
 static const unsigned char IM_INSTRUCTION_TABLE[256] = {
-
+//0
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1643,7 +1695,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//1
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1661,7 +1713,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//2
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1679,7 +1731,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//3
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1697,7 +1749,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//4
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1715,7 +1767,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//5
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1733,7 +1785,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//6
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1751,7 +1803,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//7
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1769,7 +1821,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//8
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1787,7 +1839,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//9
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1805,7 +1857,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//A
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1823,7 +1875,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//B
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1841,7 +1893,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//C
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1859,7 +1911,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//D
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1877,7 +1929,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//E
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1895,7 +1947,7 @@ static const unsigned char IM_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//F
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -2155,16 +2207,14 @@ int Z80::IRQ(int data_on_bus)
 
       }
 
-      case Z80_INTERRUPT_MODE_2:
-      default: {//technically covers the case of IM 3 which can be loaded as &3 used.
+      case Z80_INTERRUPT_MODE_2: {
 
         int	elapsed_cycles, vector;
 
         elapsed_cycles = 0;
         SP -= 2;
         Z80_WRITE_WORD_INTERRUPT(SP, state.pc);
-        //vector = state.i << 8 | data_on_bus;
-        vector = state.i << 8 | 0xff;
+        vector = state.i << 8 | data_on_bus;
 
 #ifdef Z80_MASK_IM2_VECTOR_ADDRESS
 
@@ -2179,6 +2229,16 @@ int Z80::IRQ(int data_on_bus)
         Z80_READ_WORD_INTERRUPT(vector, state.pc);
         return elapsed_cycles + 19;
 
+      }
+      case Z80_INTERRUPT_MODE_3:
+      default: {
+        int	elapsed_cycles;
+
+        elapsed_cycles = 0;
+        SP -= 2;
+        Z80_WRITE_WORD_INTERRUPT(SP, state.pc);
+        state.pc = state.i << 8;// page boundary direct execute
+        return elapsed_cycles + 13;
       }
 
     }
@@ -3183,24 +3243,30 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
          */
 
         if ((Y(opcode) & 0x03) <= 0x01)
-
+          if(!(Y(opcode) & 1)
           /* Here goes the new prefix instruction for own use. Should be fully compatible */
           //state.im = Z80_INTERRUPT_MODE_0;#
         {
-          registers = state.register_table;
-          Z80_FETCH_BYTE(pc, opcode);
-          pc++;
-          instruction = IM_INSTRUCTION_TABLE[opcode];
-          repeatLoop = true;
+          if(state.im == Z80_INTERRUPT_MODE_3) {
+            registers = state.register_table;
+            Z80_FETCH_BYTE(pc, opcode);
+            pc++;
+            instruction = IM_INSTRUCTION_TABLE[opcode];
+            repeatLoop = true;
+          } else {
+            state.im = Z80_INTERRUPT_MODE_0;//bad mode unstable sometimes
+          }
+        } else {
+          state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
         }
 
         else if (!(Y(opcode) & 1))
 
-          state.im = Z80_INTERRUPT_MODE_1;
+          state.im = Z80_INTERRUPT_MODE_1;//default basic mode
 
         else
 
-          state.im = Z80_INTERRUPT_MODE_2;
+          state.im = Z80_INTERRUPT_MODE_2;//useable but has table size issues on bus float
 
         break;
 

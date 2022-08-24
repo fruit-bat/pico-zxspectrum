@@ -8,7 +8,7 @@ EXTRAS
 =
 
   * Added registers `14` and `15` to `AY` sound chip as a tick counter reset on `IRQ`.
-  * Made `IM 3` be `ED 4E` enter into an architecture extension mode.
+  * Made `IM 3` be `ED 4E` enter into an architecture extension mode. It also is a direct on a page boundary vectored by `I` interrupt mode.
   * Made `IM 0` an `ED 46` prefix for architecture extensions in the `IM 3` mode.
 
 STILL TODO
