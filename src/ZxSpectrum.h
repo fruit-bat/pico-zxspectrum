@@ -19,6 +19,8 @@ enum ZxSpectrumType {
   ZxSpectrum128k
 };
 
+extern unsigned int _z80x;//everybody wants one
+
 class ZxSpectrum {
 private:
   Z80 _Z80;
@@ -40,7 +42,6 @@ private:
   bool _mute;
   bool _pauseTape;
   uint32_t _buzzer;
-  unsigned int _z80x;
 
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);

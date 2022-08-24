@@ -1,4 +1,6 @@
 #include "ZxSpectrumPrepareDviScanline.h"
+//need port
+#include "ZxSpectrum.h"
 
 extern "C" {
 #include "dvi_serialiser.h"

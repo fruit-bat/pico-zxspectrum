@@ -6,6 +6,8 @@
 #include <pico/stdlib.h>
 #include "SizingOutputStream.h"
 
+unsigned int _z80x;//instance is machine
+
 ZxSpectrum::ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,

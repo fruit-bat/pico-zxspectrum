@@ -1,4 +1,6 @@
 #include "ZxSpectrumPrepareRgbScanline.h"
+//need port
+#include "ZxSpectrum.h"
 
 #define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
 #define VGA_RGB_332(r,g,b) ((r##UL<<5)|(g##UL<<2)|b##UL)
