@@ -101,6 +101,9 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
     for (int i = 0; i < 16; ++i) *buf++ = bw;
 
     const uint v = y - 24;
+    // line in char cell ((v & 0x7) << 8)
+    // every 8 lines or char cells ((v & 0x38) << 2)
+    // every 64 lines or screen thirds ((v & 0xc0) << 5)
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
     const uint8_t *s2 = s + 32 * 168;
     const uint8_t *s3 = s2 + 32 * 168;
