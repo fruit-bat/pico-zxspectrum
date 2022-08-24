@@ -58,6 +58,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
   _tu32 = time_us_32() << 5;
+  _z80x = 0;
 }
 
 void ZxSpectrum::interrupt() {
@@ -431,6 +432,9 @@ int ZxSpectrum::writeZ80HeaderV3(OutputStream *os) {
   buf[37 - 30] = 0x04;
   buf[38 - 30] = _ay.readCtrl();
   for (uint8_t i = 0; i < 16; ++i) buf[39 - 30 + i] = _ay.readData(i);
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    buf[39 - 30 + 15] = _z80x;//port 15 overwrite with special port
+  }
   buf[55 - 30] = 0;
   buf[56 - 30] = 0;
   buf[57 - 30] = 0;
@@ -508,7 +512,7 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
 */
   const int hm = buf[34-32];
   *type = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3)) ? ZxSpectrum48k : ZxSpectrum128k;
-  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
+  printf("Found header for V%d and hardware mode %d is 48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
   transmute(*type);
   _port254 = 0x30;
   if (*type == ZxSpectrum128k) {
@@ -520,6 +524,12 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
     _ay.writeCtrl(i);
     _ay.writeData(buf[i + 39-32]);
   }
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    _z80x = buf[15 + 39-32];//use last reg as port value
+  } else {
+    _z80x = 0;//default
+  }
+  // causes loss of sync for one interval frame
   _ay.writeCtrl(buf[38-32]);
   return 0;
 }
@@ -674,7 +684,7 @@ void ZxSpectrum::loadZ80(InputStream *is) {
       case 1:
         loadZ80MemV1(is);
         break;
-      case 2:
+      case 2:// <= case 3 is what is saved ...
         ZxSpectrumType type;
         if (loadZ80HeaderV2(is, &type) >= 0) {
           while(loadZ80MemBlock(is, type) >= 0);

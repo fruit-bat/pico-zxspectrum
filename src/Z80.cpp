@@ -2187,8 +2187,10 @@ void Z80::resetArch() {
   //====================================================
   // Reset the extended Z80X architecture
   //====================================================
-  
-  return;
+  Z80_OUTPUT_BYTE(0x3ffd, 0);//clear port hack
+  // essential to clear special mode port on mode change
+  // as it allows potential use of some features which
+  // would be in a super ULA.
 }
 
 
@@ -3271,21 +3273,25 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
               instruction = IM_INSTRUCTION_TABLE[opcode];
               repeatLoop = true;
             } else {
+              // this is perhaps the most useless mode on the spectrum
+              // it is prone to crash on floating bus IRQ
               state.im = Z80_INTERRUPT_MODE_0;//bad mode unstable sometimes
+              resetArch();
             }
           } else {
             state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
             resetArch();//resets the extended architecture for save file compatibility
+            // allows prep of port before entry into IM 3 mode
+            // so allowing arch extensions to be used
           }
-
-        } else if (!(Y(opcode) & 1))
-
-          state.im = Z80_INTERRUPT_MODE_1;//default basic mode
-
-        else
-
-          state.im = Z80_INTERRUPT_MODE_2;//useable but has table size issues on bus float
-
+        } else {
+          if (!(Y(opcode) & 1)) {
+            state.im = Z80_INTERRUPT_MODE_1;//default basic mode
+          } else {
+            state.im = Z80_INTERRUPT_MODE_2;//useable but has table size issues on bus float
+          }
+          resetArch();
+        }
         break;
 
       }
