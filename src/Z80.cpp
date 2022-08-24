@@ -1379,7 +1379,9 @@ static const unsigned char CB_INSTRUCTION_TABLE[256] = {
 //======================================================
 
 static const unsigned char ED_INSTRUCTION_TABLE[256] = {
-
+//====================================================
+// RESERVED BLOCK
+//====================================================
 //0
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1452,6 +1454,9 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
+//====================================================
+// Z80X EXTENSION BLOCK (DOES NOT EXPAND REGISTERS)
+//====================================================
 //4
   IN_R_C,
   OUT_C_R,
@@ -1596,6 +1601,9 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
+//====================================================
+// RESERVED BLOCK
+//====================================================
 //C
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1677,6 +1685,9 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 // these only work when in IM mode 3
 
 static const unsigned char IM_INSTRUCTION_TABLE[256] = {
+//====================================================
+// Z80X ARCHITECTURAL EXTENSIONS BLOCK
+//====================================================
 //0
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -2172,6 +2183,13 @@ void Z80::reset()
   state.fd_register_table[14] = &state.registers.word[Z80_IY];
 }
 
+void Z80::resetArch() {
+  //====================================================
+  // Reset the extended Z80X architecture
+  //====================================================
+  
+  return;
+}
 
 
 int Z80::IRQ(int data_on_bus)
@@ -3257,6 +3275,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
             }
           } else {
             state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
+            resetArch();//resets the extended architecture for save file compatibility
           }
 
         } else if (!(Y(opcode) & 1))

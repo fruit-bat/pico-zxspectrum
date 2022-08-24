@@ -251,6 +251,7 @@ public:
 
   /* Initialize processor's state to power-on default. */
   void reset();
+  void resetArch();
 
   /* Trigger an interrupt according to the current interrupt mode and return the
   * number of cycles elapsed to accept it. If maskable interrupts are disabled,
@@ -290,7 +291,7 @@ public:
   void setIYL(uint8_t v)                      { state.registers.byte[Z80_IYL] = v; }
   void setIFF1(uint8_t v)                     { state.iff1 = v; }
   void setIFF2(uint8_t v)                     { state.iff2 = v; }
-  void setIM(uint8_t v)                       { state.im = v; }
+  void setIM(uint8_t v)                       { state.im = v; /* resetArch(); */ }
   void setI(uint8_t v)                        { state.i = v; }
   void setR(uint8_t v)                        { state.r = v; }
   void setSPH(uint8_t v)                      { state.registers.byte[Z80_SPH] = v; }
