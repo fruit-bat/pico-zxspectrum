@@ -11,7 +11,7 @@ extern "C" {
 //=======================================================
 // N.B. INDEXING MAYBE OFF ....................
 //=======================================================
-// this fixes bitmap memory ordering
+// this fixes bitmap memory ordering intensity based luma
 const uint8_t primaries[3] = {
     64+1, //BLUE
     64+2, //RED
@@ -20,7 +20,9 @@ const uint8_t primaries[3] = {
 
 // this is for the output draw plane ordering ...
 const uint8_t indexing[3] = {
-  0, 1, 2,//ORDER MAY NEED CHANGING
+  0, 2, 1,//ORDER MAY NEED CHANGING
+  // Assuming https://en.wikipedia.org/wiki/Digital_Visual_Interface
+  // is correct starting with pin 17 ... BGR
 };
 
 // Screen handler
