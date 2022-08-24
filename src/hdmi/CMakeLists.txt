@@ -72,8 +72,26 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmiKbd1PinAudio PRIVATE
-  ${zxspectrum_hdmi_defines}
+  # Set up the DVI output to match the Pimoroni Pico DV board
+  DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1  
+  # Single pin audio for now
   SPK_PIN=20
+  # 21 is also free
+  # Configure the SPI sd card to use PIO
+  SDCARD_PIO=pio1
+  SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=28
+  SDCARD_PIN_SPI0_SCK=22
+  SDCARD_PIN_SPI0_MOSI=26
+  SDCARD_PIN_SPI0_MISO=27  
   USE_KEY_MATRIX
 )
 

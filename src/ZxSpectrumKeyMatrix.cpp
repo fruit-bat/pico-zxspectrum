@@ -8,15 +8,15 @@
 
 #define SAMPLES 4 
 
-#define CP 9, 10, 11, 21, 22, 26, 27, 28
-#define RP 0, 1, 6, 7, 8
-#define CP_JOIN(a) ((a & 7) | ((a >> 9) & (3 << 3)) | ((a >> 12) & (7 << 5)))
-#define CP_SHIFT 9
-#define RN 5
+#define CP 2, 3, 4, 5, 6, 7, 8, 9
+#define RP_DAT 10
+#define RP_CLK 11
+#define CP_JOIN(a) (a)
+#define CP_SHIFT 2
+#define RN 6
 #define CN 8
 
 static uint8_t cp[] = {CP};                      // Column pins
-static uint8_t rp[] = {RP};                      // Row pins
 static uint8_t rs[RN][SAMPLES];                  // Oversampled pins
 static uint8_t rdb[RN];                          // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
@@ -33,48 +33,57 @@ static uint8_t kbits[1][5][8] = {
   }
 };
 
-
 #define KEY_SHIFT_ROW 0
 #define KEY_SHIFT_BIT 0x20
 #define LED_PIN 25
 
 void zx_keyscan_init() {
 
-  for(int i = 0; i < RN; ++i) {
-      gpio_init(rp[i]);
-      gpio_set_dir(rp[i], GPIO_IN);    
-      gpio_disable_pulls(rp[i]);
-   }  
-    
+   gpio_init(RP_DAT);
+   gpio_set_dir(RP_DAT, GPIO_OUT);
+   gpio_init(RP_CLK);
+   gpio_set_dir(RP_CLK, GPIO_OUT);
+   gpio_put(RP_DAT, 1);
+   gpio_put(RP_CLK, 0);
+   sleep_ms(1);
+
+   for(int i = 0; i < RN; ++i) {
+     gpio_put(RP_CLK, 1);
+     sleep_ms(1);
+     gpio_put(RP_CLK, 0);
+     sleep_ms(1);
+   }
+
+   gpio_put(RP_DAT, 0);
+   sleep_ms(1);
+   gpio_put(RP_CLK, 1);
+   sleep_ms(1);
+
    for(int i = 0; i < CN; ++i) {
       gpio_init(cp[i]);
-      gpio_set_dir(cp[i], GPIO_IN);    
+      gpio_set_dir(cp[i], GPIO_IN);
       gpio_pull_up(cp[i]);
    }
-   
-   uint32_t row = rp[0];
-   gpio_set_dir(row, GPIO_OUT);
-   gpio_put(row, 0);
 }
 
 void __not_in_flash_func(zx_keyscan_row)() {
   static uint32_t ri = 0;
   static uint32_t si = 0;
+
+  gpio_put(RP_CLK, 0);
+
   uint32_t a = ~(gpio_get_all() >> CP_SHIFT);
 
   uint32_t r = CP_JOIN(a);
   rs[ri][si] = (uint8_t)r;
-  uint32_t row;
-  row = rp[ri];
-  gpio_set_dir(row, GPIO_IN);
-  gpio_disable_pulls(row);
+  
+  
   if (++ri >= RN) {
     ri = 0;
     if (++si >= SAMPLES) si = 0;
   }
-  row = rp[ri];
-  gpio_set_dir(row, GPIO_OUT);
-  gpio_put(row, 0);
+
+  gpio_put(RP_DAT, ri == 0 ? 0 : 1);
   
   uint32_t om = 0;
   uint32_t am = (1 << CN) - 1;
@@ -85,6 +94,8 @@ void __not_in_flash_func(zx_keyscan_row)() {
   }
   // only change key state if all samples on or off
   rdb[ri] = (am | rdb[ri]) & om; 
+  
+  gpio_put(RP_CLK, 1);
 }
 
 void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev) {
