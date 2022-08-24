@@ -273,7 +273,9 @@ public:
   bool mute() { return _mute; }
 
   inline unsigned int borderColour() { return _borderColour; }
+  // Z80X expansion port address for feature access
   inline unsigned int z80xPort() { return _z80x; }
+  inline void z80xPortW(int value) { _z80x = value; }
 
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
