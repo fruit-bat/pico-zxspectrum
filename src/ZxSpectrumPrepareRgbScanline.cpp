@@ -85,8 +85,12 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   ) {
 
   const uint32_t bw = zx_colour_words[borderColor];
+  const unsigned int rem = (_z80x & 1) ? 168 : 192;
+  const int r = zx_colour_words[2];
+  const int g = zx_colour_words[4];
+  const int b = zx_colour_words[1];
 
-  if (y < 24 || y >= (24+192)) {
+  if (y < 24 || y >= (24+rem)) {
     // Screen is 640 bytes
     // Each color word is 4 bytes, which represents 2 pixels
     for (int i = 0; i < 160; ++i) buf[i] = bw;
@@ -98,30 +102,57 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
 
     const uint v = y - 24;
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
+    const uint8_t *s2 = s + 32 * 168;
+    const uint8_t *s3 = s2 + 32 * 168;
     const uint8_t *a = attrPtr+((v>>3)<<5);
     const int m = (frame >> 5) & 1;
 
     for (int i = 0; i < 32; ++i) {//an rgb based mode extra by colour tables??
       uint8_t c = *a++; // Fetch the attribute for the character
-      uint8_t p = *s++ ^ zx_invert_masks[(c >> 7) & m]; // fetch a byte of pixel data
-      uint8_t bci = (c >> 3) & 0xf; // The background colour index
-      uint8_t fci = (c & 7) | (bci & 0x8); // The foreground colour index
-      uint32_t bcw = zx_colour_words[bci]; // The background colour word
-      uint32_t fcw = zx_colour_words[fci]; // The foreground colour word
-      uint32_t fgm;
-      uint32_t bgm;
-      fgm = zx_bitbit_masks[(p >> 6) & 3];
-      bgm = ~fgm;
-      *buf++ = (fgm & fcw) | (bgm & bcw);
-      fgm = zx_bitbit_masks[(p >> 4) & 3];
-      bgm = ~fgm;
-      *buf++ = (fgm & fcw) | (bgm & bcw);
-      fgm = zx_bitbit_masks[(p >> 2) & 3];
-      bgm = ~fgm;
-      *buf++ = (fgm & fcw) | (bgm & bcw);
-      fgm = zx_bitbit_masks[p & 3];
-      bgm = ~fgm;
-      *buf++ = (fgm & fcw) | (bgm & bcw);
+      //=============================
+      // get alternates
+      //=============================
+      if(_z80x & 1) {
+        // new video mode ?
+        uint8_t ba = *s++; // fetch a byte of pixel data
+        uint8_t ra = *s2++; // fetch a byte of pixel data
+        uint8_t ga = *s3++; // fetch a byte of pixel data
+        //speccy intensity ordering of planes toward high memory
+
+        *buf++ = (zx_bitbit_masks[(ra >> 6) & 3] & r)
+          + (zx_bitbit_masks[(ga >> 6) & 3] & g)
+          + (zx_bitbit_masks[(ba >> 6) & 3] & b);
+        *buf++ = (zx_bitbit_masks[(ra >> 4) & 3] & r)
+          + (zx_bitbit_masks[(ga >> 4) & 3] & g)
+          + (zx_bitbit_masks[(ba >> 4) & 3] & b);
+        *buf++ = (zx_bitbit_masks[(ra >> 2) & 3] & r)
+          + (zx_bitbit_masks[(ga >> 2) & 3] & g)
+          + (zx_bitbit_masks[(ba >> 2) & 3] & b);
+        *buf++ = (zx_bitbit_masks[(ra >> 0) & 3] & r)
+          + (zx_bitbit_masks[(ga >> 0) & 3] & g)
+          + (zx_bitbit_masks[(ba >> 0) & 3] & b);
+      } else {
+        uint8_t p = *s++ ^ zx_invert_masks[(c >> 7) & m]; // fetch a byte of pixel data
+        uint8_t bci = (c >> 3) & 0xf; // The background colour index
+        uint8_t fci = (c & 7) | (bci & 0x8); // The foreground colour index
+        // back on track
+        uint32_t bcw = zx_colour_words[bci]; // The background colour word
+        uint32_t fcw = zx_colour_words[fci]; // The foreground colour word
+        uint32_t fgm;
+        uint32_t bgm;
+        fgm = zx_bitbit_masks[(p >> 6) & 3];
+        bgm = ~fgm;
+        *buf++ = (fgm & fcw) | (bgm & bcw);
+        fgm = zx_bitbit_masks[(p >> 4) & 3];
+        bgm = ~fgm;
+        *buf++ = (fgm & fcw) | (bgm & bcw);
+        fgm = zx_bitbit_masks[(p >> 2) & 3];
+        bgm = ~fgm;
+        *buf++ = (fgm & fcw) | (bgm & bcw);
+        fgm = zx_bitbit_masks[p & 3];
+        bgm = ~fgm;
+        *buf++ = (fgm & fcw) | (bgm & bcw);
+      }
     }
 
     for (int i = 0; i < 16; ++i) *buf++ = bw;

@@ -8,6 +8,21 @@ extern "C" {
 #include "tmds_encode_zxspectrum.h"
 }
 
+//=======================================================
+// N.B. INDEXING MAYBE OFF ....................
+//=======================================================
+// this fixes bitmap memory ordering
+const uint8_t primaries[3] = {
+    64+1, //BLUE
+    64+2, //RED
+    64+4, //GREEN
+};
+
+// this is for the output draw plane ordering ...
+const uint8_t indexing[3] = {
+  0, 1, 2,//ORDER MAY NEED CHANGING
+};
+
 // Screen handler
 //
 // 256×192 Pixels
@@ -31,8 +46,9 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
   const uint8_t *a = attrPtr+((v>>3)<<5);
   const int m = (frame >> 5) & 1 ? 0xff : 0x7f;
+  const unsigned int rem = (_z80x & 1) ? 168 : 192;
 
-  if (y < 24 || y >= (24+192)) {
+  if (y < 24 || y >= (24+rem)) {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
         40,          // r0 is width in characters
@@ -50,13 +66,24 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
         p,           // r2 is output TMDS buffer
         borderColor  // r3 is the colour attribute
       );
-      p = tmds_encode_screen(//an rgb based mode extra by colour tables??
-        (const uint8_t*)s,
-        a,
-        p,
-        m,
-        plane
-      );
+      if(_z80x & 1) {
+        // new video mode ?
+        p = tmds_encode_screen(//an rgb based mode extra by colour tables??
+          (const uint8_t*)(s + (indexing[plane] * 32 * 168)),
+          &primaries[indexing[plane]],//attribute primary
+          p,
+          m,
+          plane
+        );
+      } else {
+        p = tmds_encode_screen(//an rgb based mode extra by colour tables??
+          (const uint8_t*)s,
+          a,
+          p,
+          m,
+          plane
+        );
+      }
       p = tmds_encode_border(
         4,           // r0 is width in characters
         plane,       // r1 is colour channel
