@@ -3242,25 +3242,24 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
          * 0x6e) is treated like a "IM 0".
          */
 
-        if ((Y(opcode) & 0x03) <= 0x01)
-          if(!(Y(opcode) & 1)
+        if ((Y(opcode) & 0x03) <= 0x01) {
+          if(!(Y(opcode) & 1)) {
           /* Here goes the new prefix instruction for own use. Should be fully compatible */
           //state.im = Z80_INTERRUPT_MODE_0;#
-        {
-          if(state.im == Z80_INTERRUPT_MODE_3) {
-            registers = state.register_table;
-            Z80_FETCH_BYTE(pc, opcode);
-            pc++;
-            instruction = IM_INSTRUCTION_TABLE[opcode];
-            repeatLoop = true;
+            if(state.im == Z80_INTERRUPT_MODE_3) {
+              registers = state.register_table;
+              Z80_FETCH_BYTE(pc, opcode);
+              pc++;
+              instruction = IM_INSTRUCTION_TABLE[opcode];
+              repeatLoop = true;
+            } else {
+              state.im = Z80_INTERRUPT_MODE_0;//bad mode unstable sometimes
+            }
           } else {
-            state.im = Z80_INTERRUPT_MODE_0;//bad mode unstable sometimes
+            state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
           }
-        } else {
-          state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
-        }
 
-        else if (!(Y(opcode) & 1))
+        } else if (!(Y(opcode) & 1))
 
           state.im = Z80_INTERRUPT_MODE_1;//default basic mode
 
