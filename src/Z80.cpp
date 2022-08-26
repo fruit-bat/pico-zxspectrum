@@ -367,6 +367,15 @@ enum {
   JPJ_RR,// jpj (be/de/hl/sp)
   JPC_RR,// jpc (be/de/hl/sp)
 
+  AND_R_N,// and r,n
+  OR_R_N,// or r,n
+  XOR_R_N,// xor r,n
+  CP_R_N,// cp r,n
+  AND_INDIRECT_HL_N,// and (hl),n
+  OR_INDIRECT_HL_N,// or (hl),n
+  XOR_INDIRECT_HL_N,// xor (hl),n
+  CP_INDIRECT_HL_N,// cp (hl),n
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -1537,36 +1546,36 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   CPI_CPD,
   INI_IND,
   OUTI_OUTD,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  AND_R_N,
+  AND_R_N,
+  AND_INDIRECT_HL_N,
   ED_UNDEFINED,
 
   LDI_LDD,
   CPI_CPD,
   INI_IND,
   OUTI_OUTD,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  XOR_R_N,
+  XOR_R_N,
+  XOR_INDIRECT_HL_N,
   ED_UNDEFINED,
 //B
   LDIR_LDDR,
   CPIR_CPDR,
   INIR_INDR,
   OTIR_OTDR,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  OR_R_N,
+  OR_R_N,
+  OR_INDIRECT_HL_N,
   ED_UNDEFINED,
 
   LDIR_LDDR,
   CPIR_CPDR,
   INIR_INDR,
   OTIR_OTDR,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  CP_R_N,
+  CP_R_N,
+  CP_INDIRECT_HL_N,
   ED_UNDEFINED,
 //====================================================
 // RESERVED BLOCK
@@ -4541,7 +4550,87 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         elapsed_cycles++;
         break;
       }
-
+      /* works on h, l and (hl) for index masking */
+      case AND_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        AND(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case XOR_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        XOR(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case OR_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        OR(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case CP_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        CP(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case AND_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        AND(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case XOR_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);;
+        XOR(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case OR_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        OR(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case CP_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        CP(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
     }
 
   } while (repeatLoop);
