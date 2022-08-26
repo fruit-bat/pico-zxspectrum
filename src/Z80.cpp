@@ -381,6 +381,8 @@ enum {
   CPCR,
   LDCR,
 
+  NGC,
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -1453,7 +1455,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NEG,
+  NGC,
   RETI_RETN,
   IM_N,//ZX
   LD_I_A_LD_R_A,
@@ -4821,9 +4823,14 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         break;
       }
+      /* special extexded carry negation */
+      case NGC: {
+        A = ~A;
+        ADC(0);
+        break;
+      }
 
     }
-
   } while (repeatLoop);
 
   state.r = (state.r & 0x80) | (r & 0x7f);
