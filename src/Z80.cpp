@@ -4825,9 +4825,9 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
       /* special extexded carry negation */
       case NGC: {
-        int a = A;
+        int t = A;
         A = 0;
-        SBC(a);//performs the complement subtraction for high order bytes
+        SBC(t);//performs the complement subtraction for high order bytes
         break;
       }
 
