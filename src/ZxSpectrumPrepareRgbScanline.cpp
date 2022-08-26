@@ -85,12 +85,15 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   ) {
 
   const uint32_t bw = zx_colour_words[borderColor];
-  const unsigned int rem = (_z80x & 1) ? 168 : 192;
+  const unsigned int rez = (_z80x & 1) ? 128 : 192;
   const int r = zx_colour_words[2];
   const int g = zx_colour_words[4];
   const int b = zx_colour_words[1];
 
-  if (y < 24 || y >= (24+rem)) {
+  const uint bord = 24 + ((_z80x & 1) ? 32 : 0);
+  const uint v = y - bord;
+
+  if (y < bord || y >= (bord+rez)) {
     // Screen is 640 bytes
     // Each color word is 4 bytes, which represents 2 pixels
     for (int i = 0; i < 160; ++i) buf[i] = bw;
@@ -100,13 +103,12 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
     // Border edge is 64 bytes wide
     for (int i = 0; i < 16; ++i) *buf++ = bw;
 
-    const uint v = y - 24;
     // line in char cell ((v & 0x7) << 8)
     // every 8 lines or char cells ((v & 0x38) << 2)
     // every 64 lines or screen thirds ((v & 0xc0) << 5)
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
-    const uint8_t *s2 = s + 32 * 168;
-    const uint8_t *s3 = s2 + 32 * 168;
+    const uint8_t *s2 = s + 32 * 128;
+    const uint8_t *s3 = s2 + 32 * 128;
     const uint8_t *a = attrPtr+((v>>3)<<5);
     const int m = (frame >> 5) & 1;
 

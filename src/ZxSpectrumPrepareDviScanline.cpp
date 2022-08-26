@@ -44,13 +44,14 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   uint32_t *tmdsbuf;
   queue_remove_blocking(&dvi->q_tmds_free, &tmdsbuf);
   uint32_t *p = tmdsbuf;
-  const uint v = y - 24;
+  const unsigned int rez = (_z80x & 1) ? 128 : 192;
+  const uint bord = 24 + ((_z80x & 1) ? 32 : 0);
+  const uint v = y - bord;
   const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
   const uint8_t *a = attrPtr+((v>>3)<<5);
   const int m = (frame >> 5) & 1 ? 0xff : 0x7f;
-  const unsigned int rem = (_z80x & 1) ? 168 : 192;
 
-  if (y < 24 || y >= (24+rem)) {
+  if (y < bord || y >= (bord+rez)) {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
         40,          // r0 is width in characters
@@ -71,7 +72,7 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
       if(_z80x & 1) {
         // new video mode ?
         p = tmds_encode_screen(//an rgb based mode extra by colour tables??
-          (const uint8_t*)(s + (indexing[plane] * 32 * 168)),
+          (const uint8_t*)(s + (indexing[plane] * 32 * 128)),
           &primaries[indexing[plane]],//attribute primary
           p,
           m,

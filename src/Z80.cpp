@@ -523,44 +523,6 @@ READ_WORD(SP, (x));                                             \
 SP += 2;                                                        \
 }
 
-//=========================================
-// Added as part of Z80X extensions
-//=========================================
-
-#define PUHL(x)                                                         \
-{                                                                       \
-  if (registers == state.register_table) {			\
-    WRITE_BYTE(--HL, (x));                                    \
-  } else {                                                        \
-  \
-  int     d;                                              \
-  \
-  READ_D(d);                                              \
-  d += --HL_IX_IY;                                          \
-  WRITE_BYTE(d, (x));                                     \
-  \
-  elapsed_cycles += 5;                                    \
-  \
-  }                                          \
-}
-
-#define POHL(x)                                                          \
-{                                                                       \
-  if (registers == state.register_table) {			\
-    READ_BYTE(HL++, (x));                                    \
-  } else {                                                        \
-  \
-  int     d;                                              \
-  \
-  READ_D(d);                                              \
-  d += HL_IX_IY++;                                          \
-  READ_BYTE(d, (x));                                     \
-  \
-  elapsed_cycles += 5;                                    \
-  \
-  }                                                           \
-}
-
 /* Exchange macro. */
 
 #define EXCHANGE(a, b)                                                  \
@@ -1473,7 +1435,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_RR_INDIRECT_NN,
   NEG,
   RETI_RETN,
-  IM_N,//IM 3
+  IM_N,//ZX
   LD_I_A_LD_R_A,
 //5
   IN_R_C,
@@ -3268,8 +3230,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           //state.im = Z80_INTERRUPT_MODE_0;#
             if(state.im == Z80_INTERRUPT_MODE_3) {
               registers = state.register_table;
-              Z80_FETCH_BYTE(pc, opcode);
-              pc++;
+              READ_N(opcode);//use timing macros
               instruction = IM_INSTRUCTION_TABLE[opcode];
               repeatLoop = true;
             } else {
