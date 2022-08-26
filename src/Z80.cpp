@@ -353,7 +353,7 @@ enum {
 
   /* Special instruction group. */
 
-  ED_UNDEFINED            /* ED_UNDEFINED is used to catch undefined
+  ED_UNDEFINED,           /* ED_UNDEFINED is used to catch undefined
                            * 0xed prefixed opcodes.
                            */
 
@@ -361,6 +361,10 @@ enum {
 // Z80X EXTENSIONS (ALWAYS AVAILABLE ED xx GROUP)
 //=====================================================
 
+  LD_INDIRECT_BC_R,
+  LD_R_INDIRECT_BC,
+  LD_INDIRECT_DE_R,
+  LD_R_INDIRECT_DE,
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1492,39 +1496,39 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   IM_N,
   ED_UNDEFINED,
 //8
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_INDIRECT_BC_R,
+  LD_INDIRECT_BC_R,
+  LD_INDIRECT_BC_R,
+  LD_INDIRECT_BC_R,
+  LD_INDIRECT_BC_R,
+  LD_INDIRECT_BC_R,
   ED_UNDEFINED,
   ED_UNDEFINED,
 
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_BC,
   ED_UNDEFINED,
   ED_UNDEFINED,
 //9
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_INDIRECT_DE_R,
+  LD_INDIRECT_DE_R,
+  LD_INDIRECT_DE_R,
+  LD_INDIRECT_DE_R,
+  LD_INDIRECT_DE_R,
+  LD_INDIRECT_DE_R,
   ED_UNDEFINED,
   ED_UNDEFINED,
 
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_DE,
   ED_UNDEFINED,
   ED_UNDEFINED,
 //A
@@ -4506,6 +4510,23 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         break;
 
+      }
+      /* Read and write using */
+      case LD_INDIRECT_BC_R: {
+        WRITE_BYTE(BC, R(Z(opcode)));
+        break;
+      }
+      case LD_R_INDIRECT_BC: {
+        READ_BYTE(BC, R(Z(opcode)));
+        break;
+      }
+      case LD_INDIRECT_DE_R: {
+        WRITE_BYTE(DE, R(Z(opcode)));
+        break;
+      }
+      case LD_R_INDIRECT_DE: {
+        READ_BYTE(DE, R(Z(opcode)));
+        break;
       }
 
     }

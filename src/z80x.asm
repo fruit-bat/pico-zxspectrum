@@ -61,19 +61,19 @@ endm
 macro ld tar, src
 if tar=="(bc)"&~((src=="a")|(src=="(hl)"))
   ed
-  defb ((reglownib src)|88h)
+  defb ((reglownib src)|80h)
 else
 if tar=="(de)"&~((src=="a")|(src=="(hl)"))
   ed
-  defb ((reglownib src)|98h)
+  defb ((reglownib src)|90h)
 else
 if src=="(bc)"&~((tar=="a")|(tar=="(hl)"))
   ed
-  defb ((reglownib tar)|80h)
+  defb ((reglownib tar)|88h)
 else
 if src=="(bc)"&~((tar=="a")|(tar=="(hl)"))
   ed
-  defb ((reglownib tar)|90h)
+  defb ((reglownib tar)|98h)
 else
   ld tar, src
 endif
