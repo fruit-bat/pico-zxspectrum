@@ -361,10 +361,8 @@ enum {
 // Z80X EXTENSIONS (ALWAYS AVAILABLE ED xx GROUP)
 //=====================================================
 
-  LD_INDIRECT_BC_R,// ld (bc),r
-  LD_R_INDIRECT_BC,// ld r,(bc)
-  LD_INDIRECT_DE_R,// ld (de),r
-  LD_R_INDIRECT_DE,// ld r,(de)
+  LD_INDIRECT_RR_R,// ld (bc/de),r
+  LD_R_INDIRECT_RR,// ld r,(bc/de)
 
   JPJ_RR,// jpj (be/de/hl/sp)
   JPC_RR,// jpc (be/de/hl/sp)
@@ -1499,39 +1497,39 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   IM_N,
   ED_UNDEFINED,
 //8
-  LD_INDIRECT_BC_R,
-  LD_INDIRECT_BC_R,
-  LD_INDIRECT_BC_R,
-  LD_INDIRECT_BC_R,
-  LD_INDIRECT_BC_R,
-  LD_INDIRECT_BC_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
   JPJ_RR,
   JPC_RR,
 
-  LD_R_INDIRECT_BC,
-  LD_R_INDIRECT_BC,
-  LD_R_INDIRECT_BC,
-  LD_R_INDIRECT_BC,
-  LD_R_INDIRECT_BC,
-  LD_R_INDIRECT_BC,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
   JPJ_RR,
   JPC_RR,
 //9
-  LD_INDIRECT_DE_R,
-  LD_INDIRECT_DE_R,
-  LD_INDIRECT_DE_R,
-  LD_INDIRECT_DE_R,
-  LD_INDIRECT_DE_R,
-  LD_INDIRECT_DE_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
   JPJ_RR,
   JPC_RR,
 
-  LD_R_INDIRECT_DE,
-  LD_R_INDIRECT_DE,
-  LD_R_INDIRECT_DE,
-  LD_R_INDIRECT_DE,
-  LD_R_INDIRECT_DE,
-  LD_R_INDIRECT_DE,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
   JPJ_RR,
   JPC_RR,
 //A
@@ -4515,35 +4513,27 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
       }
       /* Read and write using */
-      case LD_INDIRECT_BC_R: {
-        WRITE_BYTE(BC, R(Z(opcode)));
+      case LD_INDIRECT_RR_R: {
+        WRITE_BYTE(RR(P(opcode)), R(Z(opcode)));
         break;
       }
-      case LD_R_INDIRECT_BC: {
-        READ_BYTE(BC, R(Z(opcode)));
-        break;
-      }
-      case LD_INDIRECT_DE_R: {
-        WRITE_BYTE(DE, R(Z(opcode)));
-        break;
-      }
-      case LD_R_INDIRECT_DE: {
-        READ_BYTE(DE, R(Z(opcode)));
+      case LD_R_INDIRECT_RR: {
+        READ_BYTE(RR(P(opcode)), R(Z(opcode)));
         break;
       }
       /* jump indirections and call indirections
         the (sp) version is quite useful for threading
-        as it leaves the code field address on the stack top.
+        as it leaves the code field address on the stack top?
         hl/sp on the right of the 16*16 square opcode table.
         bc/de on the left in the same table.
       */
       case JPJ_RR: {
-        pc = RR((P(opcode) & 3) | ((Y(opcode) & 1) << 2));
+        pc = RR((P(opcode) & 1) | ((Y(opcode) & 1) << 1));
         READ_NN(pc);
         break;
       }
       case JPC_RR: {
-        pc = RR((P(opcode) & 3) | ((Y(opcode) & 1) << 2));
+        pc = RR((P(opcode) & 1) | ((Y(opcode) & 1) << 1));
         int     nn;
         READ_NN(nn);
         PUSH(pc);
