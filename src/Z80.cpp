@@ -376,6 +376,11 @@ enum {
   XOR_INDIRECT_HL_N,// xor (hl),n
   CP_INDIRECT_HL_N,// cp (hl),n
 
+  CPC,
+  LDC,
+  CPCR,
+  LDCR,
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -759,7 +764,8 @@ c = (x) & 0x01;                                                 \
 F = SZYXP_FLAGS_TABLE[(x) & 0xff] | c;                          \
 }
 
-
+// for video indexing
+#define ED(x) (((x) & 0xf81f) | (((x) & 0x700) >> 3) | (((x) & 0xe0) << 3))
 
 
 
@@ -1549,7 +1555,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   AND_R_N,
   AND_R_N,
   AND_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  CPC,
 
   LDI_LDD,
   CPI_CPD,
@@ -1558,7 +1564,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   XOR_R_N,
   XOR_R_N,
   XOR_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  LDC,
 //B
   LDIR_LDDR,
   CPIR_CPDR,
@@ -1567,7 +1573,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OR_R_N,
   OR_R_N,
   OR_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  CPCR,
 
   LDIR_LDDR,
   CPIR_CPDR,
@@ -1576,7 +1582,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   CP_R_N,
   CP_R_N,
   CP_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  LDCR,
 //====================================================
 // RESERVED BLOCK
 //====================================================
@@ -4631,6 +4637,191 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         A = a;
         break;
       }
+      /* screen IO bulk */
+      case CPC: {
+        int     n, f, d;
+
+        READ_BYTE(HL, n);
+        READ_BYTE(ED(DE), d);
+
+        f = F & SZC_FLAGS;
+        //also fail compare is an effective exit
+        f |= (--BC && n==d) ? Z80_P_FLAG : 0;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        DE += 256;
+        HL ++;
+
+        elapsed_cycles += 2;
+        break;
+      }
+      case LDC: {
+        int     n, f;
+
+        READ_BYTE(HL, n);
+        WRITE_BYTE(ED(DE), n);
+
+        f = F & SZC_FLAGS;
+        f |= --BC ? Z80_P_FLAG : 0;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        DE += 256;
+        HL ++;
+
+        elapsed_cycles += 2;
+        break;
+      }
+      case CPCR: {
+        int     d, f, bc, de, hl, n;
+
+        f = F & SZC_FLAGS;
+        bc = BC;
+        de = DE;
+        hl = HL;
+
+        r -= 2;
+        elapsed_cycles -= 8;
+        for ( ; ; ) {
+
+          r += 2;
+
+          Z80_READ_BYTE(hl, n);
+          Z80_READ_BYTE(ED(de), d);
+
+          hl ++;
+          de += 256;
+
+          if (--bc && n==d)
+
+            elapsed_cycles += 21;
+
+          else {
+
+            elapsed_cycles += 16;
+            break;
+
+          }
+
+          f |= Z80_P_FLAG;
+          pc -= 2;
+          break;
+
+        }
+
+        HL = hl;
+        DE = de;
+        BC = bc;
+
+      #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+      #endif
+
+        F = f;
+
+        break;
+      }
+      case LDCR: {
+        int     f, bc, de, hl, n;
+
+  #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
+
+        int     p, q;
+
+        p = (pc - 2) & 0xffff;
+        q = (pc - 1) & 0xffff;
+
+  #endif
+
+        f = F & SZC_FLAGS;
+        bc = BC;
+        de = DE;
+        hl = HL;
+
+        r -= 2;
+        elapsed_cycles -= 8;
+        for ( ; ; ) {
+
+          r += 2;
+
+          Z80_READ_BYTE(hl, n);
+          Z80_WRITE_BYTE(ED(de), n);
+
+          hl ++;
+          de += 256;
+
+          if (--bc)
+
+            elapsed_cycles += 21;
+
+          else {
+
+            elapsed_cycles += 16;
+            break;
+
+          }
+
+  #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
+
+          if (((de - 256) & 0xffff) == p
+              || ((de - 256) & 0xffff) == q) {
+
+            f |= Z80_P_FLAG;
+            pc -= 2;
+            break;
+
+          }
+
+  #endif
+
+          f |= Z80_P_FLAG;
+          pc -= 2;
+          break;
+
+        }
+
+        HL = hl;
+        DE = de;
+        BC = bc;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        break;
+      }
+
     }
 
   } while (repeatLoop);
