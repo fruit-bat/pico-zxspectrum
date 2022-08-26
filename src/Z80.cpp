@@ -361,10 +361,13 @@ enum {
 // Z80X EXTENSIONS (ALWAYS AVAILABLE ED xx GROUP)
 //=====================================================
 
-  LD_INDIRECT_BC_R,
-  LD_R_INDIRECT_BC,
-  LD_INDIRECT_DE_R,
-  LD_R_INDIRECT_DE,
+  LD_INDIRECT_BC_R,// ld (bc),r
+  LD_R_INDIRECT_BC,// ld r,(bc)
+  LD_INDIRECT_DE_R,// ld (de),r
+  LD_R_INDIRECT_DE,// ld r,(de)
+
+  JPJ_RR,// jpj (be/de/hl/sp)
+  JPC_RR,// jpc (be/de/hl/sp)
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1502,8 +1505,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_INDIRECT_BC_R,
   LD_INDIRECT_BC_R,
   LD_INDIRECT_BC_R,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  JPJ_RR,
+  JPC_RR,
 
   LD_R_INDIRECT_BC,
   LD_R_INDIRECT_BC,
@@ -1511,8 +1514,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_R_INDIRECT_BC,
   LD_R_INDIRECT_BC,
   LD_R_INDIRECT_BC,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  JPJ_RR,
+  JPC_RR,
 //9
   LD_INDIRECT_DE_R,
   LD_INDIRECT_DE_R,
@@ -1520,8 +1523,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_INDIRECT_DE_R,
   LD_INDIRECT_DE_R,
   LD_INDIRECT_DE_R,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  JPJ_RR,
+  JPC_RR,
 
   LD_R_INDIRECT_DE,
   LD_R_INDIRECT_DE,
@@ -1529,8 +1532,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_R_INDIRECT_DE,
   LD_R_INDIRECT_DE,
   LD_R_INDIRECT_DE,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  JPJ_RR,
+  JPC_RR,
 //A
   LDI_LDD,
   CPI_CPD,
@@ -4526,6 +4529,26 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
       case LD_R_INDIRECT_DE: {
         READ_BYTE(DE, R(Z(opcode)));
+        break;
+      }
+      /* jump indirections and call indirections
+        the (sp) version is quite useful for threading
+        as it leaves the code field address on the stack top.
+        hl/sp on the right of the 16*16 square opcode table.
+        bc/de on the left in the same table.
+      */
+      case JPJ_RR: {
+        pc = RR((P(opcode) & 3) | ((Y(opcode) & 1) << 2));
+        READ_NN(pc);
+        break;
+      }
+      case JPC_RR: {
+        pc = RR((P(opcode) & 3) | ((Y(opcode) & 1) << 2));
+        int     nn;
+        READ_NN(nn);
+        PUSH(pc);
+        pc = nn;
+        elapsed_cycles++;
         break;
       }
 
