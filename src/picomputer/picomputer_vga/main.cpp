@@ -106,11 +106,11 @@ static bool toggleMenu = false;
 static volatile uint _frames = 0;
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
-	keyboard1.mount();
+  keyboard1.mount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
-	keyboard1.unmount();
+  keyboard1.unmount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -260,21 +260,21 @@ int main(){
   sem_release(&dvi_start_sem);
  
   if (sdCard0.mount()) {
-		
-		// Set up the quick load loops
-		zxSpectrumSnaps.reload();
-		zxSpectrumTapes.reload();
+    
+    // Set up the quick load loops
+    zxSpectrumSnaps.reload();
+    zxSpectrumTapes.reload();
 
     // Load quick save slot 1 if present
-		if (quickSave.used(0)) {
-			quickSave.load(&zxSpectrum, 0);
-		}
+    if (quickSave.used(0)) {
+      quickSave.load(&zxSpectrum, 0);
+    }
   
     // See if the board is in kiosk mode    
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
     keyboard2.setKiosk(isKiosk);
-	}
+  }
 
   showMenu = false;
   picoRootWin.removeMessage();

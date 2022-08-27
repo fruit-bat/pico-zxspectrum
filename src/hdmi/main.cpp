@@ -13,7 +13,14 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
+
+#ifdef USE_PS2_KBD
 #include "ps2kbd.h"
+#endif
+
+#ifdef USE_KEY_MATRIX
+#include "ZxSpectrumKeyMatrix.h"
+#endif
 
 extern "C" {
 #include "dvi.h"
@@ -78,15 +85,21 @@ static QuickSave quickSave(
   "zxspectrum/quicksaves"
 );
 static ZxSpectrumHidJoystick joystick;
-static ZxSpectrumHidKeyboard keyboard(
+static ZxSpectrumHidKeyboard keyboard1(
   &zxSpectrumSnaps,
   &zxSpectrumTapes,
   &quickSave,
   &joystick
 );
+static ZxSpectrumHidKeyboard keyboard2(
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes,
+  &quickSave, 
+  0
+);
 static ZxSpectrum zxSpectrum(
-  &keyboard, 
-  0, 
+  &keyboard1, 
+  &keyboard2,  
   &joystick
 );
 static ZxSpectrumMenu picoRootWin(
@@ -112,11 +125,11 @@ void print(hid_keyboard_report_t const *report) {
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
-  keyboard.mount();
+  keyboard1.mount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
-  keyboard.unmount();
+  keyboard1.unmount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -131,10 +144,23 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
   }
   else {
-    r = keyboard.processHidReport(report, prev_report);
+    r = keyboard1.processHidReport(report, prev_report);
   }
   if (r == 1) toggleMenu = true;
 }
+
+void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = keyboard2.processHidReport(report, prev_report);
+  }
+  if (r == 1) toggleMenu = true;
+}
+
+
 
 #ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
@@ -160,6 +186,9 @@ void __not_in_flash_func(core1_scanline_callback)() {
   else {
     zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
   }
+#ifdef USE_KEY_MATRIX
+  zx_keyscan_row();
+#endif
   if (y == FRAME_HEIGHT) {
     _frames++;
     y = 0;
@@ -199,6 +228,12 @@ void __not_in_flash_func(main_loop)() {
     tuh_task();
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
+#endif
+#ifdef USE_KEY_MATRIX
+    hid_keyboard_report_t const *curr;
+    hid_keyboard_report_t const *prev;
+    zx_keyscan_get_hid_reports(&curr, &prev);
+    process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
       for (int i = 1; i < 100; ++i) {
@@ -241,10 +276,16 @@ int main() {
   screenPtr = zxSpectrum.screenPtr();
   attrPtr = screenPtr + (32 * 24 * 8);
 
-  keyboard.setZxSpectrum(&zxSpectrum);
+  keyboard1.setZxSpectrum(&zxSpectrum);
+  keyboard2.setZxSpectrum(&zxSpectrum);
 
   // Initialise the menu renderer
   pcw_init_renderer();
+  
+#ifdef USE_KEY_MATRIX
+  // Initialise the keyboard scan
+  zx_keyscan_init();
+#endif
   
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
@@ -282,7 +323,8 @@ int main() {
     }
     
     bool isKiosk = zxSpectrumKisok.isKiosk();
-    keyboard.setKiosk(isKiosk);
+    keyboard1.setKiosk(isKiosk);
+    keyboard2.setKiosk(isKiosk);
   }
 
   showMenu = false;
