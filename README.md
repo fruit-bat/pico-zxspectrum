@@ -513,6 +513,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 
 ## References
+[Z80 Test suite](https://github.com/raxoft/z80test)
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
 [Fonts by DamienG](https://damieng.com/typography/zx-origins/)<br/>
