@@ -1496,7 +1496,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
-  ED_UNDEFINED,//shorter code available
+  LD_INDIRECT_NN_RR,//shorter code available but umm ...
   ADD_R_N,
   ADD_R_N,
   ADD_INDIRECT_HL_N,
@@ -1505,7 +1505,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
-  ED_UNDEFINED,//shorter code available
+  LD_RR_INDIRECT_NN,//shorter code available but umm ...
   ADC_R_N,
   ADC_R_N,
   ADC_INDIRECT_HL_N,
