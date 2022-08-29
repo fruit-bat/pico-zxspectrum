@@ -384,7 +384,7 @@ enum {
   CPCR,
   LDCR,
 
-  NGC,
+  NGC_DE,// neg de
 
   ADD_R_N,// add r,n
   ADC_R_N,// adc r,n
@@ -398,10 +398,10 @@ enum {
   EX_BC_DE,// ex bc,de
   EX_BC_HL,// ex bc,hl
 
-  MUL_DE,
-  ABS_DE,
+  MUL_DE,//mul de
+  ABS_DE,//abs de
 
-  KAB_D_A,// keep absolute kab d, a
+  KAB_D_A,// keep absolute: kab d, a
   ADC_DE_DE,// adc de, de
 
 //=====================================================
@@ -1476,7 +1476,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NGC,
+  NGC_DE,//negate on carry ngc de
   RETI_RETN,
   IM_N,//ZX
   LD_I_A_LD_R_A,
@@ -4878,10 +4878,14 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
       }
       /* special extexded carry negation */
-      case NGC: {
-        int t = A;
-        A = 0;
-        SBC(t);//performs the complement subtraction for high order bytes
+      case NGC_DE: {// ngc de
+        if(F & Z80_C_FLAG) {
+          DE = (0 - DE);
+          int c = 0 - (DE >> 1);
+          if(!(c & 0x8000)) {//not borrow
+            F &= ~Z80_C_FLAG;//clear carry
+          }
+        }
         break;
       }
       // arithmetic reg, n
