@@ -15,6 +15,7 @@ EXTRAS In this repository
     * Use bit zero of port `0x3ffd` set making a 3 planes going in `Blue`, `Red` then `Green` order with increasing in memory address. They are contiguous planes and take 12 kB bytes of the 16 kB block of video memory.
     * Also added an alpha quality beam following bus mode, which places `0xff` or the first colour attribute of pixel data per line. This may allow sync on attributes by checking this alternate to floating port.
   * Added many new instructions to the Z80, mainly in the `ED xx` group. Although `DF ED` and `FF ED` do an `ex hl, ix/iy` respectively.
+    * `ED 40` to `ED BF` completed and apart from errors should remain fixed in meaning. They could be seen as useful for indexing and arithmetic, with a few ZX Spectrum specials covering the screen layout. 
 
 PORT `0x3ffd` Extras control
 =
