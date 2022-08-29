@@ -386,6 +386,15 @@ enum {
 
   NGC,
 
+  ADD_R_N,// add r,n
+  ADC_R_N,// adc r,n
+  SUB_R_N,// sub r,n
+  SBC_R_N,// sbc r,n
+  ADD_INDIRECT_HL_N,// add (hl),n
+  ADC_INDIRECT_HL_N,// adc (hl),n
+  SUB_INDIRECT_HL_N,// sub (hl),n
+  SBC_INDIRECT_HL_N,// sbc (hl),n
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -1485,36 +1494,36 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   SBC_HL_RR,
   ED_UNDEFINED,//shorter code available
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  ADD_R_N,
+  ADD_R_N,
+  ADD_INDIRECT_HL_N,
   RLD_RRD,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
   ED_UNDEFINED,//shorter code available
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  ADC_R_N,
+  ADC_R_N,
+  ADC_INDIRECT_HL_N,
   RLD_RRD,
 //7
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  SUB_R_N,
+  SUB_R_N,
+  SUB_INDIRECT_HL_N,
   ED_UNDEFINED,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  SBC_R_N,
+  SBC_R_N,
+  SBC_INDIRECT_HL_N,
   ED_UNDEFINED,
 //8
   LD_INDIRECT_RR_R,
@@ -4853,6 +4862,87 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int t = A;
         A = 0;
         SBC(t);//performs the complement subtraction for high order bytes
+        break;
+      }
+      // arithmetic reg, n
+      case ADD_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        ADD(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case ADC_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        ADC(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case SUB_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        SUB(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case SBC_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        SBC(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case ADD_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        ADD(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case ADC_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        ADC(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case SUB_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        SUB(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case SBC_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        SBC(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
         break;
       }
 
