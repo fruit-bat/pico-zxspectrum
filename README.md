@@ -35,6 +35,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 ## Updates
+* 27/08/22 - Possible fix for joysticks with single xy axis
 * 13/08/22 - Added support for PICOZX
 * 04/08/22 - Update wiring documentation
 * 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
@@ -512,6 +513,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 
 ## References
+[Z80 Test suite](https://github.com/raxoft/z80test)<br/>
 [Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI)<br/>
 [Z80 file format documentation](https://worldofspectrum.org/faq/reference/z80format.htm)<br/>
 [Fonts by DamienG](https://damieng.com/typography/zx-origins/)<br/>
