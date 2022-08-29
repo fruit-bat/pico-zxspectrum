@@ -20,6 +20,7 @@ enum ZxSpectrumType {
 };
 
 extern unsigned int _z80x;//everybody wants one
+extern unsigned int beamColor;
 
 class ZxSpectrum {
 private:
@@ -111,7 +112,7 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
           return kb ^ (_ear ? (1<<6) : 0) ;
         }
         case 0x1f: return _joystick ? _joystick->getKempston() : 0;
-        default: return 0xff;
+        default: return beamColor;
       }
     }
   }

@@ -3276,7 +3276,8 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           /* Here goes the new prefix instruction for own use. Should be fully compatible */
           //state.im = Z80_INTERRUPT_MODE_0;#
             if(state.im == Z80_INTERRUPT_MODE_3) {
-              registers = state.register_table;
+              //registers = state.register_table;
+              //unnecessary as ED does this
               READ_N(opcode);//use timing macros
               instruction = IM_INSTRUCTION_TABLE[opcode];
               repeatLoop = true;

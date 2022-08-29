@@ -52,6 +52,7 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   const int m = (frame >> 5) & 1 ? 0xff : 0x7f;
 
   if (y < bord || y >= (bord+rez)) {
+    beamColor = 0xff;
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
         40,          // r0 is width in characters
@@ -62,6 +63,7 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
     }
   }
   else {
+    beamColor = *a;//attribute beam setting
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
         4,           // r0 is width in characters

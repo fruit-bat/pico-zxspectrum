@@ -7,6 +7,7 @@
 #include "SizingOutputStream.h"
 
 unsigned int _z80x;//instance is machine
+unsigned int beamColor;
 
 ZxSpectrum::ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,

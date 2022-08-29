@@ -96,6 +96,7 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   if (y < bord || y >= (bord+rez)) {
     // Screen is 640 bytes
     // Each color word is 4 bytes, which represents 2 pixels
+    beamColor = 0xff;
     for (int i = 0; i < 160; ++i) buf[i] = bw;
   }
   else {
@@ -111,6 +112,7 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
     const uint8_t *s3 = s2 + 32 * 128;
     const uint8_t *a = attrPtr+((v>>3)<<5);
     const int m = (frame >> 5) & 1;
+    beamColor = *a;//try beam following only 256*192 screen
 
     for (int i = 0; i < 32; ++i) {//an rgb based mode extra by colour tables??
       uint8_t c = *a++; // Fetch the attribute for the character
