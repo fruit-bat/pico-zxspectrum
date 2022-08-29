@@ -384,7 +384,8 @@ enum {
   CPCR,
   LDCR,
 
-  NGC_DE,// neg de
+  // reverted as ngc de might have been faster but I didn't like it.
+  NGC,// negate and borrow on carry ngc
 
   ADD_R_N,// add r,n
   ADC_R_N,// adc r,n
@@ -398,10 +399,10 @@ enum {
   EX_BC_DE,// ex bc,de
   EX_BC_HL,// ex bc,hl
 
-  MUL_DE,//mul de
-  ABS_DE,//abs de
+  MUL_DE,
+  ABS_DE,
 
-  KAB_D_A,// keep absolute: kab d, a
+  KAB_D_A,// keep absolute kab d, a
   ADC_DE_DE,// adc de, de
 
 //=====================================================
@@ -1476,7 +1477,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NGC_DE,//negate on carry ngc de
+  NGC,// negate and subtract carry has a certain purity.
   RETI_RETN,
   IM_N,//ZX
   LD_I_A_LD_R_A,
@@ -4878,14 +4879,10 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
       }
       /* special extexded carry negation */
-      case NGC_DE: {// ngc de
-        if(F & Z80_C_FLAG) {
-          DE = (0 - DE);
-          int c = 0 - (DE >> 1);
-          if(!(c & 0x8000)) {//not borrow
-            F &= ~Z80_C_FLAG;//clear carry
-          }
-        }
+      case NGC: {// ngc
+        int t = A;
+        A = 0;
+        SBC(t);//performs the complement subtraction for high order bytes
         break;
       }
       // arithmetic reg, n
