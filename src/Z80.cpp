@@ -401,6 +401,8 @@ enum {
   MUL_DE,
   ABS_DE,
 
+  KAB_D_A,// keep absolute kab d, a
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -1491,7 +1493,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  ED_UNDEFINED,
+  KAB_D_A,
   ED_UNDEFINED,
   IM_N,//IM 2
   LD_A_I_LD_A_R,
@@ -4984,6 +4986,20 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
             F |= Z80_V_FLAG;
           }
         }
+        break;
+      }
+      case KAB_D_A: {
+        if(F & Z80_C_FLAG) {//on borrow
+          int a;
+          a = A;
+          A = (DE >> 8);
+          ADD(a);//add back subtraction within a division
+          DE = (A << 8) | (DE & 0xff);
+          A = a;
+          F &= ~Z80_C_FLAG;//clear carry
+          break;
+        }
+        F |= Z80_C_FLAG;//set carry
         break;
       }
     }
