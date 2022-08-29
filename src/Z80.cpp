@@ -399,6 +399,7 @@ enum {
   EX_BC_HL,// ex bc,hl
 
   MUL_DE,
+  ABS_DE,
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1481,8 +1482,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
-  MUL_DE,//multiply mlde
-  ED_UNDEFINED,
+  MUL_DE,//multiply mul de
+  ABS_DE,//absolute abs de
   IM_N,//IM 1
   LD_A_I_LD_A_R,
 
@@ -4971,6 +4972,18 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
       case MUL_DE: {
         DE = ((DE & 255) * ((DE >> 8) & 255)) & 0xffff;//super fast byte multiply
+        break;
+      }
+      case ABS_DE: {
+        F &= ~(Z80_C_FLAG | Z80_V_FLAG);//clear c flag
+        if(DE & 0x8000) {
+          F |= Z80_C_FLAG;
+          DE = (0 - DE) & 0xffff;//invert
+          if(DE & 0x8000) {
+            //exception state overflow
+            F |= Z80_V_FLAG;
+          }
+        }
         break;
       }
     }
