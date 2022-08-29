@@ -402,6 +402,7 @@ enum {
   ABS_DE,
 
   KAB_D_A,// keep absolute kab d, a
+  ADC_DE_DE,// adc de, de
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1494,7 +1495,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
   KAB_D_A,
-  ED_UNDEFINED,
+  ADC_DE_DE,
   IM_N,//IM 2
   LD_A_I_LD_A_R,
 //6
@@ -5000,6 +5001,33 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           break;
         }
         F |= Z80_C_FLAG;//set carry
+        break;
+      }
+      case ADC_DE_DE: {
+        int     x, z, f, c;
+
+        x = DE;
+        z = x + x + (F & Z80_C_FLAG);
+
+        c = z;
+        f = z & 0xffff
+        ? (z >> 8) & SYX_FLAGS
+        : Z80_Z_FLAG;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        f |= (c >> 8) & Z80_H_FLAG;
+
+  #endif
+
+        f |= OVERFLOW_TABLE[c >> 15];
+        f |= z >> (16 - Z80_C_FLAG_SHIFT);
+
+        DE = z;
+        F = f;
+
+        elapsed_cycles += 7;
+
         break;
       }
     }
