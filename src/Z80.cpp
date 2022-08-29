@@ -4976,6 +4976,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
       case MUL_DE: {
         DE = ((DE & 255) * ((DE >> 8) & 255)) & 0xffff;//super fast byte multiply
+        elapsed_cycles += 13;//expected plus 4 for fetch
         break;
       }
       case ABS_DE: {
@@ -4988,6 +4989,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
             F |= Z80_V_FLAG;
           }
         }
+        elapsed_cycles += 7;//expected
         break;
       }
       case KAB_D_A: {
