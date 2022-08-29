@@ -395,6 +395,9 @@ enum {
   SUB_INDIRECT_HL_N,// sub (hl),n
   SBC_INDIRECT_HL_N,// sbc (hl),n
 
+  EX_BC_DE,// ex bc,de
+  EX_BC_HL,// ex bc,hl
+
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
 //=====================================================
@@ -1515,7 +1518,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   SUB_R_N,
   SUB_R_N,
   SUB_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  EX_BC_HL,
 
   IN_R_C,
   OUT_C_R,
@@ -1524,7 +1527,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   SBC_R_N,
   SBC_R_N,
   SBC_INDIRECT_HL_N,
-  ED_UNDEFINED,
+  EX_BC_DE,
 //8
   LD_INDIRECT_RR_R,
   LD_INDIRECT_RR_R,
@@ -4945,7 +4948,14 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         A = a;
         break;
       }
-
+      case EX_BC_HL: {
+        EXCHANGE(BC, HL);
+        break;
+      }
+      case EX_BC_DE: {
+        EXCHANGE(BC, DE);
+        break;
+      }
     }
   } while (repeatLoop);
 
