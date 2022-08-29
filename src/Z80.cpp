@@ -4975,9 +4975,9 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
       }
       case ABS_DE: {
-        F &= ~(Z80_C_FLAG | Z80_V_FLAG);//clear c flag
+        F &= ~Z80_V_FLAG;//clear c flag
         if(DE & 0x8000) {
-          F |= Z80_C_FLAG;
+          F ^= Z80_C_FLAG;
           DE = (0 - DE) & 0xffff;//invert
           if(DE & 0x8000) {
             //exception state overflow
