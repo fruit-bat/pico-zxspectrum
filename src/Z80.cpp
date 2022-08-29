@@ -350,6 +350,7 @@ enum {
   DD_PREFIX,//IX
   FD_PREFIX,//IY
   ED_PREFIX,//MISC
+  // DD ED and FD ED are ex hl, ix/iy special hidden opcodes
 
   /* Special instruction group. */
 
@@ -364,8 +365,10 @@ enum {
   LD_INDIRECT_RR_R,// ld (bc/de),r
   LD_R_INDIRECT_RR,// ld r,(bc/de)
 
-  JPJ_RR,// jpj (be/de/hl/sp)
-  JPC_RR,// jpc (be/de/hl/sp)
+  JPJ_RR,// jpj (be/de/hl)
+  JPC_RR,// jpc (be/de/hl)
+  RTJ,// return and jump in the jpj (sp) position as better
+  RTC,// return and call in the jpc (sp) position as better
 
   AND_R_N,// and r,n
   OR_R_N,// or r,n
@@ -1547,8 +1550,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_R_INDIRECT_RR,
   LD_R_INDIRECT_RR,
   LD_R_INDIRECT_RR,
-  JPJ_RR,
-  JPC_RR,
+  RTJ,
+  RTC,
 //A
   LDI_LDD,
   CPI_CPD,
@@ -4505,7 +4508,13 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
 
       case ED_PREFIX: {
+        if(registers != state.register_table) {
+          // DD ED and FD ED as ex hl, ix/iy
+          EXCHANGE(HL_IX_IY, HL);//swap about
+          break;
+        }
 
+        // there is no special on IX/IY
         registers = state.register_table;
         Z80_FETCH_BYTE(pc, opcode);
         pc++;
@@ -4558,6 +4567,20 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         elapsed_cycles++;
         break;
       }
+      case RTJ: {
+        POP(pc);
+        READ_NN(pc);
+        break;
+      }
+      case RTC: {
+        POP(pc);
+        int     nn;
+        READ_NN(nn);
+        PUSH(pc);
+        pc = nn;
+        elapsed_cycles++;
+        break;
+      }
       /* works on h, l and (hl) for index masking */
       case AND_R_N: {
         int     n,a;
@@ -4595,7 +4618,8 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         a = A;
         A = R(Z(opcode));
         CP(n);
-        R(Z(opcode)) = A;
+        //compare does not need writeback
+        //R(Z(opcode)) = A;
         A = a;
         break;
       }
@@ -4635,7 +4659,8 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         a = A;
         READ_INDIRECT_HL(A);
         CP(n);
-        WRITE_INDIRECT_HL(A);
+        //compare does not need write back
+        //WRITE_INDIRECT_HL(A);
         A = a;
         break;
       }
