@@ -284,6 +284,9 @@ int ZxSpectrum::writeZ80Header(
   buf[5] = _Z80.getH();
   buf[6] = version > 1 ? 0 : _Z80.getPC() & 0xff;
   buf[7] = version > 1 ? 0 : _Z80.getPC() >> 8;
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    _Z80.pushArch();
+  }
   buf[8] = _Z80.getSPL();
   buf[9] = _Z80.getSPH();
   buf[10] = _Z80.getI();
@@ -397,7 +400,10 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIFF1(buf[27] ? 1 : 0);
   _Z80.setIFF2(buf[28] ? 1 : 0);
   _Z80.setIM(buf[29] & 3);//technically can load 3 and indicate format extension ... ?
-  if (_Z80.getIM() == 3) printf("Z80X mode architecture enabled\n");
+  if (_Z80.getIM() == 3) {
+    printf("Z80X mode architecture enabled\n");
+    _Z80.popArch();
+  }
   if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
   printf("PC %04X\n", pc);
   printf("IFF1 %02X\n", buf[27]);

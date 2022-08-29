@@ -2187,11 +2187,21 @@ void Z80::resetArch() {
   // Reset the extended Z80X architecture
   //====================================================
   Z80_OUTPUT_BYTE(0x3ffd, 0);//clear port hack
+  // clocks not important but actual implements could use
+  //elapsed_cycles += 4;
+  // to inform IO of architecture reset.
   // essential to clear special mode port on mode change
   // as it allows potential use of some features which
   // would be in a super ULA.
 }
 
+void Z80::pushArch() {
+
+}
+
+void Z80::popArch() {
+
+}
 
 int Z80::IRQ(int data_on_bus)
 {
