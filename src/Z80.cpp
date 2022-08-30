@@ -4697,10 +4697,11 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       case CPC: {
         int     n, f, d;
 
+        f = F & SZC_FLAGS;
         READ_BYTE(HL, n);
         READ_BYTE(ED(DE), d);
+        d = f & Z80_C_FLAG ? ~d : d;
 
-        f = F & SZC_FLAGS;
         //also fail compare is an effective exit
         f |= (--BC && n==d) ? Z80_P_FLAG : 0;
 
@@ -4724,10 +4725,10 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       case LDC: {
         int     n, f;
 
-        READ_BYTE(HL, n);
-        WRITE_BYTE(ED(DE), n);
-
         f = F & SZC_FLAGS;
+        READ_BYTE(HL, n);
+        WRITE_BYTE(ED(DE), f & Z80_C_FLAG ? ~n : n);
+
         f |= --BC ? Z80_P_FLAG : 0;
 
   #ifndef Z80_DOCUMENTED_FLAGS_ONLY
@@ -4763,6 +4764,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           Z80_READ_BYTE(hl, n);
           Z80_READ_BYTE(ED(de), d);
+          d = f & Z80_C_FLAG ? ~d : d;
 
           hl ++;
           de += 256;
@@ -4825,7 +4827,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           r += 2;
 
           Z80_READ_BYTE(hl, n);
-          Z80_WRITE_BYTE(ED(de), n);
+          Z80_WRITE_BYTE(ED(de), f & Z80_C_FLAG ? ~n : n);
 
           hl ++;
           de += 256;
