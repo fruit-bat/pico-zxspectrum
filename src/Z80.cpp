@@ -396,14 +396,10 @@ enum {
   SUB_INDIRECT_HL_N,// sub (hl),n
   SBC_INDIRECT_HL_N,// sbc (hl),n
 
-  EX_BC_DE,// ex bc,de
-  EX_BC_HL,// ex bc,hl
+  EX_RR_RR,// ex bc/sp, de/hl
 
   MUL_DE,
-  ABS_DE,
-
-  KAB_D_A,// keep absolute kab d, a
-  ADC_DE_DE,// adc de, de
+  ADC_DE_DE,
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1486,8 +1482,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
-  MUL_DE,//multiply mul de
-  ABS_DE,//absolute abs de
+  EX_RR_RR,
+  EX_RR_RR,
   IM_N,//IM 1
   LD_A_I_LD_A_R,
 
@@ -1495,8 +1491,8 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  KAB_D_A,
-  ADC_DE_DE,
+  EX_RR_RR,
+  EX_RR_RR,
   IM_N,//IM 2
   LD_A_I_LD_A_R,
 //6
@@ -1525,7 +1521,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   SUB_R_N,
   SUB_R_N,
   SUB_INDIRECT_HL_N,
-  EX_BC_HL,
+  ADC_DE_DE,
 
   IN_R_C,
   OUT_C_R,
@@ -1534,7 +1530,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   SBC_R_N,
   SBC_R_N,
   SBC_INDIRECT_HL_N,
-  EX_BC_DE,
+  MUL_DE,
 //8
   LD_INDIRECT_RR_R,
   LD_INDIRECT_RR_R,
@@ -4586,6 +4582,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       case JPJ_RR: {
         pc = RR((P(opcode) & 1) | ((Y(opcode) & 1) << 1));
         READ_NN(pc);
+        elapsed_cycles += 2;
         break;
       }
       case JPC_RR: {
@@ -4594,16 +4591,18 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         READ_NN(nn);
         PUSH(pc);
         pc = nn;
-        elapsed_cycles++;
+        elapsed_cycles += 3;
         break;
       }
       case RTJ: {
         POP(pc);
+        elapsed_cycles += 2;
         READ_NN(pc);
         break;
       }
       case RTC: {
         POP(pc);
+        elapsed_cycles += 2;
         int     nn;
         READ_NN(nn);
         PUSH(pc);
@@ -4749,10 +4748,10 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
       }
       case CPCR: {
-        int     d, f, bc, de, hl, n;
+        int     d, f, b, de, hl, n;
 
         f = F & SZC_FLAGS;
-        bc = BC;
+        b = BC >> 8;
         de = DE;
         hl = HL;
 
@@ -4768,7 +4767,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           hl ++;
           de += 256;
 
-          if (--bc && n==d)
+          if (--b && n==d)
 
             elapsed_cycles += 21;
 
@@ -4787,7 +4786,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         HL = hl;
         DE = de;
-        BC = bc;
+        BC = (b << 8) | (BC & 255) ;
 
       #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
@@ -4803,7 +4802,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
       }
       case LDCR: {
-        int     f, bc, de, hl, n;
+        int     f, b, de, hl, n;
 
   #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
 
@@ -4815,7 +4814,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
   #endif
 
         f = F & SZC_FLAGS;
-        bc = BC;
+        b = BC >> 8;
         de = DE;
         hl = HL;
 
@@ -4831,7 +4830,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           hl ++;
           de += 256;
 
-          if (--bc)
+          if (--b)
 
             elapsed_cycles += 21;
 
@@ -4863,7 +4862,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         HL = hl;
         DE = de;
-        BC = bc;
+        BC = (b << 8) | (BC & 255);
 
   #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
@@ -4966,44 +4965,17 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         A = a;
         break;
       }
-      case EX_BC_HL: {
-        EXCHANGE(BC, HL);
-        break;
-      }
-      case EX_BC_DE: {
-        EXCHANGE(BC, DE);
+      case EX_RR_RR: {
+        int de = Z(opcode) & 1;
+        int hl = ((~de) & 1) << 1;
+        int sp = Y(opcode) & 1;
+        int bc = ((~sp) & 1) << 1;
+        EXCHANGE(RR(bc | sp), RR(de | hl));// ex sp/be, de/hl
         break;
       }
       case MUL_DE: {
         DE = ((DE & 255) * ((DE >> 8) & 255)) & 0xffff;//super fast byte multiply
         elapsed_cycles += 13;//expected plus 4 for fetch
-        break;
-      }
-      case ABS_DE: {
-        F &= ~Z80_V_FLAG;//clear c flag
-        if(DE & 0x8000) {
-          F ^= Z80_C_FLAG;
-          DE = (0 - DE) & 0xffff;//invert
-          if(DE & 0x8000) {
-            //exception state overflow
-            F |= Z80_V_FLAG;
-          }
-        }
-        elapsed_cycles += 7;//expected
-        break;
-      }
-      case KAB_D_A: {
-        if(F & Z80_C_FLAG) {//on borrow
-          int a;
-          a = A;
-          A = (DE >> 8);
-          ADD(a);//add back subtraction within a division
-          DE = (A << 8) | (DE & 0xff);
-          A = a;
-          F &= ~Z80_C_FLAG;//clear carry
-          break;
-        }
-        F |= Z80_C_FLAG;//set carry
         break;
       }
       case ADC_DE_DE: {
