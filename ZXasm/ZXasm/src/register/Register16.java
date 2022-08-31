@@ -6,7 +6,8 @@ public enum Register16 {
     BC("bc"),
     DE("de"),
     HL("hl", "ix", "iy"),// jp (hl) write as jp hl for consistency
-    SP("sp");
+    SP("sp"),
+    AF("af");
 
     String name;
 

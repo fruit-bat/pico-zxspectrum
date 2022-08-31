@@ -1,5 +1,7 @@
 package register;
 
+import literal.Address;
+
 public class Register {
 
     boolean is8;
@@ -8,10 +10,16 @@ public class Register {
     Register16 reg16;
     byte offset;
 
+    Address data;
+
     public static Register getRegister(String reg) {
         Register r = Register8.getRegister(reg);
         if(r == null) {
             r = Register16.getRegister(reg);
+        }
+        if(r == null) {
+            Address a = new Address((char)Integer.parseInt(reg));
+            r = new Register(a);
         }
         return r;
     }
@@ -37,5 +45,9 @@ public class Register {
         reg16 = reg;
         isIX = ix;
         isIY = iy;
+    }
+
+    public Register(Address address) {
+        this.data = address;
     }
 }

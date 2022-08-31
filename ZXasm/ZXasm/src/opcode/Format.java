@@ -15,8 +15,9 @@ public enum Format {
     B_R(),// bit and register
     INDIRECT_RR_RR(),
     R_INDIRECT_NN(),
-    INDIRECT_NN_R();
-
+    INDIRECT_NN_R(),
+    R_INDIRECT_R(),
+    INDIRECT_R_R();
 
 
 }
