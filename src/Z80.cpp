@@ -3874,7 +3874,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         WRITE_BYTE(HL, x);
 
         f = SZYX_FLAGS_TABLE[--B & 0xff]
-        | (x >> (7 - Z80_N_FLAG_SHIFT));
+        | ((x & 0x80) >> (7 - Z80_N_FLAG_SHIFT));
         if (opcode == OPCODE_INI) {
 
           HL++;
@@ -3960,7 +3960,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         HL = hl;
         B = b;
 
-        f |= x >> (7 - Z80_N_FLAG_SHIFT);
+        f |= (x & 0x80) >> (7 - Z80_N_FLAG_SHIFT);
         x += (C + d) & 0xff;
         f |= x & 0x0100 ? HC_FLAGS : 0;
         f |= SZYXP_FLAGS_TABLE[(x & 0x07) ^ b]
@@ -4009,7 +4009,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         HL += opcode == OPCODE_OUTI ? +1 : -1;
 
         f = SZYX_FLAGS_TABLE[--B & 0xff]
-        | (x >> (7 - Z80_N_FLAG_SHIFT));
+        | ((x & 0x80) >> (7 - Z80_N_FLAG_SHIFT));
         x += HL & 0xff;
         f |= x & 0x0100 ? HC_FLAGS : 0;
         f |= SZYXP_FLAGS_TABLE[(x & 0x07) ^ B]
@@ -4060,7 +4060,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         HL = hl;
         B = b;
 
-        f |= x >> (7 - Z80_N_FLAG_SHIFT);
+        f |= (x & 0x80) >> (7 - Z80_N_FLAG_SHIFT);
         x += hl & 0xff;
         f |= x & 0x0100 ? HC_FLAGS : 0;
         f |= SZYXP_FLAGS_TABLE[(x & 0x07) ^ b]
