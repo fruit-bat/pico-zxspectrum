@@ -537,3 +537,6 @@ tio -m ODELBS /dev/ttyUSB0
 [PS/2 vs HID keyboard codes](docs/ps2-hid.pdf)<br/>
 [PCM 5100A DAC](PCM510xA.pdf)<br/>
 [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>
+[Z80 Instruction set with XYH](https://wikiti.brandonw.net/?title=Z80_Instruction_Set)</br>
+[Z80 Instruction set](https://clrhome.org/table/)</br>
+
