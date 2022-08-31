@@ -3849,7 +3849,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         Z80_INPUT_BYTE(BC, x);
         if (Y(opcode) != INDIRECT_HL)
 
-          R(Y(opcode)) = x;
+          S(Y(opcode)) = x;
 
         F = SZYXP_FLAGS_TABLE[x] | (F & Z80_C_FLAG);
 
