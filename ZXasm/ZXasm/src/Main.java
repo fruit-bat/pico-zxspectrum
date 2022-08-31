@@ -9,7 +9,7 @@ public class Main {
 
     }
 
-    public static Opcode parseLine(String line) {
+    public static byte[] parseLine(String line) {
         if(line == null || line.equals("")) return null;
         line = line.split(";")[0];//strip comments
         line = line.split("//")[0].trim();//strip alt comments
@@ -46,11 +46,12 @@ public class Main {
 
                 default: break;//invalid count
             }
-            if(!op.compile()) {
+            byte[] compiled;
+            if((compiled = op.compile()) == null) {
                 //alternates
             }
             //have opcode sequence??
-            return op;
+            return compiled;
         }
         return null;//no can do
     }

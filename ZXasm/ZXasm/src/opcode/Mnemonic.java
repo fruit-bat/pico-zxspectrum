@@ -5,7 +5,7 @@ import static opcode.Format.*;
 public enum Mnemonic {
 
     LD("ld", new Format[]{ R_R, INDIRECT_NN_RR, RR_INDIRECT_NN,
-        R_INDIRECT_RR, INDIRECT_RR_R }),
+        R_INDIRECT_RR, INDIRECT_RR_R, R_INDIRECT_NN, INDIRECT_NN_R }),
     PUSH("push", new Format[]{ Format.RR }),
     POP("", new Format[]{ Format.RR }),
     EX("ex", new Format[]{ RR_RR }),

@@ -36,8 +36,11 @@ public class Opcode {
         return (src != null) & (dst != null);
     }
 
-    public boolean compile() {
-        //TODO
-        return false;
+    public byte[] compile() {
+        for (int i = 0; i < op.allows.length; i++) {
+            byte[] b = op.allows[i].ass.assemble(this);
+            if(b != null) return b;
+        }
+        return null;
     }
 }
