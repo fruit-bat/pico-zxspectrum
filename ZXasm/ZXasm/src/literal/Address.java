@@ -12,7 +12,7 @@ public class Address {
         this.address = (char)(base.address + relative);
     }
 
-    public Address(Address base, Byte relative) {
-        this.address = (char)(base.address + relative.value);
+    public Address(Address base, Address relative) {
+        this.address = (char)(base.address + relative.address);
     }
 }

@@ -1,82 +1,87 @@
 package opcode;
 
+import static opcode.Format.*;
+
 public enum Mnemonic {
 
-    LD("ld"),
-    PUSH("push"),
-    POP(""),
-    EX("ex"),
-    LDI("ldi"),
-    LDIR("ldir"),
-    CPI("cpi"),
-    CPIR("cpir"),
-    ADD("add"),
-    SUB("sub"),
-    AND("and"),
-    XOR("xor"),
-    OR("or"),
-    CP("cp"),
-    INC("inc"),
-    DEC("dec"),
-    ADC("adc"),
-    SBC("sbc"),
-    DAA("daa"),
-    CPL("cpl"),
-    NEG("neg"),
-    CCF("ccf"),
-    SCF("scf"),
-    NOP("nop"),
-    HALT("halt"),
-    DI("di"),
-    EI("ei"),
-    IM("im"),
-    RLCA("rlca"),
-    RLA("rla"),
-    RRCA("rrca"),
-    RRA("rra"),
-    RLC("rlc"),
-    RL("rl"),
-    RRC("rrc"),
-    RR("rr"),
-    SLA("sla"),
-    SLL("sll"),
-    SRA("sra"),
-    SRL("srl"),
-    RLD("rld"),
-    RRD("rrd"),
-    BIT("bit"),
-    SET("set"),
-    RES("res"),
-    JP("jp"),
-    DJNZ("djnz"),
-    CALL("call"),
-    RET("ret"),
-    RETI("reti"),
-    RETN("retn"),
-    RST("rst"),
-    IN("in"),
-    INI("ini"),
-    IND("ind"),
-    INIR("inir"),
-    INDR("indr"),
-    OUT("out"),
-    OUTI("outi"),
-    OUTD("outd"),
-    OTIR("otir"),
-    OTDR("otdr"),
-    JPJ("jpj"),
-    JPC("jpc"),
-    RTJ("rtj"),
-    RTC("rtc"),
-    CPC("cpc"),
-    LDC("ldc"),
-    CPCR("cpcr"),
-    LDCR("ldcr"),
-    MUL("mul");
+    LD("ld", new Format[]{ R_R, INDIRECT_NN_RR, RR_INDIRECT_NN,
+        R_INDIRECT_RR, INDIRECT_RR_R }),
+    PUSH("push", new Format[]{ Format.RR }),
+    POP("", new Format[]{ Format.RR }),
+    EX("ex", new Format[]{ RR_RR }),
+    LDI("ldi", new Format[]{ NUL }),
+    LDIR("ldir", new Format[]{ NUL }),
+    CPI("cpi", new Format[]{ NUL }),
+    CPIR("cpir", new Format[]{ NUL }),
+    ADD("add", new Format[]{ R_R, RR_RR }),
+    SUB("sub", new Format[]{ R_R, RR_RR }),
+    AND("and", new Format[]{ R_R, R_N }),
+    XOR("xor", new Format[]{ R_R, R_N }),
+    OR("or", new Format[]{ R_R, R_N }),
+    CP("cp", new Format[]{ R_R, R_N }),
+    INC("inc", new Format[]{ R, Format.RR }),
+    DEC("dec", new Format[]{ R, Format.RR }),
+    ADC("adc", new Format[]{ R, RR_RR, R_N }),
+    SBC("sbc", new Format[]{ R, RR_RR, R_N }),
+    DAA("daa", new Format[]{ NUL }),
+    CPL("cpl", new Format[]{ NUL }),
+    NEG("neg", new Format[]{ NUL }),
+    CCF("ccf", new Format[]{ NUL }),
+    SCF("scf", new Format[]{ NUL }),
+    NOP("nop", new Format[]{ NUL }),
+    HALT("halt", new Format[]{ NUL }),
+    DI("di", new Format[]{ NUL }),
+    EI("ei", new Format[]{ NUL }),
+    IM("im", new Format[]{ Format.IM }),
+    RLCA("rlca", new Format[]{ NUL }),
+    RLA("rla", new Format[]{ NUL }),
+    RRCA("rrca", new Format[]{ NUL }),
+    RRA("rra", new Format[]{ NUL }),
+    RLC("rlc", new Format[]{ NUL }),
+    RL("rl", new Format[]{ R }),
+    RRC("rrc", new Format[]{ R }),
+    RR("rr", new Format[]{ R }),
+    SLA("sla", new Format[]{ R }),
+    SLL("sll", new Format[]{ R }),
+    SRA("sra", new Format[]{ R }),
+    SRL("srl", new Format[]{ R }),
+    RLD("rld", new Format[]{ R }),
+    RRD("rrd", new Format[]{ R }),
+    BIT("bit", new Format[]{ N_R }),
+    SET("set", new Format[]{ N_R }),
+    RES("res", new Format[]{ N_R }),
+    JR("jr", new Format[]{ D, F_D }),
+    JP("jp", new Format[]{ NN, F_NN }),
+    DJNZ("djnz", new Format[]{ D }),
+    CALL("call", new Format[]{ NN, F_NN }),
+    RET("ret", new Format[]{ NUL, F }),
+    RETI("reti", new Format[]{ NUL }),
+    RETN("retn", new Format[]{ NUL }),
+    RST("rst", new Format[]{ Format.RST }),
+    IN("in", new Format[]{ R_INDIRECT_R, INDIRECT_R }),
+    INI("ini", new Format[]{ NUL }),
+    IND("ind", new Format[]{ NUL }),
+    INIR("inir", new Format[]{ NUL }),
+    INDR("indr", new Format[]{ NUL }),
+    OUT("out", new Format[]{ INDIRECT_R_R, INDIRECT_R }),
+    OUTI("outi", new Format[]{ NUL }),
+    OUTD("outd", new Format[]{ NUL }),
+    OTIR("otir", new Format[]{ NUL }),
+    OTDR("otdr", new Format[]{ NUL }),
+    JPJ("jpj", new Format[]{ Format.RR }),
+    JPC("jpc", new Format[]{ Format.RR }),
+    RTJ("rtj", new Format[]{ NUL }),
+    RTC("rtc", new Format[]{ NUL }),
+    CPC("cpc", new Format[]{ NUL }),
+    LDC("ldc", new Format[]{ NUL }),
+    CPCR("cpcr", new Format[]{ NUL }),
+    LDCR("ldcr", new Format[]{ NUL }),
+    MUL("mul", new Format[]{ Format.RR });
 
     String name;
+    Format[] allows;
 
-    Mnemonic(String name) {
+    Mnemonic(String name, Format[] allows) {
         this.name = name;
     }
 
@@ -87,5 +92,16 @@ public enum Mnemonic {
             }
         }
         return null;
+    }
+
+    public boolean hasFormat(Format f) {
+        for(int i = 0; i < allows.length; i++) {
+            if(allows[i] == f) return true;
+        }
+        return false;
+    }
+
+    public boolean hasFlagFormat() {
+        return hasFormat(F) || hasFormat(F_D) || hasFormat(F_NN);
     }
 }

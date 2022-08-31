@@ -1,3 +1,4 @@
+import opcode.CCode;
 import opcode.Mnemonic;
 import opcode.Opcode;
 import register.Register;
@@ -29,8 +30,14 @@ public class Main {
                         comma[0].trim()), false
                     );
                     break;
-                case 2: op.setRegisters(Register.getRegister(
-                        comma[0].trim()), true
+                case 2: if(op.mnemonic().hasFlagFormat()) {
+                        op.setRegisters(Register.getRegister(
+                                comma[1].trim()),
+                                CCode.getCCode(comma[0].trim()));
+                        break;
+                    }
+                    op.setRegisters(Register.getRegister(
+                            comma[0].trim()), true
                     );
                     op.setRegisters(Register.getRegister(
                             comma[1].trim()), false

@@ -5,6 +5,7 @@ import register.Register;
 public class Opcode {
 
     Mnemonic op;
+    CCode flag;
     Register src, dst;
     public Mnemonic mnemonic() {
         return op;
@@ -20,6 +21,11 @@ public class Opcode {
         } else {
             dst = reg;
         }
+    }
+
+    public void setRegisters(Register reg, CCode flag) {
+        src = reg;
+        this.flag = flag;
     }
 
     public boolean hasOne() {
