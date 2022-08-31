@@ -1,0 +1,6 @@
+#!/bin/sh
+#echo "Z80X assembler."
+#echo $(basename $0) $*
+#call majar with all arguments
+java -jar zxasm.jar $(basename $0) $*
+exit $?

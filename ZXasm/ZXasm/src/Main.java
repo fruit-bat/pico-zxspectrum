@@ -1,3 +1,5 @@
+import literal.Address;
+import literal.Label;
 import opcode.CCode;
 import opcode.Mnemonic;
 import opcode.Opcode;
@@ -9,6 +11,13 @@ public class Main {
 
     }
 
+    public static void labelProxy(String name) {
+        Label l = new Label(name);
+        l.setLocation(new Address(org));
+    }
+
+    static char org;
+
     public static byte[] parseLine(String line) {
         if(line == null || line.equals("")) return null;
         line = line.split(";")[0];//strip comments
@@ -18,6 +27,10 @@ public class Main {
             int spc = line.indexOf(" ");
             String word = line.substring(0, spc);
             line = line.substring(spc).trim();
+            if(word.charAt(word.length() - 1) == ':') {
+                //label:
+                labelProxy(word.substring(0, word.length() - 1).trim());
+            }
             //handle mnemonic
             if(op.mnemonic() == null) {
                 op.setMnemonic(Mnemonic.getMnemonic(word));
@@ -51,6 +64,7 @@ public class Main {
                 //alternates
             }
             //have opcode sequence??
+            org += compiled.length;
             return compiled;
         }
         return null;//no can do

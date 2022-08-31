@@ -1,6 +1,7 @@
 package register;
 
 import literal.Address;
+import literal.Label;
 
 public class Register {
 
@@ -18,8 +19,15 @@ public class Register {
             r = Register16.getRegister(reg);
         }
         if(r == null) {
-            Address a = new Address((char)Integer.parseInt(reg));
-            r = new Register(a);
+            try {
+                Address a = new Address((char) Integer.parseInt(reg));
+                r = new Register(a);
+            } catch(Exception e) {
+                // leave as null
+            }
+        }
+        if(r == null) {
+            r = new Register(Label.findLabel(reg));//could be un-found 0
         }
         return r;
     }
