@@ -190,14 +190,13 @@ Here are the pin assignments:
 ### ZxSpectrumBreadboardHdmiKbd1PinAudio
 This is a target similar to the HDMI prototype which uses can read from an original Spectrum keyboard matrix.
 
-It is a work in progress and there is currently no way to open the menu's from the Spectrum keyboard; 
-you can still open them by attaching a USB keyboard.
+It is a work in progress.
 
 <a href=""><img src="docs/proto_kbd.jpg" width="300"/></a>
 
 It supports the following:
 * USB keyboard
-* Matrix keyboard
+* Matrix keyboard (8x8)
 * USB joysticks
 * HDMI video
 * PWM sound (1 pin)
