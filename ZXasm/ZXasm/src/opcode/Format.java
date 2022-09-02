@@ -6,7 +6,10 @@ interface Assembler {
 }
 public enum Format {
 
-    NUL((opcode, org) -> { return null; }),
+    NUL((opcode, org) -> {
+        //TODO
+        return null;
+    }),
     R_R((opcode, org) -> { return null; }),
     RR_RR((opcode, org) -> { return null; }),
     R_N((opcode, org) -> { return null; }),

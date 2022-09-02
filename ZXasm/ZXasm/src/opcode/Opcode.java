@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Opcode {
 
     Mnemonic op;
-    CCode flag;
     ArrayList<Register> args = new ArrayList<>();
     public Mnemonic mnemonic() {
         return op;

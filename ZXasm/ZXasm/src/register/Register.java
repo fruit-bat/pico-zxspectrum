@@ -13,7 +13,6 @@ public class Register {
     byte offset;
     CCode flags;
     String literal;
-
     Address data;
 
     public static Register getRegister(String reg, int org) {

@@ -8,6 +8,7 @@ public class Label {
 
     String name;
     Address location;
+    Label parent;//useful TODO
 
     static HashMap<String, Label> table;
 

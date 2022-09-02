@@ -8,10 +8,6 @@ public class Address {
         this.address = address;
     }
 
-    public Address(Address base, int relative) {
-        this.address = base.address + relative;
-    }
-
     public Address(Address base, Address relative) {
         this.address = base.address + relative.address;
     }
