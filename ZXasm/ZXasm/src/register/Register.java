@@ -2,6 +2,7 @@ package register;
 
 import literal.Address;
 import literal.Label;
+import opcode.CCode;
 
 public class Register {
 
@@ -10,11 +11,19 @@ public class Register {
     Register8 reg8;
     Register16 reg16;
     byte offset;
+    CCode flags;
+    String literal;
 
     Address data;
 
-    public static Register getRegister(String reg) {
-        Register r = Register8.getRegister(reg);
+    public static Register getRegister(String reg, int org) {
+        Register r = null;
+        if(reg.charAt(0) == '\"' && reg.charAt(reg.length() - 1) == '\"') {
+            r = new Register(reg);
+        }
+        if(r == null) {
+            r = Register8.getRegister(reg);
+        }
         if(r == null) {
             r = Register16.getRegister(reg);
         }
@@ -27,7 +36,10 @@ public class Register {
             }
         }
         if(r == null) {
-            r = new Register(Label.findLabel(reg));//could be un-found 0
+            r = CCode.getCCode(reg);
+        }
+        if(r == null) {
+            r = new Register(Label.findLabel(reg, org));//could be un-found 0
         }
         return r;
     }
@@ -37,8 +49,16 @@ public class Register {
         reg8 = reg;
     }
 
+    public Register(String reg) {
+        literal = reg.substring(1, reg.length() - 1);
+    }
+
     public Register(Register16 reg) {
         reg16 = reg;
+    }
+
+    public Register(CCode flags) {
+        this.flags = flags;
     }
 
     public Register(Register8 reg, boolean ix, boolean iy, byte offset) {

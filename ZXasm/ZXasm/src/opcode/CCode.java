@@ -1,5 +1,7 @@
 package opcode;
 
+import register.Register;
+
 public enum CCode {
 
     NZ("nz"),
@@ -17,10 +19,10 @@ public enum CCode {
         this.name = name;
     }
 
-    public static CCode getCCode(String op) {
+    public static Register getCCode(String op) {
         for (CCode m: CCode.values()) {
             if(op.trim().toLowerCase().equals(m.name)) {
-                return m;
+                return new Register(m);
             }
         }
         return null;

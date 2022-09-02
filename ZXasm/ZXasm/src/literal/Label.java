@@ -1,6 +1,7 @@
 package literal;
 
-import java.util.ArrayList;
+import asm.Main;
+
 import java.util.HashMap;
 
 public class Label {
@@ -19,9 +20,14 @@ public class Label {
         this.location = location;
     }
 
-    public static Address findLabel(String name) {
+    public static Address findLabel(String name, int org) {
         Label l = table.get(name);
-        if(l == null) return new Address((char)0);//first pass blag
+        if(l == null) return new Address(0);//first pass blag
+        if(!Main.isROMorSafe(l.location.address)) {
+            if(Main.getPage(l.location.address) != Main.getPage(org)) {
+                Main.error(Main.Errors.LABEL_ADDRESS_PAGE);
+            }
+        }
         return l.location;
     }
 

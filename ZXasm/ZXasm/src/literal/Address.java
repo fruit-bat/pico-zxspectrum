@@ -2,17 +2,17 @@ package literal;
 
 public class Address {
 
-    char address;
+    int address;
 
-    public Address(char address) {
+    public Address(int address) {
         this.address = address;
     }
 
-    public Address(Address base, char relative) {
-        this.address = (char)(base.address + relative);
+    public Address(Address base, int relative) {
+        this.address = base.address + relative;
     }
 
     public Address(Address base, Address relative) {
-        this.address = (char)(base.address + relative.address);
+        this.address = base.address + relative.address;
     }
 }
