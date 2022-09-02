@@ -6,12 +6,64 @@ import opcode.Mnemonic;
 import opcode.Opcode;
 import register.Register;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;;
 import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
-    public static void main(String[] argv) {
+    @FunctionalInterface
+    interface OutputWriter {
+        void write(byte[] code, int org, OutputStream out);
+    }
 
+    public enum OutputAs {
+        BIN("bin", (code, org, out) -> {}),
+        HEX("hex", (code, org, out) -> {}),
+        ROM("rom", (code, org, out) -> {}),
+        Z80("z80", (code, org, out) -> {}),
+        C("c", (code, org, out) -> {});
+
+        String as;
+        OutputWriter writer;
+
+        OutputAs(String as, OutputWriter writer) {
+            this.as = as;
+            this.writer = writer;
+        }
+    }
+
+    public static void main(String[] argv) throws Exception {
+        try {
+            OutputWriter format = null;
+            for (OutputAs as: OutputAs.values()) {
+                if(as.as == argv[1]) {
+                    format = as.writer;
+                    break;
+                }
+            }
+            if(format == null) {
+                error(Errors.BAD_OUT_FORMAT);
+                System.exit(-1);//error
+            }
+            List<String> in = Files.readAllLines(Paths.get(argv[2]),
+                    StandardCharsets.UTF_8);
+            lines = new String[in.size()];
+            for (int i = 0; i < in.size(); i++) {
+                //pass 1
+                lines[i] = in.get(i);//head removal better
+                parseLine(lines[i]);
+            }
+            //pass 2
+            //TODO
+
+        } catch(Exception e) {
+            error(Errors.INTERNAL);//also does an ...
+            throw e;
+        }
     }
 
     public static void labelProxy(String name) {
@@ -71,7 +123,6 @@ public class Main {
 
     //use magic "" quote in quotes
     public static String[] splitComma(String args) {
-        lineNumber++;
         String[] quotes = args.split("\"");
         for(int i = 1; i < quotes.length; i += 2) {
             quotes[i] = quotes[i].replace(",", "\n");
@@ -103,7 +154,9 @@ public class Main {
         SCREEN_1(ErrorKinds.WARN, "Assembling into screen 1 page"),
         SCREEN_0(ErrorKinds.WARN, "Assembling into screen 0 page (OK?)"),
         LABEL_ADDRESS_PAGE(ErrorKinds.WARN, "Label is in a paged memory bank"),
-        ORG_SET(ErrorKinds.ERROR, "Can only set org once at start of file");
+        ORG_SET(ErrorKinds.ERROR, "Can only set org once at start of file"),
+        INTERNAL(ErrorKinds.ERROR, "Internal error"),
+        BAD_OUT_FORMAT(ErrorKinds.ERROR, "The output format asked for is not supported");
 
         ErrorKinds kind;
         String msg;
@@ -115,10 +168,12 @@ public class Main {
     public static void error(Errors error) {
         System.err.println(error.kind.kind
             + ": " + error.msg + ".");
-        System.err.println(lineNumber + "> " + lines[lineNumber - 1]);
+        if(lineNumber != 0)
+            System.err.println(lineNumber + "> " + lines[lineNumber - 1]);
     }
 
     public static byte[] parseLine(String line) {
+        lineNumber++;
         if(line == null || line.equals("")) return null;
         line = line.split(";")[0];//strip comments
         line = line.split("//")[0].trim();//strip alt comments
