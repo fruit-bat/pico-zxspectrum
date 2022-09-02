@@ -1,6 +1,12 @@
-;===========================================
-; Z80X new instructions too
-;===========================================
+//===========================================
+// Z80X new instructions too
+//===========================================
+// Write it how you want it
+// The following code is to build a template for making all manor
+// of assemblies for the Z80X processor extensions
+// the syntax is decided for the Java ZXASM project and used throughout.
+
+// Partially wrote by Simon Jackson @jackokring github.
 
   org $0000
   equ bankPort, $7ffd
@@ -9,6 +15,23 @@ main:
   ld sp, stack. //"." for last before next symbol as stack grows down
   ld hl, startVec
   jp vector
+
+  upto $08
+rst08:
+  upto $10
+rst10:
+  upto $18
+rst18:
+  upto $20
+rst20:
+  upto $28
+rst28:
+  upto $30
+rst30:
+  upto $38
+rst38:          // interrupt IM 1
+  upto $66
+nmi66:
 
 startVec:
   db @start //@ for page and screen 1
@@ -50,7 +73,8 @@ vector:// enter vector with hl set to the 3 byte vector address/bank switch
 start:
   //the start up code
   ret
-
+notice:
+  ds "ZX FORTH ROM OK"
   bank      //skip out of ROM page into RAM initial bank
 stack:
   fill $ff  //for 256 bytes
