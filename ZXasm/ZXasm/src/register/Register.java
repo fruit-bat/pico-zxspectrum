@@ -27,15 +27,25 @@ public class Register {
             r = Register16.getRegister(reg);
         }
         if(r == null) {
+            r = CCode.getCCode(reg);
+        }
+        if(r == null) {
+            Address a = null;
+            String based = reg.substring(1);
             try {
-                Address a = new Address((char) Integer.parseInt(reg));
-                r = new Register(a);
+                if(reg.charAt(0) == '$') {
+                    a = new Address((char) Integer.parseInt(based, 16));
+                } else if(reg.charAt(0) == '%') {
+                    a = new Address((char) Integer.parseInt(based, 2));
+                } else {
+                    a = new Address((char) Integer.parseInt(reg));
+                }
             } catch(Exception e) {
                 // leave as null
             }
-        }
-        if(r == null) {
-            r = CCode.getCCode(reg);
+            if(a != null) {
+                r = new Register(a);
+            }
         }
         if(r == null) {
             r = new Register(Label.findLabel(reg, org));//could be un-found 0
