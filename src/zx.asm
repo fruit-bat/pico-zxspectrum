@@ -15,24 +15,23 @@ startVec:
   dw start
   //more vectors here
 
-vector:
+vector:// enter vector with hl set to the 3 byte vector address/bank switch
   ld (temphl), hl
   ld h, (lastBank)
-  push hl
+  push hl         //save lastbank used
   push af
   ld a, (hl)
   push bc
   load bc, bankPort
   out (c), a
-  ld (lastBank), a
+  ld (lastBank), a  //put new lastBank
   pop bc
+  pop af          //restored
   ld hl, .onReturn  //local sub-label address
-  ex (sp), hl
-  push hl
+  push hl           //return there
   ld hl, (temphl)
   inc hl
-  pop af
-  jpj hl
+  jpj hl            //indirect vector to return to onReturn
 
 .onReturn:
   ld (temphl), hl
@@ -42,9 +41,10 @@ vector:
   bush bc
   ld bc, bankPort
   out (c), a
-  ld (lastBank), a
+  ld (lastBank), a    //restored lastBank
   pop bc
   pop af
+  ld hl, (temphl)     //restore hl
   ret
 
 start:
