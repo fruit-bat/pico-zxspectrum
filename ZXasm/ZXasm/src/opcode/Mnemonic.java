@@ -76,7 +76,17 @@ public enum Mnemonic {
     LDC("ldc", new Format[]{ NUL }),
     CPCR("cpcr", new Format[]{ NUL }),
     LDCR("ldcr", new Format[]{ NUL }),
-    MUL("mul", new Format[]{ Format.RR });
+    MUL("mul", new Format[]{ Format.RR }),
+
+    DB("db", new Format[]{ MACRO }),
+    DW("dw", new Format[]{ MACRO }),
+    DS("ds", new Format[]{ MACRO }),
+    UPTO("upto", new Format[]{ MACRO }),
+    ORG("org", new Format[]{ MACRO }),
+    EQU("equ", new Format[]{ MACRO }),
+    MACRO_DEF("macro", new Format[]{ MACRO }),//whole file as macro with #n args??
+    MACRO_END("end", new Format[]{ MACRO }),
+    FILL("fill", new Format[]{ MACRO });
 
     String name;
     Format[] allows;

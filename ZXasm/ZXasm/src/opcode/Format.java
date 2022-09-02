@@ -33,7 +33,8 @@ public enum Format {
     R_INDIRECT_RR((opcode, org) -> { return null; }),
     INDIRECT_RR_R((opcode, org) -> { return null; }),
     INDIRECT_R((opcode, org) -> { return null; }),
-    INDIRECT_R_R((opcode, org) -> { return null; });
+    INDIRECT_R_R((opcode, org) -> { return null; }),
+    MACRO((opcode, org) -> { return null; });
 
     Assembler ass;
 
