@@ -26,7 +26,7 @@ vector:
   out (c), a
   ld (lastBank), a
   pop bc
-  ld hl, onReturn
+  ld hl, .onReturn  //local sub-label address
   ex (sp), hl
   push hl
   ld hl, (temphl)
@@ -34,7 +34,7 @@ vector:
   pop af
   jpj hl
 
-onReturn:
+.onReturn:
   ld (temphl), hl
   pop hl
   push af
@@ -51,7 +51,7 @@ start:
   //the start up code
   ret
 
-  page      //skip out of ROM page
+  bank      //skip out of ROM page into RAM initial bank
 stack:
   fill $ff  //for 256 bytes
 
