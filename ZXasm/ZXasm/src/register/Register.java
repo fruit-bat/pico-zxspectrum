@@ -34,7 +34,11 @@ public class Register {
             String based = reg.substring(1);
             try {
                 if(reg.charAt(0) == '$') {
-                    a = new Address((char) Integer.parseInt(based, 16));
+                    if(reg.length() == 1) {
+                        a = new Address(org);//special address of 1st byte of compile
+                    } else {
+                        a = new Address((char) Integer.parseInt(based, 16));
+                    }
                 } else if(reg.charAt(0) == '%') {
                     a = new Address((char) Integer.parseInt(based, 2));
                 } else {
