@@ -109,7 +109,7 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
         case 0xFE: {
           uint8_t kb = _keyboard1->read(address);
           if (_keyboard2) kb &= _keyboard2->read(address);
-          return kb ^ (_ear ? (1<<6) : 0) ;
+          return kb ^ (_ear ? 0 : (1<<6)) ;
         }
         case 0x1f: return _joystick ? _joystick->getKempston() : 0;
         default: return beamColor;
