@@ -169,12 +169,14 @@ private:
   
   inline int32_t getBuzzerSmoothed() {
     const int32_t a1 = __mul_instruction(_buzzer, 21);
+    return a1;
+    
     const int32_t a2 = _ear ? 31 : 0;
     return a1 + a2;
   }
   
   inline uint32_t getBuzzer() {
-    return ((_port254 >> 4) ^ _ear) & 1;
+    return ((_port254 >> 4) /* ^ _ear */) & 1;
   }  
   
 public:
@@ -223,6 +225,38 @@ public:
         }
       }
       if (tud) _ay.step(tud);
+      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+  }
+
+#define EAR_BITS_PER_STEP 32
+
+  void __not_in_flash_func(step)(uint32_t eb)
+  {
+      int c = 0;
+
+      uint32_t vA, vB, vC;
+      
+      const uint32_t tu32 = time_us_32() << 5;
+      int32_t tud = tu32 - _tu32;
+      if (tud) _ay.step(tud); 
+      _tu32 = tu32;
+      _ay.vol(vA, vB, vC);
+      
+      
+      for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
+        _ta32 += 1 << 5;
+        _ear = eb & 1;
+        eb = eb >> 1;
+        while (_ta32 > 0) {
+          int t = _Z80.step();
+          c += t;
+          stepBuzzer();
+          zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+          uint32_t tt32 = MUL32(t, _moderate);
+          if (tt32 == 0) break;
+          _ta32 -= tt32;
+        }
+      }
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
   }
 

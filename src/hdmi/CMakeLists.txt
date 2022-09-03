@@ -22,6 +22,10 @@ add_executable(ZxSpectrumBreadboardHdmi4PinAudio
   ${zxspectrum_hdmi_src}
 )
 
+pico_generate_pio_header(ZxSpectrumBreadboardHdmi4PinAudio 
+  ${zxspectrum_ear_in_pio}
+)
+
 add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
   ${zxspectrum_common_src}
   ${zxspectrum_hdmi_src}

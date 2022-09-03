@@ -52,6 +52,10 @@ set(zxspectrum_audio_i2s_pio
   ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
 )
 
+set(zxspectrum_ear_in_pio
+  ${CMAKE_CURRENT_LIST_DIR}/zx_ear_in.pio
+)
+
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)

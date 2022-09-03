@@ -218,6 +218,24 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+// TODO HACK move somewhere sensible
+
+#include "zx_ear_in.pio.h"
+
+static  PIO ear_pio = pio1;
+static  uint ear_sm = 0;
+
+static void init_ear_in() {
+  printf("init_ear_in\n");
+  uint offset = pio_add_program(ear_pio, &zx_ear_in_program);
+  ear_sm = pio_claim_unused_sm(ear_pio, true);
+  printf("Ear in sm = %d\n", ear_sm);
+  zx_ear_in_program_init(ear_pio, ear_sm, offset, 11, 1000000);
+  printf("init_ear_in done\n");
+}
+
+// TODO HACK end
+
 void __not_in_flash_func(main_loop)() {
   
   unsigned int lastInterruptFrame = _frames;
@@ -236,12 +254,12 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
-      for (int i = 1; i < 100; ++i) {
+      for (int i = 1; i < 8; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();
         }
-        zxSpectrum.step();
+        zxSpectrum.step(zx_ear_get32(ear_pio, ear_sm));
       }
     }
     else if (frames != _frames) {
@@ -266,7 +284,7 @@ int main() {
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif
-
+  
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
@@ -286,6 +304,12 @@ int main() {
   // Initialise the keyboard scan
   zx_keyscan_init();
 #endif
+  init_ear_in();
+
+  
+  
+  
+  
   
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;

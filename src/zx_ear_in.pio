@@ -1,0 +1,34 @@
+
+
+.program   zx_ear_in
+    in pins, 1
+
+% c-sdk {
+#include "hardware/clocks.h"
+#include "hardware/gpio.h"
+
+static inline void   zx_ear_in_program_init(PIO pio, uint sm, uint offset, uint pin, float baud) {
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, false);
+    pio_gpio_init(pio, pin);
+    gpio_pull_up(pin);
+
+    pio_sm_config c = zx_ear_in_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, pin); // for WAIT, IN
+    // Shift to right, autopush 
+    sm_config_set_in_shift(&c, true, true, 32);
+    // Deeper FIFO as we're not doing any TX
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    // SM reads 1 bit per 1 execution cycles.
+    float div = (float)clock_get_hz(clk_sys) / (1.0 * baud);
+    sm_config_set_clkdiv(&c, div);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline uint32_t __not_in_flash_func(zx_ear_get32)(PIO pio, uint sm) {
+    while ((pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + sm))) != 0);
+    return pio->rxf[sm];
+}
+
+%}
