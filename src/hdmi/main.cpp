@@ -254,7 +254,7 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
-      for (int i = 1; i < 8; ++i) {
+      for (int i = 1; i < 10; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();
@@ -305,11 +305,6 @@ int main() {
   zx_keyscan_init();
 #endif
   init_ear_in();
-
-  
-  
-  
-  
   
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
