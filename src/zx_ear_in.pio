@@ -1,5 +1,3 @@
-
-
 .program   zx_ear_in
     in pins, 1
 
@@ -13,7 +11,7 @@ static inline void   zx_ear_in_program_init(PIO pio, uint sm, uint offset, uint 
     gpio_pull_up(pin);
 
     pio_sm_config c = zx_ear_in_program_get_default_config(offset);
-    sm_config_set_in_pins(&c, pin); // for WAIT, IN
+    sm_config_set_in_pins(&c, pin);
     // Shift to right, autopush 
     sm_config_set_in_shift(&c, true, true, 32);
     // Deeper FIFO as we're not doing any TX
