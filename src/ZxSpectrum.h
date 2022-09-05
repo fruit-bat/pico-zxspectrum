@@ -226,7 +226,6 @@ public:
 
 #define EAR_BITS_PER_STEP 32
 
-  
   void __not_in_flash_func(step)(uint32_t eb)
   {
       int c = 0;
@@ -241,7 +240,7 @@ public:
       
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
-        _ear = (eb >> i) & 1;
+        if (_pulseBlock.end()) _ear = (eb >> i) & 1;
         while (_ta32 > 0) {
           int t = _Z80.step();
           c += t;
