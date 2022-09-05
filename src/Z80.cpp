@@ -367,8 +367,9 @@ enum {
 
   JPJ_RR,// jpj (be/de/hl)
   JPC_RR,// jpc (be/de/hl)
-  RTJ,// return and jump in the jpj (sp) position as better
-  RTC,// return and call in the jpc (sp) position as better
+  XIT,// xit - threading exit
+  RTC,// return and thread used for exit to next threading address instead of ret
+  // call nn starts threading followed by nn nn nn and a final nn to an xit
 
   AND_R_N,// and r,n
   OR_R_N,// or r,n
@@ -1565,7 +1566,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   LD_R_INDIRECT_RR,
   LD_R_INDIRECT_RR,
   LD_R_INDIRECT_RR,
-  RTJ,
+  XIT,
   RTC,
 //A
   LDI_LDD,
@@ -3191,7 +3192,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     c;
 
         c = F & Z80_C_FLAG;
-        
+
   #ifdef Z80_DOCUMENTED_FLAGS_ONLY
 
         F = (F & SZPV_FLAGS)
@@ -4606,11 +4607,10 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         elapsed_cycles += 3;
         break;
       }
-      case RTJ: {
-        POP(pc);
-        elapsed_cycles += 2;
-        READ_NN(pc);
-        break;
+      case XIT: {
+        SP += 2;// drop a threading address
+        elapsed_cycles += 4;
+        //break;// intentional no break
       }
       case RTC: {
         POP(pc);
@@ -4715,7 +4715,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         d = f & Z80_C_FLAG ? ~d : d;
 
         //also fail compare is an effective exit
-        f |= (--BC && n==d) ? Z80_P_FLAG : 0;
+        f |= (--B && n==d) ? Z80_P_FLAG : 0;
 
   #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
@@ -4741,7 +4741,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         READ_BYTE(HL, n);
         WRITE_BYTE(ED(DE), f & Z80_C_FLAG ? ~n : n);
 
-        f |= --BC ? Z80_P_FLAG : 0;
+        f |= --B ? Z80_P_FLAG : 0;
 
   #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
@@ -4764,7 +4764,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     d, f, b, de, hl, n;
 
         f = F & SZC_FLAGS;
-        b = BC >> 8;
+        b = B;
         de = DE;
         hl = HL;
 
@@ -4800,7 +4800,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         HL = hl;
         DE = de;
-        BC = (b << 8) | (BC & 255) ;
+        B = b;
 
       #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
@@ -4828,7 +4828,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
   #endif
 
         f = F & SZC_FLAGS;
-        b = BC >> 8;
+        b = B;
         de = DE;
         hl = HL;
 
@@ -4876,7 +4876,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         HL = hl;
         DE = de;
-        BC = (b << 8) | (BC & 255);
+        BC = b;
 
   #ifndef Z80_DOCUMENTED_FLAGS_ONLY
 
