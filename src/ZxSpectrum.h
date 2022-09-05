@@ -168,11 +168,7 @@ private:
   }
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = __mul_instruction(_buzzer, 21);
-    return a1;
-    
-    const int32_t a2 = _ear ? 31 : 0;
-    return a1 + a2;
+    return __mul_instruction(_buzzer, 25);
   }
   
   inline uint32_t getBuzzer() {
