@@ -164,6 +164,7 @@ static uint8_t func_keys[] = {
   HID_KEY_F10,
   HID_KEY_F11,
   HID_KEY_F12,
+  // assume custom HID ...
   HID_KEY_F13,
   HID_KEY_F14
 };
@@ -202,7 +203,6 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
       }
     }
   }
-
   if ((m & KEYBOARD_MODIFIER_LEFTCTRL) && !_kiosk) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
