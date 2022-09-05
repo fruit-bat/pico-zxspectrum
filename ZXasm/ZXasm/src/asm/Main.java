@@ -58,6 +58,7 @@ public class Main {
                 parseLine(lines[i]);
             }
             //pass 2
+            lineNumber = 0;
             //TODO
 
         } catch(Exception e) {
@@ -119,26 +120,46 @@ public class Main {
 
     static int lineNumber;//line number
     static String[] lines;
-    static boolean printedScreenNotice;
+    static boolean printedScreenNotice5, printedScreenNotice7;
 
     //use magic "" quote in quotes
     public static String[] splitComma(String args) {
         String[] quotes = args.split("\"");
         for(int i = 1; i < quotes.length; i += 2) {
-            quotes[i] = quotes[i].replace(",", "\n");
+            quotes[i] = quotes[i].replace(",", "\u0100");
         }
         args = Arrays.stream(quotes).reduce((a, b) -> a + "\"" + b).get();
         quotes = args.split(",");
         for (int i = 0; i < quotes.length; i++) {
-            quotes[i] = quotes[i].replace("\n", ",");
+            quotes[i] = quotes[i].replace("\u0100", ",");
             //ok
         }
         return quotes;
     }
 
+    public static String removeComment(String line) {
+        String[] quote = line.split("\"");
+        line = "";
+        for(int i = 0; i < quote.length; i+=2) {
+            quote[i] = quote[i].replace("//", ";");
+            String[] split = quote[i].split(";");
+            if(split.length > 1) {
+                line += split[0];//strip comments
+                break;// as comment after
+            } else {
+                line += quote[i];//all to quote
+                if(i + 1 < quote.length) {
+                    line += "\"" + quote[i + 1] + "\"";//and a literal
+                }
+            }
+        }
+        return line;
+    }
+
     public enum ErrorKinds {
-        WARN("Warning"),
-        ERROR("Error");
+        INFO("\\u001b[32mInformation\\u001b[0m"),
+        WARN("\\u001b[33mWarning\\u001b[0m"),
+        ERROR("\\u001b[31mError\\u001b[0m");
 
         String kind;
         ErrorKinds(String kind) {
@@ -173,10 +194,9 @@ public class Main {
     }
 
     public static byte[] parseLine(String line) {
-        lineNumber++;
+        lineNumber++;// starts at line 1
+        line = removeComment(line);
         if(line == null || line.equals("")) return null;
-        line = line.split(";")[0];//strip comments
-        line = line.split("//")[0].trim();//strip alt comments
         line = line.replace(":", ": ");//split for label
         Opcode op = new Opcode();
         String lastLine = line;
@@ -193,10 +213,13 @@ public class Main {
             }
             //handle mnemonic
             if(op.mnemonic() == null) {
-                op.setMnemonic(Mnemonic.getMnemonic(word));
+                op.setMnemonic(Mnemonic.getMnemonic(word, org));
                 if(op.mnemonic() == null) {
                     error(Errors.MNEMONIC_NOT_FOUND);
                     break;
+                }
+                if(op.mnemonic() == Mnemonic.LABEL) {
+                    line = word + line;//line should be nothing but ...
                 }
             }
             //handle registers/literals
@@ -224,13 +247,16 @@ public class Main {
                     error(Errors.BANK_CROSSING);
                 }
             }
-            if(!printedScreenNotice) {
-                printedScreenNotice = true;
-                if (getPage(org) == 7) {
-                    error(Errors.SCREEN_1);//could be an issue
-                }
+            if(!printedScreenNotice5) {
+                printedScreenNotice5 = true;
                 if (getPage(org) == 5) {
                     error(Errors.SCREEN_0);//could be an issue
+                }
+            }
+            if(!printedScreenNotice7) {
+                printedScreenNotice7 = true;
+                if (getPage(org) == 7) {
+                    error(Errors.SCREEN_1);//could be an issue
                 }
             }
             return compiled;

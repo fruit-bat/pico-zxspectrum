@@ -1,5 +1,8 @@
 package opcode;
 
+import literal.Address;
+import literal.Label;
+
 import static opcode.Format.*;
 
 public enum Mnemonic {
@@ -70,7 +73,7 @@ public enum Mnemonic {
     OTDR("otdr", new Format[]{ NUL }),
     JPJ("jpj", new Format[]{ Format.RR }),
     JPC("jpc", new Format[]{ Format.RR }),
-    RTJ("rtj", new Format[]{ NUL }),
+    XIT("xit", new Format[]{ NUL }),
     RTC("rtc", new Format[]{ NUL }),
     CPC("cpc", new Format[]{ NUL }),
     LDC("ldc", new Format[]{ NUL }),
@@ -86,7 +89,8 @@ public enum Mnemonic {
     EQU("equ", new Format[]{ MACRO }),
     MACRO_DEF("macro", new Format[]{ MACRO }),//whole file as macro with #n args??
     MACRO_END("end", new Format[]{ MACRO }),
-    FILL("fill", new Format[]{ MACRO });
+    FILL("fill", new Format[]{ MACRO }),
+    LABEL(null, new Format[]{ MACRO });// for threaded automatics
 
     String name;
     Format[] allows;
@@ -95,12 +99,15 @@ public enum Mnemonic {
         this.name = name;
     }
 
-    public static Mnemonic getMnemonic(String op) {
+    public static Mnemonic getMnemonic(String op, int org) {
         for (Mnemonic m: Mnemonic.values()) {
             if(op.trim().toLowerCase().equals(m.name)) {
                 return m;
             }
         }
+        Address l = Label.findLabel(op.trim().toLowerCase(), org);
+        // found as label
+        if(l != null) return LABEL;
         return null;
     }
 

@@ -1,5 +1,7 @@
 package register;
 
+import literal.Address;
+
 import java.util.Arrays;
 
 public enum Register8 {
@@ -31,7 +33,7 @@ public enum Register8 {
         this.iy = iy;
     }
 
-    static byte parse(String num, Register8 reg, boolean isIX) {
+    static byte parse(String num, Register8 reg, boolean isIX) throws Exception {
         //remove space
         num = num.trim();
         Arrays.stream(num.split(" ")).reduce((a, b) -> a + b);
@@ -39,7 +41,14 @@ public enum Register8 {
         num = num.substring(fuzz.indexOf("*") + 1);
         int tail = fuzz.length() - fuzz.indexOf("*") - 1;
         num = num.substring(0, fuzz.length() - tail);
-        return Byte.parseByte(num);
+        String based = num.substring(1);
+        if(num.charAt(0) == '$') {
+            return (byte) Integer.parseInt(based, 16);
+        } else if(num.charAt(0) == '%') {
+            return (byte) Integer.parseInt(based, 2);
+        } else {
+            return (byte) Integer.parseInt(num);
+        }
     }
 
     static boolean fuzzEquals(String reg, String fuzz) {
@@ -58,19 +67,23 @@ public enum Register8 {
     }
 
     public static Register getRegister(String reg) {
-        for (Register8 r: Register8.values()) {
-            if(reg.trim().toLowerCase().equals(r.name))
-                return new Register(r);
-            if(r.ix != null) {
-                if(fuzzEquals(reg.trim().toLowerCase(), r.ix))
-                    return new Register(r, true, false,
-                            parse(reg, r, false));
+        try {
+            for (Register8 r : Register8.values()) {
+                if (reg.trim().toLowerCase().equals(r.name))
+                    return new Register(r);
+                if (r.ix != null) {
+                    if (fuzzEquals(reg.trim().toLowerCase(), r.ix))
+                        return new Register(r, true, false,
+                                parse(reg, r, false));
+                }
+                if (r.iy != null) {
+                    if (fuzzEquals(reg.trim().toLowerCase(), r.iy))
+                        return new Register(r, false, true,
+                                parse(reg, r, true));
+                }
             }
-            if(r.iy != null) {
-                if(fuzzEquals(reg.trim().toLowerCase(), r.iy))
-                    return new Register(r, false, true,
-                            parse(reg, r, true));
-            }
+        } catch (Exception e) {
+            return null;
         }
         return null;
     }

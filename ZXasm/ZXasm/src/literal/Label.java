@@ -22,6 +22,11 @@ public class Label {
     }
 
     public static Address findLabel(String name, int org) {
+        boolean page = false;
+        if(name.length() > 0 && name.charAt(0) == '@') {//page of label
+            page = true;
+            name = name.substring(1);
+        }
         Label l = table.get(name);
         if(l == null) return new Address(0);//first pass blag
         if(!Main.isROMorSafe(l.location.address)) {
@@ -29,6 +34,7 @@ public class Label {
                 Main.error(Main.Errors.LABEL_ADDRESS_PAGE);
             }
         }
+        if(page && l.location != null) return new Address((l.location.address >> 16) | 8);// sets screen 7
         return l.location;
     }
 
