@@ -34,7 +34,7 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_E,           1, { {2, 2} }},
   { HID_KEY_R,           1, { {2, 3} }},
   { HID_KEY_T,           1, { {2, 4} }},
-  
+
   { HID_KEY_1,           1, { {3, 0} }},
   { HID_KEY_2,           1, { {3, 1} }},
   { HID_KEY_3,           1, { {3, 2} }},
@@ -64,9 +64,23 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_M,           1, { {7, 2} }},
   { HID_KEY_N,           1, { {7, 3} }},
   { HID_KEY_B,           1, { {7, 4} }},
-  
+
   { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
-  
+
+  // maybe extra usefuls
+  { HID_KEY_CONTROL_RIGHT,  2, { {0, 0}, {6, 0} }},//break
+  // some extra punctuation immediates
+  { HID_KEY_COMMA,          2, { {0, 0}, {7, 3} }},
+  { HID_KEY_PERIOD,         2, { {0, 0}, {7, 2} }},
+  { HID_KEY_SLASH,          2, { {0, 0}, {0, 4} }},
+  { HID_KEY_SEMICOLON,      2, { {0, 0}, {5, 1} }},
+  { HID_KEY_APOSTROPHE,     2, { {0, 0}, {4, 3} }},
+  //{ HID_KEY_BACKSLASH,      2, { {0, 0}, {4, 0} }},
+  //{ HID_KEY_BRACKET_LEFT,   2, { {0, 0}, {4, 0} }},
+  //{ HID_KEY_BRACKET_RIGHT,  2, { {0, 0}, {4, 0} }},
+  { HID_KEY_MINUS,          2, { {0, 0}, {6, 3} }},
+  { HID_KEY_EQUAL,          2, { {0, 0}, {6, 1} }},
+
   { HID_KEY_ARROW_LEFT,  2, { {0, 0}, {3, 4} }},
   { HID_KEY_ARROW_DOWN,  2, { {0, 0}, {4, 4} }},
   { HID_KEY_ARROW_UP,    2, { {0, 0}, {4, 3} }},
@@ -111,8 +125,8 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
 
 ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   ZxSpectrumFileLoop *zxSpectrumSnapList,
-  ZxSpectrumFileLoop* zxSpectrumTapeList, 
-  QuickSave* quickSave, 
+  ZxSpectrumFileLoop* zxSpectrumTapeList,
+  QuickSave* quickSave,
   ZxSpectrumJoystick * zxSpectrumJoystick
 ) :
   ZxSpectrumKeyboard(zxSpectrumJoystick),
@@ -125,7 +139,7 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
 }
 
 ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
-  QuickSave* quickSave, 
+  QuickSave* quickSave,
   ZxSpectrumJoystick * zxSpectrumJoystick
 ) :
   ZxSpectrumKeyboard(zxSpectrumJoystick),
@@ -151,7 +165,7 @@ static uint8_t func_keys[] = {
   HID_KEY_F11,
   HID_KEY_F12,
   HID_KEY_F13,
-  HID_KEY_F14  
+  HID_KEY_F14
 };
 
 int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -167,10 +181,10 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
 
   uint32_t fkd = 0;
   uint32_t fkp = 0;
-  
+
   for(unsigned int i = 0; i < 6; ++i) {
     const unsigned char hidKeyCode = report->keycode[i];
-    
+
     for (unsigned int fk = 0; fk < sizeof(func_keys); ++fk) {
       const uint32_t fkb = 1 << fk;
       const unsigned char fkc = func_keys[fk];
@@ -206,10 +220,10 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   else {
     // F1 open menu
     if ((fkp & (1 << 0)) && !_kiosk) r = 1;
-    
+
     // F3 toggle mute
-    if ((fkp & (1 << 2))) _ZxSpectrum->toggleMute();    
-    
+    if ((fkp & (1 << 2))) _ZxSpectrum->toggleMute();
+
     if ((fkp & (1 << 12)) && _quickSave) _quickSave->save(_ZxSpectrum, 0);
     if ((fkp & (1 << 13)) && _quickSave) _quickSave->load(_ZxSpectrum, 0);
 
@@ -219,7 +233,7 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     if (fkp & (1 << 11)) _ZxSpectrum->reset(ZxSpectrum128k);
     // F4 toggle moderate
     if (fkp & (1 << 3)) _ZxSpectrum->toggleModerate();
-    
+
     if (_zxSpectrumSnapList) {
       // F8 curr snap
       if (fkp & (1 << 7)) _zxSpectrumSnapList->curr(_ZxSpectrum);
@@ -238,6 +252,6 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
       if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
     }
   }
-  
+
   return r;
 }
