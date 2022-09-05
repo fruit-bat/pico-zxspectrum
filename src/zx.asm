@@ -9,8 +9,8 @@
 // Partially wrote by Simon Jackson @jackokring github.
 
   org $0000
-bankPort:     equ $7ffd
-portPlusA:    equ $1ffd
+bankPort:     equ $7ffd         // 128k banking port
+portPlusA:    equ $1ffd         // +2A/+3A port for extra ROMs
 
 main:
 .rest00:
@@ -49,36 +49,40 @@ main:
 .rst30:
   upto $38
 .rst38:          // interrupt IM 2
-  call userInt
-  call sysInt
-  reti
-.sysIgnore:
-  ex (sp), hl
-  pop hl
-  reti
+  call userInt              //3
+  call sysInt               //3
+  ret                       //1 (7 bytes)
 .spectrum:
-  ld bc, portPlusA
-  out (c), 4
-  ld bc, bankPort
-  out (c), 16
-  rst 0       // reset as 48k if possible
+  ld bc, portPlusA           //3
+  ld a, 4                    //2
+  out (c), a                 //2
+  ld bc, bankPort            //3
+  ld a, 16                   //2
+  out (c), a                 //2
+  rst 0                      //1 reset as 48k if possible (15 bytes + 7)
 .doSpectrum
-  ld bc, 11
-  ld hl, .spectrum
-  ld de, stack
-  ldir
-  ld hl, stack
-  push hl
-  ret
+  ld bc, 15                 //3
+  ld hl, .spectrum          //3
+  ld de, stack              //3
+  push de                   //1
+  ldir                      //2
+  ret                       //1 (13 bytes + 22)
 .setIntVec
-  di
-  ld (userInt), hl
-  ei
-  retn
+  di                        //1
+  ld (userInt), hl          //3
+  ei                        //1
+  retn                      //2 (7 bytes + 35)
+  //should be 4 bytes spare
+.userIntNoSys:
+  ex (sp), hl
+  pop hl                    // a botch to pop stack using no registers
+  reti                      // exit interrupts without doing system things
   upto $66
 .nmi66:
 .warm:
   // warm boot code and NMI does it too
+  ld bc, bankPort
+  out (c), a
   ld hl, .userIntDefault  // a default user interrupt
   call setIntVec
   jr .exe
@@ -121,7 +125,7 @@ main:
 .sysInt:
   // the system interrupt code fixed in ROM
 
-  ret
+  reti
 .userIntDefault:
   ret
 notice:
