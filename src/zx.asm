@@ -26,6 +26,8 @@ main:
   // if there is a divMMC connected it will switch and vector to its own
   // handler. As nn is its own handler in its own ROM.
   // This is about the neatest solution but has no presence checking.
+
+  // The 48k ROM is not paged in so danger on all indirect basic calls
 .saveReg:
   ex (sp), hl
   push de
@@ -54,6 +56,7 @@ main:
 .rst30:
   upto $38
 .rst38:          // interrupt IM 2
+  // adapted to leave push af 48k BASIC ROM execution on there divMMC
   push af                   //1
   pop af                    //1
   call userInt              //3
@@ -156,11 +159,7 @@ notice:
   nop
 .fixLoadTap:
 
-  // an interface I fix to prevent code intercept
-  // upto $1706
-  // jr .ifaceIFix
-  // nop   // must not fetch $1708 as interface I intercepts on this address
-//.ifaceIFix:
+
 
 
   upto $3d00          // $4000 - ($80 - $20) * 8
@@ -1236,12 +1235,6 @@ userInt:
 lastBank:
   dw 0
 
-chAdd:
-  // used by rst 08 for start of command buffer evaluation
-  dw 0
-xPtr:
-  // used by rst 08 for error pointer
-  dw 0
 
   // vectors if paging used
 vectors:
