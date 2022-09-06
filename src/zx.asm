@@ -21,11 +21,14 @@ main:
   jr .start
   upto $08
 .rst08:
-  db $2a         // interface I error intercept but divMMC code better
-  // a ld hl, ()
+  db $c3         // interface I error intercept but divMMC code better
+  // jp nn --------------- $d1e3 address for a vectored crash if no divMMC
+  // if there is a divMMC connected it will switch and vector to its own
+  // handler. As nn is its own handler in its own ROM.
+  // This is about the neatest solution but has no presence checking.
 .saveReg:
-  ex (sp), hl    // if no divMMC abused
-  push de        // if no divMMC abused
+  ex (sp), hl
+  push de
   push bc
   push af
   push hl
@@ -116,7 +119,7 @@ main:
   push hl           //return there
   ld hl, (temphl)
   inc hl
-  jpj hl            //indirect vector to return to .onReturn
+  jpj hl            //indirect vector and return to .onReturn
 .onReturn:
   ld (temphl), hl
   pop hl
@@ -142,12 +145,13 @@ notice:
   ds "ZX FORTH ROM"
 
 
+
   upto $04c0      // save tap divMMC esxDOS
   jr .fixSaveTap
   nop
 .fixSaveTap:
 
-  upto $0560
+  upto $0560      // load tap divMMC esxDOS
   jr .fixLoadTap
   nop
 .fixLoadTap:
@@ -1228,6 +1232,8 @@ dstack:
 temphl:
   dw 0
 userInt:
+  dw 0
+lastBank:
   dw 0
 
 chAdd:
