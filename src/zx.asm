@@ -21,10 +21,11 @@ main:
   jr .start
   upto $08
 .rst08:
-  nop         // interface I error intercept
+  db $2a         // interface I error intercept but divMMC code better
+  // a ld hl, ()
 .saveReg:
-  ex (sp), hl
-  push de
+  ex (sp), hl    // if no divMMC abused
+  push de        // if no divMMC abused
   push bc
   push af
   push hl
@@ -141,13 +142,21 @@ notice:
   ds "ZX FORTH ROM"
 
 
+  upto $04c0      // save tap divMMC esxDOS
+  jr .fixSaveTap
+  nop
+.fixSaveTap:
 
+  upto $0560
+  jr .fixLoadTap
+  nop
+.fixLoadTap:
 
   // an interface I fix to prevent code intercept
-  upto $1706
-  jr ifaceIFix
-  nop   // must not fetch $1708 as interface I intercepts on this address
-ifaceIFix:
+  // upto $1706
+  // jr .ifaceIFix
+  // nop   // must not fetch $1708 as interface I intercepts on this address
+//.ifaceIFix:
 
 
   upto $3d00          // $4000 - ($80 - $20) * 8
@@ -1220,8 +1229,13 @@ temphl:
   dw 0
 userInt:
   dw 0
-lastBank:
-  db 0
+
+chAdd:
+  // used by rst 08 for start of command buffer evaluation
+  dw 0
+xPtr:
+  // used by rst 08 for error pointer
+  dw 0
 
   // vectors if paging used
 vectors:
