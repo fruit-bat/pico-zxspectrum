@@ -244,14 +244,15 @@ public:
         while (_ta32 > 0) {
           int t = _Z80.step();
           c += t;
-          stepBuzzer();
-          zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+          if (!_mute) {
+            stepBuzzer();
+            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+          }
           if (t == 0) {
             _ta32 = 0;
             break;
           }
-          uint32_t tt32 = MUL32(t, _moderate);
-          _ta32 -= tt32;
+          _ta32 = _ta32 < -500 * 4 * 32 ? -500 * 4 * 32 : _ta32 - MUL32(t, _moderate);
         }
       }
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);

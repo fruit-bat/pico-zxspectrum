@@ -267,7 +267,12 @@ void __not_in_flash_func(main_loop)() {
           zxSpectrum.interrupt();
         }
 #ifdef EAR_PIN
-        zxSpectrum.step(zx_ear_get32(ear_pio, ear_sm));
+        if (zxSpectrum.moderate()) {
+          zxSpectrum.step(zx_ear_get32(ear_pio, ear_sm));
+        }
+        else {
+          zxSpectrum.step();
+        }
 #else
         zxSpectrum.step();
 #endif 
