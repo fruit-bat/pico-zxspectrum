@@ -14,6 +14,7 @@ portPlusA:    equ $1ffd         // +2A/+3A port for extra ROMs
 
 main:
 .rest00:
+  // divMMC compat ok
   di
   ld sp, stack. //"." for last before next symbol as stack grows down
   im 2
@@ -49,9 +50,10 @@ main:
 .rst30:
   upto $38
 .rst38:          // interrupt IM 2
+  push af                   //1
+  pop af                    //1
   call userInt              //3
-  call sysInt               //3
-  ret                       //1 (7 bytes)
+  jp sysInt                 //3 (8 bytes)
 .spectrum:
   ld bc, portPlusA           //3
   ld a, 4                    //2
@@ -59,19 +61,21 @@ main:
   ld bc, bankPort            //3
   ld a, 16                   //2
   out (c), a                 //2
-  rst 0                      //1 reset as 48k if possible (15 bytes + 7)
+  rst 0                      //1 reset as 48k if possible (15 bytes + 8)
 .doSpectrum
   ld bc, 15                 //3
   ld hl, .spectrum          //3
   ld de, stack              //3
   push de                   //1
   ldir                      //2
-  ret                       //1 (13 bytes + 22)
+  ret                       //1 (13 bytes + 23)
 .setIntVec
+  // set up hl with vector to routine ending ret
+  // or jp .userIntNoSys to disable system ROM routine post user
   di                        //1
   ld (userInt), hl          //3
   ei                        //1
-  retn                      //2 (7 bytes + 35)
+  ret                       //1 (6 bytes + 36 = 42)
   //should be 4 bytes spare
 .userIntNoSys:
   ex (sp), hl
@@ -79,6 +83,9 @@ main:
   reti                      // exit interrupts without doing system things
   upto $66
 .nmi66:
+  // might do divMMC compat ok
+  push af
+  pop af
 .warm:
   // warm boot code and NMI does it too
   ld bc, bankPort
@@ -108,7 +115,7 @@ main:
   push hl           //return there
   ld hl, (temphl)
   inc hl
-  jpj hl            //indirect vector to return to onReturn
+  jpj hl            //indirect vector to return to .onReturn
 .onReturn:
   ld (temphl), hl
   pop hl
@@ -127,6 +134,8 @@ main:
 
   reti
 .userIntDefault:
+  // a default null routine
+  // always use ret except for when escaping the system
   ret
 notice:
   ds "ZX FORTH ROM"

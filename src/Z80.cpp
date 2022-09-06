@@ -401,6 +401,7 @@ enum {
 
   MUL_DE,
   ADC_DE_DE,
+  NOPN,// divMMC might require this for an effect banked EDxx NOP
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1386,7 +1387,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 // RESERVED BLOCK
 //====================================================
 //0
-  ED_UNDEFINED,
+  NOPN,// banked mid fetch NOP for RETN NMI on divMMC ?
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -3234,7 +3235,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
 
       }
-
+      case NOPN:
       case NOP: {
 
         break;
