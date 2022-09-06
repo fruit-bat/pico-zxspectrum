@@ -252,7 +252,7 @@ public:
             _ta32 = 0;
             break;
           }
-          _ta32 = _ta32 < -500 * 4 * 32 ? -500 * 4 * 32 : _ta32 - MUL32(t, _moderate);
+          _ta32 -= MUL32(t, _moderate);
         }
       }
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
