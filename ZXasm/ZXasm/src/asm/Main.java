@@ -23,9 +23,10 @@ public class Main {
     public enum OutputAs {
         BIN("bin", (code, org, out) -> {}),
         HEX("hex", (code, org, out) -> {}),
-        ROM("rom", (code, org, out) -> {}),
-        Z80("z80", (code, org, out) -> {}),
-        C("c", (code, org, out) -> {});
+        ROM("rom", (code, org, out) -> {}),//Also builds z80 too
+        Z80("z80", (code, org, out) -> {}),//doesn't build rom
+        C("c", (code, org, out) -> {}),
+        PRETTY("txt", (code, org, out) -> {});//like a really well printed assembly listing
 
         String as;
         OutputWriter writer;
@@ -52,15 +53,21 @@ public class Main {
             List<String> in = Files.readAllLines(Paths.get(argv[2]),
                     StandardCharsets.UTF_8);
             lines = new String[in.size()];
-            for (int i = 0; i < in.size(); i++) {
+            for (int i = 0; i < lines.length; i++) {
                 //pass 1
+                //build syntax tree and symbol table
                 lines[i] = in.get(i);//head removal better
-                parseLine(lines[i]);
+                parseLine(lines[i], false);
             }
+            in = null;
             //pass 2
             lineNumber = 0;
-            //TODO
-
+            for (int i = 0; i < lines.length; i++) {
+                //pass 2
+                //TODO code gen with actual address values instead of some zeros
+                parseLine(lines[i], true);// should have defined them all
+            }
+            //TODO report
         } catch(Exception e) {
             error(Errors.INTERNAL);//also does an ...
             throw e;
@@ -139,6 +146,7 @@ public class Main {
 
     public static String removeComment(String line) {
         String[] quote = line.split("\"");
+        if(quote.length % 2 == 0) error(Errors.QUOTE_CLOSE);
         line = "";
         for(int i = 0; i < quote.length; i+=2) {
             quote[i] = quote[i].replace("//", ";");
@@ -177,7 +185,9 @@ public class Main {
         LABEL_ADDRESS_PAGE(ErrorKinds.WARN, "Label is in a paged memory bank"),
         ORG_SET(ErrorKinds.ERROR, "Can only set org once at start of file"),
         INTERNAL(ErrorKinds.ERROR, "Internal error"),
-        BAD_OUT_FORMAT(ErrorKinds.ERROR, "The output format asked for is not supported");
+        BAD_OUT_FORMAT(ErrorKinds.ERROR, "The output format asked for is not supported"),
+        QUOTE_CLOSE(ErrorKinds.ERROR, "All \"\" must be paired and joined are one"),
+        DUPE_LABEL(ErrorKinds.ERROR, "All label names must be unique or contextually determined");
 
         ErrorKinds kind;
         String msg;
@@ -193,7 +203,7 @@ public class Main {
             System.err.println(lineNumber + "> " + lines[lineNumber - 1]);
     }
 
-    public static byte[] parseLine(String line) {
+    public static byte[] parseLine(String line, boolean allowDupe) {
         lineNumber++;// starts at line 1
         line = removeComment(line);
         if(line == null || line.equals("")) return null;
@@ -204,11 +214,16 @@ public class Main {
         while((line = line.replace(" :", ":")) != lastLine);
         while(line.length() > 0) {
             int spc = line.indexOf(" ");
+            if(spc == -1) spc = line.length();// might not be any ...
             String word = line.substring(0, spc);
             line = line.substring(spc).trim();
             if(word.charAt(word.length() - 1) == ':') {
+                word = word.substring(0, word.length() - 1).trim();
                 //label:
-                labelProxy(word.substring(0, word.length() - 1).trim());
+                if(!allowDupe && Label.exits(word)) {
+                    error(Errors.DUPE_LABEL);
+                }
+                labelProxy(word);
                 continue;//multi-label lines
             }
             //handle mnemonic

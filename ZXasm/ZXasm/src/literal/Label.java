@@ -21,6 +21,10 @@ public class Label {
         this.location = location;
     }
 
+    public static boolean exits(String name) {
+        return table.get(name) != null;
+    }
+
     public static Address findLabel(String name, int org) {
         boolean page = false;
         if(name.length() > 0 && name.charAt(0) == '@') {//page of label

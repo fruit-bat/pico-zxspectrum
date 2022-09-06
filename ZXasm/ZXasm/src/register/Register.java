@@ -63,7 +63,8 @@ public class Register {
     }
 
     public Register(String reg) {
-        literal = reg.substring(1, reg.length() - 1);
+        literal = reg.substring(1, reg.length() - 1)
+                .replace("\"\"", "\"");
     }
 
     public Register(Register16 reg) {

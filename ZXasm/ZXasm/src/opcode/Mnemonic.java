@@ -80,6 +80,7 @@ public enum Mnemonic {
     CPCR("cpcr", new Format[]{ NUL }),
     LDCR("ldcr", new Format[]{ NUL }),
     MUL("mul", new Format[]{ Format.RR }),
+    NOPN("nopn", new Format[]{ NUL }),
 
     DB("db", new Format[]{ MACRO }),
     DW("dw", new Format[]{ MACRO }),
