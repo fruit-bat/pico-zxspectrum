@@ -69,45 +69,40 @@ private:
   
   inline int readIO(int address)
   {
-    if (address == 0xfffd) {
+    if (!(address & 0x0001)) {
+      uint8_t kb = _keyboard1->read(address);
+      if (_keyboard2) kb &= _keyboard2->read(address);
+      return kb ^ (_ear ? 0 : (1<<6)) ;
+    }
+    if ((address & 0xC002) == 0x8000) {
       return _ay.readData();
     }
+    else if (!(address & 0x00e0)) {
+       return _joystick ? _joystick->getKempston() : 0;
+    }
     else {
-      switch(address & 0xFF) {
-        case 0xFE: {
-          uint8_t kb = _keyboard1->read(address);
-          if (_keyboard2) kb &= _keyboard2->read(address);
-          return kb ^ (_ear ? 0 : (1<<6)) ;
-        }
-        case 0x1f: return _joystick ? _joystick->getKempston() : 0;
-        default: return 0xff;
-      }
+      return 0xff;
     }
   }
   
-  inline void writeIO(int address, int value) {
-    if (address == 0x7ffd) {
+  inline void writeIO(int address, int value)
+  {
+    if (!(address & 0x0001)) {
+      _port254 = value;
+      _borderColour = value & 7;
+    }
+    else if (!(address & 0x8002)) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
-    else if (address == 0xfffd) {
+    else if ((address & 0xC002) == 0xC000) {
       _ay.writeCtrl(value);
     }
-    else if (address == 0xbffd) {
+    else if ((address & 0xC002) == 0x8000) {
       _ay.writeData(value);
-    }
-    else {
-      switch(address & 0xFF) {
-        case 0xFE:
-          _port254 = value;
-          _borderColour = value & 7;
-          break;
-        default:
-          break;
-      }
     }
   }
   
