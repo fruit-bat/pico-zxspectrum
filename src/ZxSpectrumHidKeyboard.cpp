@@ -166,7 +166,11 @@ static uint8_t func_keys[] = {
   HID_KEY_F12,
   // assume custom HID ...
   HID_KEY_F13,
-  HID_KEY_F14
+  HID_KEY_F14,
+
+  // EXTRAS
+  HID_KEY_GRAVE,
+  HID_KEY_TAB
 };
 
 int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -227,6 +231,13 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     if ((fkp & (1 << 12)) && _quickSave) _quickSave->save(_ZxSpectrum, 0);
     if ((fkp & (1 << 13)) && _quickSave) _quickSave->load(_ZxSpectrum, 0);
 
+    // grave tab in F15 to F16 space
+    if ((fkp & (1 << 14)) && !_kiosk) {//GRAVE
+
+    }
+    if ((fkp & (1 << 15)) && _quickSave) {//TAB
+      
+    }
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
     // F11 reset to 128k
