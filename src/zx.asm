@@ -95,20 +95,6 @@ main:
   //the start up code to initial once only values for cold boot
 
 
-  jr .warm
-//===========================================
-// The Pre-NMI space
-//===========================================
-
-
-  upto $66
-.nmi66:
-//===========================================
-// The NMI
-//===========================================
-  // might do divMMC compat ok
-  retn      // can't find respective pop af in divMMC exit
-  // so either there's a missing retn or NMI returns via other means
 //===========================================
 // Warm and evaluation loop (NO ENTRY POINT)
 //===========================================
@@ -121,10 +107,26 @@ main:
   out (c), a
   ld hl, .userIntDefault  // a default user interrupt
   call setIntVec
+
+  
 .exe:             // THIS IS NOT THE ENTRY POINT rst 18 (stacks an instance)
   //main loop as initialized now
 
   jr .exe               // loop back
+//===========================================
+// The Pre-NMI space
+//===========================================
+
+
+  upto $66
+.nmi66:
+//===========================================
+// The NMI
+//===========================================
+  // might do divMMC compat ok
+  retn      // can't find respective pop af in divMMC exit on space
+  // so either there's a missing retn or NMI returns via other means
+  // very likely does some weird stuff
 //===========================================
 // Banking vectoring
 //===========================================

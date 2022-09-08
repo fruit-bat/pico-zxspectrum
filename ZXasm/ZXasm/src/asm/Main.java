@@ -112,6 +112,20 @@ public class Main {
         return last;
     }
 
+    public static byte[] byteUpto(int here) {
+        if(here == org) return new byte[0];//ok no issue
+        int count = here - org;//amount org behind request
+        if(here < org) {
+            error(Errors.UPTO_BAD);
+            System.err.println((-count) + " bytes excess");
+            return new byte[0];//no make worse
+        }
+        //ok
+        error(Errors.UPTO_GOOD);//not bad
+        System.err.println(count + " bytes available");
+        return new byte[count];//make ok
+    }
+
     public static int getPage(int org) {
         int x = pageOrder[(org & 0xFC000) >> 14];
         if(x > 8) {
@@ -189,7 +203,9 @@ public class Main {
         QUOTE_CLOSE(ErrorKinds.ERROR, "All \"\" must be paired and joined are one"),
         DUPE_LABEL(ErrorKinds.ERROR, "All label names must be unique or contextually determined"),
         LABEL_NOT_FOUND(ErrorKinds.ERROR, "An undefined label was not found"),
-        NULL_REGISTER(ErrorKinds.ERROR, "No argument present");
+        NULL_REGISTER(ErrorKinds.ERROR, "No argument present"),
+        UPTO_BAD(ErrorKinds.ERROR, "Org has exceeded upto request"),
+        UPTO_GOOD(ErrorKinds.INFO, "Org padding upto request");
 
         ErrorKinds kind;
         String msg;
