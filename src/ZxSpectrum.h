@@ -274,6 +274,11 @@ public:
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
 
+// single step interface
+  void stopToggle();
+  void stepOneOnly();
+  void regDump();
+
   inline unsigned int borderColour() { return _borderColour; }
   // Z80X expansion port address for feature access
   inline unsigned int z80xPort() { return _z80x; }

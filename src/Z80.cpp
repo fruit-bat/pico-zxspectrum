@@ -2120,11 +2120,13 @@ static const int OVERFLOW_TABLE[4] = {
   0,
 };
 
-
-
+bool stopped;
+bool requestStep;
 
 void Z80::reset()
 {
+  stopped = false;
+  requestStep = false;
   state.status = 0;
   AF = 0xffff;
   SP = 0xffff;
@@ -2208,8 +2210,18 @@ void Z80::popArch() {
 
 }
 
+void Z80::stopToggle() {
+  stopped = !stopped;
+  if(stopped && requestStep) requestStep = false;
+}
+
+void Z80::stepOneOnly() {
+  requestStep = true;
+}
+
 int Z80::IRQ(int data_on_bus)
 {
+  if(stopped) return 0;
   state.status = 0;
   if (state.iff1) {
 
@@ -2285,6 +2297,7 @@ int Z80::IRQ(int data_on_bus)
 
 int Z80::NMI()
 {
+  if(stopped) return 0;
   int	elapsed_cycles;
 
   state.status = 0;
@@ -2304,6 +2317,13 @@ int Z80::NMI()
 
 int Z80::step()
 {
+  if(stopped) {
+    if(requestStep) {
+      requestStep = false;
+    } else {
+      return 4;//keep regulation clock working
+    }
+  }
   if (state.status != 0) return 0;
   int elapsed_cycles = 0;
   int pc = state.pc;

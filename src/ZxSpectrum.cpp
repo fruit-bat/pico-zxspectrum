@@ -43,6 +43,42 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
   }
 }
 
+inline void ZxSpectrum::regDump() {
+  printf("AF %04x\n", (_Z80.getA() << 8) + _Z80.getF());
+  printf("BC %04x\n", (_Z80.getB() << 8) + _Z80.getC());
+  printf("DE %04x\n", (_Z80.getD() << 8) + _Z80.getE());
+  printf("HL %04x\n\n", (_Z80.getH() << 8) + _Z80.getL());
+
+  printf("IX %04x\n", (_Z80.getIXH() << 8) + _Z80.getIXL());
+  printf("IY %04x\n", (_Z80.getIYH() << 8) + _Z80.getIYL());
+
+  int sp = (_Z80.getSPH() << 8) + _Z80.getSPL();
+  printf("SP %04x\n", sp);
+  printf("(PC) %02x ", readByte(sp++));//stack byte
+  printf("%02x %02x %02x\n\n",
+    readByte((sp+1) & 0xffff),
+    readByte((sp+2) & 0xffff),
+    readByte((sp+3) & 0xffff));
+
+  int pc = _Z80.getPC();
+  printf("PC %04x\n", pc);
+  printf("(PC) %02x ", readByte(pc++));//opcode byte
+  printf("%02x %02x %02x\n\n",
+    readByte((pc+1) & 0xffff),
+    readByte((pc+2) & 0xffff),
+    readByte((pc+3) & 0xffff));//max opcode length
+}
+
+void ZxSpectrum::stopToggle() {
+  _Z80.stopToggle();
+  regDump();
+}
+
+void ZxSpectrum::stepOneOnly() {
+  _Z80.stepOneOnly();
+  regDump();
+}
+
 void ZxSpectrum::reset(ZxSpectrumType type)
 {
   _type = type;

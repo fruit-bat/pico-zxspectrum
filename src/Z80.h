@@ -251,9 +251,13 @@ public:
 
   /* Initialize processor's state to power-on default. */
   void reset();
+  //architecture extensions
   void resetArch();
   void pushArch();
   void popArch();
+  //single stepper
+  void stopToggle();
+  void stepOneOnly();
 
   /* Trigger an interrupt according to the current interrupt mode and return the
   * number of cycles elapsed to accept it. If maskable interrupts are disabled,

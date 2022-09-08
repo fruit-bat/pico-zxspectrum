@@ -233,10 +233,10 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
 
     // grave tab in F15 to F16 space
     if ((fkp & (1 << 14)) && !_kiosk) {//GRAVE
-
+      _ZxSpectrum->stopToggle();
     }
     if ((fkp & (1 << 15)) && !_kiosk) {//TAB
-
+      _ZxSpectrum->stepOneOnly();
     }
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);
