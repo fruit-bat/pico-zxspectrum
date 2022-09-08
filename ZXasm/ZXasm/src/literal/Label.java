@@ -8,13 +8,22 @@ public class Label {
 
     String name;
     Address location;
-    Label parent;//useful TODO
 
     static HashMap<String, Label> table;
+    static String lastGlobal = "";
 
     public Label(String name) {
+        if(name.length() < 1) {
+            name = lastGlobal + ".";// bad symbol null
+        }
+        if(name.charAt(0) == '.') name = lastGlobal + name;//local
         this.name = name;
         table.putIfAbsent(name, this);//prevent second pass overwrite address
+    }
+
+    public static void setLocation(String name, Address location) {
+        Label l = table.get(name);
+        l.setLocation(location);
     }
 
     public void setLocation(Address location) {
@@ -25,14 +34,23 @@ public class Label {
         return table.get(name) != null;
     }
 
-    public static Address findLabel(String name, int org) {
+    public static Address findLabel(String name, int org, boolean allowDupe) {
         boolean page = false;
         if(name.length() > 0 && name.charAt(0) == '@') {//page of label
             page = true;
             name = name.substring(1);
         }
+        if(name.length() > 0 && name.charAt(0) == '.') {
+            name = lastGlobal + name;
+        }
         Label l = table.get(name);
-        if(l == null) return new Address(0);//first pass blag
+        if(l == null) {
+            if(allowDupe) {//second pass
+                Main.error(Main.Errors.LABEL_NOT_FOUND);
+                return null;
+            }
+            return new Address(0);//first pass blag
+        }
         if(!Main.isROMorSafe(l.location.address)) {
             if(Main.getPage(l.location.address) != Main.getPage(org)) {
                 Main.error(Main.Errors.LABEL_ADDRESS_PAGE);
@@ -40,9 +58,5 @@ public class Label {
         }
         if(page && l.location != null) return new Address((l.location.address >> 16) | 8);// sets screen 7
         return l.location;
-    }
-
-    public static boolean existsLabel(String name) {
-        return table.get(name) != null;
     }
 }

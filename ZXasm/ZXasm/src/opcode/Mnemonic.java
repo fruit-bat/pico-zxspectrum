@@ -100,13 +100,13 @@ public enum Mnemonic {
         this.name = name;
     }
 
-    public static Mnemonic getMnemonic(String op, int org) {
+    public static Mnemonic getMnemonic(String op, int org, boolean allowDupe) {
         for (Mnemonic m: Mnemonic.values()) {
             if(op.trim().toLowerCase().equals(m.name)) {
                 return m;
             }
         }
-        Address l = Label.findLabel(op.trim().toLowerCase(), org);
+        Address l = Label.findLabel(op.trim().toLowerCase(), org, allowDupe);
         // found as label
         if(l != null) return LABEL;
         return null;

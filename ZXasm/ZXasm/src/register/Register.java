@@ -1,5 +1,6 @@
 package register;
 
+import asm.Main;
 import literal.Address;
 import literal.Label;
 import opcode.CCode;
@@ -15,8 +16,12 @@ public class Register {
     String literal;
     Address data;
 
-    public static Register getRegister(String reg, int org) {
+    public static Register getRegister(String reg, int org, boolean allowDupe) {
         Register r = null;
+        if(reg.length() < 1) {
+            Main.error(Main.Errors.NULL_REGISTER);
+            return new Register(new Address(0));
+        }
         if(reg.charAt(0) == '\"' && reg.charAt(reg.length() - 1) == '\"') {
             r = new Register(reg);
         }
@@ -52,7 +57,7 @@ public class Register {
             }
         }
         if(r == null) {
-            r = new Register(Label.findLabel(reg, org));//could be un-found 0
+            r = new Register(Label.findLabel(reg, org, allowDupe));//could be un-found 0
         }
         return r;
     }

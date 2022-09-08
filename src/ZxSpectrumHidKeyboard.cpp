@@ -235,8 +235,8 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     if ((fkp & (1 << 14)) && !_kiosk) {//GRAVE
 
     }
-    if ((fkp & (1 << 15)) && _quickSave) {//TAB
-      
+    if ((fkp & (1 << 15)) && !_kiosk) {//TAB
+
     }
     // F11 reset to 48k
     if (fkp & (1 << 10)) _ZxSpectrum->reset(ZxSpectrum48k);

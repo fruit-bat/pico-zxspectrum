@@ -76,12 +76,12 @@ public class Main {
 
     public static void labelProxy(String name) {
         Label l = new Label(name);
-        l.setLocation(new Address(org));
+        Label.setLocation(name, new Address(org));
     }
 
     static int org, initialOrg;//also page
     final static int[] pageOrder = {
-        8, 5, 2, 0, 4, 6, 1, 3, 7
+        16, 5, 2, 0, 4, 6, 1, 3, 7
     };
 
     final static boolean[] safes = {
@@ -116,7 +116,7 @@ public class Main {
         int x = pageOrder[(org & 0xFC000) >> 14];
         if(x > 8) {
             error(Errors.OUT_OF_MEMORY);
-            return 9;
+            return 8;// an error
         }
         return x;
     }
@@ -187,7 +187,9 @@ public class Main {
         INTERNAL(ErrorKinds.ERROR, "Internal error"),
         BAD_OUT_FORMAT(ErrorKinds.ERROR, "The output format asked for is not supported"),
         QUOTE_CLOSE(ErrorKinds.ERROR, "All \"\" must be paired and joined are one"),
-        DUPE_LABEL(ErrorKinds.ERROR, "All label names must be unique or contextually determined");
+        DUPE_LABEL(ErrorKinds.ERROR, "All label names must be unique or contextually determined"),
+        LABEL_NOT_FOUND(ErrorKinds.ERROR, "An undefined label was not found"),
+        NULL_REGISTER(ErrorKinds.ERROR, "No argument present");
 
         ErrorKinds kind;
         String msg;
@@ -206,7 +208,7 @@ public class Main {
     public static byte[] parseLine(String line, boolean allowDupe) {
         lineNumber++;// starts at line 1
         line = removeComment(line);
-        if(line == null || line.equals("")) return null;
+        if(line == null || line.equals("")) return new byte[0];
         line = line.replace(":", ": ");//split for label
         Opcode op = new Opcode();
         String lastLine = line;
@@ -228,7 +230,7 @@ public class Main {
             }
             //handle mnemonic
             if(op.mnemonic() == null) {
-                op.setMnemonic(Mnemonic.getMnemonic(word, org));
+                op.setMnemonic(Mnemonic.getMnemonic(word, org, allowDupe));
                 if(op.mnemonic() == null) {
                     error(Errors.MNEMONIC_NOT_FOUND);
                     break;
@@ -240,12 +242,11 @@ public class Main {
             //handle registers/literals
             String[] comma = splitComma(line);
             for (String s: comma) {
-                op.setRegisters(Register.getRegister(s.trim(), org));
+                op.setRegisters(Register.getRegister(s.trim(), org, allowDupe));
             }
             byte[] compiled;
             if((compiled = op.compile(org)) == null) {
-                //alternates
-                break;
+                break;//error
             }
             //have opcode sequence??
             int lastOrg = org;
