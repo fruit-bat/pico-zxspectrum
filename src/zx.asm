@@ -14,30 +14,38 @@ portPlusA:    equ $1ffd         // +2A/+3A port for extra ROMs
 
 main:
 .rest00:
+//===========================================
+// RESET STACK POINTER
+//===========================================
   // divMMC compat ok
   di
-  ld sp, stack. //"." for last before next symbol as stack grows down
+  ld sp, endDStack //stack grows down
   im 2
   jr .start
   upto $08
 .rst08:
-  db $c3         // interface I error intercept but divMMC code better
+//===========================================
+// esxDOS call function (NOT dot command)
+//===========================================
+  jp .errorDivMMC // almost useless
   // jp nn --------------- $d1e3 address for a vectored crash if no divMMC
   // if there is a divMMC connected it will switch and vector to its own
   // handler. As nn is its own handler in its own ROM.
   // This is about the neatest solution but has no presence checking.
 
   // The 48k ROM is not paged in so danger on all indirect basic calls
-.saveReg:
-  ex (sp), hl
-  push de
-  push bc
-  push af
-  push hl
-  clc
-  ret
+  // RETURN ERROR NULL
+.errorDivMMC:
+  xor a     //EOK
+  scf       // but with carry set error
+  pop hl
+  inc hl  // skip command
+  jp hl
   upto $10
 .rst10:        // warm start
+//===========================================
+// Warm start and load a register set
+//===========================================
   jr .warm
 .loadReg:
   pop hl
@@ -48,6 +56,17 @@ main:
   ret
   upto $18
 .rst18:
+//===========================================
+// Evaluation loop and save a register set
+//===========================================
+  jr .exe
+.saveReg:
+  ex (sp), hl
+  push de
+  push bc
+  push af
+  push hl
+  ret
   upto $20
 .rst20:
   upto $28
@@ -56,56 +75,59 @@ main:
 .rst30:
   upto $38
 .rst38:          // interrupt IM 2
+//===========================================
+// IRQ with divMMC sophisticates
+//===========================================
   // adapted to leave push af 48k BASIC ROM execution on there divMMC
-  push af                   //1
-  pop af                    //1
-  call userInt              //3
-  jp sysInt                 //3 (8 bytes)
-.spectrum:
-  ld bc, portPlusA           //3
-  ld a, 4                    //2
-  out (c), a                 //2
-  ld bc, bankPort            //3
-  ld a, 16                   //2
-  out (c), a                 //2
-  rst 0                      //1 reset as 48k if possible (15 bytes + 8)
-.doSpectrum
-  ld bc, 15                 //3
-  ld hl, .spectrum          //3
-  ld de, stack              //3
-  push de                   //1
-  ldir                      //2
-  ret                       //1 (13 bytes + 23)
-.setIntVec
-  // set up hl with vector to routine ending ret
-  // or jp .userIntNoSys to disable system ROM routine post user
-  di                        //1
-  ld (userInt), hl          //3
-  ei                        //1
-  ret                       //1 (6 bytes + 36 = 42)
-  //should be 4 bytes spare
-.userIntNoSys:
-  ex (sp), hl
-  pop hl                    // a botch to pop stack using no registers
-  reti                      // exit interrupts without doing system things
+  push hl                   //1
+  ld hl, (userInt)          //3
+  jpc hl                    //1 - New!
+  //jr sysInt
+.sysInt:
+  pop hl
+  // the system interrupt code fixed in ROM
+
+  reti
+//===========================================
+// Startup initialization code
+//===========================================
+.start:
+  //the start up code to initial once only values for cold boot
+
+
+  jr .warm
+//===========================================
+// The Pre-NMI space
+//===========================================
+
+
   upto $66
 .nmi66:
+//===========================================
+// The NMI
+//===========================================
   // might do divMMC compat ok
-  push af
-  pop af
-.warm:
+  retn      // can't find respective pop af in divMMC exit
+  // so either there's a missing retn or NMI returns via other means
+//===========================================
+// Warm and evaluation loop (NO ENTRY POINT)
+//===========================================
+.warm:            // THIS IS NOT THE ENTRY POINT rst 10 (does not stack)
+  //ex (sp), hl     // pop down as no return
+  pop hl
   // warm boot code and NMI does it too
+  ld a, 4         // set screen 1
   ld bc, bankPort
   out (c), a
   ld hl, .userIntDefault  // a default user interrupt
   call setIntVec
-  jr .exe
-.start:
-  //the start up code to initial once only values for cold boot
-  jr .warm
-.exe:
+.exe:             // THIS IS NOT THE ENTRY POINT rst 18 (stacks an instance)
   //main loop as initialized now
-  ret // unreachable??
+
+  jr .exe               // loop back
+//===========================================
+// Banking vectoring
+//===========================================
 .vector:// enter vector with hl set to the 3 byte vector address/bank switch
   ld (temphl), hl
   ld h, (lastBank)
@@ -123,7 +145,7 @@ main:
   ld hl, (temphl)
   inc hl
   jpj hl            //indirect vector and return to .onReturn
-.onReturn:
+.onReturn:          // for .vextor
   ld (temphl), hl
   pop hl
   push af
@@ -136,24 +158,59 @@ main:
   pop af
   ld hl, (temphl)     //restore hl
   ret
-.sysInt:
-  // the system interrupt code fixed in ROM
-
-  reti
+.spectrum:
+  ld bc, portPlusA           //3
+  ld a, 4                    //2
+  out (c), a                 //2
+  ld bc, bankPort            //3
+  ld a, 16                   //2
+  out (c), a                 //2
+  rst 0                      //1
+.doSpectrum
+  ld bc, 15                 //3
+  ld hl, .spectrum          //3
+.doHLLenBC:
+  ld de, stack              //3
+  push de                   //1
+  ldir                      //2
+  ret                       //1
+//===========================================
+// Interrupt IRQ vectoring
+//===========================================
+.setIntVec
+  // set up hl with vector to routine ending ret
+  // or jp .userIntNoSys to disable system ROM routine post user
+  di                        //1
+  ld (userInt), hl          //3
+  ei                        //1
+  ret                       //1
+.userIntNoSys:
+  pop hl
+  pop hl                    // a botch to pop stack using no registers
+  reti                      // exit interrupts without doing system things
 .userIntDefault:
   // a default null routine
   // always use ret except for when escaping the system
+  // see .userIntNoSys for an example
   ret
 notice:
   ds "ZX FORTH ROM"
 
 
-
+//===========================================
+// Save tape skip (DO NOT CHANGE)
+//===========================================
   upto $04c0      // save tap divMMC esxDOS
   jr .fixSaveTap
   nop
 .fixSaveTap:
 
+
+
+
+//===========================================
+// Load tape skip (DO NOT CHANGE)
+//===========================================
   upto $0560      // load tap divMMC esxDOS
   jr .fixLoadTap
   nop
@@ -161,7 +218,9 @@ notice:
 
 
 
-
+//===========================================
+// Font part in ROM
+//===========================================
   upto $3d00          // $4000 - ($80 - $20) * 8
 chars:
 ; $20 - Character: ' '          CHR$(32)
@@ -1221,13 +1280,15 @@ chars:
   db    %00111100
   upto $4000    // end ROM
 charUDG:
-  fill 1280     // UDG space for (char+32) mod 255
+  fill 1280     // UDG space for (chr+32) mod 255
   // stacks for forth
 stack:
   fill $ff  //for 256 bytes
-dstack:
+endStack:
+dStack:
   fill $ff  //for 256 bytes
   // system variables
+endDStack:
 temphl:
   dw 0
 userInt:
