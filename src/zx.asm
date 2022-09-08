@@ -33,6 +33,12 @@ main:
   // handler. As nn is its own handler in its own ROM.
   // This is about the neatest solution but has no presence checking.
 
+  // The DOS ROM will likely still be paged in on the return
+  // and so there needs to be an executed "jp $1FFA" to un-map esxDOS
+  // so some copy and execute from memory
+  // try "jp .bankoutMMC" after return from any rst $10 x calls
+  // can't do it from within ROM
+
   // The 48k ROM is not paged in so danger on all indirect basic calls
   // RETURN ERROR NULL
 .errorDivMMC:
@@ -106,9 +112,10 @@ main:
   ld bc, bankPort
   out (c), a
   ld hl, .userIntDefault  // a default user interrupt
-  call setIntVec
+  call .setIntVec
+  call .compileEndMMC // make a nice convenience RAM function at bankoutMMC
 
-  
+
 .exe:             // THIS IS NOT THE ENTRY POINT rst 18 (stacks an instance)
   //main loop as initialized now
 
@@ -160,6 +167,9 @@ main:
   pop af
   ld hl, (temphl)     //restore hl
   ret
+//===========================================
+// Copy out of ROM and execute
+//===========================================
 .spectrum:
   ld bc, portPlusA           //3
   ld a, 4                    //2
@@ -176,6 +186,40 @@ main:
   push de                   //1
   ldir                      //2
   ret                       //1
+.compileEndMMC:
+  push hl
+  push af
+  ld hl, bankoutMMC
+  ld a, $df             // rst 08 - esxDOS command entry
+  ld (hl), a
+  inc hl
+  // blank for command code
+  inc hl
+  ld a, $c3
+  ld (hl), a
+  inc hl
+  ld a, $fa
+  ld (hl), a
+  inc hl
+  ld a, $1f
+  ld (hl), a
+  pop af
+  pop hl
+  ret
+.commandCodeDOS:
+  ex (sp), hl
+  push af
+  ld a, (hl)
+  inc hl
+  push hl
+  ld hl, bankoutMMC
+  inc hl
+  ld (hl), a
+  pop hl
+  pop af
+  ex (sp), hl
+  jp bankoutMMC   // do jump and return management
+
 //===========================================
 // Interrupt IRQ vectoring
 //===========================================
@@ -217,6 +261,16 @@ notice:
   jr .fixLoadTap
   nop
 .fixLoadTap:
+
+
+
+//===========================================
+// bankoutMMC (DO NOT CHANGE)
+//===========================================
+  upto $1ff8      // bankoutMMC divMMC esxDOS
+  jr .fixBankMMC
+  ret
+.fixBankMMC:
 
 
 
@@ -1297,6 +1351,8 @@ userInt:
   dw 0
 lastBank:
   dw 0
+bankoutMMC:
+  db 0, 0, 0, 0, 0
 
 
   // vectors if paging used
