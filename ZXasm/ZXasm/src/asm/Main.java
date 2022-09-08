@@ -175,7 +175,7 @@ public class Main {
                 }
             }
         }
-        return line;
+        return line.replace("\t", " ");//tabs
     }
 
     public enum ErrorKinds {
