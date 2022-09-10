@@ -28,7 +28,7 @@ public:
   }
 
   unsigned char __not_in_flash_func(read)(int address) {
-    int rs = address >> 8;
+    int rs = ~(address >> 8);
     unsigned int a = 0xff;
     
     if (_zxSpectrumJoystick) {
@@ -37,7 +37,7 @@ public:
     }
 
     for (int i = 0; i < 8; ++i) {
-      if (~rs & (1 << i)) a &= _line[i];
+      if (rs & (1 << i)) a &= _line[i];
     }
     //if (a != 0xff) printf("input %04X %02X\n", address, a);
     return a;

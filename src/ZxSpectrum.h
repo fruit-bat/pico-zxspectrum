@@ -33,6 +33,9 @@ private:
   uint8_t _portMem;
   uint8_t* _pageaddr[4];
   bool _ear;
+  uint32_t _earInvert;
+  uint32_t _earDc;
+  
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -72,7 +75,9 @@ private:
     if (!(address & 0x0001)) {
       uint8_t kb = _keyboard1->read(address);
       if (_keyboard2) kb &= _keyboard2->read(address);
-      return kb ^ (_ear ? 0 : (1<<6)) ;
+      int r = (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
+//      printf("%2.2X ", r);
+      return r;
     }
     if ((address & 0xC002) == 0x8000) {
       return _ay.readData();
@@ -233,9 +238,19 @@ public:
       _tu32 = tu32;
       _ay.vol(vA, vB, vC);
       
+      if (_earInvert ? (eb == 0) : (~eb == 0)) {
+        if (_earDc++ > 16000) {
+           _earInvert ^= 1;
+        }
+      }
+      else {
+        _earDc = 0;
+      }
+      
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
         if (_pulseBlock.end()) _ear = (eb >> i) & 1;
+
         while (_ta32 > 0) {
           int t = _Z80.step();
           c += t;
