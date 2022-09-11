@@ -219,25 +219,6 @@ void __not_in_flash_func(core1_main)() {
 }
 
 #ifdef EAR_PIN
-
-// TODO HACK move somewhere sensible
-
-#include "zx_ear_in.pio.h"
-
-static  PIO ear_pio = pio1;
-static  uint ear_sm = 0;
-
-static void init_ear_in() {
-  printf("init_ear_in\n");
-  uint offset = pio_add_program(ear_pio, &zx_ear_in_program);
-  ear_sm = pio_claim_unused_sm(ear_pio, true);
-  printf("Ear in sm = %d\n", ear_sm);
-  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 1000000);
-  printf("init_ear_in done\n");
-}
-
-// TODO HACK end
-
 #define CPU_STEP_LOOP 10
 #else
 #define CPU_STEP_LOOP 100
@@ -268,7 +249,7 @@ void __not_in_flash_func(main_loop)() {
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zx_ear_get32(ear_pio, ear_sm));
+          zxSpectrum.step(zxSpectrumReadEar());
         }
         else {
           zxSpectrum.step();
@@ -320,9 +301,7 @@ int main() {
   // Initialise the keyboard scan
   zx_keyscan_init();
 #endif
-#ifdef EAR_PIN
-  init_ear_in();
-#endif
+
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
