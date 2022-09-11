@@ -75,9 +75,7 @@ private:
     if (!(address & 0x0001)) {
       uint8_t kb = _keyboard1->read(address);
       if (_keyboard2) kb &= _keyboard2->read(address);
-      int r = (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
-//      printf("%2.2X ", r);
-      return r;
+      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
     }
     if ((address & 0xC002) == 0x8000) {
       return _ay.readData();
