@@ -258,7 +258,9 @@ public:
   //single stepper
   void stopToggle();
   void stepOneOnly();
-
+  bool canReport();
+  void haveReported();
+  
   /* Trigger an interrupt according to the current interrupt mode and return the
   * number of cycles elapsed to accept it. If maskable interrupts are disabled,
   * this will return zero. In interrupt mode 0, data_on_bus must be a single

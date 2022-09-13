@@ -277,6 +277,8 @@ public:
 // single step interface
   void stopToggle();
   void stepOneOnly();
+  bool canReport();
+  void haveReported();
   void regDump();
 
   inline unsigned int borderColour() { return _borderColour; }

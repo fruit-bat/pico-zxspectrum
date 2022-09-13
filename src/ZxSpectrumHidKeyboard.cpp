@@ -68,7 +68,7 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
 
   // maybe extra usefuls
-  { HID_KEY_CONTROL_RIGHT,  2, { {0, 0}, {6, 0} }},//break
+  { HID_KEY_CONTROL_RIGHT,  2, { {0, 0}, {7, 0} }},//break
   // some extra punctuation immediates
   { HID_KEY_COMMA,          2, { {0, 0}, {7, 3} }},
   { HID_KEY_PERIOD,         2, { {0, 0}, {7, 2} }},
@@ -264,5 +264,9 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     }
   }
 
+  if(_ZxSpectrum->canReport()) {
+    _ZxSpectrum->regDump();//debug after processing key events
+    _ZxSpectrum->haveReported();
+  }
   return r;
 }

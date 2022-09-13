@@ -402,6 +402,7 @@ enum {
   MUL_DE,
   ADC_DE_DE,
   NOPN,// divMMC might require this for an effect banked EDxx NOP
+  BRK,// breakpoint nop
 
 //=====================================================
 // Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
@@ -1388,7 +1389,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
 //====================================================
 //0
   NOPN,// banked mid fetch NOP for RETN NMI on divMMC ?
-  ED_UNDEFINED,
+  BRK,// breakpoint nop
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -2122,11 +2123,13 @@ static const int OVERFLOW_TABLE[4] = {
 
 bool stopped;
 bool requestStep;
+bool reportReady;
 
 void Z80::reset()
 {
   stopped = false;
   requestStep = false;
+  reportReady = false;
   state.status = 0;
   AF = 0xffff;
   SP = 0xffff;
@@ -2213,10 +2216,20 @@ void Z80::popArch() {
 void Z80::stopToggle() {
   stopped = !stopped;
   if(stopped && requestStep) requestStep = false;
+  reportReady = false;
 }
 
 void Z80::stepOneOnly() {
   requestStep = true;
+  reportReady = false;
+}
+
+bool Z80::canReport() {
+  return reportReady;
+}
+
+void Z80::haveReported() {
+  reportReady = false;
 }
 
 int Z80::IRQ(int data_on_bus)
@@ -2320,6 +2333,7 @@ int Z80::step()
   if(stopped) {
     if(requestStep) {
       requestStep = false;
+      reportReady = false;
     } else {
       return 4;//keep regulation clock working
     }
@@ -2330,8 +2344,9 @@ int Z80::step()
   int opcode;
   Z80_FETCH_BYTE(pc, opcode);
   state.pc = pc + 1;
-
-  return intemulate(opcode, elapsed_cycles);
+  int ret = intemulate(opcode, elapsed_cycles);
+  reportReady = true;
+  return ret;
 }
 
 
@@ -5039,6 +5054,11 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         elapsed_cycles += 7;
 
         break;
+      }
+      case BRK: {
+        stopToggle();//start and stop breakpoint
+        break;
+
       }
     }
   } while (repeatLoop);

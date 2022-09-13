@@ -43,7 +43,7 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
   }
 }
 
-inline void ZxSpectrum::regDump() {
+void ZxSpectrum::regDump() {
   printf("AF %04x\n", (_Z80.getA() << 8) + _Z80.getF());
   printf("BC %04x\n", (_Z80.getB() << 8) + _Z80.getC());
   printf("DE %04x\n", (_Z80.getD() << 8) + _Z80.getE());
@@ -71,12 +71,20 @@ inline void ZxSpectrum::regDump() {
 
 void ZxSpectrum::stopToggle() {
   _Z80.stopToggle();
-  regDump();
+  //regDump();
 }
 
 void ZxSpectrum::stepOneOnly() {
   _Z80.stepOneOnly();
-  regDump();
+  //regDump();
+}
+
+bool ZxSpectrum::canReport() {
+  return _Z80.canReport();
+}
+
+void ZxSpectrum::haveReported() {
+  _Z80.haveReported();
 }
 
 void ZxSpectrum::reset(ZxSpectrumType type)
