@@ -16,7 +16,11 @@ public class Label {
         if(name.length() < 1) {
             name = lastGlobal + ".";// bad symbol null
         }
-        if(name.charAt(0) == '.') name = lastGlobal + name;//local
+        if(name.charAt(0) == '.') {
+            name = lastGlobal + name;//local
+        } else {
+            lastGlobal = name;//new global scope
+        }
         this.name = name;
         table.putIfAbsent(name, this);//prevent second pass overwrite address
     }
@@ -36,8 +40,13 @@ public class Label {
 
     public static Address findLabel(String name, int org, boolean allowDupe) {
         boolean page = false;
+        boolean upper = false;
         if(name.length() > 0 && name.charAt(0) == '@') {//page of label
             page = true;
+            name = name.substring(1);
+        }
+        if(name.length() > 0 && name.charAt(0) == '^') {//page of label
+            upper = true;
             name = name.substring(1);
         }
         if(name.length() > 0 && name.charAt(0) == '.') {
@@ -56,7 +65,8 @@ public class Label {
                 Main.error(Main.Errors.LABEL_ADDRESS_PAGE);
             }
         }
-        if(page && l.location != null) return new Address((l.location.address >> 16) | 8);// sets screen 7
+        if(page && l.location != null) return new Address((l.location.address >> 16));// sets screen 5
+        if(upper && l.location != null) return new Address((l.location.address >> 8));
         return l.location;
     }
 }

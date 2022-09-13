@@ -81,7 +81,8 @@ public class Main {
 
     static int org, initialOrg;//also page
     final static int[] pageOrder = {
-        16, 5, 2, 0, 4, 6, 1, 3, 7
+            //ROM zero (128k editor) or two (+3DOS)
+        128, 5, 2, 0, 4, 6, 1, 3, 7
     };
 
     final static boolean[] safes = {
