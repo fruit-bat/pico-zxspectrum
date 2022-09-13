@@ -11,6 +11,7 @@
   org $0000
 bankPort:     equ $7ffd         // 128k banking port
 portPlusA:    equ $1ffd         // +2A/+3A port for extra ROMs
+featurePort:  equ $3ffd         // added feature port
 
 main:
 .rest00:
@@ -100,26 +101,6 @@ main:
 .start:
   //the start up code to initial once only values for cold boot
 
-
-//===========================================
-// Warm and evaluation loop (NO ENTRY POINT)
-//===========================================
-.warm:            // THIS IS NOT THE ENTRY POINT rst 10 (does not stack)
-  //ex (sp), hl     // pop down as no return
-  pop hl
-  // warm boot code and NMI does it too
-  ld a, 4         // set screen 1
-  ld bc, bankPort
-  out (c), a
-  ld hl, .userIntDefault  // a default user interrupt
-  call .setIntVec
-  call .compileEndMMC // make a nice convenience RAM function at bankoutMMC
-
-
-.exe:             // THIS IS NOT THE ENTRY POINT rst 18 (stacks an instance)
-  //main loop as initialized now
-
-  jr .exe               // loop back
 //===========================================
 // The Pre-NMI space
 //===========================================
@@ -131,9 +112,24 @@ main:
 // The NMI
 //===========================================
   // might do divMMC compat ok
-  retn      // can't find respective pop af in divMMC exit on space
+  push af     // can't find respective pop af in divMMC exit on space
   // so either there's a missing retn or NMI returns via other means
   // very likely does some weird stuff
+  pop af
+//===========================================
+// Warm and evaluation loop (NO ENTRY POINT)
+//===========================================
+.warm:            // THIS IS NOT THE ENTRY POINT rst 10 (does not stack)
+  //ex (sp), hl     // pop down as no return
+  pop hl
+  // warm boot code and NMI does it too
+  ld hl, .userIntDefault  // a default user interrupt
+  call .setIntVec
+  call .compileEndMMC // make a nice convenience RAM function at bankoutMMC
+.exe:             // THIS IS NOT THE ENTRY POINT rst 18 (stacks an instance)
+  //main loop as initialized now
+
+  jr .exe               // loop back
 //===========================================
 // Banking vectoring
 //===========================================
@@ -239,6 +235,69 @@ main:
   // always use ret except for when escaping the system
   // see .userIntNoSys for an example
   ret
+
+//===========================================
+// Echo to screen
+//===========================================
+charPrint:      // A is char DE is byte pointer in Y pix|X byte format
+  ld b, 7
+  ld h, 0
+  ccf
+  ld l, a
+  adc hl, hl
+  adc hl, hl
+  adc hl, hl
+  add h, $3c
+  cp h, $40
+  jp n, .skipUDG
+  add h, $1c       // $5c - $40 UDG gap
+.skipUDG:
+  ldcr
+  ret
+attributeGetPrint:
+  ld b, (attribute)
+attribPrint:    // B is attribute, DE is byte pointer to normalize
+  ld l, d
+  ld h, 0
+  ccf
+  adc hl, hl
+  adc hl, hl
+  and l, $e0
+  add h, $58       // base offset to ^attributes
+  ld a, l
+  add e
+  ld l, a
+  jr nc, .ok
+  inc h
+.ok:
+  ld (hl), b
+  ret
+stringPrint:    // C is count, DE is byte pointer, HL is string pointer
+  ld a, c
+  ld c, 0
+  cp c
+  ret z
+  dec a
+  ld c, a
+  ld a, (hl)
+  inc hl
+  push hl
+  call charPrint
+  dec d
+  call attributeGetPrint
+  ld a, e
+  ld l, 1
+  add l
+  ld e, a
+  jr nc, .ok
+  ld a, d
+  ld l, 32
+  add l
+.ok:
+  ld d, a
+  pop hl
+  jr stringPrint
+
 notice:
   ds "ZX FORTH ROM"
 
@@ -267,6 +326,7 @@ notice:
 //===========================================
 // bankoutMMC (DO NOT CHANGE)
 //===========================================
+  // allows banking back in and invariance when no divMMC connected
   upto $1ff8      // bankoutMMC divMMC esxDOS
   jr .fixBankMMC
   ret
@@ -277,8 +337,360 @@ notice:
 //===========================================
 // Font part in ROM
 //===========================================
-  upto $3d00          // $4000 - ($80 - $20) * 8
+  upto $3c00          // $4000 - ($80 - $20) * 8
 chars:
+; $0 - Character: ''          CHR$(0)
+
+  db    %00000000
+  db    %00000000
+  db    %00111100
+  db    %00100100
+  db    %00100100
+  db    %00111100
+  db    %00000000
+  db    %00000000
+
+; $1 - Character: ''          CHR$(1)
+
+  db    %00000000
+  db    %00000000
+  db    %00111111
+  db    %00100000
+  db    %00100000
+  db    %00111111
+  db    %00000000
+  db    %00000000
+
+; $2 - Character: ''          CHR$(2)
+
+  db    %00000000
+  db    %00000000
+  db    %11111100
+  db    %00000100
+  db    %00000100
+  db    %11111100
+  db    %00000000
+  db    %00000000
+
+; $3 - Character: ''          CHR$(3)
+
+  db    %00000000
+  db    %00000000
+  db    %11111111
+  db    %00000000
+  db    %00000000
+  db    %11111111
+  db    %00000000
+  db    %00000000
+
+; $4 - Character: ''          CHR$(4)
+
+  db    %00000000
+  db    %00000000
+  db    %00111100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+
+; $5 - Character: ''          CHR$(5)
+
+  db    %00000000
+  db    %00000000
+  db    %00111111
+  db    %00100000
+  db    %00100000
+  db    %00100111
+  db    %00100100
+  db    %00100100
+
+; $6 - Character: ''          CHR$(6)
+
+  db    %00000000
+  db    %00000000
+  db    %11111100
+  db    %00000100
+  db    %00000100
+  db    %11100100
+  db    %00100100
+  db    %00100100
+
+; $7 - Character: '''          CHR$(7)
+
+  db    %00000000
+  db    %00000000
+  db    %11111111
+  db    %00000000
+  db    %00000000
+  db    %11100111
+  db    %00100100
+  db    %00100100
+
+; $8 - Character: ''          CHR$(8)
+
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00111100
+  db    %00000000
+  db    %00000000
+
+; $9 - Character: ''          CHR$(9)
+
+  db    %00100100
+  db    %00100100
+  db    %00100111
+  db    %00100000
+  db    %00100000
+  db    %00111111
+  db    %00000000
+  db    %00000000
+
+; $A - Character: ''          CHR$(10)
+
+  db    %00100100
+  db    %00100100
+  db    %11100100
+  db    %00000100
+  db    %00000100
+  db    %11111100
+  db    %00000000
+  db    %00000000
+
+; $B - Character: ''          CHR$(11)
+
+  db    %00100100
+  db    %00100100
+  db    %11100111
+  db    %00000000
+  db    %00000000
+  db    %11111111
+  db    %00000000
+  db    %00000000
+
+; $C - Character: ''          CHR$(12)
+
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+  db    %00100100
+
+; $D - Character: ''          CHR$(13)
+
+  db    %00100100
+  db    %00100100
+  db    %00100111
+  db    %00100000
+  db    %00100000
+  db    %00100111
+  db    %00100100
+  db    %00100100
+
+; $E - Character: ''          CHR$(14)
+
+  db    %00100100
+  db    %00100100
+  db    %11100100
+  db    %00000100
+  db    %00000100
+  db    %11100100
+  db    %00100100
+  db    %00100100
+
+; $F - Character: ''          CHR$(15)
+
+  db    %00100100
+  db    %00100100
+  db    %11100111
+  db    %00000000
+  db    %00000000
+  db    %11100111
+  db    %00100100
+  db    %00100100
+
+; $30 - Character: '0'          CHR$(48)
+
+  db    %00000000
+  db    %00111100
+  db    %01000110
+  db    %01001010
+  db    %01010010
+  db    %01100010
+  db    %00111100
+  db    %00000000
+
+; $31 - Character: '1'          CHR$(49)
+
+  db    %00000000
+  db    %00011000
+  db    %00101000
+  db    %00001000
+  db    %00001000
+  db    %00001000
+  db    %00111110
+  db    %00000000
+
+; $32 - Character: '2'          CHR$(50)
+
+  db    %00000000
+  db    %00111100
+  db    %01000010
+  db    %00000010
+  db    %00111100
+  db    %01000000
+  db    %01111110
+  db    %00000000
+
+; $33 - Character: '3'          CHR$(51)
+
+  db    %00000000
+  db    %00111100
+  db    %01000010
+  db    %00001100
+  db    %00000010
+  db    %01000010
+  db    %00111100
+  db    %00000000
+
+; $34 - Character: '4'          CHR$(52)
+
+  db    %00000000
+  db    %00001000
+  db    %00011000
+  db    %00101000
+  db    %01001000
+  db    %01111110
+  db    %00001000
+  db    %00000000
+
+; $35 - Character: '5'          CHR$(53)
+
+  db    %00000000
+  db    %01111110
+  db    %01000000
+  db    %01111100
+  db    %00000010
+  db    %01000010
+  db    %00111100
+  db    %00000000
+
+; $36 - Character: '6'          CHR$(54)
+
+  db    %00000000
+  db    %00111100
+  db    %01000000
+  db    %01111100
+  db    %01000010
+  db    %01000010
+  db    %00111100
+  db    %00000000
+
+; $37 - Character: '7'          CHR$(55)
+
+  db    %00000000
+  db    %01111110
+  db    %00000010
+  db    %00000100
+  db    %00001000
+  db    %00010000
+  db    %00010000
+  db    %00000000
+
+; $38 - Character: '8'          CHR$(56)
+
+  db    %00000000
+  db    %00111100
+  db    %01000010
+  db    %00111100
+  db    %01000010
+  db    %01000010
+  db    %00111100
+  db    %00000000
+
+; $39 - Character: '9'          CHR$(57)
+
+  db    %00000000
+  db    %00111100
+  db    %01000010
+  db    %01000010
+  db    %00111110
+  db    %00000010
+  db    %00111100
+  db    %00000000
+
+; $3A - Character: ':'          CHR$(58)
+
+  db    %00000000
+  db    %00000000
+  db    %00000000
+  db    %00010000
+  db    %00000000
+  db    %00000000
+  db    %00010000
+  db    %00000000
+
+; $3B - Character: ';'          CHR$(59)
+
+  db    %00000000
+  db    %00000000
+  db    %00010000
+  db    %00000000
+  db    %00000000
+  db    %00010000
+  db    %00010000
+  db    %00100000
+
+; $3C - Character: '<'          CHR$(60)
+
+  db    %00000000
+  db    %00000000
+  db    %00000100
+  db    %00001000
+  db    %00010000
+  db    %00001000
+  db    %00000100
+  db    %00000000
+
+; $3D - Character: '='          CHR$(61)
+
+  db    %00000000
+  db    %00000000
+  db    %00000000
+  db    %00111110
+  db    %00000000
+  db    %00111110
+  db    %00000000
+  db    %00000000
+
+; $3E - Character: ''          CHR$(30)
+
+  db    %00000000
+  db    %00000000
+  db    %00010000
+  db    %00001000
+  db    %00000100
+  db    %00001000
+  db    %00010000
+  db    %00000000
+
+; $3F - Character: ''          CHR$(31)
+
+  db    %00000000
+  db    %00111100
+  db    %01000010
+  db    %00000100
+  db    %00001000
+  db    %00000000
+  db    %00001000
+  db    %00000000
+
 ; $20 - Character: ' '          CHR$(32)
 
   db    %00000000
@@ -1335,8 +1747,18 @@ chars:
   db    %01000010
   db    %00111100
   upto $4000    // end ROM
+
+//===========================================
+// RAM Start (Bank 5)
+//===========================================
+screen:
+  upto $5800
+attributes:
+  upto $5b00
+padBuffer:
+  upto $5c00
 charUDG:
-  fill 1280     // UDG space for (chr+32) mod 255
+  upto $6000
   // stacks for forth
 stack:
   fill $ff  //for 256 bytes
@@ -1353,6 +1775,8 @@ lastBank:
   dw 0
 bankoutMMC:
   db 0, 0, 0, 0, 0
+attribute:
+  db 0
 
 
   // vectors if paging used

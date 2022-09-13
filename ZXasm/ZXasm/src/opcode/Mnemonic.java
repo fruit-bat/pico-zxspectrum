@@ -92,6 +92,8 @@ public enum Mnemonic {
     MACRO_DEF("macro", new Format[]{ MACRO }),//whole file as macro with #n args??
     MACRO_END("end", new Format[]{ MACRO }),
     FILL("fill", new Format[]{ MACRO }),
+
+    DF("df", new Format[]{ MACRO }),//forth header like macro
     LABEL(null, new Format[]{ MACRO });// for threaded automatics
 
     String name;
