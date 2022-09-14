@@ -119,7 +119,10 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   else {
     r = keyboard1.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
 }
 
 void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -130,7 +133,10 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   else {
     r = keyboard2.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
 }
 
 
