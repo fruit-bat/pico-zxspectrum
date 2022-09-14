@@ -287,7 +287,7 @@ int main() {
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif
-  
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
@@ -307,7 +307,6 @@ int main() {
   // Initialise the keyboard scan
   zx_keyscan_init();
 #endif
-
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
