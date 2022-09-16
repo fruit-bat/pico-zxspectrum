@@ -264,6 +264,11 @@ public:
       }
       if (tud) _ay.step(tud);
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+
+      if(canReport()) {
+        regDump();//debug after processing key events
+        haveReported();
+      }
   }
 
   void interrupt();

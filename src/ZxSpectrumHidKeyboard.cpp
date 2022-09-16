@@ -263,10 +263,5 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
       if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
     }
   }
-
-  if(_ZxSpectrum->canReport()) {
-    _ZxSpectrum->regDump();//debug after processing key events
-    _ZxSpectrum->haveReported();
-  }
   return r;
 }
