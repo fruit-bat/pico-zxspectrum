@@ -10,8 +10,8 @@ public enum Mnemonic {
     LD("ld", new Format[]{ LD_R_R,//done
             INDIRECT_NN_RR, RR_INDIRECT_NN,
         R_INDIRECT_RR, INDIRECT_RR_R, R_INDIRECT_NN, INDIRECT_NN_R }),
-    PUSH("push", new Format[]{ Format.RR }),
-    POP("pop", new Format[]{ Format.RR }),
+    PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
+    POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
     EX("ex", new Format[]{ RR_RR }),
     LDI("ldi", new Format[]{ NUL }),
     LDIR("ldir", new Format[]{ NUL }),

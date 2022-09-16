@@ -65,6 +65,19 @@ public enum Format {
         ok[0] = (byte)baseOpcode;
         return ok;
     }),
+    PP_RR((opcode, org) -> {
+        if(opcode.args.size() != 1) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0];
+        if(getRegister16(opcode, 0).reg16 == Register16.SP) return null;
+        if(getRegister16(opcode, 0).reg16 == Register16.AF)
+            getRegister16(opcode, 0).reg16 = Register16.SP;
+        int source = getRegister16(opcode, 0).reg16.ordinal();
+        if(source > 4) return null;
+        baseOpcode |= source << 4;// by eights
+        byte[] ok = new byte[1];
+        ok[0] = (byte)baseOpcode;
+        return ok;
+    }),
     LD_R_R((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
         if(getRegister8(opcode, 0).reg8 == Register8.IND_HL
