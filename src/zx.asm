@@ -339,7 +339,7 @@ notice:
 //===========================================
   upto $3c00          // $4000 - ($80 - $20) * 8
 chars:
-; $0 - Character: ''          CHR$(0)
+; $00 - Character: Box         CHR$(0)
 
   db    %00000000
   db    %00000000
@@ -350,7 +350,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $1 - Character: ''          CHR$(1)
+; $01 - Character: Box         CHR$(1)
 
   db    %00000000
   db    %00000000
@@ -361,7 +361,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $2 - Character: ''          CHR$(2)
+; $02 - Character: Box         CHR$(2)
 
   db    %00000000
   db    %00000000
@@ -372,7 +372,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $3 - Character: ''          CHR$(3)
+; $03 - Character: Box         CHR$(3)
 
   db    %00000000
   db    %00000000
@@ -383,7 +383,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $4 - Character: ''          CHR$(4)
+; $04 - Character: Box         CHR$(4)
 
   db    %00000000
   db    %00000000
@@ -394,7 +394,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $5 - Character: ''          CHR$(5)
+; $05 - Character: Box         CHR$(5)
 
   db    %00000000
   db    %00000000
@@ -405,7 +405,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $6 - Character: ''          CHR$(6)
+; $06 - Character: Box         CHR$(6)
 
   db    %00000000
   db    %00000000
@@ -416,7 +416,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $7 - Character: '''          CHR$(7)
+; $07 - Character: Box          CHR$(7)
 
   db    %00000000
   db    %00000000
@@ -427,7 +427,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $8 - Character: ''          CHR$(8)
+; $08 - Character: Box         CHR$(8)
 
   db    %00100100
   db    %00100100
@@ -438,7 +438,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $9 - Character: ''          CHR$(9)
+; $09 - Character: Box         CHR$(9)
 
   db    %00100100
   db    %00100100
@@ -449,7 +449,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $A - Character: ''          CHR$(10)
+; $0A - Character: Box         CHR$(10)
 
   db    %00100100
   db    %00100100
@@ -460,7 +460,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $B - Character: ''          CHR$(11)
+; $0B - Character: Box         CHR$(11)
 
   db    %00100100
   db    %00100100
@@ -471,7 +471,7 @@ chars:
   db    %00000000
   db    %00000000
 
-; $C - Character: ''          CHR$(12)
+; $0C - Character: Box         CHR$(12)
 
   db    %00100100
   db    %00100100
@@ -482,7 +482,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $D - Character: ''          CHR$(13)
+; $0D - Character: Box         CHR$(13)
 
   db    %00100100
   db    %00100100
@@ -493,7 +493,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $E - Character: ''          CHR$(14)
+; $0E - Character: Box         CHR$(14)
 
   db    %00100100
   db    %00100100
@@ -504,7 +504,7 @@ chars:
   db    %00100100
   db    %00100100
 
-; $F - Character: ''          CHR$(15)
+; $0F - Character: Box         CHR$(15)
 
   db    %00100100
   db    %00100100
@@ -669,26 +669,26 @@ chars:
   db    %00000000
   db    %00000000
 
-; $3E - Character: ''          CHR$(30)
+; $1E - Character: SI micro     CHR$(30)
 
   db    %00000000
   db    %00000000
-  db    %00010000
-  db    %00001000
-  db    %00000100
-  db    %00001000
-  db    %00010000
   db    %00000000
+  db    %01000100
+  db    %01000100
+  db    %01000100
+  db    %01111010
+  db    %01000000
 
-; $3F - Character: ''          CHR$(31)
+; $1F - Character: SI Omega     CHR$(31)
 
   db    %00000000
   db    %00111100
   db    %01000010
-  db    %00000100
-  db    %00001000
-  db    %00000000
-  db    %00001000
+  db    %01000010
+  db    %00100100
+  db    %00100100
+  db    %01100110
   db    %00000000
 
 ; $20 - Character: ' '          CHR$(32)
