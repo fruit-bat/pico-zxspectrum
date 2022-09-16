@@ -291,8 +291,7 @@ stringPrint:    // C is count, DE is byte pointer, HL is string pointer
   ld e, a
   jr nc, .ok
   ld a, d
-  ld l, 32
-  add l
+  add 32
 .ok:
   ld d, a
   pop hl

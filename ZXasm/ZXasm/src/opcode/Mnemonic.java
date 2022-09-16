@@ -7,39 +7,40 @@ import static opcode.Format.*;
 
 public enum Mnemonic {
 
-    LD("ld", new Format[]{ R_R, INDIRECT_NN_RR, RR_INDIRECT_NN,
+    LD("ld", new Format[]{ LD_R_R,//done
+            INDIRECT_NN_RR, RR_INDIRECT_NN,
         R_INDIRECT_RR, INDIRECT_RR_R, R_INDIRECT_NN, INDIRECT_NN_R }),
     PUSH("push", new Format[]{ Format.RR }),
-    POP("", new Format[]{ Format.RR }),
+    POP("pop", new Format[]{ Format.RR }),
     EX("ex", new Format[]{ RR_RR }),
     LDI("ldi", new Format[]{ NUL }),
     LDIR("ldir", new Format[]{ NUL }),
     CPI("cpi", new Format[]{ NUL }),
     CPIR("cpir", new Format[]{ NUL }),
-    ADD("add", new Format[]{ R_R, RR_RR }),
-    SUB("sub", new Format[]{ R_R, RR_RR }),
-    AND("and", new Format[]{ R_R, R_N }),
-    XOR("xor", new Format[]{ R_R, R_N }),
-    OR("or", new Format[]{ R_R, R_N }),
-    CP("cp", new Format[]{ R_R, R_N }),
+    ADD("add", new Format[]{ ALU_R, RR_RR }),
+    SUB("sub", new Format[]{ ALU_R, RR_RR }),
+    ADC("adc", new Format[]{ ALU_R, RR_RR, R_N }),
+    SBC("sbc", new Format[]{ ALU_R, RR_RR, R_N }),
+    AND("and", new Format[]{ ALU_R, R_N }),
+    XOR("xor", new Format[]{ ALU_R, R_N }),
+    OR("or", new Format[]{ ALU_R, R_N }),
+    CP("cp", new Format[]{ ALU_R, R_N }),
     INC("inc", new Format[]{ R, Format.RR }),
     DEC("dec", new Format[]{ R, Format.RR }),
-    ADC("adc", new Format[]{ R, RR_RR, R_N }),
-    SBC("sbc", new Format[]{ R, RR_RR, R_N }),
-    DAA("daa", new Format[]{ NUL }),
-    CPL("cpl", new Format[]{ NUL }),
+    DAA("daa", (byte)0x27, new Format[]{ NUL_1 }),//done
+    CPL("cpl", (byte)0x2f, new Format[]{ NUL_1 }),//done
     NEG("neg", new Format[]{ NUL }),
-    CCF("ccf", new Format[]{ NUL }),
-    SCF("scf", new Format[]{ NUL }),
-    NOP("nop", new Format[]{ NUL }),
-    HALT("halt", new Format[]{ NUL }),
+    CCF("ccf", (byte)0x3f, new Format[]{ NUL_1 }),//done
+    SCF("scf", (byte)0x37, new Format[]{ NUL_1 }),//done
+    NOP("nop", (byte)0x00, new Format[]{ NUL_1 }),//done
+    HALT("halt", (byte)0x76, new Format[]{ NUL_1 }),//done
     DI("di", new Format[]{ NUL }),
     EI("ei", new Format[]{ NUL }),
     IM("im", new Format[]{ Format.IM }),
-    RLCA("rlca", new Format[]{ NUL }),
-    RLA("rla", new Format[]{ NUL }),
-    RRCA("rrca", new Format[]{ NUL }),
-    RRA("rra", new Format[]{ NUL }),
+    RLCA("rlca", (byte)0x07, new Format[]{ NUL_1 }),//done
+    RLA("rla", (byte)0x17, new Format[]{ NUL_1 }),//done
+    RRCA("rrca", (byte)0x0f, new Format[]{ NUL_1 }),//done
+    RRA("rra", (byte)0x1f, new Format[]{ NUL_1 }),//done
     RLC("rlc", new Format[]{ NUL }),
     RL("rl", new Format[]{ R }),
     RRC("rrc", new Format[]{ R }),
@@ -98,9 +99,15 @@ public enum Mnemonic {
 
     String name;
     Format[] allows;
+    byte[] baseOpcode;
 
     Mnemonic(String name, Format[] allows) {
         this.name = name;
+    }
+    Mnemonic(String name, byte baseOpcode, Format[] allows) {
+        this(name, allows);
+        this.baseOpcode = new byte[1];
+        this.baseOpcode[0] = baseOpcode;
     }
 
     public static Mnemonic getMnemonic(String op, int org, boolean allowDupe) {

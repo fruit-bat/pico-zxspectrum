@@ -9,7 +9,7 @@ public class Register {
 
     boolean is8;
     boolean isIX, isIY;
-    Register8 reg8;
+    public Register8 reg8;
     Register16 reg16;
     byte offset;
     CCode flags;
@@ -60,6 +60,21 @@ public class Register {
             r = new Register(Label.findLabel(reg, org, allowDupe));//could be un-found 0
         }
         return r;
+    }
+
+    public byte[] withIXIY(byte[] in) {
+        byte[] ok = new byte[in.length + 2];
+        for(int i = 0; i < in.length; i++) {
+            ok[i + 1] = in[1];
+        }
+        if(isIX) {
+            ok[0] = (byte)0xdd;
+        }
+        if(isIY) {
+            ok[0] = (byte)0xfd;
+        }
+        ok[in.length] = offset;
+        return ok;
     }
 
     public Register(Register8 reg) {
