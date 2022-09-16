@@ -25,8 +25,8 @@ public enum Mnemonic {
     XOR("xor", new Format[]{ ALU_R, R_N }),
     OR("or", new Format[]{ ALU_R, R_N }),
     CP("cp", new Format[]{ ALU_R, R_N }),
-    INC("inc", new Format[]{ R, Format.RR }),
-    DEC("dec", new Format[]{ R, Format.RR }),
+    INC("inc", (byte)0x04, (byte)0x03, new Format[]{ ID_R, ID_RR }),//done
+    DEC("dec", (byte)0x05, (byte)0x0b, new Format[]{ ID_R, ID_RR }),//done
     DAA("daa", (byte)0x27, new Format[]{ NUL_1 }),//done
     CPL("cpl", (byte)0x2f, new Format[]{ NUL_1 }),//done
     NEG("neg", new Format[]{ NUL }),
@@ -58,7 +58,7 @@ public enum Mnemonic {
     JP("jp", new Format[]{ NN, F_NN }),
     DJNZ("djnz", new Format[]{ D }),
     CALL("call", new Format[]{ NN, F_NN }),
-    RET("ret", new Format[]{ NUL, F }),
+    RET("ret", (byte)0xc9, new Format[]{ NUL_1, RET_F }),//done
     RETI("reti", new Format[]{ NUL }),
     RETN("retn", new Format[]{ NUL }),
     RST("rst", new Format[]{ Format.RST }),
@@ -100,6 +100,7 @@ public enum Mnemonic {
     String name;
     Format[] allows;
     byte[] baseOpcode;
+    byte baseDouble;
 
     Mnemonic(String name, Format[] allows) {
         this.name = name;
@@ -108,6 +109,11 @@ public enum Mnemonic {
         this(name, allows);
         this.baseOpcode = new byte[1];
         this.baseOpcode[0] = baseOpcode;
+    }
+
+    Mnemonic(String name, byte baseOpcode, byte baseDouble, Format[] allows) {
+        this(name, baseOpcode, allows);;
+        this.baseDouble = baseDouble;
     }
 
     public static Mnemonic getMnemonic(String op, int org, boolean allowDupe) {
@@ -120,16 +126,5 @@ public enum Mnemonic {
         // found as label
         if(l != null) return LABEL;
         return null;
-    }
-
-    public boolean hasFormat(Format f) {
-        for(int i = 0; i < allows.length; i++) {
-            if(allows[i] == f) return true;
-        }
-        return false;
-    }
-
-    public boolean hasFlagFormat() {
-        return hasFormat(F) || hasFormat(F_D) || hasFormat(F_NN);
     }
 }

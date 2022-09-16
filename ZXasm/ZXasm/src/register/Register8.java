@@ -16,7 +16,8 @@ public enum Register8 {
     IND_HL("(hl)", "(ix*)", "(iy*)"),// do jp (hl) => remove inconstancy
     A("a"),
     I("i"),
-    R("r");
+    R("r"),
+    BAD_REG(null);//allows continuation to other parse options without null pointer exception
 
     String name;
     String ix, iy;

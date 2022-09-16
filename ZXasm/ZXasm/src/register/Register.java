@@ -10,9 +10,9 @@ public class Register {
     boolean is8;
     boolean isIX, isIY;
     public Register8 reg8;
-    Register16 reg16;
+    public Register16 reg16;
     byte offset;
-    CCode flags;
+    public CCode flags;
     String literal;
     Address data;
 

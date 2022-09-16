@@ -326,10 +326,10 @@ notice:
 // bankoutMMC (DO NOT CHANGE)
 //===========================================
   // allows banking back in and invariance when no divMMC connected
-  upto $1ff8      // bankoutMMC divMMC esxDOS
-  jr .fixBankMMC
-  ret
-.fixBankMMC:
+//  upto $1ff8      // bankoutMMC divMMC esxDOS
+//  jr .fixBankMMC
+//  ret
+//.fixBankMMC:
 
 
 

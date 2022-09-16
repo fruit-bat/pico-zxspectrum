@@ -11,7 +11,8 @@ public enum CCode {
     PO("po"),
     PE("pe"),
     P("p"),
-    M("m");
+    M("m"),
+    BAD_FLAG(null);//bad
 
     String name;
 
