@@ -59,4 +59,5 @@ set(zxspectrum_ear_in_pio
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
+add_subdirectory(picovga)
 
