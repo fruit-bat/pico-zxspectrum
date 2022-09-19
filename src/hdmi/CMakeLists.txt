@@ -12,14 +12,26 @@ add_executable(ZxSpectrumBreadboardHdmi1PinAudio
   ${zxspectrum_hdmi_src}
 )
 
+pico_generate_pio_header(ZxSpectrumBreadboardHdmi1PinAudio 
+  ${zxspectrum_ear_in_pio}
+)
+
 add_executable(ZxSpectrumBreadboardHdmi2PinAudio
   ${zxspectrum_common_src}
   ${zxspectrum_hdmi_src}
 )
 
+pico_generate_pio_header(ZxSpectrumBreadboardHdmi2PinAudio 
+  ${zxspectrum_ear_in_pio}
+)
+
 add_executable(ZxSpectrumBreadboardHdmi4PinAudio
   ${zxspectrum_common_src}
   ${zxspectrum_hdmi_src}
+)
+
+pico_generate_pio_header(ZxSpectrumBreadboardHdmi4PinAudio 
+  ${zxspectrum_ear_in_pio}
 )
 
 add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
@@ -49,6 +61,8 @@ set(zxspectrum_hdmi_defines
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   SPK_PIN=20
+  EAR_PIN=11
+  
   # Enable the PS/2 keyboard
   USE_PS2_KBD
 )
@@ -56,6 +70,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   SPK_PIN=20
+  EAR_PIN=11
   BZR_PIN=21
   # Enable the PS/2 keyboard
   USE_PS2_KBD
@@ -64,6 +79,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   BZR_PIN=21
+  EAR_PIN=11
   AY8912_A_PIN=20
   AY8912_B_PIN=26
   AY8912_C_PIN=27

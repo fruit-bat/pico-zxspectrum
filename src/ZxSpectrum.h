@@ -33,6 +33,9 @@ private:
   uint8_t _portMem;
   uint8_t* _pageaddr[4];
   bool _ear;
+  uint32_t _earInvert;
+  uint32_t _earDc;
+  
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -69,45 +72,40 @@ private:
   
   inline int readIO(int address)
   {
-    if (address == 0xfffd) {
+    if (!(address & 0x0001)) {
+      uint8_t kb = _keyboard1->read(address);
+      if (_keyboard2) kb &= _keyboard2->read(address);
+      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
+    }
+    if ((address & 0xC002) == 0x8000) {
       return _ay.readData();
     }
+    else if (!(address & 0x00e0)) {
+       return _joystick ? _joystick->getKempston() : 0;
+    }
     else {
-      switch(address & 0xFF) {
-        case 0xFE: {
-          uint8_t kb = _keyboard1->read(address);
-          if (_keyboard2) kb &= _keyboard2->read(address);
-          return kb ^ (_ear ? 0 : (1<<6)) ;
-        }
-        case 0x1f: return _joystick ? _joystick->getKempston() : 0;
-        default: return 0xff;
-      }
+      return 0xff;
     }
   }
   
-  inline void writeIO(int address, int value) {
-    if (address == 0x7ffd) {
+  inline void writeIO(int address, int value)
+  {
+    if (!(address & 0x0001)) {
+      _port254 = value;
+      _borderColour = value & 7;
+    }
+    else if (!(address & 0x8002)) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
-    else if (address == 0xfffd) {
+    else if ((address & 0xC002) == 0xC000) {
       _ay.writeCtrl(value);
     }
-    else if (address == 0xbffd) {
+    else if ((address & 0xC002) == 0x8000) {
       _ay.writeData(value);
-    }
-    else {
-      switch(address & 0xFF) {
-        case 0xFE:
-          _port254 = value;
-          _borderColour = value & 7;
-          break;
-        default:
-          break;
-      }
     }
   }
   
@@ -223,6 +221,50 @@ public:
         }
       }
       if (tud) _ay.step(tud);
+      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+  }
+
+#define EAR_BITS_PER_STEP 32
+
+  void __not_in_flash_func(step)(uint32_t eb)
+  {
+      int c = 0;
+
+      uint32_t vA, vB, vC;
+
+      const uint32_t tu32 = time_us_32() << 5;
+      int32_t tud = tu32 - _tu32;
+      if (tud) _ay.step(tud); 
+      _tu32 = tu32;
+      _ay.vol(vA, vB, vC);
+      
+      if (_earInvert ? (eb == 0) : (~eb == 0)) {
+        if (_earDc++ > 16000) {
+           _earInvert ^= 1;
+        }
+      }
+      else {
+        _earDc = 0;
+      }
+      
+      for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
+        _ta32 += 32;
+        if (_pulseBlock.end()) _ear = (eb >> i) & 1;
+
+        while (_ta32 > 0) {
+          int t = _Z80.step();
+          c += t;
+          if (!_mute) {
+            stepBuzzer();
+            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+          }
+          if (t == 0) {
+            _ta32 = 0;
+            break;
+          }
+          _ta32 -= MUL32(t, _moderate);
+        }
+      }
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
   }
 

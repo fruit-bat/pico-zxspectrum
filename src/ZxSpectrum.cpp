@@ -17,6 +17,8 @@ ZxSpectrum::ZxSpectrum(
   _joystick(joystick),
   _borderColour(7),
   _ear(false),
+  _earInvert(0),
+  _earDc(0),
   _buzzer(0)
 {
   _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
@@ -29,13 +31,11 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
     case ZxSpectrum48k:
       setPageaddr(0, (uint8_t*)basic);
       _portMem = 0x20;
-      moderate(9);
       break;
     case ZxSpectrum128k:
     default:
       setPageaddr(0, (uint8_t*)zx_128k_rom_1);
       _portMem = 0;
-      moderate(8);
       break;
   }
 }
@@ -46,6 +46,9 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _Z80.reset();
   _Z80.setPC(0x0000);
   _ta32 = 0;
+  _earInvert = 0;
+  _earDc = 0;
+  moderate(9);
   transmute(type);
   setPageaddr(1, (uint8_t*)&_RAM[5]);
   setPageaddr(2, (uint8_t*)&_RAM[2]);

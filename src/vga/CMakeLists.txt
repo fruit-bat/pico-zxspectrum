@@ -28,6 +28,7 @@ target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2 PRIVATE
   VGA_GPIO_OUTNUM=4
   # 4 pin audio
   BZR_PIN=21
+  EAR_PIN=11  
   AY8912_A_PIN=20
   AY8912_B_PIN=26
   AY8912_C_PIN=27
@@ -44,6 +45,10 @@ target_link_libraries(ZxSpectrum4PinAudioVga1111Ps2
   tinyusb_board
   hardware_pio
   hardware_pwm
+)
+
+pico_generate_pio_header(ZxSpectrum4PinAudioVga1111Ps2 
+  ${zxspectrum_ear_in_pio}
 )
 
 pico_enable_stdio_usb(ZxSpectrum4PinAudioVga1111Ps2 0)

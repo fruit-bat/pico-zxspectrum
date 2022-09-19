@@ -592,4 +592,3 @@ void ZxSpectrumMenu::confirm(
   });
 }
 
-
