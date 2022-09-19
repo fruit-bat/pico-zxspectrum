@@ -35,6 +35,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 
 ## Updates
+* 19/09/22 - Audio in (load from tape)
 * 31/08/22 - Fix multiple Z80 self-test failures
 * 27/08/22 - Fix for joysticks with single xy axis
 * 13/08/22 - Added support for PICOZX
@@ -44,6 +45,9 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
+
+Builds with an RP_AUDIO_IN pin can now load from tape. 
+Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
 
 The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
 [Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
