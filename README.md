@@ -12,7 +12,8 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * USB keyboard & Joysticks
 * PS/2 keyboard
 * Martix keyboard
-* PWM/I2S DAC audio for ear, mic and AY-3-8912
+* PWM/I2S DAC audio for 48k buzzer and AY-3-8912
+* Audio input (load from tape)
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
@@ -99,6 +100,7 @@ They support the following:
 * USB joysticks
 * HDMI video
 * PWM sound
+* Audio input (load from tape)
 * SPI SD card
 * Serial port debug
 
@@ -133,6 +135,7 @@ It supports:
 * USB joysticks
 * VGA video (RGB222)
 * PWM sound (1 pin)
+* Audio input (load from tape)
 * SPI SD card
 
 Here are the pin assignments:
