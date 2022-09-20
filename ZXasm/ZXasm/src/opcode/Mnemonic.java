@@ -7,17 +7,18 @@ import static opcode.Format.*;
 
 public enum Mnemonic {
 
-    LD("ld", new Format[]{ LD_R_R,//done
-            INDIRECT_NN_RR, RR_INDIRECT_NN,
-        R_INDIRECT_RR, INDIRECT_RR_R, R_INDIRECT_NN, INDIRECT_NN_R }),
+    LD("ld", (byte)0x22, (byte)0x2a, new Format[]{ LD_R_R, LD_RR_NN,//done
+            INDIRECT_NN_R, R_INDIRECT_NN, //done
+            INDIRECT_RR_R, R_INDIRECT_RR,//done
+            INDIRECT_NN_RR, RR_INDIRECT_NN }),
     PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
     POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
-    EX("ex", new Format[]{ RR_RR }),
+    EX("ex", (byte)0x08, new Format[]{ EX_RR, RR_RR }),
     LDI("ldi", new Format[]{ NUL }),
     LDIR("ldir", new Format[]{ NUL }),
     CPI("cpi", new Format[]{ NUL }),
     CPIR("cpir", new Format[]{ NUL }),
-    ADD("add", new Format[]{ ALU_R, RR_RR }),
+    ADD("add", (byte)0x09, new Format[]{ ALU_R, ADD_RR_RR }),
     SUB("sub", new Format[]{ ALU_R, RR_RR }),
     ADC("adc", new Format[]{ ALU_R, RR_RR, R_N }),
     SBC("sbc", new Format[]{ ALU_R, RR_RR, R_N }),
@@ -54,9 +55,9 @@ public enum Mnemonic {
     BIT("bit", new Format[]{ N_R }),
     SET("set", new Format[]{ N_R }),
     RES("res", new Format[]{ N_R }),
-    JR("jr", new Format[]{ D, F_D }),
+    JR("jr", (byte)0x18, (byte)0x20, new Format[]{ D, F_D }),//done
     JP("jp", new Format[]{ NN, F_NN }),
-    DJNZ("djnz", new Format[]{ D }),
+    DJNZ("djnz", (byte)0x10, new Format[]{ D }),//done
     CALL("call", new Format[]{ NN, F_NN }),
     RET("ret", (byte)0xc9, new Format[]{ NUL_1, RET_F }),//done
     RETI("reti", new Format[]{ NUL }),

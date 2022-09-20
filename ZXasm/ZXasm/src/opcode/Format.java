@@ -1,6 +1,7 @@
 package opcode;
 
 import asm.Main;
+import literal.Address;
 import register.Register;
 import register.Register16;
 import register.Register8;
@@ -63,6 +64,8 @@ public enum Format {
         baseOpcode |= source << 4;// by eights
         byte[] ok = new byte[1];
         ok[0] = (byte)baseOpcode;
+        if(getRegister16(opcode, 0).reg16 == Register16.HL)
+            ok = getRegister16(opcode, 0).withIXIYNotIndirect(ok);//HL
         return ok;
     }),
     PP_RR((opcode, org) -> {
@@ -73,11 +76,93 @@ public enum Format {
             getRegister16(opcode, 0).reg16 = Register16.SP;
         int source = getRegister16(opcode, 0).reg16.ordinal();
         if(source > 4) return null;
-        baseOpcode |= source << 4;// by eights
+        baseOpcode |= source << 4;// by 16
+        byte[] ok = new byte[1];
+        ok[0] = (byte)baseOpcode;
+        if(getRegister16(opcode, 0).reg16 == Register16.HL)
+            ok = getRegister16(opcode, 0).withIXIYNotIndirect(ok);//HL
+        return ok;
+    }),
+    LD_RR_NN((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0];
+        int dest = getRegister16(opcode, 0).reg16.ordinal();
+        if(dest > 4) return null;
+        baseOpcode |= dest << 4;// by 16
+        byte[] ok = new byte[3];
+        ok[0] = (byte)baseOpcode;
+        ok[1] = getLower(opcode, 1);
+        ok[2] = getUpper(opcode, 1);
+        if(getRegister16(opcode, 0).reg16 == Register16.HL)
+            ok = getRegister16(opcode, 0).withIXIYNotIndirect(ok);//HL
+        return ok;
+    }),
+    INDIRECT_NN_R((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0];
+        if(!opcode.args.get(0).indirect) return null;//not indirect
+        if(getRegister16(opcode, 1).reg16 != Register16.HL
+            || getRegister8(opcode, 1).reg8 != Register8.A) return null;
+        if(getRegister16(opcode, 1).reg16 == Register16.HL) {
+            // ok
+        }
+        if(getRegister8(opcode, 1).reg8 == Register8.A) {
+            baseOpcode |= 16;
+        }
+        byte[] ok = new byte[3];
+        ok[0] = (byte)baseOpcode;
+        ok[1] = getLower(opcode, 0);
+        ok[2] = getUpper(opcode, 0);
+        if(getRegister16(opcode, 1).reg16 == Register16.HL)
+            ok = getRegister16(opcode, 1).withIXIYNotIndirect(ok);//HL
+        return ok;
+    }),
+    R_INDIRECT_NN((opcode, org) -> { if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseDouble;
+        if(!opcode.args.get(1).indirect) return null;//not indirect
+        if(getRegister16(opcode, 0).reg16 != Register16.HL
+                || getRegister8(opcode, 0).reg8 != Register8.A) return null;
+        if(getRegister16(opcode, 0).reg16 == Register16.HL) {
+            // ok
+        }
+        if(getRegister8(opcode, 0).reg8 == Register8.A) {
+            baseOpcode |= 16;
+        }
+        byte[] ok = new byte[3];
+        ok[0] = (byte)baseOpcode;
+        ok[1] = getLower(opcode, 1);
+        ok[2] = getUpper(opcode, 1);
+        if(getRegister16(opcode, 0).reg16 == Register16.HL)
+            ok = getRegister16(opcode, 0).withIXIYNotIndirect(ok);//HL
+        return ok; }),
+    INDIRECT_RR_R((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0] - 32;//ok
+        if(!opcode.args.get(0).indirect) return null;//not indirect
+        if(getRegister8(opcode, 1).reg8 != Register8.A) return null;
+        if(getRegister16(opcode, 0).reg16 == Register16.BC) {
+            // ok
+        }
+        if(getRegister8(opcode, 0).reg16 == Register16.DE) {
+            baseOpcode |= 16;
+        }
         byte[] ok = new byte[1];
         ok[0] = (byte)baseOpcode;
         return ok;
     }),
+    R_INDIRECT_RR((opcode, org) -> { if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseDouble - 32;//ok
+        if(!opcode.args.get(1).indirect) return null;//not indirect
+        if(getRegister8(opcode, 0).reg8 != Register8.A) return null;
+        if(getRegister16(opcode, 1).reg16 == Register16.BC) {
+            // ok
+        }
+        if(getRegister8(opcode, 1).reg16 == Register16.DE) {
+            baseOpcode |= 16;
+        }
+        byte[] ok = new byte[3];
+        ok[0] = (byte)baseOpcode;
+        return ok; }),
     LD_R_R((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
         if(getRegister8(opcode, 0).reg8 == Register8.IND_HL
@@ -99,16 +184,50 @@ public enum Format {
             ok = getRegister8(opcode, 1).withIXIY(ok);
         return ok;
     }),
+    ADD_RR_RR((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0];
+        if(getRegister16(opcode, 0).reg16 != Register16.HL) return null;//must be hl
+        int source = getRegister16(opcode, 1).reg16.ordinal();
+        if(source > 4) return null;
+        baseOpcode |= source << 4;// by 16
+        byte[] ok = new byte[1];
+        ok[0] = (byte)baseOpcode;
+        ok = getRegister16(opcode, 0).withIXIYNotIndirect(ok);//HL
+        return ok;
+    }),
     RR_RR((opcode, org) -> { return null; }),
+    EX_RR((opcode, org) -> {// ex af
+        if(opcode.args.size() != 1) return null;//invalid
+        if(getRegister16(opcode, 0).reg16 != Register16.AF) return null;
+        return opcode.mnemonic().baseOpcode;
+    }),
     R_N((opcode, org) -> { return null; }),
     R((opcode, org) -> { return null; }),
     RR((opcode, org) -> { return null; }),
     N((opcode, org) -> { return null; }),
     NN((opcode, org) -> { return null; }),
-    D((opcode, org) -> { return null; }),
+    D((opcode, org) -> {
+        if(opcode.args.size() != 1) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseOpcode[0];//for djnz, jr
+        byte[] ok = new byte[2];
+        ok[0] = (byte)baseOpcode;
+        ok[1] = getOffset(opcode, 0, org);
+        return ok;
+    }),
+    F_D((opcode, org) -> {
+        if(opcode.args.size() != 1) return null;//invalid
+        int baseOpcode = opcode.mnemonic().baseDouble;//for jr
+        int source = getFlags(opcode, 0).flags.ordinal();
+        if(source > 4) return null;
+        baseOpcode |= source << 3;// 8 per flag
+        byte[] ok = new byte[2];
+        ok[0] = (byte)baseOpcode;
+        ok[1] = getOffset(opcode, 0, org);
+        return ok;
+    }),//jr f, d
     IM((opcode, org) -> { return null; }),
     RST((opcode, org) -> { return null; }),
-    F_D((opcode, org) -> { return null; }),//jr f, d
     F_NN((opcode, org) -> { return null; }),
     RET_F((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
@@ -122,13 +241,9 @@ public enum Format {
     }),
     N_R((opcode, org) -> { return null; }),// bit and register
     INDIRECT_RR_RR((opcode, org) -> { return null; }),
-    R_INDIRECT_NN((opcode, org) -> { return null; }),
-    INDIRECT_NN_R((opcode, org) -> { return null; }),
     RR_INDIRECT_NN((opcode, org) -> { return null; }),
     INDIRECT_NN_RR((opcode, org) -> { return null; }),
     R_INDIRECT_R((opcode, org) -> { return null; }),
-    R_INDIRECT_RR((opcode, org) -> { return null; }),
-    INDIRECT_RR_R((opcode, org) -> { return null; }),
     INDIRECT_R((opcode, org) -> { return null; }),
     INDIRECT_R_R((opcode, org) -> { return null; }),
     MACRO((opcode, org) -> { return null; });
@@ -146,6 +261,37 @@ public enum Format {
             r.reg8 = Register8.BAD_REG;
         }
         return r;
+    }
+
+    public static byte getOffset(Opcode opcode, int number, int org) {
+        Register r = opcode.args.get(number);
+        if(r.data == null) {
+            //Main.error(Main.Errors.BAD_REGISTER);
+            r.data = new Address(org);//auto loop?
+        }
+        byte b = (byte)(r.data.address - org);
+        if(b != r.data.address - org) {
+            Main.error(Main.Errors.OFFSET);//error
+        }
+        return b;
+    }
+
+    public static byte getUpper(Opcode opcode, int number) {
+        Register r = opcode.args.get(number);
+        if(r.data == null) {
+            //Main.error(Main.Errors.BAD_REGISTER);
+            r.data = new Address(0);//auto loop?
+        }
+        return (byte)(r.data.address >> 8);
+    }
+
+    public static byte getLower(Opcode opcode, int number) {
+        Register r = opcode.args.get(number);
+        if(r.data == null) {
+            //Main.error(Main.Errors.BAD_REGISTER);
+            r.data = new Address(0);//auto loop?
+        }
+        return (byte)(r.data.address);
     }
 
     public static Register getRegister16(Opcode opcode, int number) {

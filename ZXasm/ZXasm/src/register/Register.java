@@ -14,7 +14,8 @@ public class Register {
     byte offset;
     public CCode flags;
     String literal;
-    Address data;
+    public Address data;
+    public boolean indirect = false;
 
     public static Register getRegister(String reg, int org, boolean allowDupe) {
         Register r = null;
@@ -33,6 +34,11 @@ public class Register {
         }
         if(r == null) {
             r = CCode.getCCode(reg);
+        }
+        if(reg.charAt(0) == '(' && reg.charAt(reg.length() - 1) == ')') {//indirect
+            r = getRegister(reg.substring(1, reg.length() - 1), org, allowDupe);
+            r.indirect = true;
+            return r;// recurse
         }
         if(r == null) {
             Address a = null;
@@ -63,9 +69,10 @@ public class Register {
     }
 
     public byte[] withIXIY(byte[] in) {
+        if(!isIX && ! isIY) return in;
         byte[] ok = new byte[in.length + 2];
         for(int i = 0; i < in.length; i++) {
-            ok[i + 1] = in[1];
+            ok[i + 1] = in[i];
         }
         if(isIX) {
             ok[0] = (byte)0xdd;
@@ -74,6 +81,21 @@ public class Register {
             ok[0] = (byte)0xfd;
         }
         ok[in.length] = offset;
+        return ok;
+    }
+
+    public byte[] withIXIYNotIndirect(byte[] in) {
+        if(!isIX && ! isIY) return in;
+        byte[] ok = new byte[in.length + 1];
+        for(int i = 0; i < in.length; i++) {
+            ok[i + 1] = in[i];
+        }
+        if(isIX) {
+            ok[0] = (byte)0xdd;
+        }
+        if(isIY) {
+            ok[0] = (byte)0xfd;
+        }
         return ok;
     }
 

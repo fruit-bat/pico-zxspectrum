@@ -206,7 +206,8 @@ public class Main {
         LABEL_NOT_FOUND(ErrorKinds.ERROR, "An undefined label was not found"),
         NULL_REGISTER(ErrorKinds.ERROR, "No argument present"),
         UPTO_BAD(ErrorKinds.ERROR, "Org has exceeded upto request"),
-        UPTO_GOOD(ErrorKinds.INFO, "Org padding upto request");
+        UPTO_GOOD(ErrorKinds.INFO, "Org padding upto request"),
+        OFFSET(ErrorKinds.ERROR, "Offset exceeds byte range");
 
         ErrorKinds kind;
         String msg;

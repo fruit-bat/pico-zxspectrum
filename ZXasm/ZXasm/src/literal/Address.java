@@ -2,7 +2,7 @@ package literal;
 
 public class Address {
 
-    int address;
+    public int address;
 
     public Address(int address) {
         this.address = address;
