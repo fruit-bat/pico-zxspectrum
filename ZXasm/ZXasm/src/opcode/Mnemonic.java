@@ -10,22 +10,24 @@ public enum Mnemonic {
     LD("ld", (byte)0x22, (byte)0x2a, new Format[]{ LD_R_R, LD_RR_NN,//done
             INDIRECT_NN_R, R_INDIRECT_NN, //done
             INDIRECT_RR_R, R_INDIRECT_RR,//done
+            SP_HL,//done
             INDIRECT_NN_RR, RR_INDIRECT_NN }),
     PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
     POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
-    EX("ex", (byte)0x08, new Format[]{ EX_RR, RR_RR }),
+    EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR }),//done
+    EXX("exx", (byte)0xd9, new Format[]{ NUL_1 }),//done
     LDI("ldi", new Format[]{ NUL }),
     LDIR("ldir", new Format[]{ NUL }),
     CPI("cpi", new Format[]{ NUL }),
     CPIR("cpir", new Format[]{ NUL }),
-    ADD("add", (byte)0x09, new Format[]{ ALU_R, ADD_RR_RR }),
-    SUB("sub", new Format[]{ ALU_R, RR_RR }),
-    ADC("adc", new Format[]{ ALU_R, RR_RR, R_N }),
-    SBC("sbc", new Format[]{ ALU_R, RR_RR, R_N }),
-    AND("and", new Format[]{ ALU_R, R_N }),
-    XOR("xor", new Format[]{ ALU_R, R_N }),
-    OR("or", new Format[]{ ALU_R, R_N }),
-    CP("cp", new Format[]{ ALU_R, R_N }),
+    ADD("add", (byte)0x09, new Format[]{ ALU_R, ALU_N, ADD_RR_RR }),
+    SUB("sub", new Format[]{ ALU_R, ALU_N, RR_RR }),
+    ADC("adc", new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
+    SBC("sbc", new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
+    AND("and", new Format[]{ ALU_R, ALU_N, R_N }),
+    XOR("xor", new Format[]{ ALU_R, ALU_N, R_N }),
+    OR("or", new Format[]{ ALU_R, ALU_N, R_N }),
+    CP("cp", new Format[]{ ALU_R, ALU_N, R_N }),
     INC("inc", (byte)0x04, (byte)0x03, new Format[]{ ID_R, ID_RR }),//done
     DEC("dec", (byte)0x05, (byte)0x0b, new Format[]{ ID_R, ID_RR }),//done
     DAA("daa", (byte)0x27, new Format[]{ NUL_1 }),//done
@@ -35,8 +37,8 @@ public enum Mnemonic {
     SCF("scf", (byte)0x37, new Format[]{ NUL_1 }),//done
     NOP("nop", (byte)0x00, new Format[]{ NUL_1 }),//done
     HALT("halt", (byte)0x76, new Format[]{ NUL_1 }),//done
-    DI("di", new Format[]{ NUL }),
-    EI("ei", new Format[]{ NUL }),
+    DI("di", (byte)0xf3, new Format[]{ NUL_1 }),//done
+    EI("ei", (byte)0xfb, new Format[]{ NUL_1 }),//done
     IM("im", new Format[]{ Format.IM }),
     RLCA("rlca", (byte)0x07, new Format[]{ NUL_1 }),//done
     RLA("rla", (byte)0x17, new Format[]{ NUL_1 }),//done
@@ -56,19 +58,21 @@ public enum Mnemonic {
     SET("set", new Format[]{ N_R }),
     RES("res", new Format[]{ N_R }),
     JR("jr", (byte)0x18, (byte)0x20, new Format[]{ D, F_D }),//done
-    JP("jp", new Format[]{ NN, F_NN }),
+    JP("jp", (byte)0xc3, (byte)0xc2, new Format[]{ JP_NN, JP_F_NN, JP_HL }),//done
     DJNZ("djnz", (byte)0x10, new Format[]{ D }),//done
-    CALL("call", new Format[]{ NN, F_NN }),
+    CALL("call", (byte)0xcd, (byte)0xcc, new Format[]{ JP_NN, JP_F_NN }),
     RET("ret", (byte)0xc9, new Format[]{ NUL_1, RET_F }),//done
     RETI("reti", new Format[]{ NUL }),
     RETN("retn", new Format[]{ NUL }),
-    RST("rst", new Format[]{ Format.RST }),
-    IN("in", new Format[]{ R_INDIRECT_R, INDIRECT_R }),
+    RST("rst", (byte)0xc7, new Format[]{ Format.RST }),
+    IN("in", (byte)0xdb, new Format[]{ IN_AN,//done
+            R_INDIRECT_R, INDIRECT_R }),
     INI("ini", new Format[]{ NUL }),
     IND("ind", new Format[]{ NUL }),
     INIR("inir", new Format[]{ NUL }),
     INDR("indr", new Format[]{ NUL }),
-    OUT("out", new Format[]{ INDIRECT_R_R, INDIRECT_R }),
+    OUT("out", (byte)0xd3, new Format[]{ OUT_NA,//done
+            INDIRECT_R_R, INDIRECT_R }),
     OUTI("outi", new Format[]{ NUL }),
     OUTD("outd", new Format[]{ NUL }),
     OTIR("otir", new Format[]{ NUL }),
