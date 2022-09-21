@@ -21,8 +21,10 @@ target_compile_definitions(ZxSpectrumPicoVga PRIVATE
   # Set up the menu 80 columns and 30 rows
   PCS_COLS=80 
   PCS_ROWS=30
-  # VGA 16
-  # TODO
+  # VGA on Pimoroni Pico VGA Demo Base
+  # PICO_BOARD=vgaboard
+  # cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
+
 
   # Configure the I2S audio 
   PICO_AUDIO_I2S=1
