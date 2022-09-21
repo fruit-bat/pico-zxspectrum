@@ -8,6 +8,9 @@
 #endif
 // TODO need a 16bit version
 // #include "vga.h"
+#include "pico/scanvideo.h"
+#include "pico/scanvideo/composable_scanline.h"
+#include "pico/sync.h"
 
 #include "ZxSpectrumPrepareRgb16Scanline.h"
 #include "PicoCharRendererVga16.h"
@@ -37,6 +40,7 @@
 
 #define LED_PIN 25
 #define SPK_PIN 9
+#define vga_mode vga_mode_640x320_60
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 

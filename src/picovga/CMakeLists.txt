@@ -42,6 +42,7 @@ target_link_libraries(ZxSpectrumPicoVga
   tinyusb_board
   hardware_pio
   hardware_pwm
+  pico_scanvideo_dpi
 )
 
 pico_enable_stdio_usb(ZxSpectrumPicoVga 0)
