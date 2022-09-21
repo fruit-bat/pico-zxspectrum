@@ -3,14 +3,13 @@
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
-#ifdef USE_PS2_KBD
-#include "ps2kbd.h"
-#endif
-// TODO need a 16bit version
-// #include "vga.h"
 
-#include "ZxSpectrumPrepareRgb16Scanline.h"
-#include "PicoCharRendererVga16.h"
+
+#include "vga.h"
+#include "ZxSpectrumPrepareRgbScanline.h"
+// #include "pzx_keyscan.h"
+
+#include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoPen.h"
@@ -22,6 +21,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
+// #include "ZxSpectrumPicomputerJoystick.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -34,52 +34,65 @@
 #include "PicoDisplay.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
-
-#define LED_PIN 25
-#define SPK_PIN 9
+#include "ZxSpectrumEmuVga.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
-struct semaphore dvi_start_sem;
+struct semaphore   ;
+static const sVmode* vmode = NULL;
+
+uint8_t* screenPtr;
+uint8_t* attrPtr;
 
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
+  &sdCard0,
+  "zxspectrum/snapshots"
+);
+static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
+  &sdCard0,
+  "zxspectrum/tapes"
+);
+static QuickSave quickSave(
+  &sdCard0,
+  "zxspectrum/quicksaves"
+);
+static ZxSpectrumHidJoystick hidJoystick;
+// static ZxSpectrumPicomputerJoystick picomputerJoystick;
+//static ZxSpectrumDualJoystick dualJoystick(
+//  &hidJoystick, 
+//  &picomputerJoystick
+//);
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
 );
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
-  &sdCard0, 
-  "zxspectrum/snapshots"
-);
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
-  &sdCard0, 
-  "zxspectrum/tapes"
-);
-static QuickSave quickSave(
-  &sdCard0, 
-  "zxspectrum/quicksaves"
-);
-static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
-  &zxSpectrumSnaps,
+  &zxSpectrumSnaps, 
+  &zxSpectrumTapes, 
+  &quickSave, 
+  &dualJoystick
+);
+static ZxSpectrumHidKeyboard keyboard2(
+  &zxSpectrumSnaps, 
   &zxSpectrumTapes,
-  &quickSave,
-  &joystick
+  &quickSave, 
+  &picomputerJoystick
 );
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
-  0, 
-  &joystick
+  &keyboard2, 
+  &dualJoystick
 );
 static ZxSpectrumMenu picoRootWin(
-  &sdCard0,
-  &zxSpectrum,
+  &sdCard0, 
+  &zxSpectrum, 
   &quickSave
 );
 static PicoDisplay picoDisplay(
-  pcw_screen(),
+  pcw_screen(), 
   &picoRootWin
 );
 static PicoWinHidKeyboard picoWinHidKeyboard(
@@ -88,28 +101,17 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 
 static bool showMenu = true;
 static bool toggleMenu = false;
-
-void print(hid_keyboard_report_t const *report) {
-  printf("HID key report modifiers %2.2X report ", report->modifier);
-  for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
-  printf("\n");
-}
+static volatile uint _frames = 0;
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
-  keyboard1.mount();
+	keyboard1.mount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
-  keyboard1.unmount();
+	keyboard1.unmount();
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-#if 0
-  // Some help debugging keyboard input/drivers
-  printf("PREV ");print(prev_report);
-  printf("CURR ");print(report);
-#endif
-
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -123,26 +125,32 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   }
 }
 
-#ifdef USE_PS2_KBD
-static Ps2Kbd ps2kbd(
-  pio1,
-  6,
-  process_kbd_report
-);
-#endif
+/*
+void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+  int r;
+  if (showMenu) {
+    r = picoWinHidKeyboard.processHidReport(report, prev_report);
+  }
+  else {
+    r = keyboard2.processHidReport(report, prev_report);
+  }
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
+}
+*/
 
-unsigned char* screenPtr;
-unsigned char* attrPtr;
-static volatile uint _frames = 0;
+std::function<void()> _scanline_extra;
+std::function<void()> _frame_extra;
 
 void __not_in_flash_func(core1_main)() {
-  sem_acquire_blocking(&dvi_start_sem);
+  sem_acquire_blocking(&core1_start_sme);
   printf("Core 1 running...\n");
 
   // TODO fetch the resolution from the mode ?
-  //VgaInit(vmode,640,480);
-  // TODO init 16 bit VGA video
-/*
+  VgaInit(vmode,640,480);
+
   while (1) {
 
     VgaLineBuf *linebuf = get_vga_line();
@@ -164,7 +172,8 @@ void __not_in_flash_func(core1_main)() {
         zxSpectrum.borderColour()
       );
     }
-      
+    
+    _scanline_extra();
 //    pzx_keyscan_row();
     
     if (y == 239) { // TODO use a const / get from vmode
@@ -176,6 +185,7 @@ void __not_in_flash_func(core1_main)() {
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
+        _frame_extra();
 //        picomputerJoystick.enabled(!showMenu);
       }
       
@@ -183,17 +193,9 @@ void __not_in_flash_func(core1_main)() {
     }    
   }
   __builtin_unreachable();
-  * 
-  * */
 }
 
-#ifdef EAR_PIN
-#define CPU_STEP_LOOP 10
-#else
-#define CPU_STEP_LOOP 100
-#endif
-
-void __not_in_flash_func(main_loop)(){
+void __not_in_flash_func(main_loop)(std::function<void()> main_loop_extra){
 
   unsigned int lastInterruptFrame = _frames;
 
@@ -203,9 +205,8 @@ void __not_in_flash_func(main_loop)(){
   while(1){
     
     tuh_task();
-#ifdef USE_PS2_KBD
-    ps2kbd.tick();
-#endif
+    
+    main_loop_extra();
 
 //    hid_keyboard_report_t const *curr;
 //    hid_keyboard_report_t const *prev;
@@ -213,21 +214,12 @@ void __not_in_flash_func(main_loop)(){
 //    process_picomputer_kbd_report(curr, prev);
     
     if (!showMenu) {
-      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
+      for (int i = 1; i < 100; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();
         }
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
         zxSpectrum.step();
-#endif 
       }
     }
     else if (frames != _frames) {
@@ -237,23 +229,27 @@ void __not_in_flash_func(main_loop)(){
   }
 }
 
-int main(){
+int main_vga(
+  std::function<void()> post_init,
+  std::function<void()> main_loop_extra,
+  std::function<void()> scanline_extra,
+  std::function<void()> frame_extra,
+){
+  _scanline_extra = scanline_extra
+  _frame_extra = frame_extra;
+  
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  // TODO init 16 bit VGA
-  //vmode = Video(DEV_VGA, RES_HVGA);
+  vmode = Video(DEV_VGA, RES_HVGA);
   sleep_ms(100);
 
-  //Initialise I/O
+  // Initialise I/O
   stdio_init_all(); 
   
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
   tusb_init();
-#ifdef USE_PS2_KBD
-  ps2kbd.init_gpio();
-#endif
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
@@ -262,17 +258,19 @@ int main(){
   attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
-//  keyboard2.setZxSpectrum(&zxSpectrum);
+  keyboard2.setZxSpectrum(&zxSpectrum);
   
   // Initialise the menu renderer
   pcw_init_renderer();
 
-  // Initialise the keyboard scan
-//  pzx_keyscan_init();
+//  // Initialise the keyboard scan
+//  pzx_keyscan_init();  
+  // Initialise anything else
+  post_init();
   
   sleep_ms(10);
   
-  sem_init(&dvi_start_sem, 0, 1);
+  sem_init(&core1_start_sme, 0, 1);
   
   multicore_launch_core1(core1_main);
 
@@ -282,27 +280,31 @@ int main(){
           
   picoDisplay.refresh();
   
-  sem_release(&dvi_start_sem);
+  sem_release(&core1_start_sme);
  
   if (sdCard0.mount()) {
-    
-    // Set up the quick load loops
-    zxSpectrumSnaps.reload();
-    zxSpectrumTapes.reload();
+		
+		// Set up the quick load loops
+		zxSpectrumSnaps.reload();
+		zxSpectrumTapes.reload();
 
     // Load quick save slot 1 if present
-    if (quickSave.used(0)) {
-      quickSave.load(&zxSpectrum, 0);
-    }
+		if (quickSave.used(0)) {
+			quickSave.load(&zxSpectrum, 0);
+		}
   
     // See if the board is in kiosk mode    
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
-//    keyboard2.setKiosk(isKiosk);
-  }
+    keyboard2.setKiosk(isKiosk);
+	}
 
   showMenu = false;
   picoRootWin.removeMessage();
   
-  main_loop();
+  main_loop(main_loop_extra);
+}
+
+ZxSpectrumHidKeyboard *get_keyboard2() {
+  return &keyboard2;
 }

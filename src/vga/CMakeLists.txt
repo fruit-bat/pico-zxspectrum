@@ -9,8 +9,6 @@ set(picomputer_vga_defines
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
   SDCARD_PIN_SPI0_MISO=4
-  DEBUG_FAT_SPI
-
 )
 
 add_executable(ZxSpectrum4PinAudioVga1111Ps2
