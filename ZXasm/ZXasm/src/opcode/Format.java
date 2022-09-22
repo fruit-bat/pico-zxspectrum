@@ -12,12 +12,13 @@ interface Assembler {
 }
 public enum Format {
 
-    NUL((opcode, org) -> {
-        //TODO
-        return null;
-    }),
     NUL_1((opcode, org) -> {
         if(opcode.args.size() != 0) return null;//invalid
+        return opcode.mnemonic().baseOpcode;
+    }),
+    MUL_DE((opcode, org) -> {
+        if(opcode.args.size() != 1) return null;//invalid
+        if(getRegister16(opcode, 0).reg16 != Register16.DE) return null;
         return opcode.mnemonic().baseOpcode;
     }),
     IN_AN((opcode, org) -> {
@@ -300,10 +301,25 @@ public enum Format {
         ok[1] = getOffset(opcode, 0, org);
         return ok;
     }),//jr f, d
-    IM((opcode, org) -> { return null; }),
+    IM((opcode, org) -> {
+        if(opcode.args.size() != 1) return null;//invalid
+        byte[] ok = opcode.mnemonic().baseOpcode;
+        if(getUpper(opcode, 0) != 0) return null;
+        int adjust = getLower(opcode, 0);
+        if(adjust != (adjust & 3)) return null;
+        switch (adjust) {
+            case 0: ok[1] += 0; break;
+            case 1: ok[1] += 16; break;
+            case 2: ok[1] += 24; break;
+            case 3: ok[1] += 8; break;//IM 3
+            default: break;
+        }
+        return ok;
+    }),
     RST((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseOpcode[0];
+        if(getUpper(opcode, 0) != 0) return null;
         int adjust = getLower(opcode, 0);
         if(adjust != (adjust & 0x38)) return null;//bad thing
         baseOpcode += (adjust & 0x38);
