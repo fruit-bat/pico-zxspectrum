@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pico/stdlib.h"
+#include "pico/scanvideo.h"
 
 #ifdef __cplusplus
 extern "C" {

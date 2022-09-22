@@ -1,5 +1,4 @@
 #include "ZxSpectrumPrepareScanvideoScanline.h"
-#include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 
 #define VGA_RGB_555(r,g,b) ((r##UL<<0)|(g##UL<<6)|(b##UL << 11))

@@ -12,7 +12,7 @@
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/sync.h"
 
-#include "PicoCharRendererVga16.h"
+#include "PicoCharRendererScanvideo.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoPen.h"
@@ -199,13 +199,13 @@ void __not_in_flash_func(core1_main)() {
         uint32_t frame_num = scanvideo_frame_number(scanline_buffer->scanline_id);
         uint32_t y = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-   /*     if (showMenu) {
-          pcw_prepare_vga332_scanline_80(
-            buf,
-            y,
-            linebuf->frame);
+        if (showMenu) {
+          pcw_prepare_scanvideo_scanline_80(
+            scanline_buffer,
+            y >> 1,
+            frame_num);
         }
-        else { */
+        else { 
           zx_prepare_scanvideo_scanline(
             scanline_buffer, 
             y >> 1, 
@@ -214,9 +214,7 @@ void __not_in_flash_func(core1_main)() {
             attrPtr,
             zxSpectrum.borderColour()
           );
-    /*    }
-    */
-      //  render_scanline(scanline_buffer, core_num);
+        }
 
         // Release the rendered buffer into the wild
         scanvideo_end_scanline_generation(scanline_buffer);
@@ -341,7 +339,7 @@ int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
   // TODO init 16 bit VGA
-  //vmode = Video(DEV_VGA, RES_HVGA);
+  set_sys_clock_khz(200000, true);
   sleep_ms(100);
 
   //Initialise I/O

@@ -35,13 +35,13 @@ target_compile_definitions(ZxSpectrumPicoVga PRIVATE
   PICO_AUDIO_I2S_DATA=26
   PICO_AUDIO_I2S_BCLK=27  
   
-  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=320
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
 )
 
 target_link_libraries(ZxSpectrumPicoVga
   ${zxspectrum_common_libs}
   pico_emu_utils
-  pico_vga16_menu
+  pico_scanvideo_menu
   tinyusb_host
   tinyusb_board
   hardware_pio
