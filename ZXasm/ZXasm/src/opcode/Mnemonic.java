@@ -44,19 +44,19 @@ public enum Mnemonic {
     RLA("rla", (byte)0x17, new Format[]{ NUL_1 }),//done
     RRCA("rrca", (byte)0x0f, new Format[]{ NUL_1 }),//done
     RRA("rra", (byte)0x1f, new Format[]{ NUL_1 }),//done
-    RLC("rlc", new Format[]{ R }),
-    RL("rl", new Format[]{ R }),
-    RRC("rrc", new Format[]{ R }),
-    RR("rr", new Format[]{ R }),
-    SLA("sla", new Format[]{ R }),
-    SLL("sll", new Format[]{ R }),
-    SRA("sra", new Format[]{ R }),
-    SRL("srl", new Format[]{ R }),
-    RLD("rld", new Format[]{ R }),
-    RRD("rrd", new Format[]{ R }),
-    BIT("bit", new Format[]{ N_R }),
-    SET("set", new Format[]{ N_R }),
-    RES("res", new Format[]{ N_R }),
+    RLC("rlc", new byte[] { (byte)0xcb, (byte) 0x00 }, new Format[]{ R }),//done
+    RL("rl", new byte[] { (byte)0xcb, (byte) 0x10 }, new Format[]{ R }),//done
+    RRC("rrc", new byte[] { (byte)0xcb, (byte) 0x08 }, new Format[]{ R }),//done
+    RR("rr", new byte[] { (byte)0xcb, (byte) 0x18 }, new Format[]{ R }),//done
+    SLA("sla", new byte[] { (byte)0xcb, (byte) 0x20 }, new Format[]{ R }),//done
+    SLL("sll", new byte[] { (byte)0xcb, (byte) 0x30 }, new Format[]{ R }),//done
+    SRA("sra", new byte[] { (byte)0xcb, (byte) 0x28 }, new Format[]{ R }),//done
+    SRL("srl", new byte[] { (byte)0xcb, (byte) 0x38 }, new Format[]{ R }),//done
+    RLD("rld", new byte[] { (byte)0xed, (byte) 0x6f }, new Format[]{ NUL_1 }),//done
+    RRD("rrd", new byte[] { (byte)0xed, (byte) 0x67 }, new Format[]{ NUL_1 }),//done
+    BIT("bit", new byte[] { (byte)0xcb, (byte) 0x40 }, new Format[]{ N_R }),//done
+    SET("set", new byte[] { (byte)0xcb, (byte) 0xc0 }, new Format[]{ N_R }),//done
+    RES("res", new byte[] { (byte)0xcb, (byte) 0x80 }, new Format[]{ N_R }),//done
     JR("jr", (byte)0x18, (byte)0x20, new Format[]{ D, F_D }),//done
     JP("jp", (byte)0xc3, (byte)0xc2, new Format[]{ JP_NN, JP_F_NN, JP_HL }),//done
     DJNZ("djnz", (byte)0x10, new Format[]{ D }),//done

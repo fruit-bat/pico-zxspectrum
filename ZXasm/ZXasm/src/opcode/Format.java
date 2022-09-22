@@ -270,7 +270,24 @@ public enum Format {
         return withIXIY16(opcode, 1, ok);
     }),
     R_N((opcode, org) -> { return null; }),
-    R((opcode, org) -> { return null; }),
+    R((opcode, org) -> { // bit ops simplicity
+        if(opcode.args.size() == 1) {//normal
+            int source = getRegister8(opcode, 0).reg8.ordinal();
+            if(source > 8) return null;
+            byte[] ok = opcode.mnemonic().baseOpcode;
+            ok[1] |= source;
+            return withIXIY8Bit(opcode, 0, ok);
+        }
+        if(opcode.args.size() != 2) return null;
+        // two special
+        int dest = getRegister8(opcode, 1).reg8.ordinal();
+        if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
+        if(getRegister8(opcode, 0).reg8 != Register8.IND_HL) return null;
+        if(!getRegister8(opcode, 0).hasIXIY()) return null;
+        byte[] ok = opcode.mnemonic().baseOpcode;
+        ok[1] |= dest;
+        return withIXIY8Bit(opcode, 0, ok);
+    }),
     RR((opcode, org) -> { return null; }),
     N((opcode, org) -> { return null; }),
     JP_NN((opcode, org) -> {
@@ -349,7 +366,34 @@ public enum Format {
         ok[0] = (byte)baseOpcode;
         return ok;
     }),
-    N_R((opcode, org) -> { return null; }),// bit and register
+    N_R((opcode, org) -> {
+        if(opcode.args.size() == 2) {//normal
+            int source = getRegister8(opcode, 1).reg8.ordinal();
+            if(source > 8) return null;
+            if(getUpper(opcode, 0) != 0) return null;
+            int bit = getLower(opcode, 0);
+            if(bit != (bit & 7)) return null;
+            bit &= 7;
+            bit <<= 3;//shift prefix
+            byte[] ok = opcode.mnemonic().baseOpcode;
+            ok[1] |= source | bit;
+            return withIXIY8Bit(opcode, 1, ok);
+        }
+        if(opcode.args.size() != 3 || opcode.mnemonic() == Mnemonic.BIT) return null;
+        // three special
+        int dest = getRegister8(opcode, 2).reg8.ordinal();
+        if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
+        if(getRegister8(opcode, 1).reg8 != Register8.IND_HL) return null;
+        if(!getRegister8(opcode, 1).hasIXIY()) return null;
+        byte[] ok = opcode.mnemonic().baseOpcode;
+        if(getUpper(opcode, 0) != 0) return null;
+        int bit = getLower(opcode, 0);
+        if(bit != (bit & 7)) return null;
+        bit &= 7;
+        bit <<= 3;//shift prefix
+        ok[1] |= dest | bit;
+        return withIXIY8Bit(opcode, 1, ok);
+    }),// bit and register
     INDIRECT_RR_RR((opcode, org) -> { return null; }),
     RR_INDIRECT_NN((opcode, org) -> { return null; }),
     INDIRECT_NN_RR((opcode, org) -> { return null; }),
@@ -442,6 +486,12 @@ public enum Format {
             || getRegister8(opcode, number).reg8 == Register8.L)
             return getRegister8(opcode, number).withIXIYNotIndirect(in);
         return in;//can't do
+    }
+
+    public static byte[] withIXIY8Bit(Opcode opcode, int number, byte[] in) {
+        if(getRegister8(opcode, number).reg8 == Register8.IND_HL)
+            return getRegister8(opcode, number).withIXIYBit(in);
+        return in;
     }
 
     public static byte[] withIXIY16(Opcode opcode, int number, byte[] in) {

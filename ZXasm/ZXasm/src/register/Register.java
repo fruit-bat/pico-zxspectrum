@@ -88,6 +88,15 @@ public class Register {
         return ok;
     }
 
+    public byte[] withIXIYBit(byte[] in) {
+        if(!isIX && ! isIY) return in;
+        byte[] ok = withIXIYBit(in);
+        byte tmp = ok[2];
+        ok[2] = ok[3];
+        ok[3] = tmp;//some wierd selection of displacement location
+        return ok;
+    }
+
     public byte[] withIXIYNotIndirect(byte[] in) {
         if(!isIX && ! isIY) return in;
         byte[] ok = new byte[in.length + 1];
