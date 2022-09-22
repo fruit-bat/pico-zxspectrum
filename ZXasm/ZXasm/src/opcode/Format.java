@@ -241,6 +241,18 @@ public enum Format {
         if(getRegister16(opcode, 0).reg16 != Register16.AF) return null;
         return opcode.mnemonic().baseOpcode;
     }),
+    EX_IXY_HL((opcode, org) -> {// ex ix/iy, hl
+        if (opcode.args.size() != 2) return null;//invalid
+        if (getRegister16(opcode, 1).reg16 != Register16.HL) return null;//must be hl
+        if(getRegister16(opcode, 1).hasIXIY()) return null;//must be hl plain
+        if (getRegister16(opcode, 0).reg16 != Register16.HL) return null;//must be ix or iy
+        if(!getRegister16(opcode, 0).hasIXIY()) return null;//must be ix iy
+        int baseOpcode = 0xed;//an ED with a prefix IX or IY
+        //ok
+        byte[] ok = new byte[1];
+        ok[0] = (byte) baseOpcode;
+        return withIXIY16(opcode, 0, ok);
+    }),
     EX_RR_RR((opcode, org) -> {// ex xx, hl
         if(opcode.args.size() != 2) return null;//invalid
         if(getRegister16(opcode, 1).reg16 != Register16.HL) return null;

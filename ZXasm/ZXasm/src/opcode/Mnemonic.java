@@ -14,7 +14,7 @@ public enum Mnemonic {
             INDIRECT_NN_RR, RR_INDIRECT_NN }),
     PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
     POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
-    EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR }),//done
+    EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR, EX_IXY_HL }),//done
     EXX("exx", (byte)0xd9, new Format[]{ NUL_1 }),//done
     LDI("ldi", new Format[]{ NUL }),
     LDIR("ldir", new Format[]{ NUL }),
