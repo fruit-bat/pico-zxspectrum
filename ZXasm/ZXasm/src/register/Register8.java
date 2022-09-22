@@ -11,8 +11,8 @@ public enum Register8 {
     C("c"),
     D("d"),
     E("e"),
-    H("h"),
-    L("l"),
+    H("h", "ixh", "iyh"),
+    L("l", "ixl", "iyl"),
     IND_HL("(hl)", "(ix*)", "(iy*)"),// do jp (hl) => remove inconstancy
     A("a"),
     I("i"),
@@ -39,6 +39,7 @@ public enum Register8 {
         num = num.trim();
         Arrays.stream(num.split(" ")).reduce((a, b) -> a + b);
         String fuzz = isIX ? reg.ix : reg.iy;
+        if(fuzz.indexOf("*") < 0) return 0;// no *
         num = num.substring(fuzz.indexOf("*") + 1);
         int tail = fuzz.length() - fuzz.indexOf("*") - 1;
         num = num.substring(0, fuzz.length() - tail);
@@ -54,6 +55,9 @@ public enum Register8 {
 
     static boolean fuzzEquals(String reg, String fuzz) {
         int head = fuzz.indexOf("*");
+        if(head < 0) {
+            return reg.equals(fuzz);// no *
+        }
         int tail = fuzz.length() - fuzz.indexOf("*") - 1;
         if(reg.substring(head).equals(fuzz.substring(head))) {
             String end = reg.substring(reg.length() - tail);

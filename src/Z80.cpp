@@ -2626,6 +2626,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
       case EX_DE_HL: {
 
+        // flip flop toggle so no HL_IX_IY
         EXCHANGE(DE, HL);
         break;
 

@@ -68,6 +68,10 @@ public class Register {
         return r;
     }
 
+    public boolean hasIXIY() {
+        return isIX || isIY;
+    }
+
     public byte[] withIXIY(byte[] in) {
         if(!isIX && ! isIY) return in;
         byte[] ok = new byte[in.length + 2];
