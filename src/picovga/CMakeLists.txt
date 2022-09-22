@@ -1,6 +1,7 @@
 
 add_executable(ZxSpectrumPicoVga
   ${zxspectrum_common_src}
+  ${zxspectrum_scanvideo_src}
   main.cpp
 )
 
@@ -34,6 +35,7 @@ target_compile_definitions(ZxSpectrumPicoVga PRIVATE
   PICO_AUDIO_I2S_DATA=26
   PICO_AUDIO_I2S_BCLK=27  
   
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=320
 )
 
 target_link_libraries(ZxSpectrumPicoVga

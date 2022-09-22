@@ -6,8 +6,8 @@
 extern "C" {
 #endif
 
-void __not_in_flash_func(zx_prepare_rgb16_scanline)(
-  uint32_t* buf, 
+void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
+  struct scanvideo_scanline_buffer *scanline_buffer, 
   uint32_t y, 
   uint32_t frame,
   uint8_t* screenPtr,

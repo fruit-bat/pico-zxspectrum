@@ -6,13 +6,12 @@
 #ifdef USE_PS2_KBD
 #include "ps2kbd.h"
 #endif
-// TODO need a 16bit version
-// #include "vga.h"
+#include "ZxSpectrumPrepareScanvideoScanline.h"
+// TODO remove
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/sync.h"
 
-#include "ZxSpectrumPrepareRgb16Scanline.h"
 #include "PicoCharRendererVga16.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -155,13 +154,33 @@ int32_t __not_in_flash_func(single_color_scanline)(uint32_t *buf, size_t buf_len
     return 3;
 }
 
+int32_t __not_in_flash_func(single_color_scanline2)(uint32_t *buf, size_t buf_length, int width, uint32_t color16) {
+    assert(buf_length >= 2);
+
+    assert(width >= MIN_COLOR_RUN);
+    // | jmp color_run | color | count-3 |  buf[0] =
+    buf[0] = COMPOSABLE_COLOR_RUN | (color16 << 16);
+    buf[1] = (width - MIN_COLOR_RUN) | (COMPOSABLE_RAW_2P << 16);
+    buf[2] = color16 | (color16<<16);
+    // note we must end with a black pixel
+    buf[3] = COMPOSABLE_RAW_1P;
+    buf[4] = COMPOSABLE_EOL_SKIP_ALIGN;
+
+    return 5;
+}
+
+
 void __not_in_flash_func(render_scanline)(struct scanvideo_scanline_buffer *dest, int core) {
     uint32_t *buf = dest->data;
     size_t buf_length = dest->data_max;
 
     int l = scanvideo_scanline_number(dest->scanline_id);
     uint16_t bgcolour = (uint16_t) l << 2;
-    dest->data_used = single_color_scanline(buf, buf_length, VGA_MODE.width, bgcolour);
+    
+    
+    dest->data_used = single_color_scanline2(buf, buf_length, VGA_MODE.width, bgcolour);
+    
+    
     dest->status = SCANLINE_OK;
 }
 
@@ -180,8 +199,24 @@ void __not_in_flash_func(core1_main)() {
         uint32_t frame_num = scanvideo_frame_number(scanline_buffer->scanline_id);
         uint32_t y = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-
-        render_scanline(scanline_buffer, core_num);
+   /*     if (showMenu) {
+          pcw_prepare_vga332_scanline_80(
+            buf,
+            y,
+            linebuf->frame);
+        }
+        else { */
+          zx_prepare_scanvideo_scanline(
+            scanline_buffer, 
+            y >> 1, 
+            frame_num,
+            screenPtr,
+            attrPtr,
+            zxSpectrum.borderColour()
+          );
+    /*    }
+    */
+      //  render_scanline(scanline_buffer, core_num);
 
         // Release the rendered buffer into the wild
         scanvideo_end_scanline_generation(scanline_buffer);
