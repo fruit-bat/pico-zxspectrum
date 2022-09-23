@@ -39,8 +39,18 @@
 
 #define LED_PIN 25
 #define SPK_PIN 9
-#define VGA_MODE vga_mode_640x480_60
 
+const scanvideo_mode_t vga_mode_640x240_60 =
+        {
+                .default_timing = &vga_timing_640x480_60_default,
+                .pio_program = &video_24mhz_composable,
+                .width = 640,
+                .height = 240,
+                .xscale = 1,
+                .yscale = 2,
+        };
+        
+#define VGA_MODE vga_mode_640x240_60       
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
@@ -138,55 +148,6 @@ unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
 
-
-#define MIN_COLOR_RUN 3
-
-int32_t __not_in_flash_func(single_color_scanline)(uint32_t *buf, size_t buf_length, int width, uint32_t color16) {
-    assert(buf_length >= 2);
-
-    assert(width >= MIN_COLOR_RUN);
-    // | jmp color_run | color | count-3 |  buf[0] =
-    buf[0] = COMPOSABLE_COLOR_RUN | (color16 << 16);
-    buf[1] = (width - MIN_COLOR_RUN) | (COMPOSABLE_RAW_1P << 16);
-    // note we must end with a black pixel
-    buf[2] = 0 | (COMPOSABLE_EOL_ALIGN << 16);
-
-    return 3;
-}
-
-int32_t __not_in_flash_func(single_color_scanline2)(uint32_t *buf, size_t buf_length, int width, uint32_t color16) {
-    assert(buf_length >= 2);
-
-    assert(width >= MIN_COLOR_RUN);
-    // | jmp color_run | color | count-3 |  buf[0] =
-    buf[0] = COMPOSABLE_COLOR_RUN | (color16 << 16);
-    buf[1] = (width - MIN_COLOR_RUN) | (COMPOSABLE_RAW_2P << 16);
-    buf[2] = color16 | (color16<<16);
-    // note we must end with a black pixel
-    buf[3] = COMPOSABLE_RAW_1P;
-    buf[4] = COMPOSABLE_EOL_SKIP_ALIGN;
-
-    return 5;
-}
-
-
-void __not_in_flash_func(render_scanline)(struct scanvideo_scanline_buffer *dest, int core) {
-    uint32_t *buf = dest->data;
-    size_t buf_length = dest->data_max;
-
-    int l = scanvideo_scanline_number(dest->scanline_id);
-    uint16_t bgcolour = (uint16_t) l << 2;
-    
-    
-    dest->data_used = single_color_scanline2(buf, buf_length, VGA_MODE.width, bgcolour);
-    
-    
-    dest->status = SCANLINE_OK;
-}
-
-
-
-
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
@@ -202,13 +163,13 @@ void __not_in_flash_func(core1_main)() {
         if (showMenu) {
           pcw_prepare_scanvideo_scanline_80(
             scanline_buffer,
-            y >> 1,
+            y,
             frame_num);
         }
         else { 
           zx_prepare_scanvideo_scanline(
             scanline_buffer, 
-            y >> 1, 
+            y, 
             frame_num,
             screenPtr,
             attrPtr,
@@ -235,6 +196,7 @@ void __not_in_flash_func(core1_main)() {
         }
     }
 
+  __builtin_unreachable();
 
 
   // TODO fetch the resolution from the mode ?
