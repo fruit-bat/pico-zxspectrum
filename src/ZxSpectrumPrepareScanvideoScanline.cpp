@@ -6,25 +6,6 @@
 #define X2(a) (a | (a << 16))
 #define XH(a) (a << 16)
 
-static uint32_t zx_colour_words[16] = {
-  (VGA_RGB_555(0, 0, 0 )), // Black
-  (VGA_RGB_555(0, 0, 15)), // Blue
-  (VGA_RGB_555(15,0, 0 )), // Red
-  (VGA_RGB_555(15,0, 15)), // Magenta
-  (VGA_RGB_555(0, 15,0 )), // Green
-  (VGA_RGB_555(0, 15,15)), // Cyan
-  (VGA_RGB_555(15,15,0 )), // Yellow
-  (VGA_RGB_555(15,15,15)), // White
-  (VGA_RGB_555(0, 0, 0 )), // Bright Black
-  (VGA_RGB_555(0, 0, 31)), // Bright Blue
-  (VGA_RGB_555(31,0, 0 )), // Bright Red
-  (VGA_RGB_555(31,0, 31)), // Bright Magenta
-  (VGA_RGB_555(0, 31,0 )), // Bright Green
-  (VGA_RGB_555(0, 31,31)), // Bright Cyan
-  (VGA_RGB_555(31,31,0 )), // Bright Yellow
-  (VGA_RGB_555(31,31,31))  // Bright White
-};
-
 static uint32_t zxd_colour_words[16] = {
   X2(VGA_RGB_555(0, 0, 0 )), // Black
   X2(VGA_RGB_555(0, 0, 15)), // Blue
