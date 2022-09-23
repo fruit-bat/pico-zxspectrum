@@ -1,7 +1,5 @@
 
 set(picomputer_vga_defines
-  # TODO I don't think the following line should be here
-  ${picomputer_common_defines}
   PCS_COLS=80 
   PCS_ROWS=30
   # Configure the SPI sd card to use SPI0
@@ -14,8 +12,6 @@ set(picomputer_vga_defines
 add_executable(ZxSpectrum4PinAudioVga1111Ps2
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
-  # TODO I don't think the following line should be here
-  ${picomputer_common_src}
   main.cpp
 )
 
