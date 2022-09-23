@@ -4,7 +4,6 @@
 #define VGA_RGB_555(r,g,b) ((r##UL<<0)|(g##UL<<6)|(b##UL << 11))
 
 #define X2(a) (a | (a << 16))
-#define XH(a) (a << 16)
 
 static uint32_t zxd_colour_words[16] = {
   X2(VGA_RGB_555(0, 0, 0 )), // Black
@@ -25,34 +24,14 @@ static uint32_t zxd_colour_words[16] = {
   X2(VGA_RGB_555(31,31,31))  // Bright White
 };
 
-static uint32_t zxh_colour_words[16] = {
-  XH(VGA_RGB_555(0, 0, 0 )), // Black
-  XH(VGA_RGB_555(0, 0, 15)), // Blue
-  XH(VGA_RGB_555(15,0, 0 )), // Red
-  XH(VGA_RGB_555(15,0, 15)), // Magenta
-  XH(VGA_RGB_555(0, 15,0 )), // Green
-  XH(VGA_RGB_555(0, 15,15)), // Cyan
-  XH(VGA_RGB_555(15,15,0 )), // Yellow
-  XH(VGA_RGB_555(15,15,15)), // White
-  XH(VGA_RGB_555(0, 0, 0 )), // Bright Black
-  XH(VGA_RGB_555(0, 0, 31)), // Bright Blue
-  XH(VGA_RGB_555(31,0, 0 )), // Bright Red
-  XH(VGA_RGB_555(31,0, 31)), // Bright Magenta
-  XH(VGA_RGB_555(0, 31,0 )), // Bright Green
-  XH(VGA_RGB_555(0, 31,31)), // Bright Cyan
-  XH(VGA_RGB_555(31,31,0 )), // Bright Yellow
-  XH(VGA_RGB_555(31,31,31))  // Bright White
-};
-
 static uint32_t zx_invert_masks[] = {
   0x00,
   0xff
 };
 
 inline uint32_t* single_color_run(uint32_t *buf, uint32_t width, uint32_t ci) {
-
   // | jmp color_run | color | count-3 |  buf[0] =
-  *buf++ = COMPOSABLE_COLOR_RUN | zxh_colour_words[ci];
+  *buf++ = COMPOSABLE_COLOR_RUN | (zxd_colour_words[ci] << 16);
   *buf++ = (width - 3 - 2) | (COMPOSABLE_RAW_2P << 16);
   *buf++ = zxd_colour_words[ci];
   return buf;
@@ -64,8 +43,7 @@ inline uint32_t* end_run(uint32_t *buf) {
   *buf++ = COMPOSABLE_EOL_SKIP_ALIGN;
   return buf;
 }
-  
-    
+
 void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
   struct scanvideo_scanline_buffer *scanline_buffer,
   uint32_t y, 
