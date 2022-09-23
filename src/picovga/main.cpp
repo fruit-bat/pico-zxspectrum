@@ -41,15 +41,15 @@
 #define SPK_PIN 9
 
 const scanvideo_mode_t vga_mode_640x240_60 =
-        {
-                .default_timing = &vga_timing_640x480_60_default,
-                .pio_program = &video_24mhz_composable,
-                .width = 640,
-                .height = 240,
-                .xscale = 1,
-                .yscale = 2,
-        };
-        
+{
+  .default_timing = &vga_timing_640x480_60_default,
+  .pio_program = &video_24mhz_composable,
+  .width = 640,
+  .height = 240,
+  .xscale = 1,
+  .yscale = 2,
+};
+
 #define VGA_MODE vga_mode_640x240_60       
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
@@ -153,82 +153,35 @@ void __not_in_flash_func(core1_main)() {
   printf("Core 1 running...\n");
 
   
-    scanvideo_setup(&VGA_MODE);
-    scanvideo_timing_enable(true);
-  
-    int core_num = get_core_num();
-    printf("Rendering on core %d\n", core_num);
-    while (true) {
-        struct scanvideo_scanline_buffer *scanline_buffer = scanvideo_begin_scanline_generation(true);
-        uint32_t frame_num = scanvideo_frame_number(scanline_buffer->scanline_id);
-        uint32_t y = scanvideo_scanline_number(scanline_buffer->scanline_id);
+  scanvideo_setup(&VGA_MODE);
+  scanvideo_timing_enable(true);
 
-        if (showMenu) {
-          pcw_prepare_scanvideo_scanline_80(
-            scanline_buffer,
-            y,
-            frame_num);
-        }
-        else { 
-          zx_prepare_scanvideo_scanline(
-            scanline_buffer, 
-            y, 
-            frame_num,
-            screenPtr,
-            attrPtr,
-            zxSpectrum.borderColour()
-          );
-        }
+  int core_num = get_core_num();
+  printf("Rendering on core %d\n", core_num);
+  while (true) {
+    struct scanvideo_scanline_buffer *scanline_buffer = scanvideo_begin_scanline_generation(true);
+    uint32_t frame_num = scanvideo_frame_number(scanline_buffer->scanline_id);
+    uint32_t y = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-        // Release the rendered buffer into the wild
-        scanvideo_end_scanline_generation(scanline_buffer);
-        
-        if (y == 239) { // TODO use a const / get from vmode
-          
-          // TODO Tidy this mechanism up
-          screenPtr = zxSpectrum.screenPtr();
-          attrPtr = screenPtr + (32 * 24 * 8);
-          
-          if (toggleMenu) {
-            showMenu = !showMenu;
-            toggleMenu = false;
-    //        picomputerJoystick.enabled(!showMenu);
-          }
-          
-          _frames = frame_num;
-        }
-    }
-
-  __builtin_unreachable();
-
-
-  // TODO fetch the resolution from the mode ?
-  //VgaInit(vmode,640,480);
-  // TODO init 16 bit VGA video
-/*
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
     if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
+      pcw_prepare_scanvideo_scanline_80(
+        scanline_buffer,
         y,
-        linebuf->frame);
+        frame_num);
     }
-    else {
-      zx_prepare_rgb_scanline(
-        buf, 
+    else { 
+      zx_prepare_scanvideo_scanline(
+        scanline_buffer, 
         y, 
-        linebuf->frame,
+        frame_num,
         screenPtr,
         attrPtr,
         zxSpectrum.borderColour()
       );
     }
-      
-//    pzx_keyscan_row();
+
+    // Release the rendered buffer into the wild
+    scanvideo_end_scanline_generation(scanline_buffer);
     
     if (y == 239) { // TODO use a const / get from vmode
       
@@ -242,12 +195,11 @@ void __not_in_flash_func(core1_main)() {
 //        picomputerJoystick.enabled(!showMenu);
       }
       
-      _frames = linebuf->frame;
-    }    
+      _frames = frame_num;
+    }
   }
+
   __builtin_unreachable();
-  * 
-  * */
 }
 
 #ifdef EAR_PIN
