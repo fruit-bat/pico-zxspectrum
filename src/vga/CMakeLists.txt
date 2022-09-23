@@ -1,6 +1,5 @@
 
 set(picomputer_vga_defines
-  ${picomputer_common_defines}
   PCS_COLS=80 
   PCS_ROWS=30
   # Configure the SPI sd card to use SPI0
@@ -8,14 +7,11 @@ set(picomputer_vga_defines
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
   SDCARD_PIN_SPI0_MISO=4
-  DEBUG_FAT_SPI
-
 )
 
 add_executable(ZxSpectrum4PinAudioVga1111Ps2
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
   main.cpp
 )
 

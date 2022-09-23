@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
+
+# Pull in PICO SDK (must be before project)
 include(pico_sdk_import.cmake)
+
+# We also need PICO EXTRAS
 include(pico_extras_import.cmake)
 
 project(picodvi C CXX ASM)
@@ -9,7 +13,6 @@ pico_sdk_init()
 
 add_compile_options(-Wall)
 
-
 set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
 	"Select a default pin configuration from common_dvi_pin_configs.h")
 
@@ -18,7 +21,6 @@ get_filename_component(PICO_FOLDER ${CMAKE_CURRENT_LIST_DIR}/.. ABSOLUTE)
 include_directories(
 	${PICO_FOLDER}/PicoDVI/software/include
 )
-
 
 add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libdvi "${CMAKE_CURRENT_BINARY_DIR}/libdvi")
 add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libsprite "${CMAKE_CURRENT_BINARY_DIR}/libsprite")

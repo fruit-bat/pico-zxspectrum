@@ -34,8 +34,10 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 
 ## Updates
+* 23/09/22 - Added support for Pimoroni Pico VGA Demo Base
 * 19/09/22 - Audio in (load from tape)
 * 31/08/22 - Fix multiple Z80 self-test failures
 * 27/08/22 - Fix for joysticks with single xy axis
@@ -75,6 +77,7 @@ Connect your Pico Pi with a USB cable, while holding down the program button:
 | PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
+| Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
@@ -454,14 +457,19 @@ make clean
 make -j4
 ```
 
-Copy the relevant version to your board:
+Building for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
+
 ```sh
-cp ./bin/picomputer/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+cd build
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
+make -j4 ZxSpectrumPicoVga
 ```
+
+Copy the relevant version to your board, which can be located with:
 ```sh
-cp ./bin/picomputer/picomputer_max/ZxSpectrumPicomputerMax.uf2 /media/pi/RPI-RP2/
+find . -name '*.uf2'
 ```
-or
+e.g.
 ```sh
 cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
