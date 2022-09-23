@@ -457,14 +457,19 @@ make clean
 make -j4
 ```
 
-Copy the relevant version to your board:
+Building for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
+
 ```sh
-cp ./bin/picomputer/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+cd build
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
+make -j4 ZxSpectrumPicoVga
 ```
+
+Copy the relevant version to your board, which can be located with:
 ```sh
-cp ./bin/picomputer/picomputer_max/ZxSpectrumPicomputerMax.uf2 /media/pi/RPI-RP2/
+find . -name '*.uf2'
 ```
-or
+e.g.
 ```sh
 cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
