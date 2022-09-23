@@ -152,7 +152,10 @@ void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-
+  
+    scanvideo_setup(&VGA_MODE);
+    scanvideo_timing_enable(true);
+  
     int core_num = get_core_num();
     printf("Rendering on core %d\n", core_num);
     while (true) {
@@ -341,9 +344,7 @@ int main(){
   });
           
   picoDisplay.refresh();
-  
-  scanvideo_setup(&VGA_MODE);
-  scanvideo_timing_enable(true);
+
 
   sem_release(&dvi_start_sem);
  
