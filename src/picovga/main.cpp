@@ -7,11 +7,6 @@
 #include "ps2kbd.h"
 #endif
 #include "ZxSpectrumPrepareScanvideoScanline.h"
-// TODO remove
-#include "pico/scanvideo.h"
-#include "pico/scanvideo/composable_scanline.h"
-#include "pico/sync.h"
-
 #include "PicoCharRendererScanvideo.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -25,7 +20,6 @@
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
 
-//#include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
