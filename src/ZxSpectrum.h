@@ -77,8 +77,16 @@ private:
       if (_keyboard2) kb &= _keyboard2->read(address);
       return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
     }
-    if ((address & 0xC002) == 0x8000) {
+    if (address == 0xbffd) {
       return _ay.readData();
+    }
+    if (address == 0x7ffd) {
+      // reading #7FFD port is the same as writing #FF into it.
+      int value = 0xff;
+      _portMem = value;
+      setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
+      setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+      return 0xff;
     }
     else if (!(address & 0x00e0)) {
        return _joystick ? _joystick->getKempston() : 0;
@@ -94,17 +102,17 @@ private:
       _port254 = value;
       _borderColour = value & 7;
     }
-    else if (!(address & 0x8002)) {
+    else if (address  == 0x7ffd) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
-    else if ((address & 0xC002) == 0xC000) {
+    else if (address == 0xfffd) {
       _ay.writeCtrl(value);
     }
-    else if ((address & 0xC002) == 0x8000) {
+    else if (address == 0xbffd) {
       _ay.writeData(value);
     }
   }
