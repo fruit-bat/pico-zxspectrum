@@ -7,13 +7,13 @@
 
 static uint32_t zxd_colour_words[16] = {
   X2(VGA_RGB_555(0, 0, 0 )), // Black
-  X2(VGA_RGB_555(0, 0, 15)), // Blue
-  X2(VGA_RGB_555(15,0, 0 )), // Red
-  X2(VGA_RGB_555(15,0, 15)), // Magenta
-  X2(VGA_RGB_555(0, 15,0 )), // Green
-  X2(VGA_RGB_555(0, 15,15)), // Cyan
-  X2(VGA_RGB_555(15,15,0 )), // Yellow
-  X2(VGA_RGB_555(15,15,15)), // White
+  X2(VGA_RGB_555(0, 0, 20)), // Blue
+  X2(VGA_RGB_555(20,0, 0 )), // Red
+  X2(VGA_RGB_555(20,0, 20)), // Magenta
+  X2(VGA_RGB_555(0, 20,0 )), // Green
+  X2(VGA_RGB_555(0, 20,20)), // Cyan
+  X2(VGA_RGB_555(20,20,0 )), // Yellow
+  X2(VGA_RGB_555(20,20,20)), // White
   X2(VGA_RGB_555(0, 0, 0 )), // Bright Black
   X2(VGA_RGB_555(0, 0, 31)), // Bright Blue
   X2(VGA_RGB_555(31,0, 0 )), // Bright Red

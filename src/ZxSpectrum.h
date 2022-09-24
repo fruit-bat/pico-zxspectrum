@@ -77,7 +77,7 @@ private:
       if (_keyboard2) kb &= _keyboard2->read(address);
       return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
     }
-    if (address == 0xbffd) {
+    if (address == 0xfffd) {
       return _ay.readData();
     }
     if (address == 0x7ffd) {
