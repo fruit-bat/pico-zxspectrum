@@ -1,6 +1,5 @@
 package opcode;
 
-import literal.Address;
 import register.Register;
 
 import java.util.ArrayList;

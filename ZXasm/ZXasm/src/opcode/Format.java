@@ -14,12 +14,12 @@ public enum Format {
 
     NUL_1((opcode, org) -> {
         if(opcode.args.size() != 0) return null;//invalid
-        return opcode.mnemonic().baseOpcode;
+        return opcode.mnemonic().cloneOpcode();
     }),
     MUL_DE((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
         if(getRegister16(opcode, 0).reg16 != Register16.DE) return null;
-        return opcode.mnemonic().baseOpcode;
+        return opcode.mnemonic().cloneOpcode();
     }),
     IN_AN((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
@@ -237,11 +237,19 @@ public enum Format {
         ok[0] = (byte)baseOpcode;
         return withIXIY16(opcode, 0, ok);
     }),
-    RR_RR((opcode, org) -> { return null; }),
+    RR_RR((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;
+        if(getRegister16(opcode, 0).reg16 != Register16.HL) return null;
+        byte[] ok = opcode.mnemonic().cloneOpcode();
+        int dest = getRegister16(opcode, 1).reg16.ordinal();
+        if(dest > 4) return null;
+        ok[1] |= (dest << 4);
+        return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
+    }),
     EX_RR((opcode, org) -> {// ex af
         if(opcode.args.size() != 1) return null;//invalid
         if(getRegister16(opcode, 0).reg16 != Register16.AF) return null;
-        return opcode.mnemonic().baseOpcode;
+        return opcode.mnemonic().cloneOpcode();
     }),
     EX_IXY_HL((opcode, org) -> {// ex ix/iy, hl
         if (opcode.args.size() != 2) return null;//invalid
@@ -274,7 +282,7 @@ public enum Format {
         if(opcode.args.size() == 1) {//normal
             int source = getRegister8(opcode, 0).reg8.ordinal();
             if(source > 8) return null;
-            byte[] ok = opcode.mnemonic().baseOpcode;
+            byte[] ok = opcode.mnemonic().cloneOpcode();
             ok[1] |= source;
             return withIXIY8Bit(opcode, 0, ok);
         }
@@ -284,7 +292,7 @@ public enum Format {
         if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
         if(getRegister8(opcode, 0).reg8 != Register8.IND_HL) return null;
         if(!getRegister8(opcode, 0).hasIXIY()) return null;
-        byte[] ok = opcode.mnemonic().baseOpcode;
+        byte[] ok = opcode.mnemonic().cloneOpcode();
         ok[1] |= dest;
         return withIXIY8Bit(opcode, 0, ok);
     }),
@@ -320,7 +328,7 @@ public enum Format {
     }),//jr f, d
     IM((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
-        byte[] ok = opcode.mnemonic().baseOpcode;
+        byte[] ok = opcode.mnemonic().cloneOpcode();
         if(getUpper(opcode, 0) != 0) return null;
         int adjust = getLower(opcode, 0);
         if(adjust != (adjust & 3)) return null;
@@ -375,7 +383,7 @@ public enum Format {
             if(bit != (bit & 7)) return null;
             bit &= 7;
             bit <<= 3;//shift prefix
-            byte[] ok = opcode.mnemonic().baseOpcode;
+            byte[] ok = opcode.mnemonic().cloneOpcode();
             ok[1] |= source | bit;
             return withIXIY8Bit(opcode, 1, ok);
         }
@@ -385,7 +393,7 @@ public enum Format {
         if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
         if(getRegister8(opcode, 1).reg8 != Register8.IND_HL) return null;
         if(!getRegister8(opcode, 1).hasIXIY()) return null;
-        byte[] ok = opcode.mnemonic().baseOpcode;
+        byte[] ok = opcode.mnemonic().cloneOpcode();
         if(getUpper(opcode, 0) != 0) return null;
         int bit = getLower(opcode, 0);
         if(bit != (bit & 7)) return null;
@@ -395,11 +403,92 @@ public enum Format {
         return withIXIY8Bit(opcode, 1, ok);
     }),// bit and register
     INDIRECT_RR_RR((opcode, org) -> { return null; }),
-    RR_INDIRECT_NN((opcode, org) -> { return null; }),
-    INDIRECT_NN_RR((opcode, org) -> { return null; }),
-    R_INDIRECT_R((opcode, org) -> { return null; }),
-    INDIRECT_R((opcode, org) -> { return null; }),
-    INDIRECT_R_R((opcode, org) -> { return null; }),
+    RR_INDIRECT_NN((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;
+        byte[] ok = new byte[4];
+        ok[0] = (byte)0xed;
+        ok[1] = (byte)0x4b;
+        int dest = getRegister16(opcode, 0).reg16.ordinal();
+        if(dest > 4) return null;
+        ok[1] |= (dest << 4);
+        if(!isIndirect(opcode, 1)) return null;
+        ok[2] = getLower(opcode, 1);
+        ok[3] = getUpper(opcode, 1);
+        return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
+    }),
+    INDIRECT_NN_RR((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;
+        byte[] ok = new byte[4];
+        ok[0] = (byte)0xed;
+        ok[1] = (byte)0x43;
+        int dest = getRegister16(opcode, 1).reg16.ordinal();
+        if(dest > 4) return null;
+        ok[1] |= (dest << 4);
+        if(!isIndirect(opcode, 0)) return null;
+        ok[2] = getLower(opcode, 0);
+        ok[3] = getUpper(opcode, 0);
+        return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
+    }),
+    LD_IR((opcode, org) -> {
+        if(opcode.args.size() != 2) return null;
+        byte[] ok = new byte[2];
+        ok[0] = (byte)0xed;
+        ok[1] = (byte)0x47;
+        if(getRegister8(opcode, 0).reg8 == Register8.A) {
+            ok[1] += 16;
+            if(getRegister8(opcode, 1).reg8 != Register8.I
+               || getRegister8(opcode, 1).reg8 != Register8.R) return null;
+            if(getRegister8(opcode, 1).reg8 == Register8.R) ok[1] += 8;
+        } else if(getRegister8(opcode, 1).reg8 == Register8.A) {
+            if(getRegister8(opcode, 0).reg8 != Register8.I
+                    || getRegister8(opcode, 0).reg8 != Register8.R) return null;
+            if(getRegister8(opcode, 0).reg8 == Register8.R) ok[1] += 8;
+        }
+        return ok;
+    }),
+    R_INDIRECT_R((opcode, org) -> {
+        // for in (c)
+        if(opcode.args.size() != 2) return null;
+        byte[] ok = new byte[2];
+        ok[0] = (byte)0xed;
+        ok[1] = (byte)0x40;
+        if(getRegister8(opcode, 1).reg8 != Register8.IND_C) return null;
+        int dest = getRegister8(opcode, 0).reg8.ordinal();
+        if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
+        ok[1] |= (dest << 3);
+        return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
+    }),
+    INDIRECT_R((opcode, org) -> {
+        // for in/out (c) specials
+        if(opcode.args.size() == 1) {
+            byte[] ok = new byte[2];
+            ok[0] = (byte)0xed;
+            ok[1] = (byte)0x70;
+            if(getRegister8(opcode, 0).reg8 != Register8.IND_C) return null;
+            if(opcode.mnemonic() != Mnemonic.IN) return null;
+            return ok;
+        } else if(opcode.args.size() == 2) {
+            byte[] ok = new byte[2];
+            ok[0] = (byte)0xed;
+            ok[1] = (byte)0x71;
+            if(getRegister8(opcode, 0).reg8 != Register8.IND_C) return null;
+            if(opcode.mnemonic() != Mnemonic.OUT) return null;
+            if(getUpper(opcode, 1) != 0 && getLower(opcode, 1) != 0) return null;
+            return ok;
+        } else return null;
+    }),
+    INDIRECT_R_R((opcode, org) -> {
+        // for out (c)
+        if(opcode.args.size() != 2) return null;
+        byte[] ok = new byte[2];
+        ok[0] = (byte)0xed;
+        ok[1] = (byte)0x41;
+        if(getRegister8(opcode, 0).reg8 != Register8.IND_C) return null;
+        int dest = getRegister8(opcode, 1).reg8.ordinal();
+        if(dest > 8 || dest == Register8.IND_HL.ordinal()) return null;
+        ok[1] |= (dest << 3);
+        return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
+    }),
     MACRO((opcode, org) -> { return null; });
 
     Assembler ass;
@@ -504,5 +593,14 @@ public enum Format {
         if(getRegister16(opcode, number).reg16 == Register16.HL)
             return getRegister16(opcode, number).withIXIYNotIndirect(in);
         return in;//can't do
+    }
+
+    public static byte[] allowedIXIYED(Opcode opcode, int number, byte[] in) {
+        if(in[0] != 0xed) {
+            return in;
+        }
+        Register r = getRegister16(opcode, number);
+        if(r.hasIXIY()) return null;
+        return in;
     }
 }

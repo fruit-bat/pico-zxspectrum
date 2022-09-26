@@ -11,19 +11,19 @@ public enum Mnemonic {
             INDIRECT_NN_R, R_INDIRECT_NN, //done
             INDIRECT_RR_R, R_INDIRECT_RR,//done
             SP_HL,//done
-            INDIRECT_NN_RR, RR_INDIRECT_NN }),
+            INDIRECT_NN_RR, RR_INDIRECT_NN, LD_IR }),//done
     PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
     POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
     EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR, EX_IXY_HL }),//done
     EXX("exx", (byte)0xd9, new Format[]{ NUL_1 }),//done
     LDI("ldi", new byte[] { (byte)0xed, (byte) 0xa0 }, new Format[]{ NUL_1 }),//done
-    LDIR("ldir", new byte[] { (byte)0xed, (byte) 0xb0 },new Format[]{ NUL_1 }),//done
+    LDIR("ldir", new byte[] { (byte)0xed, (byte) 0xb0 }, new Format[]{ NUL_1 }),//done
     CPI("cpi", new byte[] { (byte)0xed, (byte) 0xa1 }, new Format[]{ NUL_1 }),//done
     CPIR("cpir", new byte[] { (byte)0xed, (byte) 0xb1 }, new Format[]{ NUL_1 }),//done
     ADD("add", (byte)0x09, new Format[]{ ALU_R, ALU_N, ADD_RR_RR }),
-    SUB("sub", new Format[]{ ALU_R, ALU_N, RR_RR }),
-    ADC("adc", new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
-    SBC("sbc", new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
+    SUB("sub", new Format[]{ ALU_R, ALU_N }),
+    ADC("adc", new byte[] { (byte)0xed, (byte) 0x4a }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
+    SBC("sbc",  new byte[] { (byte)0xed, (byte) 0x42 }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
     AND("and", new Format[]{ ALU_R, ALU_N, R_N }),
     XOR("xor", new Format[]{ ALU_R, ALU_N, R_N }),
     OR("or", new Format[]{ ALU_R, ALU_N, R_N }),
@@ -66,13 +66,13 @@ public enum Mnemonic {
     RETN("retn", new byte[] { (byte)0xed, (byte) 0x45 }, new Format[]{ NUL_1 }),//done
     RST("rst", (byte)0xc7, new Format[]{ Format.RST }),
     IN("in", (byte)0xdb, new Format[]{ IN_AN,//done
-            R_INDIRECT_R, INDIRECT_R }),
+            R_INDIRECT_R, INDIRECT_R }),//done
     INI("ini", new byte[] { (byte)0xed, (byte) 0xa2 }, new Format[]{ NUL_1 }),//done
     IND("ind", new byte[] { (byte)0xed, (byte) 0xaa }, new Format[]{ NUL_1 }),//done
     INIR("inir", new byte[] { (byte)0xed, (byte) 0xb2 }, new Format[]{ NUL_1 }),//done
     INDR("indr", new byte[] { (byte)0xed, (byte) 0xba }, new Format[]{ NUL_1 }),//done
     OUT("out", (byte)0xd3, new Format[]{ OUT_NA,//done
-            INDIRECT_R_R, INDIRECT_R }),
+            INDIRECT_R_R, INDIRECT_R }),//done
     OUTI("outi", new byte[] { (byte)0xed, (byte) 0xa3 }, new Format[]{ NUL_1 }),//done
     OUTD("outd", new byte[] { (byte)0xed, (byte) 0xab }, new Format[]{ NUL_1 }),//done
     OTIR("otir", new byte[] { (byte)0xed, (byte) 0xb3 }, new Format[]{ NUL_1 }),//done
@@ -136,5 +136,13 @@ public enum Mnemonic {
         // found as label
         if(l != null) return LABEL;
         return null;
+    }
+
+    public byte[] cloneOpcode() {
+        byte[] b = new byte[baseOpcode.length];
+        for(int i = 0; i < baseOpcode.length; i++) {
+            b[i] = baseOpcode[i];
+        }
+        return b;
     }
 }

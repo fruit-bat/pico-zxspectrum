@@ -17,6 +17,7 @@ public enum Register8 {
     A("a"),
     I("i"),
     R("r"),
+    IND_C("(c)"),
     BAD_REG(null);//allows continuation to other parse options without null pointer exception
 
     String name;
