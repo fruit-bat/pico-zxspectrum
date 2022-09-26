@@ -65,14 +65,12 @@ public enum Mnemonic {
     RETI("reti", new byte[] { (byte)0xed, (byte) 0x4d }, new Format[]{ NUL_1 }),//done
     RETN("retn", new byte[] { (byte)0xed, (byte) 0x45 }, new Format[]{ NUL_1 }),//done
     RST("rst", (byte)0xc7, new Format[]{ Format.RST }),
-    IN("in", (byte)0xdb, new Format[]{ IN_AN,//done
-            R_INDIRECT_R, INDIRECT_R }),//done
+    IN("in", (byte)0xdb, new Format[]{ IN_AN, R_INDIRECT_R, INDIRECT_R }),//done
     INI("ini", new byte[] { (byte)0xed, (byte) 0xa2 }, new Format[]{ NUL_1 }),//done
     IND("ind", new byte[] { (byte)0xed, (byte) 0xaa }, new Format[]{ NUL_1 }),//done
     INIR("inir", new byte[] { (byte)0xed, (byte) 0xb2 }, new Format[]{ NUL_1 }),//done
     INDR("indr", new byte[] { (byte)0xed, (byte) 0xba }, new Format[]{ NUL_1 }),//done
-    OUT("out", (byte)0xd3, new Format[]{ OUT_NA,//done
-            INDIRECT_R_R, INDIRECT_R }),//done
+    OUT("out", (byte)0xd3, new Format[]{ OUT_NA, INDIRECT_R_R, INDIRECT_R }),//done
     OUTI("outi", new byte[] { (byte)0xed, (byte) 0xa3 }, new Format[]{ NUL_1 }),//done
     OUTD("outd", new byte[] { (byte)0xed, (byte) 0xab }, new Format[]{ NUL_1 }),//done
     OTIR("otir", new byte[] { (byte)0xed, (byte) 0xb3 }, new Format[]{ NUL_1 }),//done

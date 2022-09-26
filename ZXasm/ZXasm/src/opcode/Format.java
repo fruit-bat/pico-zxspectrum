@@ -12,6 +12,8 @@ interface Assembler {
 }
 public enum Format {
 
+    R_N((opcode, org) -> { return null; }),//alu reg, n
+    RR((opcode, org) -> { return null; }),//jpj/jpc
     NUL_1((opcode, org) -> {
         if(opcode.args.size() != 0) return null;//invalid
         return opcode.mnemonic().cloneOpcode();
@@ -277,7 +279,6 @@ public enum Format {
         //no IX, IY
         return withIXIY16(opcode, 1, ok);
     }),
-    R_N((opcode, org) -> { return null; }),
     R((opcode, org) -> { // bit ops simplicity
         if(opcode.args.size() == 1) {//normal
             int source = getRegister8(opcode, 0).reg8.ordinal();
@@ -296,8 +297,6 @@ public enum Format {
         ok[1] |= dest;
         return withIXIY8Bit(opcode, 0, ok);
     }),
-    RR((opcode, org) -> { return null; }),
-    N((opcode, org) -> { return null; }),
     JP_NN((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseOpcode[0];//for jp, call
@@ -402,7 +401,6 @@ public enum Format {
         ok[1] |= dest | bit;
         return withIXIY8Bit(opcode, 1, ok);
     }),// bit and register
-    INDIRECT_RR_RR((opcode, org) -> { return null; }),
     RR_INDIRECT_NN((opcode, org) -> {
         if(opcode.args.size() != 2) return null;
         byte[] ok = new byte[4];
