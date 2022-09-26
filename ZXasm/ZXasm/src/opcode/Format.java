@@ -16,7 +16,7 @@ public enum Format {
         if (opcode.args.size() != 2) return null;//invalid
         int dest = getRegister16(opcode, 0).reg16.ordinal();
         if(dest != Register16.SP.ordinal() || dest != Register16.BC.ordinal()) return null;
-        if(dest == Register16.SP.ordinal()) dest = Register16.IND_DE.ordinal();//normal 0/1
+        if(dest == Register16.SP.ordinal()) dest = Register16.DE.ordinal();//normal 0/1
         dest = (dest + 1) & 1;//invert
         int source = getRegister16(opcode, 1).reg16.ordinal() - Register16.DE.ordinal();
         if(source > 1) return null;
@@ -28,9 +28,9 @@ public enum Format {
         ok[1] += source;//hl/de
         return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
     }),
-    LD_INDIRECT_RR_R((opcode, org) -> {// ex ix/iy, hl
+    LD_INDIRECT_RR_R((opcode, org) -> {
         if (opcode.args.size() != 2) return null;//invalid
-        int dest = getRegister16(opcode, 0).reg16.ordinal();
+        int dest = getRegister16(opcode, 0).reg16.ordinal() - Register16.IND_BC.ordinal();
         if(dest > 1) return null;
         int source = getRegister8(opcode, 1).reg8.ordinal();
         if(source > 5) return null;
@@ -41,11 +41,11 @@ public enum Format {
         ok[1] += source;
         return allowedIXIYED(opcode, 0, allowedIXIYED(opcode, 1, ok));
     }),
-    LD_R_INDIRECT_RR((opcode, org) -> {// ex ix/iy, hl
+    LD_R_INDIRECT_RR((opcode, org) -> {
         if (opcode.args.size() != 2) return null;//invalid
         int dest = getRegister8(opcode, 1).reg8.ordinal();
         if(dest > 5) return null;
-        int source = getRegister16(opcode, 0).reg16.ordinal();
+        int source = getRegister16(opcode, 0).reg16.ordinal() - Register16.IND_BC.ordinal();
         if(source > 1) return null;
         byte[] ok = new byte[2];
         ok[0] = (byte)0xfd;
