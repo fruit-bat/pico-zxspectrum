@@ -8,6 +8,9 @@ public enum Register16 {
     HL("hl", "ix", "iy"),// jp (hl) write as jp hl for consistency
     SP("sp"),
     AF("af"),
+    IND_SP("(sp)"),
+    IND_BC("(bc)"),
+    IND_DE("(de)"),
     BAD_REG(null);//bad
 
     String name;

@@ -43,14 +43,7 @@ public enum Register8 {
         num = num.substring(fuzz.indexOf("*") + 1);
         int tail = fuzz.length() - fuzz.indexOf("*") - 1;
         num = num.substring(0, fuzz.length() - tail);
-        String based = num.substring(1);
-        if(num.charAt(0) == '$') {
-            return (byte) Integer.parseInt(based, 16);
-        } else if(num.charAt(0) == '%') {
-            return (byte) Integer.parseInt(based, 2);
-        } else {
-            return (byte) Integer.parseInt(num);
-        }
+        return (byte)(new Address(num, 0, false)).address;
     }
 
     static boolean fuzzEquals(String reg, String fuzz) {

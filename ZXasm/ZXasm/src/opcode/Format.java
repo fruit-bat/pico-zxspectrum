@@ -127,10 +127,10 @@ public enum Format {
     JP_HL((opcode, org) -> {
         if(opcode.args.size() != 1) return null;//invalid
         int baseOpcode = 0xe9;//hardwired
-        if(getRegister16(opcode, 0).reg16 != Register16.HL) return null;
+        if(getRegister8(opcode, 0).reg8 != Register8.IND_HL) return null;
         byte[] ok = new byte[1];
         ok[0] = (byte)baseOpcode;
-        return withIXIY16(opcode, 0, ok);
+        return withIXIY16(opcode, 0, ok);//as no offset on ix, iy
     }),
     LD_RR_NN((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
@@ -138,6 +138,7 @@ public enum Format {
         int dest = getRegister16(opcode, 0).reg16.ordinal();
         if(dest > 4) return null;
         baseOpcode |= dest << 4;// by 16
+        if(isIndirect(opcode, 1)) return null;
         byte[] ok = new byte[3];
         ok[0] = (byte)baseOpcode;
         ok[1] = getLower(opcode, 1);
@@ -147,7 +148,7 @@ public enum Format {
     INDIRECT_NN_R((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseOpcode[0];
-        if(!opcode.args.get(0).indirect) return null;//not indirect
+        if(!isIndirect(opcode, 0)) return null;//not indirect
         if(getRegister16(opcode, 1).reg16 != Register16.HL
             || getRegister8(opcode, 1).reg8 != Register8.A) return null;
         if(getRegister16(opcode, 1).reg16 == Register16.HL) {
@@ -164,7 +165,7 @@ public enum Format {
     }),
     R_INDIRECT_NN((opcode, org) -> { if(opcode.args.size() != 2) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseDouble;
-        if(!opcode.args.get(1).indirect) return null;//not indirect
+        if(!isIndirect(opcode, 1)) return null;//not indirect
         if(getRegister16(opcode, 0).reg16 != Register16.HL
                 || getRegister8(opcode, 0).reg8 != Register8.A) return null;
         if(getRegister16(opcode, 0).reg16 == Register16.HL) {
@@ -182,12 +183,12 @@ public enum Format {
     INDIRECT_RR_R((opcode, org) -> {
         if(opcode.args.size() != 2) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseOpcode[0] - 32;//ok
-        if(!opcode.args.get(0).indirect) return null;//not indirect
         if(getRegister8(opcode, 1).reg8 != Register8.A) return null;
-        if(getRegister16(opcode, 0).reg16 == Register16.BC) {
-            // ok
+        if(getRegister16(opcode, 0).reg16 != Register16.IND_BC
+            || getRegister16(opcode, 0).reg16 != Register16.IND_DE) {
+            return null;
         }
-        if(getRegister8(opcode, 0).reg16 == Register16.DE) {
+        if(getRegister8(opcode, 0).reg16 == Register16.IND_DE) {
             baseOpcode |= 16;
         }
         byte[] ok = new byte[1];
@@ -196,12 +197,12 @@ public enum Format {
     }),
     R_INDIRECT_RR((opcode, org) -> { if(opcode.args.size() != 2) return null;//invalid
         int baseOpcode = opcode.mnemonic().baseDouble - 32;//ok
-        if(!opcode.args.get(1).indirect) return null;//not indirect
         if(getRegister8(opcode, 0).reg8 != Register8.A) return null;
-        if(getRegister16(opcode, 1).reg16 == Register16.BC) {
-            // ok
+        if(getRegister16(opcode, 1).reg16 != Register16.IND_BC
+                || getRegister16(opcode, 1).reg16 != Register16.IND_DE) {
+            return null;
         }
-        if(getRegister8(opcode, 1).reg16 == Register16.DE) {
+        if(getRegister8(opcode, 1).reg16 == Register16.IND_DE) {
             baseOpcode |= 16;
         }
         byte[] ok = new byte[3];
@@ -261,8 +262,7 @@ public enum Format {
         if(getRegister16(opcode, 0).reg16 == Register16.DE) {
             baseOpcode += 8;
             if(getRegister16(opcode, 1).hasIXIY()) return null;//de/hl bit flipper consequence
-        } else if(getRegister16(opcode, 0).reg16 != Register16.SP
-                    || !getRegister16(opcode, 0).indirect) return null;
+        } else if(getRegister16(opcode, 0).reg16 != Register16.IND_SP) return null;
         //ok
         byte[] ok = new byte[1];
         ok[0] = (byte)baseOpcode;
@@ -424,7 +424,7 @@ public enum Format {
             r.data = new Address(org);//auto loop?
         }
         byte b = (byte)(r.data.address - org);
-        if(b != r.data.address - org) {
+        if(b != r.data.address - org) {//sign extended
             Main.error(Main.Errors.OFFSET);//error
         }
         return b;
@@ -446,6 +446,12 @@ public enum Format {
             r.data = new Address(0);//auto loop?
         }
         return (byte)(r.data.address);
+    }
+
+    public static boolean isIndirect(Opcode opcode, int number) {
+        Register r = opcode.args.get(number);
+        if(r.data == null) return false;
+        return r.data.indirect;
     }
 
     public static Register getRegister16(Opcode opcode, int number) {

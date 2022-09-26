@@ -15,7 +15,6 @@ public class Register {
     public CCode flags;
     String literal;
     public Address data;
-    public boolean indirect = false;
 
     public static Register getRegister(String reg, int org, boolean allowDupe) {
         Register r = null;
@@ -35,29 +34,8 @@ public class Register {
         if(r == null) {
             r = CCode.getCCode(reg);
         }
-        if(reg.charAt(0) == '(' && reg.charAt(reg.length() - 1) == ')') {//indirect
-            r = getRegister(reg.substring(1, reg.length() - 1), org, allowDupe);
-            r.indirect = true;
-            return r;// recurse
-        }
         if(r == null) {
-            Address a = null;
-            String based = reg.substring(1);
-            try {
-                if(reg.charAt(0) == '$') {
-                    if(reg.length() == 1) {
-                        a = new Address(org);//special address of 1st byte of compile
-                    } else {
-                        a = new Address((char) Integer.parseInt(based, 16));
-                    }
-                } else if(reg.charAt(0) == '%') {
-                    a = new Address((char) Integer.parseInt(based, 2));
-                } else {
-                    a = new Address((char) Integer.parseInt(reg));
-                }
-            } catch(Exception e) {
-                // leave as null
-            }
+            Address a = new Address(reg, org, true);
             if(a != null) {
                 r = new Register(a);
             }
