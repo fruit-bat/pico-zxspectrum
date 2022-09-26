@@ -11,23 +11,24 @@ public enum Mnemonic {
             INDIRECT_NN_R, R_INDIRECT_NN, //done
             INDIRECT_RR_R, R_INDIRECT_RR,//done
             SP_HL,//done
-            INDIRECT_NN_RR, RR_INDIRECT_NN, LD_IR }),//done
+            INDIRECT_NN_RR, RR_INDIRECT_NN, LD_IR, LD_INDIRECT_RR_R,//done
+            LD_R_INDIRECT_RR }),//done
     PUSH("push", (byte)0xc5, new Format[]{ PP_RR }),//done
     POP("pop", (byte)0xc1, new Format[]{ PP_RR }),//done
-    EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR, EX_IXY_HL }),//done
+    EX("ex", (byte)0x08, (byte)0xe3, new Format[]{ EX_RR, EX_RR_RR, EX_IXY_HL, EX_RR_2 }),//done
     EXX("exx", (byte)0xd9, new Format[]{ NUL_1 }),//done
     LDI("ldi", new byte[] { (byte)0xed, (byte) 0xa0 }, new Format[]{ NUL_1 }),//done
     LDIR("ldir", new byte[] { (byte)0xed, (byte) 0xb0 }, new Format[]{ NUL_1 }),//done
     CPI("cpi", new byte[] { (byte)0xed, (byte) 0xa1 }, new Format[]{ NUL_1 }),//done
     CPIR("cpir", new byte[] { (byte)0xed, (byte) 0xb1 }, new Format[]{ NUL_1 }),//done
-    ADD("add", (byte)0x09, new Format[]{ ALU_R, ALU_N, ADD_RR_RR }),
-    SUB("sub", new Format[]{ ALU_R, ALU_N }),
-    ADC("adc", new byte[] { (byte)0xed, (byte) 0x4a }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
-    SBC("sbc",  new byte[] { (byte)0xed, (byte) 0x42 }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),
-    AND("and", new Format[]{ ALU_R, ALU_N, R_N }),
-    XOR("xor", new Format[]{ ALU_R, ALU_N, R_N }),
-    OR("or", new Format[]{ ALU_R, ALU_N, R_N }),
-    CP("cp", new Format[]{ ALU_R, ALU_N, R_N }),
+    ADD("add", (byte)0x09, new Format[]{ ALU_R, ALU_N, ADD_RR_RR, R_N }),//done
+    SUB("sub", new Format[]{ ALU_R, ALU_N, R_N }),//done
+    ADC("adc", new byte[] { (byte)0xed, (byte) 0x4a }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),//done
+    SBC("sbc",  new byte[] { (byte)0xed, (byte) 0x42 }, new Format[]{ ALU_R, ALU_N, RR_RR, R_N }),//done
+    AND("and", new Format[]{ ALU_R, ALU_N, R_N }),//done
+    XOR("xor", new Format[]{ ALU_R, ALU_N, R_N }),//done
+    OR("or", new Format[]{ ALU_R, ALU_N, R_N }),//done
+    CP("cp", new Format[]{ ALU_R, ALU_N, R_N }),//done
     INC("inc", (byte)0x04, (byte)0x03, new Format[]{ ID_R, ID_RR }),//done
     DEC("dec", (byte)0x05, (byte)0x0b, new Format[]{ ID_R, ID_RR }),//done
     DAA("daa", (byte)0x27, new Format[]{ NUL_1 }),//done
@@ -60,11 +61,11 @@ public enum Mnemonic {
     JR("jr", (byte)0x18, (byte)0x20, new Format[]{ D, F_D }),//done
     JP("jp", (byte)0xc3, (byte)0xc2, new Format[]{ JP_NN, JP_F_NN, JP_HL }),//done
     DJNZ("djnz", (byte)0x10, new Format[]{ D }),//done
-    CALL("call", (byte)0xcd, (byte)0xcc, new Format[]{ JP_NN, JP_F_NN }),
+    CALL("call", (byte)0xcd, (byte)0xcc, new Format[]{ JP_NN, JP_F_NN }),//done
     RET("ret", (byte)0xc9, new Format[]{ NUL_1, RET_F }),//done
     RETI("reti", new byte[] { (byte)0xed, (byte) 0x4d }, new Format[]{ NUL_1 }),//done
     RETN("retn", new byte[] { (byte)0xed, (byte) 0x45 }, new Format[]{ NUL_1 }),//done
-    RST("rst", (byte)0xc7, new Format[]{ Format.RST }),
+    RST("rst", (byte)0xc7, new Format[]{ Format.RST }),//done
     IN("in", (byte)0xdb, new Format[]{ IN_AN, R_INDIRECT_R, INDIRECT_R }),//done
     INI("ini", new byte[] { (byte)0xed, (byte) 0xa2 }, new Format[]{ NUL_1 }),//done
     IND("ind", new byte[] { (byte)0xed, (byte) 0xaa }, new Format[]{ NUL_1 }),//done
@@ -75,8 +76,8 @@ public enum Mnemonic {
     OUTD("outd", new byte[] { (byte)0xed, (byte) 0xab }, new Format[]{ NUL_1 }),//done
     OTIR("otir", new byte[] { (byte)0xed, (byte) 0xb3 }, new Format[]{ NUL_1 }),//done
     OTDR("otdr", new byte[] { (byte)0xed, (byte) 0xbb }, new Format[]{ NUL_1 }),//done
-    JPJ("jpj", new Format[]{ Format.RR }),
-    JPC("jpc", new Format[]{ Format.RR }),
+    JPJ("jpj", new byte[] { (byte)0xed, (byte) 0x86 }, new Format[]{ Format.RR }),//done
+    JPC("jpc", new byte[] { (byte)0xed, (byte) 0x87 }, new Format[]{ Format.RR }),//done
     XIT("xit", new byte[] { (byte)0xed, (byte) 0x9e }, new Format[]{ NUL_1 }),//done thread tail exit
     RTC("rtc", new byte[] { (byte)0xed, (byte) 0x9f }, new Format[]{ NUL_1 }),//done thread continue
     CPC("cpc", new byte[] { (byte)0xed, (byte) 0xa7 }, new Format[]{ NUL_1 }),//done
