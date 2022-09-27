@@ -55,6 +55,25 @@ static void init_pwm_pin(uint32_t pin) {
 }
 #endif
 
+#ifdef EAR_PIN
+#include "zx_ear_in.pio.h"
+
+static  PIO ear_pio = pio1;
+static  uint ear_sm = 0;
+
+static void init_ear_in() {
+  uint offset = pio_add_program(ear_pio, &zx_ear_in_program);
+  ear_sm = pio_claim_unused_sm(ear_pio, true);
+  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 1000000);
+}
+
+uint32_t __not_in_flash_func(zxSpectrumReadEar)() {
+    while ((ear_pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + ear_sm))) != 0);
+    return ear_pio->rxf[ear_sm];
+}
+
+#endif
+
 void zxSpectrumAudioInit() {
 #ifdef PICO_AUDIO_I2S
   init_is2_audio();
@@ -75,6 +94,9 @@ void zxSpectrumAudioInit() {
   #ifdef AY8912_C_PIN
     init_pwm_pin(AY8912_C_PIN);
   #endif
+#endif
+#ifdef EAR_PIN
+  init_ear_in();
 #endif
 }
 

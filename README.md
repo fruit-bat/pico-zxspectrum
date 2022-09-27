@@ -12,7 +12,8 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * USB keyboard & Joysticks
 * PS/2 keyboard
 * Martix keyboard
-* PWM/I2S DAC audio for ear, mic and AY-3-8912
+* PWM/I2S DAC audio for 48k buzzer and AY-3-8912
+* Audio input (load from tape)
 * 12 quick save slots
 * Load from .z80 snapshot files
 * Read from .tap tape files
@@ -33,8 +34,12 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+<a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 
 ## Updates
+* 24/09/22 - Fixed some problems with AY audio
+* 23/09/22 - Added support for Pimoroni Pico VGA Demo Base
+* 19/09/22 - Audio in (load from tape)
 * 31/08/22 - Fix multiple Z80 self-test failures
 * 27/08/22 - Fix for joysticks with single xy axis
 * 13/08/22 - Added support for PICOZX
@@ -44,6 +49,9 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
+
+Builds with an RP_AUDIO_IN pin can now load from tape. 
+Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
 
 The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
 [Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
@@ -70,6 +78,7 @@ Connect your Pico Pi with a USB cable, while holding down the program button:
 | PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
+| Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
@@ -95,6 +104,7 @@ They support the following:
 * USB joysticks
 * HDMI video
 * PWM sound
+* Audio input (load from tape)
 * SPI SD card
 * Serial port debug
 
@@ -129,6 +139,7 @@ It supports:
 * USB joysticks
 * VGA video (RGB222)
 * PWM sound (1 pin)
+* Audio input (load from tape)
 * SPI SD card
 
 Here are the pin assignments:
@@ -447,14 +458,19 @@ make clean
 make -j4
 ```
 
-Copy the relevant version to your board:
+Building for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
+
 ```sh
-cp ./bin/picomputer/picomputer_vga/ZxSpectrumPicomputerVga.uf2 /media/pi/RPI-RP2/
+cd build
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
+make -j4 ZxSpectrumPicoVga
 ```
+
+Copy the relevant version to your board, which can be located with:
 ```sh
-cp ./bin/picomputer/picomputer_max/ZxSpectrumPicomputerMax.uf2 /media/pi/RPI-RP2/
+find . -name '*.uf2'
 ```
-or
+e.g.
 ```sh
 cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
@@ -538,4 +554,5 @@ tio -m ODELBS /dev/ttyUSB0
 [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)</br>
 [Z80 Instruction set with XYH](https://wikiti.brandonw.net/?title=Z80_Instruction_Set)</br>
 [Z80 Instruction set](https://clrhome.org/table/)</br>
-
+[Site with some WAV files](http://zx.zigg.net/zxsoftware/)</br>
+[ZX Modules Software](https://spectrumforeveryone.com/technical/zx-modules-software/)</br>

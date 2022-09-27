@@ -36,6 +36,9 @@ private:
   uint8_t _portMem;
   uint8_t* _pageaddr[4];
   bool _ear;
+  uint32_t _earInvert;
+  uint32_t _earDc;
+  
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -95,6 +98,11 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
 
   inline int readIO(int address)
   {
+    if (!(address & 0x0001)) {
+      uint8_t kb = _keyboard1->read(address);
+      if (_keyboard2) kb &= _keyboard2->read(address);
+      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
+    }
     if (address == 0xfffd) {
       return _ay.readData();
     } else if (address == 0x3ffd) {
@@ -104,7 +112,19 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
       // should never get read for meaning in a 128
       return _z80x & 255;//mask down register
     }
+    if (address == 0x7ffd) {
+      // reading #7FFD port is the same as writing #FF into it.
+      int value = 0xff;
+      _portMem = value;
+      setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
+      setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+      return 0xff;
+    }
+    else if (!(address & 0x00e0)) {
+       return _joystick ? _joystick->getKempston() : 0;
+    }
     else {
+<<<<<<< HEAD
       switch(address & 0xFF) {
         case 0xFE: {
           uint8_t kb = _keyboard1->read(address);
@@ -120,6 +140,20 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
   inline void writeIO(int address, int value) {
     if (address == 0x7ffd) {
       if ((_portMem & 0x20) == 0) {
+=======
+      return 0xff;
+    }
+  }
+  
+  inline void writeIO(int address, int value)
+  {
+    if (!(address & 0x0001)) {
+      _port254 = value;
+      _borderColour = value & 7;
+    }
+    else if (address  == 0x7ffd) {
+      if ((_portMem & 0x20) == 0) { 
+>>>>>>> 0b98bb0b59bd8c6ec1ad1b5963ff6291d5221fb2
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -139,6 +173,7 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
       // complain anyway
       _z80x = value;
     }
+<<<<<<< HEAD
     else {
       switch(address & 0xFF) {
         case 0xFE://technically all the evens
@@ -149,6 +184,8 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
           break;
       }
     }
+=======
+>>>>>>> 0b98bb0b59bd8c6ec1ad1b5963ff6291d5221fb2
   }
 
   static inline int readByte(void * context, int address) {
@@ -269,6 +306,50 @@ public:
         regDump();//debug after processing key events
         haveReported();
       }
+  }
+
+#define EAR_BITS_PER_STEP 32
+
+  void __not_in_flash_func(step)(uint32_t eb)
+  {
+      int c = 0;
+
+      uint32_t vA, vB, vC;
+
+      const uint32_t tu32 = time_us_32() << 5;
+      int32_t tud = tu32 - _tu32;
+      if (tud) _ay.step(tud); 
+      _tu32 = tu32;
+      _ay.vol(vA, vB, vC);
+      
+      if (_earInvert ? (eb == 0) : (~eb == 0)) {
+        if (_earDc++ > 16000) {
+           _earInvert ^= 1;
+        }
+      }
+      else {
+        _earDc = 0;
+      }
+      
+      for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
+        _ta32 += 32;
+        if (_pulseBlock.end()) _ear = (eb >> i) & 1;
+
+        while (_ta32 > 0) {
+          int t = _Z80.step();
+          c += t;
+          if (!_mute) {
+            stepBuzzer();
+            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+          }
+          if (t == 0) {
+            _ta32 = 0;
+            break;
+          }
+          _ta32 -= MUL32(t, _moderate);
+        }
+      }
+      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
   }
 
   void interrupt();

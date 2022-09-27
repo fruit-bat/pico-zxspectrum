@@ -91,9 +91,9 @@ static bool showMenu = true;
 static bool toggleMenu = false;
 
 void print(hid_keyboard_report_t const *report) {
-	printf("HID key report modifiers %2.2X report ", report->modifier);
-	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
-	printf("\n");
+  printf("HID key report modifiers %2.2X report ", report->modifier);
+  for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+  printf("\n");
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
@@ -107,8 +107,8 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
 #if 0
   // Some help debugging keyboard input/drivers
-	printf("PREV ");print(prev_report);
-	printf("CURR ");print(report);
+  printf("PREV ");print(prev_report);
+  printf("CURR ");print(report);
 #endif
 
   int r;
@@ -118,7 +118,10 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   else {
     r = keyboard1.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
 }
 
 #ifdef USE_PS2_KBD
@@ -182,6 +185,12 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+#ifdef EAR_PIN
+#define CPU_STEP_LOOP 10
+#else
+#define CPU_STEP_LOOP 100
+#endif
+
 void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;
@@ -202,12 +211,21 @@ void __not_in_flash_func(main_loop)(){
 //    process_picomputer_kbd_report(curr, prev);
     
     if (!showMenu) {
-      for (int i = 1; i < 100; ++i) {
+      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();
         }
+#ifdef EAR_PIN
+        if (zxSpectrum.moderate()) {
+          zxSpectrum.step(zxSpectrumReadEar());
+        }
+        else {
+          zxSpectrum.step();
+        }
+#else
         zxSpectrum.step();
+#endif 
       }
     }
     else if (frames != _frames) {

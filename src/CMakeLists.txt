@@ -28,6 +28,10 @@ set(zxspectrum_rgb_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
 )
 
+set(zxspectrum_scanvideo_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareScanvideoScanline.cpp
+)
+
 set(zxspectrum_dvi_src
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.S
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.h
@@ -52,7 +56,12 @@ set(zxspectrum_audio_i2s_pio
   ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio
 )
 
+set(zxspectrum_ear_in_pio
+  ${CMAKE_CURRENT_LIST_DIR}/zx_ear_in.pio
+)
+
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
+add_subdirectory(picovga)
 

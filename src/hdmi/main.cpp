@@ -146,7 +146,10 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   else {
     r = keyboard1.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
 }
 
 void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
@@ -157,7 +160,10 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   else {
     r = keyboard2.processHidReport(report, prev_report);
   }
-  if (r == 1) toggleMenu = true;
+  if (r == 1) {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
 }
 
 
@@ -218,6 +224,12 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+#ifdef EAR_PIN
+#define CPU_STEP_LOOP 10
+#else
+#define CPU_STEP_LOOP 100
+#endif
+
 void __not_in_flash_func(main_loop)() {
   
   unsigned int lastInterruptFrame = _frames;
@@ -236,12 +248,21 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
-      for (int i = 1; i < 100; ++i) {
+      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();
         }
+#ifdef EAR_PIN
+        if (zxSpectrum.moderate()) {
+          zxSpectrum.step(zxSpectrumReadEar());
+        }
+        else {
+          zxSpectrum.step();
+        }
+#else
         zxSpectrum.step();
+#endif 
       }
     }
     else if (frames != _frames) {
@@ -286,7 +307,6 @@ int main() {
   // Initialise the keyboard scan
   zx_keyscan_init();
 #endif
-  
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
