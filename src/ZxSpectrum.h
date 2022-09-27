@@ -38,7 +38,7 @@ private:
   bool _ear;
   uint32_t _earInvert;
   uint32_t _earDc;
-  
+
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -124,27 +124,10 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
        return _joystick ? _joystick->getKempston() : 0;
     }
     else {
-<<<<<<< HEAD
-      switch(address & 0xFF) {
-        case 0xFE: {
-          uint8_t kb = _keyboard1->read(address);
-          if (_keyboard2) kb &= _keyboard2->read(address);
-          return kb ^ (_ear ? 0 : (1<<6)) ;
-        }
-        case 0x1f: return _joystick ? _joystick->getKempston() : 0;
-        default: return beamColor;
-      }
-    }
-  }
-
-  inline void writeIO(int address, int value) {
-    if (address == 0x7ffd) {
-      if ((_portMem & 0x20) == 0) {
-=======
       return 0xff;
     }
   }
-  
+
   inline void writeIO(int address, int value)
   {
     if (!(address & 0x0001)) {
@@ -152,8 +135,7 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
       _borderColour = value & 7;
     }
     else if (address  == 0x7ffd) {
-      if ((_portMem & 0x20) == 0) { 
->>>>>>> 0b98bb0b59bd8c6ec1ad1b5963ff6291d5221fb2
+      if ((_portMem & 0x20) == 0) {
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -173,19 +155,6 @@ f. 128 memory bank, or if e.f. extra Z80X extension register
       // complain anyway
       _z80x = value;
     }
-<<<<<<< HEAD
-    else {
-      switch(address & 0xFF) {
-        case 0xFE://technically all the evens
-          _port254 = value;
-          _borderColour = value & 7;
-          break;
-        default:
-          break;
-      }
-    }
-=======
->>>>>>> 0b98bb0b59bd8c6ec1ad1b5963ff6291d5221fb2
   }
 
   static inline int readByte(void * context, int address) {
@@ -318,10 +287,10 @@ public:
 
       const uint32_t tu32 = time_us_32() << 5;
       int32_t tud = tu32 - _tu32;
-      if (tud) _ay.step(tud); 
+      if (tud) _ay.step(tud);
       _tu32 = tu32;
       _ay.vol(vA, vB, vC);
-      
+
       if (_earInvert ? (eb == 0) : (~eb == 0)) {
         if (_earDc++ > 16000) {
            _earInvert ^= 1;
@@ -330,7 +299,7 @@ public:
       else {
         _earDc = 0;
       }
-      
+
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
         if (_pulseBlock.end()) _ear = (eb >> i) & 1;
