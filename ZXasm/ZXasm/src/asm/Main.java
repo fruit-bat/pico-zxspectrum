@@ -17,32 +17,57 @@ public class Main {
 
     @FunctionalInterface
     interface OutputWriter {
-        void write(byte[] code, int org, OutputStream out);
+        void write(byte[] code, int org, DataOutputStream out) throws IOException;
     }
 
+    @FunctionalInterface
+    interface OutputCloser {
+        void close(int org, DataOutputStream out) throws IOException;
+    }
     public enum OutputAs {
-        BIN("bin", (code, org, out) -> {}),
-        HEX("hex", (code, org, out) -> {}),
-        ROM("rom", (code, org, out) -> {}),//Also builds z80 too
-        Z80("z80", (code, org, out) -> {}),//doesn't build rom
-        C("c", (code, org, out) -> {}),
-        PRETTY("txt", (code, org, out) -> {});//like a really well printed assembly listing
+        BIN("bin", (code, org, out) -> {
+            out.write(code);
+        }, (org, out) -> {}),
+        HEX("hex", (code, org, out) -> {
+            String hex = ":";
+            hex += alignedHex(code.length, 2, false);
+            hex += alignedHex(org, 4, false);
+            hex += alignedHex(0, 2, false);
+            int check = code.length + org + (org >> 8);
+            for (byte b: code) {
+                hex += alignedHex(b, 2, false);
+                check += b;
+            }
+            //checksum
+            check &= 0xff;
+            check = (-check) & 0xff;
+            hex += alignedHex(check, 2, false);
+            hex += "\n";
+            out.writeChars(hex);
+        }, (org, out) -> {
+            out.writeChars(":00000001FF");//end
+        }),
+        ROM("rom", (code, org, out) -> {}, (org, out) -> {}),//Also builds z80 too
+        Z80("z80", (code, org, out) -> {}, (org, out) -> {}),//doesn't build rom
+        C("c", (code, org, out) -> {}, (org, out) -> {});
 
         String as;
         OutputWriter writer;
+        OutputCloser closer;
 
-        OutputAs(String as, OutputWriter writer) {
+        OutputAs(String as, OutputWriter writer, OutputCloser closer) {
             this.as = as;
             this.writer = writer;
+            this.closer = closer;
         }
     }
 
     public static void main(String[] argv) throws Exception {
         try {
-            OutputWriter format = null;
+            OutputAs format = null;
             for (OutputAs as: OutputAs.values()) {
                 if(as.as == argv[1]) {
-                    format = as.writer;
+                    format = as;
                     break;
                 }
             }
@@ -62,12 +87,15 @@ public class Main {
             in = null;
             //pass 2
             lineNumber = 0;
+            DataOutputStream dos = new DataOutputStream(
+                    Files.newOutputStream(Paths.get(argv[2] + "." + format.as)));
             for (int i = 0; i < lines.length; i++) {
                 //pass 2
-                //TODO code gen with actual address values instead of some zeros
-                parseLine(lines[i], true);// should have defined them all
+                byte[] code = parseLine(lines[i], true);// should have defined them all
+                format.writer.write(code, org, dos);//writes file as per org spec.
             }
-            //TODO report
+            format.closer.close(org, dos);//maybe needs it
+            dos.close();
         } catch(Exception e) {
             error(Errors.INTERNAL);//also does an ...
             throw e;
@@ -293,9 +321,25 @@ public class Main {
                     error(Errors.SCREEN_1);//could be an issue
                 }
             }
+            //pretty print?
+            if(!allowDupe) {
+                //pass 2
+                System.out.print(alignedHex(org & 0xffff, 4, true));
+                for (byte b: compiled) {
+                    System.out.print(alignedHex(b & 0xff, 2, true));
+                }
+                System.out.println(lines[lineNumber - 1]);//print zeroth line for 1
+            }
             return compiled;
         }
         error(Errors.LINE_DOES_NOT_ASSEMBLE);
         return null;//no can do
+    }
+
+    public static String alignedHex(int num, int digits, boolean space) {
+        String s = Integer.toHexString(num);
+        while(s.length() < digits) s = "0" + s;
+        if(s.length() > digits) s = s.substring(s.length() - digits);
+        return space ? s + " " : s;
     }
 }
