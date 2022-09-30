@@ -17,6 +17,8 @@ EXTRAS In this repository
   * Added many new instructions to the Z80, mainly in the `ED xx` group. Although `DF ED` and `FF ED` do an `ex hl, ix/iy` respectively.
     * `ED 40` to `ED BF` completed and apart from errors should remain fixed in meaning. They could be seen as useful for indexing and arithmetic, with a few ZX Spectrum specials covering the screen layout.
   * Made `` ` `` stop the processor, and `TAB` do single stepping. A `printf` of the Z80 register state is made per `TAB`.
+  * Started making an assembler for the Z80 plus new instructions. Should make it easy to emit ROMs and `.Z80` files. This will be expanded and maybe moved to a separate repository.
+  * Kempston multi-button adaptation for those who need extra joypad control. Might make an interesting hardware project.
 
 PORT `0x3ffd` Extras control
 =
