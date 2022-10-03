@@ -309,6 +309,14 @@ You may find the Pico struggles to deliver enough power at 3.3v for the SD card 
 
 Currently there is no toggling on the lock keys (caps/num lock) and the indicator leds are not used.
 
+### Audio Input
+
+Due to a great deal of help from [badrianiulian](https://github.com/badrianiulian), here is a suggested audio input circuit:
+
+![image](docs/badrianiulian_audio_1.png)
+
+Suggestions to improve this circuit are appreciated and please post them [here](https://github.com/fruit-bat/pico-zxspectrum/issues/46).
+
 ## Components 
 <a href="https://shop.pimoroni.com/products/raspberry-pi-pico">
 <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/PICOBOARDWHITEANGLE2_768x768.jpg" width="200"/>
@@ -502,9 +510,6 @@ The following folders need to be created on the SD card:
 | F12 | Reset as 128k Spectrum |
 | LCtrl + F1-F12 | Quick save (LCtrl+F1 = save slot 1, LCtrl+F2 = save slot 2, etc) |
 | LAlt + F1-F12 | Quick load (LAlt+F1 = load slot 1, LAlt+F2 = load slot 2, etc) |
-
-## Missing features
-* Audio input
 
 ## Debug
 <a href="https://shop.pimoroni.com/products/usb-to-uart-serial-console-cable">
