@@ -197,7 +197,9 @@ enum {
 enum {
   Z80_INTERRUPT_MODE_0,
   Z80_INTERRUPT_MODE_1,
-  Z80_INTERRUPT_MODE_2
+  Z80_INTERRUPT_MODE_2,
+  //added in an extension mode for Z80X
+  Z80_INTERRUPT_MODE_3
 };
 
 
@@ -249,7 +251,16 @@ public:
 
   /* Initialize processor's state to power-on default. */
   void reset();
-
+  //architecture extensions
+  void resetArch();
+  void pushArch();
+  void popArch();
+  //single stepper
+  void stopToggle();
+  void stepOneOnly();
+  bool canReport();
+  void haveReported();
+  
   /* Trigger an interrupt according to the current interrupt mode and return the
   * number of cycles elapsed to accept it. If maskable interrupts are disabled,
   * this will return zero. In interrupt mode 0, data_on_bus must be a single
@@ -272,7 +283,7 @@ public:
 
   uint16_t readRegWord(int reg)               { return state.registers.word[reg]; }
   void writeRegWord(int reg, uint16_t value)  { state.registers.word[reg] = value; }
-  
+
   void setPC(uint16_t v)                      { state.pc = v; }
   void setA(uint8_t v)                        { state.registers.byte[Z80_A] = v; }
   void setF(uint8_t v)                        { state.registers.byte[Z80_F] = v; }
@@ -288,12 +299,12 @@ public:
   void setIYL(uint8_t v)                      { state.registers.byte[Z80_IYL] = v; }
   void setIFF1(uint8_t v)                     { state.iff1 = v; }
   void setIFF2(uint8_t v)                     { state.iff2 = v; }
-  void setIM(uint8_t v)                       { state.im = v; }
+  void setIM(uint8_t v)                       { state.im = v; /* resetArch(); */ }
   void setI(uint8_t v)                        { state.i = v; }
   void setR(uint8_t v)                        { state.r = v; }
   void setSPH(uint8_t v)                      { state.registers.byte[Z80_SPH] = v; }
   void setSPL(uint8_t v)                      { state.registers.byte[Z80_SPL] = v; }
- 
+
   uint16_t getPC()                      { return state.pc; }
   uint8_t getA()                        { return state.registers.byte[Z80_A]; }
   uint8_t getF()                        { return state.registers.byte[Z80_F]; }
@@ -313,8 +324,8 @@ public:
   uint8_t getI()                        { return state.i; }
   uint8_t getR()                        { return state.r; }
   uint8_t getSPH()                      { return state.registers.byte[Z80_SPH]; }
-  uint8_t getSPL()                      { return state.registers.byte[Z80_SPL]; } 
- 
+  uint8_t getSPL()                      { return state.registers.byte[Z80_SPL]; }
+
 
   void swap() {
       for(int i=0; i <4; ++i) {
@@ -323,7 +334,7 @@ public:
         state.registers.word[i] = t;
       }
   }
-  
+
 private:
 
   int __not_in_flash_func(intemulate)(int opcode, int elapsed_cycles);
@@ -343,12 +354,3 @@ private:
   WriteIOCallback   m_writeIO;
 
 };
-
-
-
-
-
-
-
-
-

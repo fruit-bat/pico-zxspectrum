@@ -19,6 +19,9 @@ enum ZxSpectrumType {
   ZxSpectrum128k
 };
 
+extern unsigned int _z80x;//everybody wants one
+extern unsigned int beamColor;
+
 class ZxSpectrum {
 private:
   Z80 _Z80;
@@ -35,7 +38,7 @@ private:
   bool _ear;
   uint32_t _earInvert;
   uint32_t _earDc;
-  
+
 	PulseBlock _pulseBlock;
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -47,29 +50,52 @@ private:
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
-  
+
   inline unsigned char* memaddr(int address) {
     return address + _pageaddr[address >> 14];
   }
-  
+
   inline int readByte(int address) {
     return *memaddr(address);
   }
-  
+
   inline void writeByte(int address, int value) {
-    if (address < 0x4000) return;    
+    if (address < 0x4000) return;
     *(memaddr(address)) = value;
   }
-  
-  inline int readWord(int addr) { 
+
+  inline int readWord(int addr) {
     return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
   }
-  
-  inline void writeWord(int addr, int value) { 
-    writeByte(addr, value & 0xFF); 
+
+  inline void writeWord(int addr, int value) {
+    writeByte(addr, value & 0xFF);
     writeByte((addr + 1) & 0xffff, value >> 8);
   }
-  
+
+  //==================================================
+  // IO bits
+  //==================================================
+  /* /CS lines
+0. ULA border OK
+1. 128 features OK
+2. ZX printer
+3.4. various sinclair interfaces
+
+5.6.7. Kempston
+
+8.
+9.
+a.
+b.
+c.
+e. if not bit f, AY chip in 128 spectrum
+f. 128 memory bank, or if e.f. extra Z80X extension register
+
+
+*/
+
+
   inline int readIO(int address)
   {
     if (!(address & 0x0001)) {
@@ -79,6 +105,12 @@ private:
     }
     if (address == 0xfffd) {
       return _ay.readData();
+    } else if (address == 0x3ffd) {
+      //===================================================
+      // Z80X extension port
+      //===================================================
+      // should never get read for meaning in a 128
+      return _z80x & 255;//mask down register
     }
     if (address == 0x7ffd) {
       // reading #7FFD port is the same as writing #FF into it.
@@ -95,7 +127,7 @@ private:
       return 0xff;
     }
   }
-  
+
   inline void writeIO(int address, int value)
   {
     if (!(address & 0x0001)) {
@@ -103,7 +135,7 @@ private:
       _borderColour = value & 7;
     }
     else if (address  == 0x7ffd) {
-      if ((_portMem & 0x20) == 0) { 
+      if ((_portMem & 0x20) == 0) {
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -114,9 +146,17 @@ private:
     }
     else if (address == 0xbffd) {
       _ay.writeData(value);
+    } else if (address == 0x3ffd) {
+      //===================================================
+      // Z80X extension port
+      //===================================================
+      // don't worry that the 128 wont select it, as if
+      // you're doing things with it the 128 is likely to
+      // complain anyway
+      _z80x = value;
     }
   }
-  
+
   static inline int readByte(void * context, int address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
@@ -124,17 +164,17 @@ private:
   static inline void writeByte(void * context, int address, int value) {
     ((ZxSpectrum*)context)->writeByte(address, value);
   }
-  
-  // TODO Can addr ever be odd (if not readWord can be simplified)? 
-  static inline int readWord(void * context, int addr) { 
-    return ((ZxSpectrum*)context)->readWord(addr); 
+
+  // TODO Can addr ever be odd (if not readWord can be simplified)?
+  static inline int readWord(void * context, int addr) {
+    return ((ZxSpectrum*)context)->readWord(addr);
   }
-  
+
   // TODO Can addr ever be odd (if not writeWord can be simplified)?
-  static inline void writeWord(void * context, int addr, int value) { 
+  static inline void writeWord(void * context, int addr, int value) {
     ((ZxSpectrum*)context)->writeWord(addr, value);
   }
-  
+
   static inline int readIO(void * context, int address)
   {
     //printf("readIO %04X\n", address);
@@ -150,7 +190,7 @@ private:
   }
 
   uint8_t _RAM[8][1<<14];
-  
+
   void transmute(ZxSpectrumType type);
   int loadZ80MemV0(InputStream *is);
   int loadZ80MemV1(InputStream *is);
@@ -172,17 +212,17 @@ private:
     if (d == 0 && _buzzer > 0) --_buzzer;
     else if (d == 1 && _buzzer < 10) ++_buzzer;
   }
-  
+
   inline int32_t getBuzzerSmoothed() {
     const int32_t a1 = __mul_instruction(_buzzer, 21);
     const int32_t a2 = _ear ? 31 : 0;
     return a1 + a2;
   }
-  
+
   inline uint32_t getBuzzer() {
     return ((_port254 >> 4) ^ _ear) & 1;
-  }  
-  
+  }
+
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
@@ -192,7 +232,7 @@ public:
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
-    
+
   void __not_in_flash_func(step)()
   {
       int c;
@@ -212,7 +252,7 @@ public:
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
         c += _Z80.step();
         stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());        
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
       }
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
@@ -230,6 +270,11 @@ public:
       }
       if (tud) _ay.step(tud);
       _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+
+      if(canReport()) {
+        regDump();//debug after processing key events
+        haveReported();
+      }
   }
 
 #define EAR_BITS_PER_STEP 32
@@ -242,10 +287,10 @@ public:
 
       const uint32_t tu32 = time_us_32() << 5;
       int32_t tud = tu32 - _tu32;
-      if (tud) _ay.step(tud); 
+      if (tud) _ay.step(tud);
       _tu32 = tu32;
       _ay.vol(vA, vB, vC);
-      
+
       if (_earInvert ? (eb == 0) : (~eb == 0)) {
         if (_earDc++ > 16000) {
            _earInvert ^= 1;
@@ -254,7 +299,7 @@ public:
       else {
         _earDc = 0;
       }
-      
+
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
         if (_pulseBlock.end()) _ear = (eb >> i) & 1;
@@ -284,7 +329,17 @@ public:
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
 
+// single step interface
+  void stopToggle();
+  void stepOneOnly();
+  bool canReport();
+  void haveReported();
+  void regDump();
+
   inline unsigned int borderColour() { return _borderColour; }
+  // Z80X expansion port address for feature access
+  inline unsigned int z80xPort() { return _z80x; }
+  inline void z80xPortW(int value) { _z80x = value; }
 
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }

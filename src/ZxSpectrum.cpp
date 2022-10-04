@@ -6,6 +6,9 @@
 #include <pico/stdlib.h>
 #include "SizingOutputStream.h"
 
+unsigned int _z80x;//instance is machine
+unsigned int beamColor;
+
 ZxSpectrum::ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
@@ -40,6 +43,50 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
   }
 }
 
+void ZxSpectrum::regDump() {
+  printf("AF %04x\n", (_Z80.getA() << 8) + _Z80.getF());
+  printf("BC %04x\n", (_Z80.getB() << 8) + _Z80.getC());
+  printf("DE %04x\n", (_Z80.getD() << 8) + _Z80.getE());
+  printf("HL %04x\n\n", (_Z80.getH() << 8) + _Z80.getL());
+
+  printf("IX %04x\n", (_Z80.getIXH() << 8) + _Z80.getIXL());
+  printf("IY %04x\n", (_Z80.getIYH() << 8) + _Z80.getIYL());
+
+  int sp = (_Z80.getSPH() << 8) + _Z80.getSPL();
+  printf("SP %04x\n", sp);
+  printf("(PC) %02x ", readByte(sp++));//stack byte
+  printf("%02x %02x %02x\n\n",
+    readByte((sp+1) & 0xffff),
+    readByte((sp+2) & 0xffff),
+    readByte((sp+3) & 0xffff));
+
+  int pc = _Z80.getPC();
+  printf("PC %04x\n", pc);
+  printf("(PC) %02x ", readByte(pc++));//opcode byte
+  printf("%02x %02x %02x\n\n",
+    readByte((pc+1) & 0xffff),
+    readByte((pc+2) & 0xffff),
+    readByte((pc+3) & 0xffff));//max opcode length
+}
+
+void ZxSpectrum::stopToggle() {
+  _Z80.stopToggle();
+  //regDump();
+}
+
+void ZxSpectrum::stepOneOnly() {
+  _Z80.stepOneOnly();
+  //regDump();
+}
+
+bool ZxSpectrum::canReport() {
+  return _Z80.canReport();
+}
+
+void ZxSpectrum::haveReported() {
+  _Z80.haveReported();
+}
+
 void ZxSpectrum::reset(ZxSpectrumType type)
 {
   _type = type;
@@ -61,10 +108,12 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
   _tu32 = time_us_32() << 5;
+  _z80x = 0;
 }
 
 void ZxSpectrum::interrupt() {
   _Z80.IRQ(0xff);
+  _ay.sync();//AY-3 timing register additions
 }
 
 // 0 - Z80 unmoderated
@@ -114,7 +163,7 @@ int ZxSpectrum::writeZ80(OutputStream *os, int version) {
       if (r < 0) {
         printf("Failed to write Z80 memory V2\n");
         return r;
-      }         
+      }
       break;
     }
     default: {
@@ -283,6 +332,9 @@ int ZxSpectrum::writeZ80Header(
   buf[5] = _Z80.getH();
   buf[6] = version > 1 ? 0 : _Z80.getPC() & 0xff;
   buf[7] = version > 1 ? 0 : _Z80.getPC() >> 8;
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    _Z80.pushArch();
+  }
   buf[8] = _Z80.getSPL();
   buf[9] = _Z80.getSPH();
   buf[10] = _Z80.getI();
@@ -311,7 +363,7 @@ int ZxSpectrum::writeZ80Header(
   buf[26] = _Z80.getIXH();
   buf[27] = _Z80.getIFF1();
   buf[28] = _Z80.getIFF2();
-  buf[29] = _Z80.getIM();
+  buf[29] = _Z80.getIM();//extending format by IM indication of 4 or more.
 
   return os->write(buf, 30);
 }
@@ -395,7 +447,11 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   _Z80.setIXH(buf[26]);
   _Z80.setIFF1(buf[27] ? 1 : 0);
   _Z80.setIFF2(buf[28] ? 1 : 0);
-  _Z80.setIM(buf[29] & 3);
+  _Z80.setIM(buf[29] & 3);//technically can load 3 and indicate format extension ... ?
+  if (_Z80.getIM() == 3) {
+    printf("Z80X mode architecture enabled\n");
+    _Z80.popArch();
+  }
   if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
   printf("PC %04X\n", pc);
   printf("IFF1 %02X\n", buf[27]);
@@ -432,6 +488,9 @@ int ZxSpectrum::writeZ80HeaderV3(OutputStream *os) {
   buf[37 - 30] = 0x04;
   buf[38 - 30] = _ay.readCtrl();
   for (uint8_t i = 0; i < 16; ++i) buf[39 - 30 + i] = _ay.readData(i);
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    buf[39 - 30 + 15] = _z80x;//port 15 overwrite with special port
+  }
   buf[55 - 30] = 0;
   buf[56 - 30] = 0;
   buf[57 - 30] = 0;
@@ -506,10 +565,10 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
         4             128k + If.1             128k
         5             -                       128k + If.1
         6             -                       128k + M.G.T.
-*/ 
+*/
   const int hm = buf[34-32];
   *type = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3)) ? ZxSpectrum48k : ZxSpectrum128k;
-  printf("Found header for V%d and hardware mode %d is48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
+  printf("Found header for V%d and hardware mode %d is 48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
   transmute(*type);
   _port254 = 0x30;
   if (*type == ZxSpectrum128k) {
@@ -521,6 +580,12 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
     _ay.writeCtrl(i);
     _ay.writeData(buf[i + 39-32]);
   }
+  if(_Z80.getIM() == Z80_INTERRUPT_MODE_3) {
+    _z80x = buf[15 + 39-32];//use last reg as port value
+  } else {
+    _z80x = 0;//default
+  }
+  // causes loss of sync for one interval frame
   _ay.writeCtrl(buf[38-32]);
   return 0;
 }
@@ -551,7 +616,7 @@ int ZxSpectrum::z80BlockToPage(const uint8_t b, const ZxSpectrumType type) {
     case ZxSpectrum48k:  p = z80p48k[b];  break;
     case ZxSpectrum128k: p = z80p128k[b]; break;
     default: break;
-  }  
+  }
   return p;
 }
 
@@ -562,9 +627,9 @@ int ZxSpectrum::z80BlockToPage(const uint8_t b, const ZxSpectrumType type) {
                     If length=0xffff, data is 16384 bytes long and not compressed
     2       1       Page number of block
     3       [0]     Data
-*/   
+*/
 int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
- 
+
   int l = is->readWord();
   if (l < 0) return l;
   printf("Found Z80 V2 block of length %d\n", l);
@@ -581,12 +646,12 @@ int ZxSpectrum::loadZ80MemBlock(InputStream *is, const ZxSpectrumType type) {
   }
 
   int p = z80BlockToPage(b, type);
-  
+
   if (p == -1) {
       printf("Failed to translate Z80 V2 block %d\n", b);
       return -2;
   }
-  
+
   uint8_t *m = (uint8_t *)&_RAM[p];
   if (l == 0xffff) {
     int r = is->read(m, 1<<14);
@@ -675,7 +740,7 @@ void ZxSpectrum::loadZ80(InputStream *is) {
       case 1:
         loadZ80MemV1(is);
         break;
-      case 2:
+      case 2:// <= case 3 is what is saved ...
         ZxSpectrumType type;
         if (loadZ80HeaderV2(is, &type) >= 0) {
           while(loadZ80MemBlock(is, type) >= 0);

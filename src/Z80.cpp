@@ -104,7 +104,11 @@
   m_writeWord(m_context, (address) & 0xffff, (x));                 \
 }
 
-#define Z80_READ_WORD_INTERRUPT(address, x)  Z80_READ_WORD((address), (x))
+/*
+  Alter to free  bytes for demos. As should be true unless hardware
+  is designed wrong in a ZX Spectrum context.
+*/
+#define Z80_READ_WORD_INTERRUPT(address, x) Z80_READ_WORD((address), (x))
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)  Z80_WRITE_WORD((address), (x))
 
@@ -342,16 +346,70 @@ enum {
 
   /* Prefix group. */
 
-  CB_PREFIX,
-  DD_PREFIX,
-  FD_PREFIX,
-  ED_PREFIX,
+  CB_PREFIX,//BIT
+  DD_PREFIX,//IX
+  FD_PREFIX,//IY
+  ED_PREFIX,//MISC
+  // DD ED and FD ED are ex hl, ix/iy special hidden opcodes
 
   /* Special instruction group. */
 
-  ED_UNDEFINED            /* ED_UNDEFINED is used to catch undefined
+  ED_UNDEFINED,           /* ED_UNDEFINED is used to catch undefined
                            * 0xed prefixed opcodes.
                            */
+
+//=====================================================
+// Z80X EXTENSIONS (ALWAYS AVAILABLE ED xx GROUP)
+//=====================================================
+
+  LD_INDIRECT_RR_R,// ld (bc/de),r
+  LD_R_INDIRECT_RR,// ld r,(bc/de)
+
+  JPJ_RR,// jpj (be/de/hl)
+  JPC_RR,// jpc (be/de/hl)
+  XIT,// xit - threading exit
+  RTC,// return and thread used for exit to next threading address instead of ret
+  // call nn starts threading followed by nn nn nn and a final nn to an xit
+
+  AND_R_N,// and r,n
+  OR_R_N,// or r,n
+  XOR_R_N,// xor r,n
+  CP_R_N,// cp r,n
+  AND_INDIRECT_HL_N,// and (hl),n
+  OR_INDIRECT_HL_N,// or (hl),n
+  XOR_INDIRECT_HL_N,// xor (hl),n
+  CP_INDIRECT_HL_N,// cp (hl),n
+
+  CPC,
+  LDC,
+  CPCR,
+  LDCR,
+
+  // reverted as ngc de might have been faster but I didn't like it.
+  NGC,// negate and borrow on carry ngc
+
+  ADD_R_N,// add r,n
+  ADC_R_N,// adc r,n
+  SUB_R_N,// sub r,n
+  SBC_R_N,// sbc r,n
+  ADD_INDIRECT_HL_N,// add (hl),n
+  ADC_INDIRECT_HL_N,// adc (hl),n
+  SUB_INDIRECT_HL_N,// sub (hl),n
+  SBC_INDIRECT_HL_N,// sbc (hl),n
+
+  EX_RR_RR,// ex bc/sp, de/hl
+
+  MUL_DE,
+  ADC_DE_DE,
+  NOPN,// divMMC might require this for an effect banked EDxx NOP
+  BRK,// breakpoint nop
+
+//=====================================================
+// Z80X EXTENSIONS (IM 3 AVAILABLE ED 46 xx GROUP)
+//=====================================================
+// note is impossible to exit to IM 0 directly from IM 3
+// these extensions alter architecture so IM 3 resets the extensions
+// to avoid needing to save Z80X extra state in the Z80 header
 
 };
 
@@ -729,7 +787,8 @@ c = (x) & 0x01;                                                 \
 F = SZYXP_FLAGS_TABLE[(x) & 0xff] | c;                          \
 }
 
-
+// for video indexing
+#define ED(x) (((x) & 0xf81f) | (((x) & 0x700) >> 3) | (((x) & 0xe0) << 3))
 
 
 
@@ -1320,29 +1379,17 @@ static const unsigned char CB_INSTRUCTION_TABLE[256] = {
 
 };
 
+//======================================================
+// MISC Instructions (includes some Z80X extensions)
+//======================================================
 
 static const unsigned char ED_INSTRUCTION_TABLE[256] = {
-
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+//====================================================
+// RESERVED BLOCK
+//====================================================
+//0
+  NOPN,// banked mid fetch NOP for RETN NMI on divMMC ?
+  BRK,// breakpoint nop
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1358,7 +1405,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//1
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1376,7 +1423,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//2
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1394,151 +1441,175 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
+//3
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
 
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//====================================================
+// Z80X EXTENSION BLOCK (DOES NOT EXPAND REGISTERS)
+//====================================================
+//4
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
   NEG,
   RETI_RETN,
-  IM_N,
+  IM_N,//IM 0
   LD_I_A_LD_R_A,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NEG,
+  NGC,// negate and subtract carry has a certain purity.
   RETI_RETN,
-  IM_N,
+  IM_N,//ZX
   LD_I_A_LD_R_A,
-
+//5
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
-  NEG,
-  RETI_RETN,
-  IM_N,
+  EX_RR_RR,
+  EX_RR_RR,
+  IM_N,//IM 1
   LD_A_I_LD_A_R,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NEG,
-  RETI_RETN,
-  IM_N,
+  EX_RR_RR,
+  EX_RR_RR,
+  IM_N,//IM 2
   LD_A_I_LD_A_R,
-
+//6
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
-  LD_INDIRECT_NN_RR,
-  NEG,
-  RETI_RETN,
-  IM_N,
+  LD_INDIRECT_NN_RR,//shorter code available but umm ...
+  ADD_R_N,
+  ADD_R_N,
+  ADD_INDIRECT_HL_N,
   RLD_RRD,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
-  LD_RR_INDIRECT_NN,
-  NEG,
-  RETI_RETN,
-  IM_N,
+  LD_RR_INDIRECT_NN,//shorter code available but umm ...
+  ADC_R_N,
+  ADC_R_N,
+  ADC_INDIRECT_HL_N,
   RLD_RRD,
-
+//7
   IN_R_C,
   OUT_C_R,
   SBC_HL_RR,
   LD_INDIRECT_NN_RR,
-  NEG,
-  RETI_RETN,
-  IM_N,
-  ED_UNDEFINED,
+  SUB_R_N,
+  SUB_R_N,
+  SUB_INDIRECT_HL_N,
+  ADC_DE_DE,
 
   IN_R_C,
   OUT_C_R,
   ADC_HL_RR,
   LD_RR_INDIRECT_NN,
-  NEG,
-  RETI_RETN,
-  IM_N,
-  ED_UNDEFINED,
+  SBC_R_N,
+  SBC_R_N,
+  SBC_INDIRECT_HL_N,
+  MUL_DE,
+//8
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  JPJ_RR,
+  JPC_RR,
 
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  JPJ_RR,
+  JPC_RR,
+//9
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  LD_INDIRECT_RR_R,
+  JPJ_RR,
+  JPC_RR,
 
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  LD_R_INDIRECT_RR,
+  XIT,
+  RTC,
+//A
+  LDI_LDD,
+  CPI_CPD,
+  INI_IND,
+  OUTI_OUTD,
+  AND_R_N,
+  AND_R_N,
+  AND_INDIRECT_HL_N,
+  CPC,
 
   LDI_LDD,
   CPI_CPD,
   INI_IND,
   OUTI_OUTD,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  LDI_LDD,
-  CPI_CPD,
-  INI_IND,
-  OUTI_OUTD,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
+  XOR_R_N,
+  XOR_R_N,
+  XOR_INDIRECT_HL_N,
+  LDC,
+//B
+  LDIR_LDDR,
+  CPIR_CPDR,
+  INIR_INDR,
+  OTIR_OTDR,
+  OR_R_N,
+  OR_R_N,
+  OR_INDIRECT_HL_N,
+  CPCR,
 
   LDIR_LDDR,
   CPIR_CPDR,
   INIR_INDR,
   OTIR_OTDR,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
-  LDIR_LDDR,
-  CPIR_CPDR,
-  INIR_INDR,
-  OTIR_OTDR,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-  ED_UNDEFINED,
-
+  CP_R_N,
+  CP_R_N,
+  CP_INDIRECT_HL_N,
+  LDCR,
+//====================================================
+// RESERVED BLOCK
+//====================================================
+//C
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1556,7 +1627,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//D
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1574,7 +1645,7 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
-
+//E
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1592,7 +1663,307 @@ static const unsigned char ED_INSTRUCTION_TABLE[256] = {
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
+//F
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
 
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+};
+
+//=================================================
+// ED 46 Prefixed IM 0 replacement Instructions
+//=================================================
+// these only work when in IM mode 3
+
+static const unsigned char IM_INSTRUCTION_TABLE[256] = {
+//====================================================
+// Z80X ARCHITECTURAL EXTENSIONS BLOCK
+//====================================================
+//0
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//1
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//2
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//3
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//4
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//5
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//6
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//7
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//8
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//9
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//A
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//B
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//C
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//D
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//E
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+  ED_UNDEFINED,
+//F
   ED_UNDEFINED,
   ED_UNDEFINED,
   ED_UNDEFINED,
@@ -1750,16 +2121,20 @@ static const int OVERFLOW_TABLE[4] = {
   0,
 };
 
-
-
+bool stopped;
+bool requestStep;
+bool reportReady;
 
 void Z80::reset()
 {
+  stopped = false;
+  requestStep = false;
+  reportReady = false;
   state.status = 0;
   AF = 0xffff;
   SP = 0xffff;
   state.i = state.pc = state.iff1 = state.iff2 = 0;
-  state.im = Z80_INTERRUPT_MODE_0;
+  state.im = Z80_INTERRUPT_MODE_0;//default on reset
 
   /* Build register decoding tables for both 3-bit encoded 8-bit
    * registers and 2-bit encoded 16-bit registers. When an opcode is
@@ -1817,10 +2192,49 @@ void Z80::reset()
   state.fd_register_table[14] = &state.registers.word[Z80_IY];
 }
 
+void Z80::resetArch() {
+  //====================================================
+  // Reset the extended Z80X architecture
+  //====================================================
+  Z80_OUTPUT_BYTE(0x3ffd, 0);//clear port hack
+  // clocks not important but actual implements could use
+  //elapsed_cycles += 4;
+  // to inform IO of architecture reset.
+  // essential to clear special mode port on mode change
+  // as it allows potential use of some features which
+  // would be in a super ULA.
+}
 
+void Z80::pushArch() {
+
+}
+
+void Z80::popArch() {
+
+}
+
+void Z80::stopToggle() {
+  stopped = !stopped;
+  if(stopped && requestStep) requestStep = false;
+  reportReady = false;
+}
+
+void Z80::stepOneOnly() {
+  requestStep = true;
+  reportReady = false;
+}
+
+bool Z80::canReport() {
+  return reportReady;
+}
+
+void Z80::haveReported() {
+  reportReady = false;
+}
 
 int Z80::IRQ(int data_on_bus)
 {
+  if(stopped) return 0;
   state.status = 0;
   if (state.iff1) {
 
@@ -1828,6 +2242,7 @@ int Z80::IRQ(int data_on_bus)
     state.r = (state.r & 0x80) | ((state.r + 1) & 0x7f);
     switch (state.im) {
 
+      /* This case will only occur on hard reset */
       case Z80_INTERRUPT_MODE_0: {
 
         /* Assuming the opcode in data_on_bus is an
@@ -1851,8 +2266,7 @@ int Z80::IRQ(int data_on_bus)
 
       }
 
-      case Z80_INTERRUPT_MODE_2:
-      default: {
+      case Z80_INTERRUPT_MODE_2: {
 
         int	elapsed_cycles, vector;
 
@@ -1867,9 +2281,23 @@ int Z80::IRQ(int data_on_bus)
 
 #endif
 
+        /* Altered elsewhere to recall defined 0xff from Because
+            and only use a duplicate of the leading vector bytes
+            at i*256+255. Fully compatible with previous usages in ZX.
+        */
         Z80_READ_WORD_INTERRUPT(vector, state.pc);
         return elapsed_cycles + 19;
 
+      }
+      case Z80_INTERRUPT_MODE_3:
+      default: {
+        int	elapsed_cycles;
+
+        elapsed_cycles = 0;
+        SP -= 2;
+        Z80_WRITE_WORD_INTERRUPT(SP, state.pc);
+        state.pc = state.i << 8;// page boundary direct execute
+        return elapsed_cycles + 13;
       }
 
     }
@@ -1882,6 +2310,7 @@ int Z80::IRQ(int data_on_bus)
 
 int Z80::NMI()
 {
+  if(stopped) return 0;
   int	elapsed_cycles;
 
   state.status = 0;
@@ -1901,14 +2330,23 @@ int Z80::NMI()
 
 int Z80::step()
 {
-  if (state.status != 0) return 0; 
+  if(stopped) {
+    if(requestStep) {
+      requestStep = false;
+      reportReady = false;
+    } else {
+      return 4;//keep regulation clock working
+    }
+  }
+  if (state.status != 0) return 0;
   int elapsed_cycles = 0;
   int pc = state.pc;
   int opcode;
   Z80_FETCH_BYTE(pc, opcode);
   state.pc = pc + 1;
-
-  return intemulate(opcode, elapsed_cycles);
+  int ret = intemulate(opcode, elapsed_cycles);
+  reportReady = true;
+  return ret;
 }
 
 
@@ -2188,6 +2626,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
       case EX_DE_HL: {
 
+        // flip flop toggle so no HL_IX_IY
         EXCHANGE(DE, HL);
         break;
 
@@ -2790,7 +3229,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         int     c;
 
         c = F & Z80_C_FLAG;
-        
+
   #ifdef Z80_DOCUMENTED_FLAGS_ONLY
 
         F = (F & SZPV_FLAGS)
@@ -2832,7 +3271,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
 
       }
-
+      case NOPN:
       case NOP: {
 
         break;
@@ -2885,18 +3324,36 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
          * 0x6e) is treated like a "IM 0".
          */
 
-        if ((Y(opcode) & 0x03) <= 0x01)
-
-          state.im = Z80_INTERRUPT_MODE_0;
-
-        else if (!(Y(opcode) & 1))
-
-          state.im = Z80_INTERRUPT_MODE_1;
-
-        else
-
-          state.im = Z80_INTERRUPT_MODE_2;
-
+        if ((Y(opcode) & 0x03) <= 0x01) {
+          if(!(Y(opcode) & 1)) {
+          /* Here goes the new prefix instruction for own use. Should be fully compatible */
+          //state.im = Z80_INTERRUPT_MODE_0;#
+            if(state.im == Z80_INTERRUPT_MODE_3) {
+              //registers = state.register_table;
+              //unnecessary as ED does this
+              READ_N(opcode);//use timing macros
+              instruction = IM_INSTRUCTION_TABLE[opcode];
+              repeatLoop = true;
+            } else {
+              // this is perhaps the most useless mode on the spectrum
+              // it is prone to crash on floating bus IRQ
+              state.im = Z80_INTERRUPT_MODE_0;//bad mode unstable sometimes
+              resetArch();
+            }
+          } else {
+            state.im = Z80_INTERRUPT_MODE_3;//Z80X Mode NEW!!
+            resetArch();//resets the extended architecture for save file compatibility
+            // allows prep of port before entry into IM 3 mode
+            // so allowing arch extensions to be used
+          }
+        } else {
+          if (!(Y(opcode) & 1)) {
+            state.im = Z80_INTERRUPT_MODE_1;//default basic mode
+          } else {
+            state.im = Z80_INTERRUPT_MODE_2;//useable but has table size issues on bus float
+          }
+          resetArch();
+        }
         break;
 
       }
@@ -4127,7 +4584,13 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
 
       case ED_PREFIX: {
+        if(registers != state.register_table) {
+          // DD ED and FD ED as ex hl, ix/iy
+          EXCHANGE(HL_IX_IY, HL);//swap about
+          break;
+        }
 
+        // there is no special on IX/IY
         registers = state.register_table;
         Z80_FETCH_BYTE(pc, opcode);
         pc++;
@@ -4151,9 +4614,454 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         break;
 
       }
+      /* Read and write using */
+      case LD_INDIRECT_RR_R: {
+        WRITE_BYTE(RR(P(opcode)), R(Z(opcode)));
+        break;
+      }
+      case LD_R_INDIRECT_RR: {
+        READ_BYTE(RR(P(opcode)), R(Z(opcode)));
+        break;
+      }
+      /* jump indirections and call indirections
+        the (sp) version is quite useful for threading
+        as it leaves the code field address on the stack top?
+        hl/sp on the right of the 16*16 square opcode table.
+        bc/de on the left in the same table.
+      */
+      case JPJ_RR: {
+        pc = RR((P(opcode) & 1) | ((Y(opcode) & 1) << 1));
+        READ_NN(pc);
+        elapsed_cycles += 2;
+        break;
+      }
+      case JPC_RR: {
+        pc = RR((P(opcode) & 1) | ((Y(opcode) & 1) << 1));
+        int     nn;
+        READ_NN(nn);
+        PUSH(pc);
+        pc = nn;
+        elapsed_cycles += 3;
+        break;
+      }
+      case XIT: {
+        SP += 2;// drop a threading address
+        elapsed_cycles += 4;
+        //break;// intentional no break
+      }
+      case RTC: {
+        POP(pc);
+        elapsed_cycles += 2;
+        int     nn;
+        READ_NN(nn);
+        PUSH(pc);
+        pc = nn;
+        elapsed_cycles++;
+        break;
+      }
+      /* works on h, l and (hl) for index masking */
+      case AND_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        AND(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case XOR_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        XOR(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case OR_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        OR(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case CP_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        CP(n);
+        //compare does not need writeback
+        //R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case AND_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        AND(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case XOR_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);;
+        XOR(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case OR_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        OR(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case CP_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        CP(n);
+        //compare does not need write back
+        //WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      /* screen IO bulk */
+      case CPC: {
+        int     n, f, d;
 
+        f = F & SZC_FLAGS;
+        READ_BYTE(HL, n);
+        READ_BYTE(ED(DE), d);
+        d = f & Z80_C_FLAG ? ~d : d;
+
+        //also fail compare is an effective exit
+        f |= (--B && n==d) ? Z80_P_FLAG : 0;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        DE += 256;
+        HL ++;
+
+        elapsed_cycles += 2;
+        break;
+      }
+      case LDC: {
+        int     n, f;
+
+        f = F & SZC_FLAGS;
+        READ_BYTE(HL, n);
+        WRITE_BYTE(ED(DE), f & Z80_C_FLAG ? ~n : n);
+
+        f |= --B ? Z80_P_FLAG : 0;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        DE += 256;
+        HL ++;
+
+        elapsed_cycles += 2;
+        break;
+      }
+      case CPCR: {
+        int     d, f, b, de, hl, n;
+
+        f = F & SZC_FLAGS;
+        b = B;
+        de = DE;
+        hl = HL;
+
+        r -= 2;
+        elapsed_cycles -= 8;
+        for ( ; ; ) {
+
+          r += 2;
+
+          Z80_READ_BYTE(hl, n);
+          Z80_READ_BYTE(ED(de), d);
+          d = f & Z80_C_FLAG ? ~d : d;
+
+          hl ++;
+          de += 256;
+
+          if (--b && n==d)
+
+            elapsed_cycles += 21;
+
+          else {
+
+            elapsed_cycles += 16;
+            break;
+
+          }
+
+          f |= Z80_P_FLAG;
+          pc -= 2;
+          break;
+
+        }
+
+        HL = hl;
+        DE = de;
+        B = b;
+
+      #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+      #endif
+
+        F = f;
+
+        break;
+      }
+      case LDCR: {
+        int     f, b, de, hl, n;
+
+  #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
+
+        int     p, q;
+
+        p = (pc - 2) & 0xffff;
+        q = (pc - 1) & 0xffff;
+
+  #endif
+
+        f = F & SZC_FLAGS;
+        b = B;
+        de = DE;
+        hl = HL;
+
+        r -= 2;
+        elapsed_cycles -= 8;
+        for ( ; ; ) {
+
+          r += 2;
+
+          Z80_READ_BYTE(hl, n);
+          Z80_WRITE_BYTE(ED(de), f & Z80_C_FLAG ? ~n : n);
+
+          hl ++;
+          de += 256;
+
+          if (--b)
+
+            elapsed_cycles += 21;
+
+          else {
+
+            elapsed_cycles += 16;
+            break;
+
+          }
+
+  #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
+
+          if (((de - 256) & 0xffff) == p
+              || ((de - 256) & 0xffff) == q) {
+
+            f |= Z80_P_FLAG;
+            pc -= 2;
+            break;
+
+          }
+
+  #endif
+
+          f |= Z80_P_FLAG;
+          pc -= 2;
+          break;
+
+        }
+
+        HL = hl;
+        DE = de;
+        BC = b;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        n += A;
+        f |= n & Z80_X_FLAG;
+        f |= (n << (Z80_Y_FLAG_SHIFT - 1))
+        & Z80_Y_FLAG;
+
+  #endif
+
+        F = f;
+
+        break;
+      }
+      /* special extexded carry negation */
+      case NGC: {// ngc
+        int t = A;
+        A = 0;
+        SBC(t);//performs the complement subtraction for high order bytes
+        break;
+      }
+      // arithmetic reg, n
+      case ADD_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        ADD(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case ADC_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        ADC(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case SUB_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        SUB(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case SBC_R_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        A = R(Z(opcode));
+        SBC(n);
+        R(Z(opcode)) = A;
+        A = a;
+        break;
+      }
+      case ADD_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        ADD(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case ADC_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        ADC(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case SUB_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        SUB(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case SBC_INDIRECT_HL_N: {
+        int     n,a;
+        READ_N(n);
+        a = A;
+        READ_INDIRECT_HL(A);
+        SBC(n);
+        WRITE_INDIRECT_HL(A);
+        A = a;
+        break;
+      }
+      case EX_RR_RR: {
+        int de = Z(opcode) & 1;
+        int hl = ((~de) & 1) << 1;
+        int sp = Y(opcode) & 1;
+        int bc = ((~sp) & 1) << 1;
+        EXCHANGE(RR(bc | sp), RR(de | hl));// ex sp/be, de/hl
+        break;
+      }
+      case MUL_DE: {
+        DE = ((DE & 255) * ((DE >> 8) & 255)) & 0xffff;//super fast byte multiply
+        elapsed_cycles += 13;//expected plus 4 for fetch
+        break;
+      }
+      case ADC_DE_DE: {
+        int     x, z, f, c;
+
+        x = DE;
+        z = x + x + (F & Z80_C_FLAG);
+
+        c = z;
+        f = z & 0xffff
+        ? (z >> 8) & SYX_FLAGS
+        : Z80_Z_FLAG;
+
+  #ifndef Z80_DOCUMENTED_FLAGS_ONLY
+
+        f |= (c >> 8) & Z80_H_FLAG;
+
+  #endif
+
+        f |= OVERFLOW_TABLE[c >> 15];
+        f |= z >> (16 - Z80_C_FLAG_SHIFT);
+
+        DE = z;
+        F = f;
+
+        elapsed_cycles += 7;
+
+        break;
+      }
+      case BRK: {
+        stopToggle();//start and stop breakpoint
+        break;
+
+      }
     }
-
   } while (repeatLoop);
 
   state.r = (state.r & 0x80) | (r & 0x7f);
@@ -4161,5 +5069,3 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
   return elapsed_cycles;
 }
-
-
