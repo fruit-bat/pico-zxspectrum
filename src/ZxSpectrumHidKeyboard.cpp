@@ -66,7 +66,16 @@ ZxSpectrumHidKey KEYS[] = {
   { HID_KEY_B,           1, { {7, 4} }},
   
   { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
-  
+  { HID_KEY_PAUSE,       2, { {0, 0}, {7, 0} }},
+  { HID_KEY_COMMA,       2, { {7, 1}, {7, 3} }},
+  { HID_KEY_PERIOD,      2, { {7, 1}, {7, 2} }},
+  { HID_KEY_SLASH,       2, { {7, 1}, {0, 4} }},
+  { HID_KEY_SEMICOLON,   2, { {7, 1}, {5, 1} }},
+  { HID_KEY_APOSTROPHE,  2, { {7, 1}, {4, 3} }},
+  { HID_KEY_MINUS,       2, { {7, 1}, {6, 3} }},
+  { HID_KEY_EQUAL,       2, { {7, 1}, {6, 1} }},
+  { HID_KEY_EUROPE_1,    2, { {7, 1}, {3, 2} }},
+
   { HID_KEY_ARROW_LEFT,  2, { {0, 0}, {3, 4} }},
   { HID_KEY_ARROW_DOWN,  2, { {0, 0}, {4, 4} }},
   { HID_KEY_ARROW_UP,    2, { {0, 0}, {4, 3} }},

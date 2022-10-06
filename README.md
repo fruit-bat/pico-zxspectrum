@@ -313,7 +313,7 @@ Currently there is no toggling on the lock keys (caps/num lock) and the indicato
 
 Due to a great deal of help from [badrianiulian](https://github.com/badrianiulian), here is a suggested audio input circuit:
 
-![image](docs/badrianiulian_audio_1.png)
+![image](docs/badrianiulian_audio_1.jpg)
 
 Suggestions to improve this circuit are appreciated and please post them [here](https://github.com/fruit-bat/pico-zxspectrum/issues/46).
 
@@ -532,6 +532,7 @@ tio -m ODELBS /dev/ttyUSB0
 [hathach](https://github.com/hathach) for the embeded USB library [TinyUSB](https://github.com/hathach/tinyusb)<br/>
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
+[badrianiulian](https://github.com/badrianiulian) for help testing and design work on the audio circuitry<br/>
 
 ## References
 [Z80 Test suite](https://github.com/raxoft/z80test)<br/>
