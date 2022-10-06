@@ -696,3 +696,8 @@ void ZxSpectrum::saveZ80(OutputStream *os) {
 void ZxSpectrum::loadTap(InputStream *inputStream) {
   _pulseBlock.reset(inputStream);
 }
+
+void ZxSpectrum::loadTzx(InputStream *inputStream) {
+  // TODO implement
+  printf("Load TZX tape not implemented\n");
+}

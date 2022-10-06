@@ -7,6 +7,7 @@
 #include "FatFsSpiInputStream.h"
 #include "BufferedInputStream.h"
 #include "hardware/clocks.h"
+#include "ff.h"
 
 #define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
@@ -41,6 +42,12 @@
 #endif
 
 #define SZ_WIZ_COLS (SZ_FRAME_COLS-(2*SZ_WIZ_ML))
+
+static const char *fext(const char *filename) {
+  const char *dot = strrchr(filename, '.');
+  if(!dot || dot == filename) return "";
+  return dot + 1;
+}
 
 ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
@@ -363,7 +370,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     fname.append(textOption->text());
     _tapeName = textOption->text();
     _tis = new FatFsSpiInputStream(_sdCard, fname.c_str());
-    _zxSpectrum->loadTap(_tis);
+    const char *ext = fext(textOption->text());
+    if (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX")) {
+      _zxSpectrum->loadTzx(_tis);
+    }
+    else {
+      _zxSpectrum->loadTap(_tis); 
+    }
     _wiz.pop(true);
   });
   
