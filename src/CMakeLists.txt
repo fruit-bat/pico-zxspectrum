@@ -17,6 +17,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseByteStream.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulsePreamble.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseBlock.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseTzx.cpp  
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp

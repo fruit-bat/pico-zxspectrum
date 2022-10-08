@@ -55,6 +55,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   setPageaddr(3, (uint8_t*)&_RAM[0]);
   _ear = false;
   _pulseBlock.reset(0);
+  _pulseTzx.reset(0);
   memset(_RAM, 0, sizeof(_RAM));
   _port254 = 0x30;
   _ay.reset();
@@ -700,4 +701,6 @@ void ZxSpectrum::loadTap(InputStream *inputStream) {
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
   // TODO implement
   printf("Load TZX tape not implemented\n");
+  
+  _pulseTzx.reset(inputStream);
 }

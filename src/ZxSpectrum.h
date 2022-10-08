@@ -8,6 +8,7 @@
 #include "OutputStream.h"
 #include <pico/stdlib.h>
 #include "PulseBlock.h"
+#include "PulseTzx.h"
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
 #include "ZxSpectrumAy.h"
@@ -36,7 +37,9 @@ private:
   uint32_t _earInvert;
   uint32_t _earDc;
   
-	PulseBlock _pulseBlock;
+  PulseBlock _pulseBlock;
+  PulseTzx _pulseTzx;
+  
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
   uint32_t _modMul;

@@ -41,7 +41,7 @@ public:
     _pulsePreamble.advance(&_tstates, pstate);
     if (!_pulsePreamble.end()) return 0;
     _r = _pulseByteStream.advance(&_tstates, pstate);
-      if (_r == 0 && _pulseByteStream.end()) {
+    if (_r == 0 && _pulseByteStream.end()) {
       reset(_is);
     }
     else if (_r < 0 || _pulseByteStream.end()) {
