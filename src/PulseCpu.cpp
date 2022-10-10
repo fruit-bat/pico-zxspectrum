@@ -16,9 +16,12 @@
 #define P_JR(D) { PC_JR, D, 0, 0 }
 #define P_END { PC_END, 0, 0, 0 }
 
+//
 // TAP loader program
+//
 //  X = marker byte
 //  L = length in bytes
+//
 PulseInstruction TAP_LOADER[] {
   // Standard pre-amble
   P_OUT_L,
@@ -53,23 +56,22 @@ PulseInstruction TAP_LOADER[] {
   P_END
 };
 
-PulseCpu::PulseCpu()  : 
+PulseCpu::PulseCpu(bool *out) :
+  _out(out),
   _is(0),
   _instructions(0)
 {
 }
 
 void PulseCpu::reset(
-  InputStream* is,
   PulseInstruction* instructions
 ) {
-  _is = is;
   _instructions = instructions;
   _state = PS_START;
   for (int i = 0; i < PR_COUNT; ++i) _registers[i] = 0;
 }
 
-void PulseCpu::execute() {
+void PulseCpu::run() {
   _state = PS_START;
   while(true) {
     PulseInstruction *instruction = &_instructions[_registers[PR_IP]++];
@@ -101,3 +103,39 @@ void PulseCpu::execute() {
   }
 }
 
+void PulseCpu::advance(int32_t *tstates) {
+  while (_state == PS_WAIT) {
+    if (_registers[PR_T] > *tstates) {
+      _registers[PR_T] -= *tstates;
+      *tstates = 0;
+      return;
+    }
+    else {
+      *tstates -= _registers[PR_T];
+      _registers[PR_T] = 0;
+      run();
+    }
+  }
+}
+
+void PulseCpu::loadTap(InputStream *is) {
+  if ((_is != 0) && (_is != is)) _is->close();
+  if (is) {
+    int length = is->readWord();
+    int marker = is->readByte();
+
+    if ((length <= 0) || (marker < 0)) {
+      is->close();
+      return;
+    }
+    
+    _is = is;
+    
+    reset(TAP_LOADER);
+    
+    _registers[PR_X] = marker;
+    _registers[PR_L] = length;
+    
+    run();
+  }
+}
