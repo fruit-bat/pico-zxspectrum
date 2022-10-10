@@ -1,25 +1,27 @@
 #pragma once
 
 #include <pico/stdlib.h>
+#include "InputStream.h"
 
 #define MAX_PULSE_INSTRUCTIONS 20
 
 enum PulseCommand {
-  PC_SET_R,    // Set the register R
+  PC_SET_R,        // Set the register R
+  PC_SET_ISRBH_R,  // Set the register R if the input shift register bit is set
+  PC_SET_ISRBL_R,  // Set the register R if the input shift register bit is not set
   PC_PUSH_R,   // Push register R onto the stack
   PC_POP_R,    // Pop register R from the stack
   PC_WAIT,     // Wait until the T-state counter is exhausted
   PC_DJNZ_R,   // Decrement the register R and jump if not zero
   PC_JRNZ_R,   // Jump if the register is non zero
-  PC_IN,       // Load the input shift register
-  PC_JR_ISRBH, // Jump if the current bit is set
-  PC_JR_ISRHL, // Jump if the current bit is not set
+  PC_IN_R,     // Read a byte into register R
   PC_OUT_H,    // Set the output high
   PC_OUT_L,    // Set the output low
   PC_OUT_T,    // Toggle the output
   PC_SRR_R,    // Shift the register to the right
   PC_SRL_R,    // Shift the register to the right
-  PC_MOV_R_R , // Copy value from one register to another
+  PC_MOV_R_R,  // Copy value from one register to another
+  PC_JR,       // Jump relative 
 };
 
 enum PulseRegister {
@@ -45,7 +47,9 @@ private:
   int32_t _registers[PR_COUNT];
   bool *_out;
   bool _wait;
-  
+  bool _end;
+  InputStream* _is;
+
   PulseInstruction _instructions[MAX_PULSE_INSTRUCTIONS];
   
 public:
