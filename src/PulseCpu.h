@@ -21,7 +21,8 @@ enum PulseCommand {
   PC_SRR_R,    // Shift the register to the right
   PC_SRL_R,    // Shift the register to the right
   PC_MOV_R_R,  // Copy value from one register to another
-  PC_JR,       // Jump relative 
+  PC_JR,       // Jump relative
+  PC_END       // Finished
 };
 
 enum PulseRegister {
@@ -31,7 +32,16 @@ enum PulseRegister {
   PR_X,        // X register
   PR_Y,        // Y register
   PR_T,        // T state counter
+  PR_L,        // L register
   PR_COUNT
+};
+
+enum PulseCpuState {
+  PS_START,
+  PS_WAIT,
+  PS_END,
+  PS_ERR,
+  PS_EOF
 };
 
 typedef struct  {
@@ -46,13 +56,19 @@ private:
   int32_t _stack[20];
   int32_t _registers[PR_COUNT];
   bool *_out;
-  bool _wait;
-  bool _end;
+  PulseCpuState _state;
   InputStream* _is;
 
-  PulseInstruction _instructions[MAX_PULSE_INSTRUCTIONS];
+  PulseInstruction* _instructions;
   
 public:
+
+  PulseCpu();
+  
+  void reset(
+    InputStream* is,
+    PulseInstruction* instructions
+  );
 
   void __not_in_flash_func(execute)();
   

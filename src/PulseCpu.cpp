@@ -14,9 +14,11 @@
 #define P_SRL(R, V) { PC_SRL_R, V, R, 0 }
 #define P_IN(R) { PC_IN_R, 0, R, 0 }
 #define P_JR(D) { PC_JR, D, 0, 0 }
+#define P_END { PC_END, 0, 0, 0 }
 
 // TAP loader program
-//  X = marker // marker ? 3223 : 8063
+//  X = marker byte
+//  L = length in bytes
 PulseInstruction TAP_LOADER[] {
   // Standard pre-amble
   P_OUT_L,
@@ -47,11 +49,28 @@ PulseInstruction TAP_LOADER[] {
   P_DJNZ(PR_Y, -9),
   // Read and send the data bit by bit
   P_IN(PR_ISR),
-  P_JR(-12)
-}; 
+  P_DJNZ(PR_L, -12),
+  P_END
+};
+
+PulseCpu::PulseCpu()  : 
+  _is(0),
+  _instructions(0)
+{
+}
+
+void PulseCpu::reset(
+  InputStream* is,
+  PulseInstruction* instructions
+) {
+  _is = is;
+  _instructions = instructions;
+  _state = PS_START;
+  for (int i = 0; i < PR_COUNT; ++i) _registers[i] = 0;
+}
 
 void PulseCpu::execute() {
-  _wait = false;
+  _state = PS_START;
   while(true) {
     PulseInstruction *instruction = &_instructions[_registers[PR_IP]++];
     switch(instruction->command) {
@@ -61,7 +80,7 @@ void PulseCpu::execute() {
       case PC_DJNZ_R: if(--_registers[instruction->r1] != 0) _registers[PR_IP] += instruction->x - 1; break;
       case PC_SET_R: _registers[instruction->r1] = instruction->x; break;
       case PC_JRNZ_R: if(_registers[instruction->r1] != 0) _registers[PR_IP] += instruction->x - 1; break;
-      case PC_WAIT: _wait = true; return;
+      case PC_WAIT: _state = PS_WAIT; return;
       case PC_MOV_R_R: _registers[instruction->r1] = _registers[instruction->r2]; break;
       case PC_SET_ISRBH_R: (_registers[PR_ISR] & 0x80) && (_registers[instruction->r1] = instruction->x); break;
       case PC_SET_ISRBL_R: (_registers[PR_ISR] & 0x80) || (_registers[instruction->r1] = instruction->x); break;
@@ -70,12 +89,14 @@ void PulseCpu::execute() {
       case PC_IN_R: { 
         int b = _is->readByte();
         if (b < 0) { 
-          _end = true;
+           if (b == -1) _state = PS_EOF;
+           else _state = PS_ERR;
            return;
         }
         _registers[instruction->r1] = b; break; 
       }
       case PC_JR: _registers[PR_IP] += instruction->x - 1; break;
+      case PC_END: _state = PS_END; _registers[PR_IP]--; return;
     }
   }
 }
