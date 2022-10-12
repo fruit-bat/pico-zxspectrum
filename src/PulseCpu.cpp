@@ -12,19 +12,21 @@
 #define P_MOV(R1, R2) { PC_MOV_R_R, 0, R1, R2 }
 #define P_SRR(R, V) { PC_SRR_R, V, R, 0 }
 #define P_SRL(R, V) { PC_SRL_R, V, R, 0 }
-#define P_IN(R) { PC_IN_R, 0, R, 0 }
+#define P_INB(R) { PC_INB_R, 0, R, 0 }
+#define P_INW(R) { PC_INW_R, 0, R, 0 }
 #define P_JR(D) { PC_JR, D, 0, 0 }
 #define P_END { PC_END, 0, 0, 0 }
+#define P_ADD(R, V) { PC_ADD_R, V, R, 0 }
 
 //
 // TAP loader program
 //
-//  X = marker byte
-//  L = length in bytes
-//
 PulseInstruction TAP_LOADER[] {
   // Standard pre-amble
   P_OUT_L,
+  P_INW(PR_L),       // Read the length in bytes, including the marker
+  P_ADD(PR_L, -1),   // Take 1 away from the length as we are about to read the marker
+  P_INB(PR_X),       // Read the marker byte
   P_SET(PR_Y, 8063), // Header data pulse count
   P_JRNZ_R(PR_X, 2), // If the marker is zero, this is a program block
   P_SET(PR_Y, 3223), // Program data pulse count
@@ -51,7 +53,7 @@ PulseInstruction TAP_LOADER[] {
   P_SRL(PR_ISR, 1),
   P_DJNZ(PR_Y, -9),
   // Read and send the data bit by bit
-  P_IN(PR_ISR),
+  P_INB(PR_ISR),
   P_DJNZ(PR_L, -12),
   P_END
 };
@@ -88,17 +90,29 @@ void PulseCpu::run() {
       case PC_SET_ISRBL_R: (_registers[PR_ISR] & 0x80) || (_registers[instruction->r1] = instruction->x); break;
       case PC_SRR_R: _registers[instruction->r1] >>= instruction->x; break;
       case PC_SRL_R: _registers[instruction->r1] <<= instruction->x; break;
-      case PC_IN_R: { 
-        int b = _is->readByte();
+      case PC_INB_R: { 
+        int32_t b = _is->readByte();
         if (b < 0) { 
            if (b == -1) _state = PS_EOF;
            else _state = PS_ERR;
            return;
         }
-        _registers[instruction->r1] = b; break; 
+        _registers[instruction->r1] = b;
+        break; 
       }
+      case PC_INW_R: { 
+        int32_t b = _is->readWord();
+        if (b < 0) { 
+           if (b == -1) _state = PS_EOF;
+           else _state = PS_ERR;
+           return;
+        }
+        _registers[instruction->r1] = b;
+        break; 
+      }      
       case PC_JR: _registers[PR_IP] += instruction->x - 1; break;
       case PC_END: _state = PS_END; _registers[PR_IP]--; return;
+      case PC_ADD_R: _registers[instruction->r1] += instruction->x; break;
     }
   }
 }
@@ -121,21 +135,11 @@ void PulseCpu::advance(int32_t *tstates) {
 void PulseCpu::loadTap(InputStream *is) {
   if ((_is != 0) && (_is != is)) _is->close();
   if (is) {
-    int length = is->readWord();
-    int marker = is->readByte();
-
-    if ((length <= 0) || (marker < 0)) {
-      is->close();
-      return;
-    }
-    
+   
     _is = is;
     
     reset(TAP_LOADER);
-    
-    _registers[PR_X] = marker;
-    _registers[PR_L] = length;
-    
+       
     run();
   }
 }

@@ -12,7 +12,8 @@ enum PulseCommand {
   PC_WAIT,         // Wait until the T-state counter is exhausted
   PC_DJNZ_R,       // Decrement the register R and jump if not zero
   PC_JRNZ_R,       // Jump if the register is non zero
-  PC_IN_R,         // Read a byte into register R
+  PC_INB_R,        // Read a byte into register R
+  PC_INW_R,        // Read a word into register R
   PC_OUT_H,        // Set the output high
   PC_OUT_L,        // Set the output low
   PC_OUT_T,        // Toggle the output
@@ -20,6 +21,7 @@ enum PulseCommand {
   PC_SRL_R,        // Shift the register to the right
   PC_MOV_R_R,      // Copy value from one register to another
   PC_JR,           // Jump relative
+  PC_ADD_R,        // Add a constant to a register
   PC_END           // Finished
 };
 
