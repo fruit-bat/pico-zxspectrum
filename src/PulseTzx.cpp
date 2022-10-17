@@ -54,7 +54,12 @@ void PulseTzx::reset(InputStream* is) {
 }
 
 void PulseTzx::skipStandardSpeedData(){
-
+// 0x00	-	WORD	Pause after this block (ms.) {1000}
+// 0x02	N	WORD	Length of data that follow
+// 0x04	-	BYTE[N]	Data as in .TAP files
+  const uint8_t l[] = {2, 2};
+  uint32_t h[2];
+  _is->decodeLsbf(h, l, 2);
 }
 
 void PulseTzx::skipTurboSpeedData(){
@@ -155,9 +160,9 @@ void PulseTzx::skipGlue(){
 
 
 
-void PulseTzx::indexBlock(int bt) {
-  unsigned int pos = _is->pos();
-  printf("TZX: Indexing block type %d at %d\n", bt, pos);
+void PulseTzx::indexBlock(int32_t bt) {
+  uint32_t pos = _is->pos();
+  printf("TZX: Indexing block type %ld at %ld\n", bt, pos);
   _bi.push_back(pos);
   switch(bt) {
     // ID 10 - Standard speed data block
@@ -213,7 +218,7 @@ void PulseTzx::indexBlock(int bt) {
 
     default:
       // TODO error
-      printf("TZX: Error unknown block type %d\n", bt);
+      printf("TZX: Error unknown block type %ld\n", bt);
       break;
   }
 }
@@ -227,8 +232,8 @@ void PulseTzx::indexBlocks() {
   _bi.clear();
   
   while (true) {
-    int bt = _is->readByte();
-    printf("TZX: Read block type %d\n", bt);
+    int32_t bt = _is->readByte();
+    printf("TZX: Read block type %ld\n", bt);
     if (bt == -1) {
       _is->seek(10);
       return;

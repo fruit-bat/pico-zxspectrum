@@ -10,11 +10,11 @@ class PulseTzx {
 private:
 
   InputStream* _is;
-  std::vector<unsigned int> _bi;
+  std::vector<uint32_t> _bi;
   
   int _tstates;
   void indexBlocks();
-  void indexBlock(int bt);
+  void indexBlock(int32_t bt);
   
   void skipStandardSpeedData();
   void skipTurboSpeedData();
