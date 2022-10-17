@@ -40,15 +40,17 @@ void PulseTzx::reset(InputStream* is) {
     
     printf("Found TZX header version %d %d\n", version_major, version_minor);
 
+    // TODO remove later
+    _is = is;
+    indexBlocks();
+    _is->close();
+    _is = 0;
   }
   _is = is;
   
   
   
-  // TODO remove later
-  indexBlocks();
-  _is->close();
-  _is = 0;
+
 }
 
 void PulseTzx::skipStandardSpeedData(){
