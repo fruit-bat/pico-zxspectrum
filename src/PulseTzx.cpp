@@ -53,17 +53,54 @@ void PulseTzx::reset(InputStream* is) {
 
 }
 
+/**
+ * 0x00	-	WORD	Pause after this block (ms.) {1000}
+ * 0x02	N	WORD	Length of data that follow
+ * 0x04	-	BYTE[N]	Data as in .TAP files
+ */
 void PulseTzx::skipStandardSpeedData(){
-// 0x00	-	WORD	Pause after this block (ms.) {1000}
-// 0x02	N	WORD	Length of data that follow
-// 0x04	-	BYTE[N]	Data as in .TAP files
-  const uint8_t l[] = {2, 2};
-  uint32_t h[2];
-  _is->decodeLsbf(h, l, 2);
+  const int8_t l[] = {-2, 2};
+  uint32_t h[1];
+  int32_t r;
+  r = _is->decodeLsbf(h, l, 2);
+  if (r < 0) {
+    // TODO error
+  }
+  else {
+    r = _is->rseek(h[0]);
+    if (r < 0) {
+      // TODO error
+    }    
+  }
 }
 
+/**
+ * 0x00	-	WORD	Length of PILOT pulse {2168}
+ * 0x02	-	WORD	Length of SYNC first pulse {667}
+ * 0x04	-	WORD	Length of SYNC second pulse {735}
+ * 0x06	-	WORD	Length of ZERO bit pulse {855}
+ * 0x08	-	WORD	Length of ONE bit pulse {1710}
+ * 0x0A	-	WORD	Length of PILOT tone (number of pulses) {8063 header (flag<128), 3223 data (flag>=128)}
+ * 0x0C	-	BYTE	Used bits in the last byte (other bits should be 0) {8}
+ * (e.g. if this is 6, then the bits used (x) in the last byte are: xxxxxx00, where MSb is the leftmost bit, LSb is the rightmost bit)
+ * 0x0D	-	WORD	Pause after this block (ms.) {1000}
+ * 0x0F	N	BYTE[3]	Length of data that follow
+ * 0x12	-	BYTE[N]	Data as in .TAP files
+ */
 void PulseTzx::skipTurboSpeedData(){
-
+  const int8_t l[] = {-0xf, 3};
+  uint32_t h[1];
+  int32_t r;
+  r = _is->decodeLsbf(h, l, 2);
+  if (r < 0) {
+    // TODO error
+  }
+  else {
+    r = _is->rseek(h[0]);
+    if (r < 0) {
+      // TODO error
+    }    
+  }
 }
 
 void PulseTzx::skipPureTone(){
