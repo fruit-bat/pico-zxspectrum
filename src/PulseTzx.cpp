@@ -87,7 +87,7 @@ int32_t PulseTzx::skipTurboSpeedData(){
   return skipSingle(l, 2, 1);
 }
 
-/**
+/** ID 12 - Pure Tone
  * 0x00	-	WORD	Length of one pulse in T-states
  * 0x02	-	WORD	Number of pulses
  */
@@ -95,7 +95,7 @@ int32_t PulseTzx::skipPureTone(){
   return _is->rseek(4) < 0 ? -2 : 0;
 }
 
-/**
+/** ID 13 - Pulse sequence
  * 0x00	N	BYTE	Number of pulses
  * 0x01	-	WORD[N]	Pulses' lengths
  */
@@ -104,7 +104,7 @@ int32_t PulseTzx::skipSequence(){
   return skipSingle(l, 1, 2);
 }
 
-/**
+/** ID 14 - Pure Data Block
  * 0x00	-	WORD	Length of ZERO bit pulse
  * 0x02	-	WORD	Length of ONE bit pulse
  * 0x04	-	BYTE	Used bits in last byte (other bits should be 0)
@@ -118,7 +118,7 @@ int32_t PulseTzx::skipPureData(){
   return skipSingle(l, 2, 1);
 }
 
-/**
+/** ID 15 - Direct Recording
  * 0x00	-	WORD	Number of T-states per sample (bit of data)
  * 0x02	-	WORD	Pause after this block in milliseconds (ms.)
  * 0x04	-	BYTE	Used bits (samples) in last byte of data (1-8)
@@ -132,7 +132,7 @@ int32_t PulseTzx::skipDirectRecording(){
   return skipSingle(l, 2, 1);
 }
 
-/**
+/** ID 18 - CSW Recording
  * 0x00	10+N	DWORD	Block length (without these four bytes)
  * 0x04	-	WORD	Pause after this block (in ms).
  * 0x06	-	BYTE[3]	Sampling rate
@@ -195,7 +195,7 @@ int32_t PulseTzx::skipSetSignalLevel(){
   return -2;
 }
 
-/** 0x30
+/** ID 30 - Text description
  * 0x00	N	BYTE	Length of the text description
  * 0x01	-	CHAR[N]	Text description in ASCII format
  */
@@ -204,7 +204,7 @@ int32_t PulseTzx::skipTextDescription(){
   return skipSingle(l, 1, 1);
 }
 
-/** 0x31
+/** ID 31 - Message block
  * 0x00	-	BYTE	Time (in seconds) for which the message should be displayed
  * 0x01	N	BYTE	Length of the text message
  * 0x02	-	CHAR[N]	Message that should be displayed in ASCII format
