@@ -13,34 +13,35 @@ private:
   std::vector<uint32_t> _bi;
   
   int _tstates;
-  void indexBlocks();
-  void indexBlock(int32_t bt);
-  
-  void skipStandardSpeedData();
-  void skipTurboSpeedData();
-  void skipPureTone();
-  void skipSequence();
-  void skipPureData();
-  void skipDirectRecording();
-  void skipCswRecording();
-  void skipGeneralizedData();
-  void skipPause();
-  void skipGroupStart();
-  void skipGroupEnd();
-  void skipJump();
-  void skipLoopStart();
-  void skipLoopEnd();
-  void skipCallSequence();
-  void skipReturnFromSequence();
-  void skipSelectBlock();
-  void skipStopTheTape48k();
-  void skipSetSignalLevel();
-  void skipTextDescription();
-  void skipMessage();
-  void skipArchiveInfo();
-  void skipHardwareType();
-  void skipCustomInfo();
-  void skipGlue();
+  int32_t indexBlocks();
+  int32_t indexBlock(int32_t bt);
+  int32_t skipSingle(const int8_t* l, uint32_t n, uint32_t m);
+    
+  int32_t skipStandardSpeedData();
+  int32_t skipTurboSpeedData();
+  int32_t skipPureTone();
+  int32_t skipSequence();
+  int32_t skipPureData();
+  int32_t skipDirectRecording();
+  int32_t skipCswRecording();
+  int32_t skipGeneralizedData();
+  int32_t skipPause();
+  int32_t skipGroupStart();
+  int32_t skipGroupEnd();
+  int32_t skipJump();
+  int32_t skipLoopStart();
+  int32_t skipLoopEnd();
+  int32_t skipCallSequence();
+  int32_t skipReturnFromSequence();
+  int32_t skipSelectBlock();
+  int32_t skipStopTheTape48k();
+  int32_t skipSetSignalLevel();
+  int32_t skipTextDescription();
+  int32_t skipMessage();
+  int32_t skipArchiveInfo();
+  int32_t skipHardwareType();
+  int32_t skipCustomInfo();
+  int32_t skipGlue();
   
 public:
 
