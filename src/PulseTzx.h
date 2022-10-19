@@ -16,6 +16,7 @@ private:
   int32_t indexBlocks();
   int32_t indexBlock(int32_t bt);
   int32_t skipSingle(const int8_t* l, uint32_t n, uint32_t m);
+  int32_t skipOnly(uint32_t n);
     
   int32_t skipStandardSpeedData();
   int32_t skipTurboSpeedData();
