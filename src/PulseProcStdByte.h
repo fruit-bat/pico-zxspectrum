@@ -14,7 +14,7 @@ public:
 
   PulseProcStdByte(PulseProcTone* t1);
   
-  void init(uint32_t b);
+  void init(PulseProc *next, uint32_t b);
   
   virtual int32_t __not_in_flash_func(advance)(
     InputStream *is,

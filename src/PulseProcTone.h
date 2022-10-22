@@ -17,16 +17,12 @@ public:
   {}
   
   inline void init(
+    PulseProc *nxt, 
     uint32_t l,
     uint32_t n)
   {
+    next(nxt);
     _l = l;
-    _n = n;
-  }
-  
-  inline void initN(
-    uint32_t n)
-  {
     _n = n;
   }
   
