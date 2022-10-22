@@ -4,9 +4,9 @@
 #include "InputStream.h"
 
 enum PulseProcState {
+  PP_CONTINUE = 0,
   PP_COMPLETE = -1,
   PP_ERROR = -2,
-  PP_CONTINUE = -3,
   PP_PAUSE = -4
 };
 
