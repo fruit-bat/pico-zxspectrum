@@ -29,6 +29,11 @@ void __not_in_flash_func(PulseProcStack::advance)(uint32_t tstates, bool *pstate
         _state = _top->advance(_is, pstate, &_top);
       }
     }
-  }  
+  }
+  if (_state < 0) {
+    while (_top) {
+      // TODO clear down PulseProc in error state
+      _top = _top->next();
+    }
+  }
 }
-

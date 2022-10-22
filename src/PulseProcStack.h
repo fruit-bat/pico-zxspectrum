@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PulseProc.h"
-#include <vector>
 #include "InputStream.h"
 
 class PulseProcStack {

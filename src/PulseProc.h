@@ -11,13 +11,13 @@ enum PulseProcState {
 };
 
 class PulseProc {
+private:
+
   PulseProc *_next;
   
 public:
 
-  PulseProc(PulseProc *next) : _next(next) {
-    
-  }
+  PulseProc();
 
   virtual int32_t __not_in_flash_func(advance)(
     InputStream *is,
@@ -26,4 +26,5 @@ public:
   );
   
   PulseProc *next() { return _next; }
+  void next(PulseProc *pp) { _next = pp; }
 };
