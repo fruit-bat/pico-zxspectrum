@@ -8,6 +8,7 @@ PulseProcStdHeader::PulseProcStdHeader(PulseProcTone* t1) :
   
 void PulseProcStdHeader::init(uint32_t p) {
   _step = 3;
+  _p = p;
   _t1->next(this);
 }
 
