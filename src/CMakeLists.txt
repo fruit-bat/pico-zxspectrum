@@ -13,6 +13,9 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrum.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuickSave.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Pulse.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProc.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcStack.cpp
+  
   ${CMAKE_CURRENT_LIST_DIR}/PulseByte.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseByteStream.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulsePreamble.cpp

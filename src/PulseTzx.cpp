@@ -10,7 +10,7 @@ bool PulseTzx::end() {
 }
 
 void PulseTzx::reset(InputStream* is) {
-  if ((_is != 0) && (_is != is)) _is->close();
+  if ((_is != 0) && (_is != is)) _is->close(); // TODO _is != is test is dubious
   if (is) {
     uint8_t header[10];
     
