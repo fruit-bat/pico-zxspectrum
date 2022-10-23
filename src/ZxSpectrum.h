@@ -7,8 +7,7 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include <pico/stdlib.h>
-#include "PulseBlock.h"
-#include "PulseTzx.h"
+#include "PulseProcChain.h"
 #include "128k_rom_1.h"
 #include "128k_rom_2.h"
 #include "ZxSpectrumAy.h"
@@ -37,8 +36,7 @@ private:
   uint32_t _earInvert;
   uint32_t _earDc;
   
-  PulseBlock _pulseBlock;
-  PulseTzx _pulseTzx;
+  PulseProcChain _pulseChain;
   
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
@@ -232,7 +230,7 @@ public:
         }
       }
       if (tud) _ay.step(tud);
-      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+      _pulseChain.advance(_pauseTape ? 0 : c, &_ear);
   }
 
 #define EAR_BITS_PER_STEP 32
@@ -260,7 +258,7 @@ public:
       
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
-        if (_pulseBlock.end()) _ear = (eb >> i) & 1;
+        if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
           int t = _Z80.step();
@@ -276,7 +274,7 @@ public:
           _ta32 -= MUL32(t, _moderate);
         }
       }
-      _pulseBlock.advance(_pauseTape ? 0 : c, &_ear);
+      _pulseChain.advance(_pauseTape ? 0 : c, &_ear);
   }
 
   void interrupt();

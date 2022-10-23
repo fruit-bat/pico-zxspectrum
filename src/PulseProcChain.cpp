@@ -13,7 +13,16 @@ PulseProcChain::PulseProcChain() :
 {
 }
 
+void PulseProcChain::reset() {
+  DBG_PULSE("PulseProcChain: reset \n");
+  _is = 0;
+  _top = 0;
+  _state = PP_COMPLETE;
+  _acc = 0;
+}
+
 void PulseProcChain::init(InputStream *is, PulseProc* top) {
+  DBG_PULSE("PulseProcChain: init \n");
   _is = is;
   _top = top;
   _state = PP_CONTINUE;
@@ -46,3 +55,8 @@ void PulseProcChain::loadTap(InputStream *is) {
   init(is, &_ppTap);
 }
 
+void PulseProcChain::loadTzx(InputStream *is) {
+  DBG_PULSE("PulseProcChain::loadTzx NOT IMPLEMENTED \n");
+//  _ppTap.init(&_ppTap);
+//  init(is, &_ppTap);
+}

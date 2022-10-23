@@ -32,5 +32,8 @@ public:
   
   inline bool end() { return _state < 0; }
   
+  void reset();
   void loadTap(InputStream *is);
+  void loadTzx(InputStream *is);
+  
 };
