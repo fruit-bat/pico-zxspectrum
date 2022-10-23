@@ -26,8 +26,14 @@ int32_t __not_in_flash_func(PulseProcTap::advance)(
   uint32_t h[2];
   int32_t r = is->decodeLsbf(h, l, 2);
   if (r < 0) {
-    DBG_PULSE("PulseProcTap: Error (%ld) reading TAP header\n", r);
-    return PP_ERROR;
+    if (r == -1) {
+      DBG_PULSE("PulseProcTap: ROF reading TAP header\n");
+      return PP_COMPLETE;
+    }
+    else {
+      DBG_PULSE("PulseProcTap: Error (%ld) reading TAP header\n", r);
+      return PP_ERROR;
+    }
   }
   else {
     uint32_t l = h[0];

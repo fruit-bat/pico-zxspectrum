@@ -1,21 +1,26 @@
-#include "PulseProcStack.h"
+#include "PulseProcChain.h"
 
-PulseProcStack::PulseProcStack() :
+PulseProcChain::PulseProcChain() :
   _is(0),
   _top(0),
   _state(PP_COMPLETE),
-  _acc(0)
+  _acc(0),
+  _ppTone(),
+  _ppStdByte(&_ppTone),
+  _ppStdByteStream(&_ppStdByte),
+  _ppStdHeader(&_ppTone),
+  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream)
 {
 }
 
-void PulseProcStack::init(InputStream *is, PulseProc* top) {
+void PulseProcChain::init(InputStream *is, PulseProc* top) {
   _is = is;
   _top = top;
   _state = PP_CONTINUE;
   _acc = 0;
 }
 
-void __not_in_flash_func(PulseProcStack::advance)(uint32_t tstates, bool *pstate) {
+void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate) {
   _acc += tstates;
   while (_state >= 0 && _acc > 0) {
     if (_acc >= static_cast<uint32_t>(_state)) {
@@ -35,3 +40,9 @@ void __not_in_flash_func(PulseProcStack::advance)(uint32_t tstates, bool *pstate
 
   }
 }
+
+void PulseProcChain::loadTap(InputStream *is) {
+  _ppTap.init(&_ppTap);
+  init(is, &_ppTap);
+}
+
