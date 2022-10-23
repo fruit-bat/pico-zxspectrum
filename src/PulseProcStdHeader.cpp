@@ -17,6 +17,7 @@ int32_t __not_in_flash_func(PulseProcStdHeader::advance)(
   bool *pstate,
   PulseProc **top
 ) {
+  DBG_PULSE("PulseProcStdHeader: Step %ld\n", _step);
   if (_step == 0) return PP_COMPLETE;
   switch(_step--) {
     case 3: _t1->init(this, 2168, _p); break;

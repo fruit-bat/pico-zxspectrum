@@ -1,7 +1,15 @@
 #pragma once
 
 #include <pico/stdlib.h>
+#include <pico/printf.h>
 #include "InputStream.h"
+
+#define DEBUG_PULSE
+#ifdef DEBUG_PULSE
+#define DBG_PULSE(...) printf(__VA_ARGS__)
+#else
+#define DBG_PULSE(...)
+#endif
 
 enum PulseProcState {
   PP_CONTINUE = 0,
