@@ -15,7 +15,8 @@ enum PulseProcState {
   PP_CONTINUE = 0,
   PP_COMPLETE = -1,
   PP_ERROR = -2,
-  PP_PAUSE = -4
+  PP_PAUSE = -4,
+  PP_EOF = -5
 };
 
 class PulseProc {

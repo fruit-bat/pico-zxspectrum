@@ -13,13 +13,15 @@ private:
   PulseProcStdHeader* _header;
   PulseProcStdByte* _byte;
   PulseProcStdByteStream* _data;
-
+  PulseProcTone* _end;
+  
 public:
 
   PulseProcTap(
     PulseProcStdHeader* header,
     PulseProcStdByte* byte,
-    PulseProcStdByteStream* data
+    PulseProcStdByteStream* data,
+    PulseProcTone* end
   );
   
   void init(PulseProc *next);

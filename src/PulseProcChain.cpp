@@ -5,11 +5,12 @@ PulseProcChain::PulseProcChain() :
   _top(0),
   _state(PP_COMPLETE),
   _acc(0),
-  _ppTone(),
-  _ppStdByte(&_ppTone),
+  _ppTone1(),
+  _ppTone2(),
+  _ppStdByte(&_ppTone1),
   _ppStdByteStream(&_ppStdByte),
-  _ppStdHeader(&_ppTone),
-  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream)
+  _ppStdHeader(&_ppTone1),
+  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2)
 {
 }
 
@@ -30,6 +31,7 @@ void PulseProcChain::init(InputStream *is, PulseProc* top) {
 }
 
 void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate) {
+  if (_state < 0) return;
   _acc += tstates;
   while (_state >= 0 && _acc >= static_cast<uint32_t>(_state)) {
     _acc -= _state;
@@ -37,9 +39,7 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
     if (_state == PP_COMPLETE) {
       _state = 0;
       _top = _top->next();
-      if (!_top) {
-        return;
-      }
+      if (!_top) break;
     }
   }
   if (_state < 0) {
@@ -51,8 +51,13 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
 
 void PulseProcChain::loadTap(InputStream *is) {
   DBG_PULSE("PulseProcChain::loadTap \n");
-  _ppTap.init(&_ppTap);
-  init(is, &_ppTap);
+  if (is) {
+    _ppTap.init(&_ppTap);
+    init(is, &_ppTap);
+  }
+  else {
+    reset();
+  }
 }
 
 void PulseProcChain::loadTzx(InputStream *is) {

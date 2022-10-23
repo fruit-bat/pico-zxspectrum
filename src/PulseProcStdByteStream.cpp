@@ -17,13 +17,9 @@ int32_t __not_in_flash_func(PulseProcStdByteStream::advance)(
 ) {
   if (_l == 0) return PP_COMPLETE;
   int32_t r = is->readByte();
-  if (r < 0) {
-    if (r == -1) {
-      *pstate = !*pstate;
-    }  
-    return PP_ERROR;
-  } 
+  if (r < 0) return PP_ERROR;
   _ppb->init(this, r);
+  --_l;
   *top = _ppb;
   return PP_CONTINUE;
 }

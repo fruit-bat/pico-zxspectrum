@@ -4,11 +4,13 @@
 PulseProcTap::PulseProcTap(
   PulseProcStdHeader* header,
   PulseProcStdByte* byte,
-  PulseProcStdByteStream* data
+  PulseProcStdByteStream* data,
+  PulseProcTone* end
 ) : 
   _header(header),
   _byte(byte),
-  _data(data)
+  _data(data),
+  _end(end)
 {
 }
 
@@ -27,8 +29,8 @@ int32_t __not_in_flash_func(PulseProcTap::advance)(
   int32_t r = is->decodeLsbf(h, l, 2);
   if (r < 0) {
     if (r == -1) {
-      DBG_PULSE("PulseProcTap: ROF reading TAP header\n");
-      return PP_COMPLETE;
+      DBG_PULSE("PulseProcTap: EOF reading TAP header\n");
+      return PP_EOF;
     }
     else {
       DBG_PULSE("PulseProcTap: Error (%ld) reading TAP header\n", r);
@@ -45,7 +47,8 @@ int32_t __not_in_flash_func(PulseProcTap::advance)(
     }
     _header->init(_byte, m ? 3223 : 8063);
     _byte->init(_data, m);
-    _data->init(next(), l - 1);
+    _data->init(_end, l - 1);
+    _end->init(next(), 4000000, 1);
     *top = _header;
     return PP_CONTINUE;
   }
