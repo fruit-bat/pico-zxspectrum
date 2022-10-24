@@ -8,6 +8,7 @@
 #include "PulseProcStdHeader.h"
 #include "PulseProcStdByteStream.h"
 #include "PulseProcStdByte.h"
+#include "PulseProcTzx.h"
 
 class PulseProcChain {
 private:
@@ -22,6 +23,7 @@ private:
   PulseProcStdByteStream _ppStdByteStream;
   PulseProcStdHeader _ppStdHeader;
   PulseProcTap _ppTap;
+  PulseProcTzx _ppTzx;
   
 public:
 

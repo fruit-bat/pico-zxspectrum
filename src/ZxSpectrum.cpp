@@ -698,5 +698,5 @@ void ZxSpectrum::loadTap(InputStream *inputStream) {
 }
 
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
-  _pulseChain.loadTap(inputStream);
+  _pulseChain.loadTzx(inputStream);
 }

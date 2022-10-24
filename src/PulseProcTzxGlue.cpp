@@ -38,5 +38,5 @@ int32_t __not_in_flash_func(PulseProcTzxGlue::advance)(
   
   DBG_PULSE("Found TZX glue version %d %d\n", version_major, version_minor);
 
-  return PP_CONTINUE;
+  return PP_COMPLETE;
 }

@@ -10,7 +10,8 @@ PulseProcChain::PulseProcChain() :
   _ppStdByte(&_ppTone1),
   _ppStdByteStream(&_ppStdByte),
   _ppStdHeader(&_ppTone1),
-  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2)
+  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2),
+  _ppTzx()
 {
 }
 
@@ -39,7 +40,10 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
     if (_state == PP_COMPLETE) {
       _state = 0;
       _top = _top->next();
-      if (!_top) break;
+      if (!_top) { 
+        _state = PP_COMPLETE;
+        break;
+      }
     }
   }
   if (_state < 0) {
@@ -62,6 +66,11 @@ void PulseProcChain::loadTap(InputStream *is) {
 
 void PulseProcChain::loadTzx(InputStream *is) {
   DBG_PULSE("PulseProcChain::loadTzx NOT IMPLEMENTED \n");
-//  _ppTap.init(&_ppTap);
-//  init(is, &_ppTap);
+  if (is) {
+    _ppTzx.init(0);
+    init(is, &_ppTzx);
+  }
+  else {
+    reset();
+  }
 }

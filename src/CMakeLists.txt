@@ -19,8 +19,10 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdByteStream.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcChain.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTap.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzx.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxHeader.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxGlue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxIndex.cpp
 
 
 
