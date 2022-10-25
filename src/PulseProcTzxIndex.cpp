@@ -1,6 +1,6 @@
 #include "PulseProcTzxIndex.h"
 
-PulseProcTzxIndex::PulseProcTzxIndex() 
+PulseProcTzxIndex::PulseProcTzxIndex() : _bi(0)
 {}
   
 void PulseProcTzxIndex::init(PulseProc *nxt, std::vector<uint32_t>* bi) {
@@ -277,7 +277,7 @@ int32_t PulseProcTzxIndex::indexBlock(InputStream *is, int32_t bt) {
   uint32_t pos = is->pos() - 1;
   printf("TZX: Indexing block type %02lX at %ld\n", bt, pos);
   _bi->push_back(pos);
-    switch(bt) {
+  switch(bt) {
     // ID 10 - Standard speed data block
     case 0x10: return skipStandardSpeedData(is); 
     // ID 11 - Turbo speed data block

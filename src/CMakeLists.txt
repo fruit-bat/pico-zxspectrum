@@ -18,22 +18,14 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdByte.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdByteStream.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcChain.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxBlock.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTap.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzx.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxHeader.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxGlue.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxIndex.cpp
 
-
-
-
-  ${CMAKE_CURRENT_LIST_DIR}/Pulse.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseByte.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseByteStream.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulsePreamble.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseBlock.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseCpu.cpp  
-  ${CMAKE_CURRENT_LIST_DIR}/PulseTzx.cpp  
+ 
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp

@@ -6,6 +6,7 @@
 #include "PulseProcTzxHeader.h"
 #include "PulseProcTzxGlue.h"
 #include "PulseProcTzxIndex.h"
+#include "PulseProcTzxBlock.h"
 
 class PulseProcTzx : public PulseProc {
 private:
@@ -13,6 +14,7 @@ private:
   PulseProcTzxHeader _pptHeader;
   PulseProcTzxGlue _pptGlue;
   PulseProcTzxIndex _pptIndex;
+  PulseProcTzxBlock _pptBlock;
   
 public:
 

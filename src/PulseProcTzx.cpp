@@ -16,7 +16,8 @@ int32_t PulseProcTzx::advance(
   DBG_PULSE("PulseProcTzx: Loading TZX\n");
 
   _pptHeader.init(&_pptIndex);
-  _pptIndex.init(next(), &_bi);
+  _pptIndex.init(&_pptBlock, &_bi);
+  _pptBlock.init(next(), &_bi);
   *top = &_pptHeader;
   
   return PP_CONTINUE;
