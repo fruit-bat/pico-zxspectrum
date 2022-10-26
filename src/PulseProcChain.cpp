@@ -10,7 +10,8 @@ PulseProcChain::PulseProcChain() :
   _ppStdByte(&_ppTone1),
   _ppStdByteStream(&_ppStdByte),
   _ppStdHeader(&_ppTone1),
-  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2),
+  _ppPause(),
+  _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2, &_ppPause),
   _ppTzx(&_ppTap)
 {
 }
@@ -53,10 +54,13 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
   }
 }
 
-void PulseProcChain::loadTap(InputStream *is) {
+void PulseProcChain::loadTap(
+    InputStream *is,
+    uint32_t tsPerMs
+) {
   DBG_PULSE("PulseProcChain::loadTap \n");
   if (is) {
-    _ppTap.init(&_ppTap);
+    _ppTap.init(&_ppTap, 1000, tsPerMs);
     init(is, &_ppTap);
   }
   else {
@@ -64,10 +68,13 @@ void PulseProcChain::loadTap(InputStream *is) {
   }
 }
 
-void PulseProcChain::loadTzx(InputStream *is) {
-  DBG_PULSE("PulseProcChain::loadTzx NOT IMPLEMENTED \n");
+void PulseProcChain::loadTzx(
+  InputStream *is,
+  uint32_t tsPerMs
+) {
+  DBG_PULSE("PulseProcChain::loadTzx Partially implemented \n");
   if (is) {
-    _ppTzx.init(0);
+    _ppTzx.init(0, tsPerMs);
     init(is, &_ppTzx);
   }
   else {

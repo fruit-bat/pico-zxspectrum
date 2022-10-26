@@ -694,9 +694,9 @@ void ZxSpectrum::saveZ80(OutputStream *os) {
 }
 
 void ZxSpectrum::loadTap(InputStream *inputStream) {
-  _pulseChain.loadTap(inputStream);
+  _pulseChain.loadTap(inputStream, 3555); // TODO adjust with CPU speed
 }
 
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
-  _pulseChain.loadTzx(inputStream);
+  _pulseChain.loadTzx(inputStream, 3555); // TODO adjust with CPU speed
 }

@@ -2,11 +2,16 @@
 #include <cstring>
 
 PulseProcTzx::PulseProcTzx(PulseProcTap* ppTap) :
-  _pptBlock(ppTap)
+  _pptBlock(ppTap),
+  _tsPerMs(0)
 {}
   
-void PulseProcTzx::init(PulseProc *nxt) {
+void PulseProcTzx::init(
+    PulseProc *nxt,
+    uint32_t tsPerMs
+) {
   next(nxt);
+  _tsPerMs = tsPerMs;
 }
 
 int32_t PulseProcTzx::advance(
@@ -18,7 +23,7 @@ int32_t PulseProcTzx::advance(
 
   _pptHeader.init(&_pptIndex);
   _pptIndex.init(&_pptBlock, &_bi);
-  _pptBlock.init(next(), &_bi);
+  _pptBlock.init(next(), &_bi, _tsPerMs);
   *top = &_pptHeader;
   
   return PP_CONTINUE;

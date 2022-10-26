@@ -3,13 +3,19 @@
 PulseProcTzxBlock::PulseProcTzxBlock(PulseProcTap* ppTap) :
   _bi(0),
   _i(0),
-  _ppTap(ppTap)
+  _ppTap(ppTap),
+  _tsPerMs(3555)
 {}
   
-void PulseProcTzxBlock::init(PulseProc *nxt, std::vector<uint32_t>* bi) {
+void PulseProcTzxBlock::init(
+    PulseProc *nxt,
+    std::vector<uint32_t>* bi,
+    uint32_t tsPerMs
+) {
   next(nxt);
   _bi = bi;
   _i = 0;
+  _tsPerMs = tsPerMs;
 }
 
 int32_t PulseProcTzxBlock::skipSingle(InputStream *is, const int8_t* l, uint32_t n, uint32_t m) {
@@ -27,8 +33,14 @@ int32_t PulseProcTzxBlock::skipOnly(InputStream *is, uint32_t n) {
  * 0x04	-	BYTE[N]	Data as in .TAP files
  */
 int32_t PulseProcTzxBlock::doStandardSpeedData(InputStream *is, PulseProc **top) {
-  skipOnly(is, 2); // TODO read the pause length
-  _ppTap->init(this);
+  const int8_t l[] = {2};
+  uint32_t delay;
+  if (is->decodeLsbf(&delay, l, 1) < 0) {
+    DBG_PULSE("PulseProcTzxBlock: failed to read standard data delay\n");
+    return PP_ERROR;
+  }
+  DBG_PULSE("PulseProcTzxBlock: standard block delay %ld ms\n", delay);  
+  _ppTap->init(this, delay, _tsPerMs);
   *top = _ppTap;
   return PP_CONTINUE;
 }
@@ -281,7 +293,7 @@ int32_t PulseProcTzxBlock::doGlue(InputStream *is) {
 
 int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top) {
   uint32_t pos = is->pos() - 1;
-  printf("TZX: reading block type %02lX at %ld\n", bt, pos);
+  DBG_PULSE("PulseProcTzxBlock: reading block type %02lX at %ld\n", bt, pos);
   switch(bt) {
     // ID 10 - Standard speed data block
     case 0x10: return doStandardSpeedData(is, top); 
@@ -335,8 +347,7 @@ int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top)
     case 0x5a: return doGlue(is); 
 
     default:
-      // TODO error
-      printf("TZX: Error unknown block type %02lX\n", bt);
+      DBG_PULSE("PulseProcTzxBlock: Error unknown block type %02lX\n", bt);
       return PP_ERROR;
   }
 }
@@ -347,21 +358,21 @@ int32_t PulseProcTzxBlock::advance(
   PulseProc **top
 ) {
   if (_i < _bi->size()) {
-    DBG_PULSE("PulseProcTzxIndex: seek to block %ld\n", _i);
+    DBG_PULSE("PulseProcTzxBlock: seek to block %ld\n", _i);
     uint32_t p = _bi->at(_i++);
     int32_t r = is->seek(p);
     if (r < 0) {
-      DBG_PULSE("PulseProcTzxIndex: failed to seek to block\n");
+      DBG_PULSE("PulseProcTzxBlock: failed to seek to block\n");
       return PP_ERROR;
     }    
     int32_t bt = is->readByte();
-    DBG_PULSE("PulseProcTzxIndex: Read block type %02lX\n", bt);
+    DBG_PULSE("PulseProcTzxBlock: Read block type %02lX\n", bt);
     if (bt < 0) {
-      printf("PulseProcTzxIndex: Error reading block type\n");
+      printf("PulseProcTzxBlock: Error reading block type\n");
       return PP_ERROR;
     }
     r = doBlock(is, bt, top);
-    printf("PulseProcTzxIndex: do block type %02lX returned %ld\n", bt, r);
+    printf("PulseProcTzxBlock: do block type %02lX returned %ld\n", bt, r);
     return r;
   }
   else {

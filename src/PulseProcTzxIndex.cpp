@@ -275,7 +275,7 @@ int32_t PulseProcTzxIndex::skipGlue(InputStream *is) {
 
 int32_t PulseProcTzxIndex::indexBlock(InputStream *is, int32_t bt) {
   uint32_t pos = is->pos() - 1;
-  printf("TZX: Indexing block type %02lX at %ld\n", bt, pos);
+  DBG_PULSE("PulseProcTzxIndex: Indexing block type %02lX at %ld\n", bt, pos);
   _bi->push_back(pos);
   switch(bt) {
     // ID 10 - Standard speed data block
@@ -330,8 +330,7 @@ int32_t PulseProcTzxIndex::indexBlock(InputStream *is, int32_t bt) {
     case 0x5a: return skipGlue(is); 
 
     default:
-      // TODO error
-      printf("TZX: Error unknown block type %02lX\n", bt);
+      DBG_PULSE("PulseProcTzxIndex: Error unknown block type %02lX\n", bt);
       return PP_ERROR;
   }
 }
@@ -345,20 +344,20 @@ int32_t PulseProcTzxIndex::advance(
   
   while (true) {
     int32_t bt = is->readByte();
-    printf("TZX: Read block type %02lX\n", bt);
+    DBG_PULSE("PulseProcTzxIndex: Read block type %02lX\n", bt);
     if (bt == -1) {
-      printf("TZX: Complete\n");
+      DBG_PULSE("PulseProcTzxIndex: Complete\n");
       return PP_COMPLETE;
     }
     if (bt < 0) {
-      printf("TZX: Error reading block type\n");
+      DBG_PULSE("PulseProcTzxIndex: Error reading block type\n");
       return PP_ERROR;
     }
     int32_t r = indexBlock(is, bt);
-    printf("TZX: Indexing block type %02lX returned %ld\n", bt, r);
+    DBG_PULSE("PulseProcTzxIndex: Indexing block type %02lX returned %ld\n", bt, r);
     
     if (r < 0) {
-      printf("TZX: Error (%ld) indexing block type %02lX\n", r, bt);
+      DBG_PULSE("PulseProcTzxIndex: Error (%ld) indexing block type %02lX\n", r, bt);
       return PP_ERROR;
     }
   }

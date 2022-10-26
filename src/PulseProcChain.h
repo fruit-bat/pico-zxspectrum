@@ -9,6 +9,7 @@
 #include "PulseProcStdByteStream.h"
 #include "PulseProcStdByte.h"
 #include "PulseProcTzx.h"
+#include "PulseProcPauseMillis.h"
 
 class PulseProcChain {
 private:
@@ -22,6 +23,7 @@ private:
   PulseProcStdByte _ppStdByte;
   PulseProcStdByteStream _ppStdByteStream;
   PulseProcStdHeader _ppStdHeader;
+  PulseProcPauseMillis _ppPause;
   PulseProcTap _ppTap;
   PulseProcTzx _ppTzx;
   
@@ -36,7 +38,15 @@ public:
   inline bool end() { return _state < 0; }
   
   void reset();
-  void loadTap(InputStream *is);
-  void loadTzx(InputStream *is);
+  
+  void loadTap(
+    InputStream *is,
+    uint32_t tsPerMs
+  );
+    
+  void loadTzx(
+    InputStream *is,
+    uint32_t tsPerMs
+  );
   
 };
