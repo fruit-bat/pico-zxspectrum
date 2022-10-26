@@ -16,7 +16,9 @@ private:
   PulseProcStdByteStream* _data;
   PulseProcTone* _end;
   PulseProcPauseMillis* _pause;
-  
+  uint32_t _pauseMillis;
+  uint32_t _tsPerMs;
+
 public:
 
   PulseProcTap(

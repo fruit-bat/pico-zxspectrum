@@ -4,7 +4,7 @@ PulseProcStdByteStream::PulseProcStdByteStream(PulseProcStdByte* ppb) :
   _ppb(ppb),
   _l(0)
 {}
-  
+
 void PulseProcStdByteStream::init(PulseProc *nxt, uint32_t l) {
   next(nxt);
   _l = l;
