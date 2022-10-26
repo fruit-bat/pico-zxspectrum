@@ -3,17 +3,19 @@
 #include <pico/stdlib.h>
 #include "PulseProc.h"
 #include <vector>
+#include "PulseProcTap.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
   std::vector<uint32_t>* _bi;
   uint32_t _i;
+  PulseProcTap* _ppTap;
   
-  int32_t doBlock(InputStream *is, int32_t bt);
+  int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);
   int32_t skipSingle(InputStream *is, const int8_t* l, uint32_t n, uint32_t m);
   int32_t skipOnly(InputStream *is, uint32_t n);
     
-  int32_t doStandardSpeedData(InputStream *is);
+  int32_t doStandardSpeedData(InputStream *is, PulseProc **top);
   int32_t doTurboSpeedData(InputStream *is);
   int32_t doPureTone(InputStream *is);
   int32_t doSequence(InputStream *is);
@@ -41,7 +43,7 @@ private:
 
 public:
 
-  PulseProcTzxBlock();
+  PulseProcTzxBlock(PulseProcTap* ppTap);
   
   void init(PulseProc *next, std::vector<uint32_t>* bi);
   

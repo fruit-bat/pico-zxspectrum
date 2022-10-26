@@ -18,7 +18,7 @@ private:
   
 public:
 
-  PulseProcTzx();
+  PulseProcTzx(PulseProcTap* ppTap);
   
   void init(PulseProc *next);
   

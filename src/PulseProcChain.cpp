@@ -11,7 +11,7 @@ PulseProcChain::PulseProcChain() :
   _ppStdByteStream(&_ppStdByte),
   _ppStdHeader(&_ppTone1),
   _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2),
-  _ppTzx()
+  _ppTzx(&_ppTap)
 {
 }
 

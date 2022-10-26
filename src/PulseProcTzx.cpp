@@ -1,7 +1,8 @@
 #include "PulseProcTzx.h"
 #include <cstring>
 
-PulseProcTzx::PulseProcTzx()
+PulseProcTzx::PulseProcTzx(PulseProcTap* ppTap) :
+  _pptBlock(ppTap)
 {}
   
 void PulseProcTzx::init(PulseProc *nxt) {

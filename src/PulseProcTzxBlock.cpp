@@ -1,8 +1,9 @@
 #include "PulseProcTzxBlock.h"
 
-PulseProcTzxBlock::PulseProcTzxBlock() :
+PulseProcTzxBlock::PulseProcTzxBlock(PulseProcTap* ppTap) :
   _bi(0),
-  _i(0)
+  _i(0),
+  _ppTap(ppTap)
 {}
   
 void PulseProcTzxBlock::init(PulseProc *nxt, std::vector<uint32_t>* bi) {
@@ -25,9 +26,11 @@ int32_t PulseProcTzxBlock::skipOnly(InputStream *is, uint32_t n) {
  * 0x02	N	WORD	Length of data that follow
  * 0x04	-	BYTE[N]	Data as in .TAP files
  */
-int32_t PulseProcTzxBlock::doStandardSpeedData(InputStream *is) {
-  const int8_t l[] = {-2, 2};
-  return skipSingle(is, l, 2, 1);
+int32_t PulseProcTzxBlock::doStandardSpeedData(InputStream *is, PulseProc **top) {
+  skipOnly(is, 2); // TODO read the pause length
+  _ppTap->init(this);
+  *top = _ppTap;
+  return PP_CONTINUE;
 }
 
 /** ID 11 - Turbo Speed Data Block
@@ -276,12 +279,12 @@ int32_t PulseProcTzxBlock::doGlue(InputStream *is) {
 }
 
 
-int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt) {
+int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top) {
   uint32_t pos = is->pos() - 1;
-  printf("TZX: Indexing block type %02lX at %ld\n", bt, pos);
+  printf("TZX: reading block type %02lX at %ld\n", bt, pos);
   switch(bt) {
     // ID 10 - Standard speed data block
-    case 0x10: return doStandardSpeedData(is); 
+    case 0x10: return doStandardSpeedData(is, top); 
     // ID 11 - Turbo speed data block
     case 0x11: return doTurboSpeedData(is); 
     // ID 12 - Pure tone
@@ -357,7 +360,7 @@ int32_t PulseProcTzxBlock::advance(
       printf("PulseProcTzxIndex: Error reading block type\n");
       return PP_ERROR;
     }
-    r = doBlock(is, bt);
+    r = doBlock(is, bt, top);
     printf("PulseProcTzxIndex: do block type %02lX returned %ld\n", bt, r);
     return r;
   }
