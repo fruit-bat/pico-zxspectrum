@@ -20,7 +20,7 @@ void __not_in_flash_func(PulseProcStdByte::init)(
   uint32_t ts1
 ) {
   next(nxt);
-  _b = b | (1 << (16 - n));
+  _b = b | (1 << (16 - (n > 8 ? 8 : n)));
   _ts[0] = ts0;
   _ts[1] = ts1;  
 }

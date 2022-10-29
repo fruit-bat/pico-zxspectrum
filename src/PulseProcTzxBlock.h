@@ -8,6 +8,7 @@
 #include "PulseProcTzxPureTone.h"
 #include "PulseProcPulseStream.h"
 #include "PulseProcTzxPulseSequence.h"
+#include "PulseProcTzxPureData.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -18,6 +19,7 @@ private:
   PulseProcTzxPureTone _ppTzxPureTone;
   PulseProcPulseStream _ppPulseStream;
   PulseProcTzxPulseSequence _ppTzxPulseSequence;
+  PulseProcTzxPureData _ppTzxPureData;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);

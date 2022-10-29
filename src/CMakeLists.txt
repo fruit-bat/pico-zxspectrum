@@ -29,7 +29,9 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureTone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcPulseStream.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPulseSequence.cpp
- 
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureData.cpp
+
+  
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp

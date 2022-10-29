@@ -15,6 +15,7 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppTzxPureTone(ppTone1),
   _ppPulseStream(ppTone1),
   _ppTzxPulseSequence(&_ppPulseStream),
+  _ppTzxPureData(data, ppTone2, pause),
   _tsPerMs(3555)
 {}
   
@@ -105,8 +106,9 @@ int32_t PulseProcTzxBlock::doSequence(InputStream *is, PulseProc **top) {
  * 0x0A	-	BYTE[N]	Data as in .TAP files
  */
 int32_t PulseProcTzxBlock::doPureData(InputStream *is, PulseProc **top) {
-  const int8_t l[] = {-0x7, 3};
-  return skipSingle(is, l, 2, 1);
+  _ppTzxPureData.init(this, _tsPerMs);
+  *top = _ppTap;
+  return PP_CONTINUE;
 }
 
 /** ID 15 - Direct Recording
