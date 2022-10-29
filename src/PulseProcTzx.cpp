@@ -1,8 +1,14 @@
 #include "PulseProcTzx.h"
 #include <cstring>
 
-PulseProcTzx::PulseProcTzx(PulseProcTap* ppTap) :
-  _pptBlock(ppTap),
+PulseProcTzx::PulseProcTzx(
+  PulseProcTap* ppTap,
+  PulseProcStdHeader* header,
+  PulseProcStdByteStream* data,
+  PulseProcTone* end,
+  PulseProcPauseMillis* pause
+) :
+  _pptBlock(ppTap, header, data, end, pause),
   _tsPerMs(0)
 {}
   

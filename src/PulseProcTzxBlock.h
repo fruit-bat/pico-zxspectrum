@@ -4,12 +4,14 @@
 #include "PulseProc.h"
 #include <vector>
 #include "PulseProcTap.h"
+#include "PulseProcTzxTurbo.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
   std::vector<uint32_t>* _bi;
   uint32_t _i;
   PulseProcTap* _ppTap;
+  PulseProcTzxTurbo _ppTzxTurbo;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);
@@ -44,7 +46,13 @@ private:
 
 public:
 
-  PulseProcTzxBlock(PulseProcTap* ppTap);
+  PulseProcTzxBlock(
+    PulseProcTap* ppTap,
+    PulseProcStdHeader* header,
+    PulseProcStdByteStream* data,
+    PulseProcTone* end,
+    PulseProcPauseMillis* pause
+  );
   
   void init(
     PulseProc *next,

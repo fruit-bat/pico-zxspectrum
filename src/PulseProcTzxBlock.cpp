@@ -1,9 +1,16 @@
 #include "PulseProcTzxBlock.h"
 
-PulseProcTzxBlock::PulseProcTzxBlock(PulseProcTap* ppTap) :
+PulseProcTzxBlock::PulseProcTzxBlock(
+  PulseProcTap* ppTap,
+  PulseProcStdHeader* header,
+  PulseProcStdByteStream* data,
+  PulseProcTone* end,
+  PulseProcPauseMillis* pause  
+) :
   _bi(0),
   _i(0),
   _ppTap(ppTap),
+  _ppTzxTurbo(header, data, end, pause),
   _tsPerMs(3555)
 {}
   

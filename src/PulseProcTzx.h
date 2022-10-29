@@ -19,7 +19,13 @@ private:
   
 public:
 
-  PulseProcTzx(PulseProcTap* ppTap);
+  PulseProcTzx(
+    PulseProcTap* ppTap,
+    PulseProcStdHeader* header,
+    PulseProcStdByteStream* data,
+    PulseProcTone* end,
+    PulseProcPauseMillis* pause
+  );
   
   void init(
     PulseProc *next,
