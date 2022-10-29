@@ -6,6 +6,8 @@
 #include "PulseProcTap.h"
 #include "PulseProcTzxTurbo.h"
 #include "PulseProcTzxPureTone.h"
+#include "PulseProcPulseStream.h"
+#include "PulseProcTzxPulseSequence.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -14,6 +16,8 @@ private:
   PulseProcTap* _ppTap;
   PulseProcTzxTurbo _ppTzxTurbo;
   PulseProcTzxPureTone _ppTzxPureTone;
+  PulseProcPulseStream _ppPulseStream;
+  PulseProcTzxPulseSequence _ppTzxPulseSequence;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);
@@ -23,28 +27,28 @@ private:
   int32_t doStandardSpeedData(InputStream *is, PulseProc **top);
   int32_t doTurboSpeedData(InputStream *is, PulseProc **top);
   int32_t doPureTone(InputStream *is, PulseProc **top);
-  int32_t doSequence(InputStream *is);
-  int32_t doPureData(InputStream *is);
-  int32_t doDirectRecording(InputStream *is);
-  int32_t doCswRecording(InputStream *is);
-  int32_t doGeneralizedData(InputStream *is);
-  int32_t doPause(InputStream *is);
-  int32_t doGroupStart(InputStream *is);
-  int32_t doGroupEnd(InputStream *is);
-  int32_t doJump(InputStream *is);
-  int32_t doLoopStart(InputStream *is);
-  int32_t doLoopEnd(InputStream *is);
-  int32_t doCallSequence(InputStream *is);
-  int32_t doReturnFromSequence(InputStream *is);
-  int32_t doSelectBlock(InputStream *is);
-  int32_t doStopTheTape48k(InputStream *is);
-  int32_t doSetSignalLevel(InputStream *is);
-  int32_t doTextDescription(InputStream *is);
-  int32_t doMessage(InputStream *is);
-  int32_t doArchiveInfo(InputStream *is);
-  int32_t doHardwareType(InputStream *is);
-  int32_t doCustomInfo(InputStream *is);
-  int32_t doGlue(InputStream *is);
+  int32_t doSequence(InputStream *is, PulseProc **top);
+  int32_t doPureData(InputStream *is, PulseProc **top);
+  int32_t doDirectRecording(InputStream *is, PulseProc **top);
+  int32_t doCswRecording(InputStream *is, PulseProc **top);
+  int32_t doGeneralizedData(InputStream *is, PulseProc **top);
+  int32_t doPause(InputStream *is, PulseProc **top);
+  int32_t doGroupStart(InputStream *is, PulseProc **top);
+  int32_t doGroupEnd(InputStream *is, PulseProc **top);
+  int32_t doJump(InputStream *is, PulseProc **top);
+  int32_t doLoopStart(InputStream *is, PulseProc **top);
+  int32_t doLoopEnd(InputStream *is, PulseProc **top);
+  int32_t doCallSequence(InputStream *is, PulseProc **top);
+  int32_t doReturnFromSequence(InputStream *is, PulseProc **top);
+  int32_t doSelectBlock(InputStream *is, PulseProc **top);
+  int32_t doStopTheTape48k(InputStream *is, PulseProc **top);
+  int32_t doSetSignalLevel(InputStream *is, PulseProc **top);
+  int32_t doTextDescription(InputStream *is, PulseProc **top);
+  int32_t doMessage(InputStream *is, PulseProc **top);
+  int32_t doArchiveInfo(InputStream *is, PulseProc **top);
+  int32_t doHardwareType(InputStream *is, PulseProc **top);
+  int32_t doCustomInfo(InputStream *is, PulseProc **top);
+  int32_t doGlue(InputStream *is, PulseProc **top);
 
 public:
 

@@ -13,6 +13,8 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppTap(ppTap),
   _ppTzxTurbo(header, data, ppTone2, pause),
   _ppTzxPureTone(ppTone1),
+  _ppPulseStream(ppTone1),
+  _ppTzxPulseSequence(&_ppPulseStream),
   _tsPerMs(3555)
 {}
   
@@ -87,9 +89,10 @@ int32_t PulseProcTzxBlock::doPureTone(InputStream *is, PulseProc **top) {
  * 0x00	N	BYTE	Number of pulses
  * 0x01	-	WORD[N]	Pulses' lengths
  */
-int32_t PulseProcTzxBlock::doSequence(InputStream *is) {
-  const int8_t l[] = {1};
-  return skipSingle(is, l, 1, 2);
+int32_t PulseProcTzxBlock::doSequence(InputStream *is, PulseProc **top) {
+  _ppTzxPulseSequence.init(this);
+  *top = _ppTap;
+  return PP_CONTINUE;
 }
 
 /** ID 14 - Pure Data Block
@@ -101,7 +104,7 @@ int32_t PulseProcTzxBlock::doSequence(InputStream *is) {
  * 0x07	N	BYTE[3]	Length of data that follow
  * 0x0A	-	BYTE[N]	Data as in .TAP files
  */
-int32_t PulseProcTzxBlock::doPureData(InputStream *is) {
+int32_t PulseProcTzxBlock::doPureData(InputStream *is, PulseProc **top) {
   const int8_t l[] = {-0x7, 3};
   return skipSingle(is, l, 2, 1);
 }
@@ -115,7 +118,7 @@ int32_t PulseProcTzxBlock::doPureData(InputStream *is) {
  * 0x08	-	BYTE[N]	Samples data. Each bit represents a state on the EAR port (i.e. one sample).
  * MSb is played first.
  */
-int32_t PulseProcTzxBlock::doDirectRecording(InputStream *is) {
+int32_t PulseProcTzxBlock::doDirectRecording(InputStream *is, PulseProc **top) {
   const int8_t l[] = {-0x5, 3};
   return skipSingle(is, l, 2, 1);
 }
@@ -130,7 +133,7 @@ int32_t PulseProcTzxBlock::doDirectRecording(InputStream *is) {
  * 0x0A	-	DWORD	Number of stored pulses (after decompression, for validation purposes)
  * 0x0E	-	BYTE[N]	CSW data, encoded according to the CSW file format specification.
  */
-int32_t PulseProcTzxBlock::doCswRecording(InputStream *is) {
+int32_t PulseProcTzxBlock::doCswRecording(InputStream *is, PulseProc **top) {
   const int8_t l[] = {4};
   return skipSingle(is, l, 1, 1);
 }
@@ -159,7 +162,7 @@ int32_t PulseProcTzxBlock::doCswRecording(InputStream *is) {
  * (2*NPD+1)*ASD	-	BYTE[DS]	Data stream
  * This field is present only if TOTD>0
  */
-int32_t PulseProcTzxBlock::doGeneralizedData(InputStream *is) {
+int32_t PulseProcTzxBlock::doGeneralizedData(InputStream *is, PulseProc **top) {
   const int8_t l[] = {4};
   return skipSingle(is, l, 1, 1);
 }
@@ -167,7 +170,7 @@ int32_t PulseProcTzxBlock::doGeneralizedData(InputStream *is) {
 /** ID 20 - Pause (silence) or 'Stop the Tape' command
  * 0x00	-	WORD	Pause duration (ms.)
  */
-int32_t PulseProcTzxBlock::doPause(InputStream *is) {
+int32_t PulseProcTzxBlock::doPause(InputStream *is, PulseProc **top) {
   return skipOnly(is, 2);
 }
 
@@ -175,34 +178,34 @@ int32_t PulseProcTzxBlock::doPause(InputStream *is) {
  * 0x00	L	BYTE	Length of the group name string
  * 0x01	-	CHAR[L]	Group name in ASCII format (please keep it under 30 characters long)
  */
-int32_t PulseProcTzxBlock::doGroupStart(InputStream *is) {
+int32_t PulseProcTzxBlock::doGroupStart(InputStream *is, PulseProc **top) {
   const int8_t l[] = {1};
   return skipSingle(is, l, 1, 1);
 }
 
 /** ID 22 - Group end
  */
-int32_t PulseProcTzxBlock::doGroupEnd(InputStream *is) {
+int32_t PulseProcTzxBlock::doGroupEnd(InputStream *is, PulseProc **top) {
   return 0;
 }
 
 /** ID 23 - Jump to block
  * 0x00	-	WORD	Relative jump value
  */
-int32_t PulseProcTzxBlock::doJump(InputStream *is) {
+int32_t PulseProcTzxBlock::doJump(InputStream *is, PulseProc **top) {
   return skipOnly(is, 2);
 }
 
 /** ID 24 - Loop start
  * 0x00	-	WORD	Number of repetitions (greater than 1)
  */
-int32_t PulseProcTzxBlock::doLoopStart(InputStream *is) {
+int32_t PulseProcTzxBlock::doLoopStart(InputStream *is, PulseProc **top) {
   return skipOnly(is, 2);
 }
 
 /** ID 25 - Loop end
  */
-int32_t PulseProcTzxBlock::doLoopEnd(InputStream *is) {
+int32_t PulseProcTzxBlock::doLoopEnd(InputStream *is, PulseProc **top) {
   return 0;
 }
 
@@ -210,14 +213,14 @@ int32_t PulseProcTzxBlock::doLoopEnd(InputStream *is) {
  * 0x00	N	WORD	Number of calls to be made
  * 0x02	-	WORD[N]	Array of call block numbers (relative-signed offsets)
  */
-int32_t PulseProcTzxBlock::doCallSequence(InputStream *is) {
+int32_t PulseProcTzxBlock::doCallSequence(InputStream *is, PulseProc **top) {
   const int8_t l[] = {2};
   return skipSingle(is, l, 1, 2);
 }
 
 /** ID 27 - Return from sequence
  */
-int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is) {
+int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is, PulseProc **top) {
   return 0;
 }
 
@@ -226,7 +229,7 @@ int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is) {
  * 0x02	N	BYTE	Number of selections
  * 0x03	-	SELECT[N]	List of selections
  */
-int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is) {
+int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is, PulseProc **top) {
   const int8_t l[] = {2};
   return skipSingle(is, l, 1, 1);
 }
@@ -234,7 +237,7 @@ int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is) {
 /** ID 2A - Stop the tape if in 48K mode
  * 0x00	0	DWORD	Length of the block without these four bytes (0)
  */
-int32_t PulseProcTzxBlock::doStopTheTape48k(InputStream *is) {
+int32_t PulseProcTzxBlock::doStopTheTape48k(InputStream *is, PulseProc **top) {
   return skipOnly(is, 4);
 }
 
@@ -242,7 +245,7 @@ int32_t PulseProcTzxBlock::doStopTheTape48k(InputStream *is) {
  * 0x00	1	DWORD	Block length (without these four bytes)
  * 0x04	-	BYTE	Signal level (0=low, 1=high)
  */
-int32_t PulseProcTzxBlock::doSetSignalLevel(InputStream *is) {
+int32_t PulseProcTzxBlock::doSetSignalLevel(InputStream *is, PulseProc **top) {
   return skipOnly(is, 5);
 }
 
@@ -250,7 +253,7 @@ int32_t PulseProcTzxBlock::doSetSignalLevel(InputStream *is) {
  * 0x00	N	BYTE	Length of the text description
  * 0x01	-	CHAR[N]	Text description in ASCII format
  */
-int32_t PulseProcTzxBlock::doTextDescription(InputStream *is) {
+int32_t PulseProcTzxBlock::doTextDescription(InputStream *is, PulseProc **top) {
   const int8_t l[] = {1};
   return skipSingle(is, l, 1, 1);
 }
@@ -260,7 +263,7 @@ int32_t PulseProcTzxBlock::doTextDescription(InputStream *is) {
  * 0x01	N	BYTE	Length of the text message
  * 0x02	-	CHAR[N]	Message that should be displayed in ASCII format
  */
-int32_t PulseProcTzxBlock::doMessage(InputStream *is) {
+int32_t PulseProcTzxBlock::doMessage(InputStream *is, PulseProc **top) {
   const int8_t l[] = {-1, 1};
   return skipSingle(is, l, 2, 1);
 }
@@ -270,7 +273,7 @@ int32_t PulseProcTzxBlock::doMessage(InputStream *is) {
  * 0x02	N	BYTE	Number of text strings
  * 0x03	-	TEXT[N]	List of text strings
  */
-int32_t PulseProcTzxBlock::doArchiveInfo(InputStream *is) {
+int32_t PulseProcTzxBlock::doArchiveInfo(InputStream *is, PulseProc **top) {
   const int8_t l[] = {2};
   return skipSingle(is, l, 1, 1);
 }
@@ -279,7 +282,7 @@ int32_t PulseProcTzxBlock::doArchiveInfo(InputStream *is) {
  * 0x00	N	BYTE	Number of machines and hardware types for which info is supplied
  * 0x01	-	HWINFO[N]	List of machines and hardware
  */
-int32_t PulseProcTzxBlock::doHardwareType(InputStream *is) {
+int32_t PulseProcTzxBlock::doHardwareType(InputStream *is, PulseProc **top) {
   const int8_t l[] = {1};
   return skipSingle(is, l, 1, 3);
 }
@@ -289,7 +292,7 @@ int32_t PulseProcTzxBlock::doHardwareType(InputStream *is) {
  * 0x10	L	DWORD	Length of the custom info
  * 0x14	-	BYTE[L]	Custom info
  */
-int32_t PulseProcTzxBlock::doCustomInfo(InputStream *is) {
+int32_t PulseProcTzxBlock::doCustomInfo(InputStream *is, PulseProc **top) {
   const int8_t l[] = {-10, 4};
   return skipSingle(is, l, 1, 1);
 }
@@ -298,7 +301,7 @@ int32_t PulseProcTzxBlock::doCustomInfo(InputStream *is) {
  * 0x00	-	BYTE[9]	Value: { "XTape!",0x1A,MajR,MinR }
  *        Just do these 9 bytes and you will end up on the next ID.
  */
-int32_t PulseProcTzxBlock::doGlue(InputStream *is) {
+int32_t PulseProcTzxBlock::doGlue(InputStream *is, PulseProc **top) {
   return skipOnly(is, 9);
 }
 
@@ -314,49 +317,49 @@ int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top)
     // ID 12 - Pure tone
     case 0x12: return doPureTone(is, top); 
     // ID 13 - Sequence of pulses of various lengths
-    case 0x13: return doSequence(is); 
+    case 0x13: return doSequence(is, top); 
     // ID 14 - Pure data block
-    case 0x14: return doPureData(is); 
+    case 0x14: return doPureData(is, top); 
     // ID 15 - Direct recording block
-    case 0x15: return doDirectRecording(is); 
+    case 0x15: return doDirectRecording(is, top); 
     // ID 18 - CSW recording block
-    case 0x18: return doCswRecording(is); 
+    case 0x18: return doCswRecording(is, top); 
     // ID 19 - Generalized data block
-    case 0x19: return doGeneralizedData(is); 
+    case 0x19: return doGeneralizedData(is, top); 
     // ID 20 - Pause (silence) or 'Stop the tape' command
-    case 0x20: return doPause(is); 
+    case 0x20: return doPause(is, top); 
     // ID 21 - Group start
-    case 0x21: return doGroupStart(is); 
+    case 0x21: return doGroupStart(is, top); 
     // ID 22 - Group end
-    case 0x22: return doGroupEnd(is); 
+    case 0x22: return doGroupEnd(is, top); 
     // ID 23 - Jump to block
-    case 0x23: return doJump(is); 
+    case 0x23: return doJump(is, top); 
     // ID 24 - Loop start
-    case 0x24: return doLoopStart(is); 
+    case 0x24: return doLoopStart(is, top); 
     // ID 25 - Loop end
-    case 0x25: return doLoopEnd(is); 
+    case 0x25: return doLoopEnd(is, top); 
     // ID 26 - Call sequence
-    case 0x26: return doCallSequence(is); 
+    case 0x26: return doCallSequence(is, top); 
     // ID 27 - Return from sequence
-    case 0x27: return doReturnFromSequence(is); 
+    case 0x27: return doReturnFromSequence(is, top); 
     // ID 28 - Select block
-    case 0x28: return doSelectBlock(is); 
+    case 0x28: return doSelectBlock(is, top); 
     // ID 2A - Stop the tape if in 48K mode
-    case 0x2a: return doStopTheTape48k(is); 
+    case 0x2a: return doStopTheTape48k(is, top); 
     // ID 2B - Set signal level
-    case 0x2b: return doSetSignalLevel(is); 
+    case 0x2b: return doSetSignalLevel(is, top); 
     // ID 30 - Text description
-    case 0x30: return doTextDescription(is); 
+    case 0x30: return doTextDescription(is, top); 
     // ID 31 - Message block
-    case 0x31: return doMessage(is); 
+    case 0x31: return doMessage(is, top); 
     // ID 32 - Archive info
-    case 0x32: return doArchiveInfo(is); 
+    case 0x32: return doArchiveInfo(is, top); 
     // ID 33 - Hardware type
-    case 0x33: return doHardwareType(is); 
+    case 0x33: return doHardwareType(is, top); 
     // ID 35 - Custom info block
-    case 0x35: return doCustomInfo(is); 
+    case 0x35: return doCustomInfo(is, top); 
     // ID 5A - "Glue" block (90 dec, ASCII Letter 'Z')    
-    case 0x5a: return doGlue(is); 
+    case 0x5a: return doGlue(is, top); 
 
     default:
       DBG_PULSE("PulseProcTzxBlock: Error unknown block type %02lX\n", bt);

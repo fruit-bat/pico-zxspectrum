@@ -2,17 +2,18 @@
 
 #include <pico/stdlib.h>
 #include "PulseProc.h"
-#include "PulseProcTone.h"
+#include "PulseProcPulseStream.h"
 
-class PulseProcTzxPureTone : public PulseProc {
+
+class PulseProcTzxPulseSequence : public PulseProc {
 private:
 
-  PulseProcTone* _ppTone;
+  PulseProcPulseStream* _ppPulseStream;
 
 public:
 
-  PulseProcTzxPureTone(
-    PulseProcTone* ppTone
+  PulseProcTzxPulseSequence(
+    PulseProcPulseStream* ppPulseStream
   );
   
   void init(

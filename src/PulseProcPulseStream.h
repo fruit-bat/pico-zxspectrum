@@ -4,20 +4,17 @@
 #include "PulseProc.h"
 #include "PulseProcTone.h"
 
-class PulseProcTzxPureTone : public PulseProc {
+class PulseProcPulseStream : public PulseProc {
 private:
 
   PulseProcTone* _ppTone;
-
+  uint32_t _l;
+  
 public:
 
-  PulseProcTzxPureTone(
-    PulseProcTone* ppTone
-  );
+  PulseProcPulseStream(PulseProcTone* ppTone);
   
-  void init(
-    PulseProc *nxt
-  );
+  void init(PulseProc *next, uint32_t l);
   
   virtual int32_t __not_in_flash_func(advance)(
     InputStream *is,
