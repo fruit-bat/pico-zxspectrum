@@ -65,9 +65,10 @@ int32_t PulseProcTzxBlock::doStandardSpeedData(InputStream *is, PulseProc **top)
  * 0x0F	N	BYTE[3]	Length of data that follow
  * 0x12	-	BYTE[N]	Data as in .TAP files
  */
-int32_t PulseProcTzxBlock::doTurboSpeedData(InputStream *is) {
-  const int8_t l[] = {-0xf, 3};
-  return skipSingle(is, l, 2, 1);
+int32_t PulseProcTzxBlock::doTurboSpeedData(InputStream *is, PulseProc **top) {
+  _ppTzxTurbo.init(this, _tsPerMs);
+  *top = _ppTap;
+  return PP_CONTINUE;
 }
 
 /** ID 12 - Pure Tone
@@ -305,7 +306,7 @@ int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top)
     // ID 10 - Standard speed data block
     case 0x10: return doStandardSpeedData(is, top); 
     // ID 11 - Turbo speed data block
-    case 0x11: return doTurboSpeedData(is); 
+    case 0x11: return doTurboSpeedData(is, top); 
     // ID 12 - Pure tone
     case 0x12: return doPureTone(is); 
     // ID 13 - Sequence of pulses of various lengths

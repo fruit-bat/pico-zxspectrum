@@ -19,7 +19,7 @@ private:
   int32_t skipOnly(InputStream *is, uint32_t n);
     
   int32_t doStandardSpeedData(InputStream *is, PulseProc **top);
-  int32_t doTurboSpeedData(InputStream *is);
+  int32_t doTurboSpeedData(InputStream *is, PulseProc **top);
   int32_t doPureTone(InputStream *is);
   int32_t doSequence(InputStream *is);
   int32_t doPureData(InputStream *is);
