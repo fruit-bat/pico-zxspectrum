@@ -5,6 +5,7 @@
 #include <vector>
 #include "PulseProcTap.h"
 #include "PulseProcTzxTurbo.h"
+#include "PulseProcTzxPureTone.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -12,6 +13,7 @@ private:
   uint32_t _i;
   PulseProcTap* _ppTap;
   PulseProcTzxTurbo _ppTzxTurbo;
+  PulseProcTzxPureTone _ppTzxPureTone;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);
@@ -20,7 +22,7 @@ private:
     
   int32_t doStandardSpeedData(InputStream *is, PulseProc **top);
   int32_t doTurboSpeedData(InputStream *is, PulseProc **top);
-  int32_t doPureTone(InputStream *is);
+  int32_t doPureTone(InputStream *is, PulseProc **top);
   int32_t doSequence(InputStream *is);
   int32_t doPureData(InputStream *is);
   int32_t doDirectRecording(InputStream *is);
@@ -50,7 +52,8 @@ public:
     PulseProcTap* ppTap,
     PulseProcStdHeader* header,
     PulseProcStdByteStream* data,
-    PulseProcTone* end,
+    PulseProcTone* ppTone1,
+    PulseProcTone* ppTone2,
     PulseProcPauseMillis* pause
   );
   

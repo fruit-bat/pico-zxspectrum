@@ -26,6 +26,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxGlue.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxIndex.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcPauseMillis.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureTone.cpp
 
  
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp

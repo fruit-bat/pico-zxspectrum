@@ -5,10 +5,11 @@ PulseProcTzx::PulseProcTzx(
   PulseProcTap* ppTap,
   PulseProcStdHeader* header,
   PulseProcStdByteStream* data,
-  PulseProcTone* end,
+  PulseProcTone* ppTone1,
+  PulseProcTone* ppTone2,
   PulseProcPauseMillis* pause
 ) :
-  _pptBlock(ppTap, header, data, end, pause),
+  _pptBlock(ppTap, header, data, ppTone1, ppTone2, pause),
   _tsPerMs(0)
 {}
   

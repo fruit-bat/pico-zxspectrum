@@ -23,7 +23,8 @@ public:
     PulseProcTap* ppTap,
     PulseProcStdHeader* header,
     PulseProcStdByteStream* data,
-    PulseProcTone* end,
+    PulseProcTone* ppTone1,
+    PulseProcTone* ppTone2,
     PulseProcPauseMillis* pause
   );
   

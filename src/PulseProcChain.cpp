@@ -12,7 +12,7 @@ PulseProcChain::PulseProcChain() :
   _ppStdHeader(&_ppTone1),
   _ppPause(),
   _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppTone2, &_ppPause),
-  _ppTzx(&_ppTap, &_ppStdHeader, &_ppStdByteStream, &_ppTone2, &_ppPause)
+  _ppTzx(&_ppTap, &_ppStdHeader, &_ppStdByteStream, &_ppTone1, &_ppTone2, &_ppPause)
 {
 }
 

@@ -4,13 +4,15 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   PulseProcTap* ppTap,
   PulseProcStdHeader* header,
   PulseProcStdByteStream* data,
-  PulseProcTone* end,
+  PulseProcTone* ppTone1,
+  PulseProcTone* ppTone2,
   PulseProcPauseMillis* pause  
 ) :
   _bi(0),
   _i(0),
   _ppTap(ppTap),
-  _ppTzxTurbo(header, data, end, pause),
+  _ppTzxTurbo(header, data, ppTone2, pause),
+  _ppTzxPureTone(ppTone1),
   _tsPerMs(3555)
 {}
   
@@ -75,8 +77,10 @@ int32_t PulseProcTzxBlock::doTurboSpeedData(InputStream *is, PulseProc **top) {
  * 0x00	-	WORD	Length of one pulse in T-states
  * 0x02	-	WORD	Number of pulses
  */
-int32_t PulseProcTzxBlock::doPureTone(InputStream *is) {
-  return skipOnly(is, 4);
+int32_t PulseProcTzxBlock::doPureTone(InputStream *is, PulseProc **top) {
+  _ppTzxPureTone.init(this);
+  *top = _ppTap;
+  return PP_CONTINUE;
 }
 
 /** ID 13 - Pulse sequence
@@ -308,7 +312,7 @@ int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top)
     // ID 11 - Turbo speed data block
     case 0x11: return doTurboSpeedData(is, top); 
     // ID 12 - Pure tone
-    case 0x12: return doPureTone(is); 
+    case 0x12: return doPureTone(is, top); 
     // ID 13 - Sequence of pulses of various lengths
     case 0x13: return doSequence(is); 
     // ID 14 - Pure data block
