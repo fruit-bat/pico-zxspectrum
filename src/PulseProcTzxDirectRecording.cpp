@@ -41,7 +41,7 @@ int32_t __not_in_flash_func(PulseProcTzxDirectRecording::advance)(
 ) {
   DBG_PULSE("PulseProcTzxDirectRecording: \n");
   
-  const int8_t l[] = { //TODO
+  const int8_t l[] = {
     2, // 0. WORD	Number of T-states per sample (bit of data)
     2, // 1. WORD	Pause after this block in milliseconds (ms.)
     1, // 2. BYTE	Used bits (samples) in last byte of data (1-8)
