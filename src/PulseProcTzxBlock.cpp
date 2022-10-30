@@ -72,7 +72,7 @@ int32_t PulseProcTzxBlock::doStandardSpeedData(InputStream *is, PulseProc **top)
  */
 int32_t PulseProcTzxBlock::doTurboSpeedData(InputStream *is, PulseProc **top) {
   _ppTzxTurbo.init(this, _tsPerMs);
-  *top = _ppTap;
+  *top = &_ppTzxTurbo;
   return PP_CONTINUE;
 }
 
@@ -82,7 +82,7 @@ int32_t PulseProcTzxBlock::doTurboSpeedData(InputStream *is, PulseProc **top) {
  */
 int32_t PulseProcTzxBlock::doPureTone(InputStream *is, PulseProc **top) {
   _ppTzxPureTone.init(this);
-  *top = _ppTap;
+  *top = &_ppTzxPureTone;
   return PP_CONTINUE;
 }
 
@@ -92,7 +92,7 @@ int32_t PulseProcTzxBlock::doPureTone(InputStream *is, PulseProc **top) {
  */
 int32_t PulseProcTzxBlock::doSequence(InputStream *is, PulseProc **top) {
   _ppTzxPulseSequence.init(this);
-  *top = _ppTap;
+  *top = &_ppTzxPulseSequence;
   return PP_CONTINUE;
 }
 
@@ -107,7 +107,7 @@ int32_t PulseProcTzxBlock::doSequence(InputStream *is, PulseProc **top) {
  */
 int32_t PulseProcTzxBlock::doPureData(InputStream *is, PulseProc **top) {
   _ppTzxPureData.init(this, _tsPerMs);
-  *top = _ppTap;
+  *top = &_ppTzxPureData;
   return PP_CONTINUE;
 }
 

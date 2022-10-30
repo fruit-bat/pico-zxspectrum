@@ -99,8 +99,8 @@ int32_t __not_in_flash_func(PulseProcTzxTurbo::advance)(
 
     _pause->init(
       next(),
-       h[7], // 7. WORD	Pause after this block (ms.) {1000}
-       _tsPerMs
+      h[7], // 7. WORD	Pause after this block (ms.) {1000}
+      _tsPerMs
     );    
 
     *top = _header;

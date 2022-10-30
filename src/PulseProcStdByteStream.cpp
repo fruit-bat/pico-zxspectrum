@@ -38,11 +38,10 @@ int32_t __not_in_flash_func(PulseProcStdByteStream::advance)(
   _ppb->init(
     this,
     r,
-    _l == 1 ? _blb : 8,
+    --_l == 0 ? _blb : 8,
     _ts0,
     _ts1
   );
-  --_l;
   *top = _ppb;
   return PP_CONTINUE;
 }

@@ -16,7 +16,8 @@ private:
   PulseProcTzxIndex _pptIndex;
   PulseProcTzxBlock _pptBlock;
   uint32_t _tsPerMs;
-  
+  PulseProcPauseMillis _lastPause;
+
 public:
 
   PulseProcTzx(
