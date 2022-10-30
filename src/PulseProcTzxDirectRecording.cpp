@@ -57,18 +57,16 @@ int32_t __not_in_flash_func(PulseProcTzxDirectRecording::advance)(
   }
   else {
     
-    DBG_PULSE("PulseProcTzxDirectRecording: Length of ZERO bit pulse %ld\n", h[0]);
-    DBG_PULSE("PulseProcTzxDirectRecording: Length of ONE bit pulse %ld\n", h[1]);
-    DBG_PULSE("PulseProcTzxDirectRecording: Used bits in the last byte %ld\n", h[2]);
-    DBG_PULSE("PulseProcTzxDirectRecording: Pause after this block %ld\n", h[3]);
-    DBG_PULSE("PulseProcTzxDirectRecording: Length of data that follow %ld\n", h[4]);
+    DBG_PULSE("PulseProcTzxDirectRecording: Number of T-states per sample (bit of data) %ld\n", h[0]);
+    DBG_PULSE("PulseProcTzxDirectRecording: Pause after this block in milliseconds (ms.) %ld\n", h[1]);
+    DBG_PULSE("PulseProcTzxDirectRecording: Used bits (samples) in last byte of data (1-8) %ld\n", h[2]);
+    DBG_PULSE("PulseProcTzxDirectRecording: Length of samples' data %ld\n", h[3]);
 
     _data->init(
       _end,
-      h[4],  // 4. BYTE[3]	Length of data that follow
-      h[0],  // 0. WORD	Length of ZERO bit pulse {855}
-      h[4],  // 4. WORD	Length of ONE bit pulse {1710}
-      h[2]   // 2. BYTE	Used bits in the last byte
+      h[3],  // 3. BYTE[3]	Length of samples' data
+      h[0],  // 0. WORD	Number of T-states per sample (bit of data)
+      h[2]   // 2. BYTE	Used bits (samples) in last byte of data (1-8)
     );
 
     _end->init(_pause, 0, 1);

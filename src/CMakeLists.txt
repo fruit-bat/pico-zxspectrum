@@ -31,6 +31,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPulseSequence.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcBitStream.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxDirectRecording.cpp
 
   
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp

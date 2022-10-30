@@ -16,6 +16,8 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppPulseStream(ppTone1),
   _ppTzxPulseSequence(&_ppPulseStream),
   _ppTzxPureData(data, ppTone2, pause),
+  _ppBitStream(ppTone1),
+  _ppTzxDirectRecording(&_ppBitStream, ppTone2, pause),
   _tsPerMs(3555)
 {}
   
@@ -121,8 +123,9 @@ int32_t PulseProcTzxBlock::doPureData(InputStream *is, PulseProc **top) {
  * MSb is played first.
  */
 int32_t PulseProcTzxBlock::doDirectRecording(InputStream *is, PulseProc **top) {
-  const int8_t l[] = {-0x5, 3};
-  return skipSingle(is, l, 2, 1);
+  _ppTzxDirectRecording.init(this, _tsPerMs);
+  *top = &_ppTzxDirectRecording;
+  return PP_CONTINUE;
 }
 
 /** ID 18 - CSW Recording
