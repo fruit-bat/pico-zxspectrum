@@ -16,6 +16,8 @@ class PulseProcTzxBlock : public PulseProc {
 private:
   std::vector<uint32_t>* _bi;
   uint32_t _i;
+  uint32_t _loopStart;
+  uint32_t _loopCount;
   PulseProcTap* _ppTap;
   PulseProcTzxTurbo _ppTzxTurbo;
   PulseProcTzxPureTone _ppTzxPureTone;

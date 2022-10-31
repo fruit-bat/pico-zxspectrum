@@ -10,6 +10,8 @@ PulseProcTzxBlock::PulseProcTzxBlock(
 ) :
   _bi(0),
   _i(0),
+  _loopStart(0),
+  _loopCount(0),
   _ppTap(ppTap),
   _ppTzxTurbo(header, data, ppTone2, pause),
   _ppTzxPureTone(ppTone1),
@@ -30,6 +32,8 @@ void PulseProcTzxBlock::init(
   _bi = bi;
   _i = 0;
   _tsPerMs = tsPerMs;
+  _loopStart = 0;
+  _loopCount = 0;  
 }
 
 int32_t PulseProcTzxBlock::skipSingle(InputStream *is, const int8_t* l, uint32_t n, uint32_t m) {
@@ -220,13 +224,25 @@ int32_t PulseProcTzxBlock::doJump(InputStream *is, PulseProc **top) {
  * 0x00	-	WORD	Number of repetitions (greater than 1)
  */
 int32_t PulseProcTzxBlock::doLoopStart(InputStream *is, PulseProc **top) {
-  return skipOnly(is, 2);
+  const int8_t l[] = {2};
+  if (is->decodeLsbf(&_loopCount, l, 1) < 0) {
+    DBG_PULSE("PulseProcTzxBlock: failed to read loop count\n");
+    return PP_ERROR;
+  }
+  _loopStart = _i;
+  DBG_PULSE("PulseProcTzxBlock: loop count %ld ms\n", _loopCount);
+  return PP_CONTINUE;
 }
 
 /** ID 25 - Loop end
  */
 int32_t PulseProcTzxBlock::doLoopEnd(InputStream *is, PulseProc **top) {
-  return 0;
+  if (_loopCount > 0) {
+    DBG_PULSE("PulseProcTzxBlock: loop end\n");
+    --_loopCount;
+    _i = _loopStart;
+  }
+  return PP_CONTINUE;
 }
 
 /** ID 26 - Call sequence
