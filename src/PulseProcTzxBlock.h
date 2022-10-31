@@ -11,6 +11,7 @@
 #include "PulseProcTzxPureData.h"
 #include "PulseProcBitStream.h"
 #include "PulseProcTzxDirectRecording.h"
+#include "PulseProcCallStream.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -26,6 +27,7 @@ private:
   PulseProcTzxPureData _ppTzxPureData;
   PulseProcBitStream _ppBitStream;
   PulseProcTzxDirectRecording _ppTzxDirectRecording;
+  PulseProcCallStream _ppCallStream;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);

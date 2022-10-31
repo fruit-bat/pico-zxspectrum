@@ -20,6 +20,7 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppTzxPureData(data, ppTone2, pause),
   _ppBitStream(ppTone1),
   _ppTzxDirectRecording(&_ppBitStream, ppTone2, pause),
+  _ppCallStream(&_i),
   _tsPerMs(3555)
 {}
   
@@ -255,13 +256,21 @@ int32_t PulseProcTzxBlock::doLoopEnd(InputStream *is, PulseProc **top) {
  */
 int32_t PulseProcTzxBlock::doCallSequence(InputStream *is, PulseProc **top) {
   const int8_t l[] = {2};
-  return skipSingle(is, l, 1, 2);
+  uint32_t n;
+  if (is->decodeLsbf(&n, l, 1) < 0) {
+    DBG_PULSE("PulseProcTzxBlock: failed to read call sequence length\n");
+    return PP_ERROR;
+  }
+  _ppCallStream.init(this, n, is->pos());
+  *top = &_ppCallStream;
+  return PP_CONTINUE;
 }
 
 /** ID 27 - Return from sequence
  */
 int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is, PulseProc **top) {
-  return 0;
+  *top = &_ppCallStream;
+  return PP_CONTINUE;
 }
 
 /** ID 28 - Select block
