@@ -224,6 +224,10 @@ int32_t PulseProcTzxBlock::doJump(InputStream *is, PulseProc **top) {
  * 0x00	-	WORD	Number of repetitions (greater than 1)
  */
 int32_t PulseProcTzxBlock::doLoopStart(InputStream *is, PulseProc **top) {
+  if (_loopCount > 0) {
+    DBG_PULSE("PulseProcTzxBlock: don't nest loops\n");
+    return PP_ERROR;
+  }  
   const int8_t l[] = {2};
   if (is->decodeLsbf(&_loopCount, l, 1) < 0) {
     DBG_PULSE("PulseProcTzxBlock: failed to read loop count\n");
