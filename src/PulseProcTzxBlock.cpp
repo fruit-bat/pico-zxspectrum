@@ -198,7 +198,22 @@ int32_t PulseProcTzxBlock::doGroupEnd(InputStream *is, PulseProc **top) {
  * 0x00	-	WORD	Relative jump value
  */
 int32_t PulseProcTzxBlock::doJump(InputStream *is, PulseProc **top) {
-  return skipOnly(is, 2);
+  const int8_t l[] = {2};
+  uint32_t uoffset;
+  if (is->decodeLsbf(&uoffset, l, 1) < 0) {
+    DBG_PULSE("PulseProcTzxBlock: failed to read jump offset\n");
+    return PP_ERROR;
+  }
+  int16_t offset = static_cast<int16_t>(uoffset);
+  DBG_PULSE("PulseProcTzxBlock: do jump %d ms\n", offset);
+  if (offset != 0) {
+    _i += offset - 1;
+  }
+  else {
+    DBG_PULSE("PulseProcTzxBlock: invalid jump offset %d ms\n", offset);
+    return PP_ERROR;
+  }
+  return PP_CONTINUE;
 }
 
 /** ID 24 - Loop start
