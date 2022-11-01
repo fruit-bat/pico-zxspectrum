@@ -68,7 +68,7 @@ int32_t __not_in_flash_func(PulseProcTzxPureData::advance)(
       _end,
       h[4],  // 4. BYTE[3]	Length of data that follow
       h[0],  // 0. WORD	Length of ZERO bit pulse {855}
-      h[4],  // 4. WORD	Length of ONE bit pulse {1710}
+      h[1],  // 1. WORD	Length of ONE bit pulse {1710}
       h[2]   // 2. BYTE	Used bits in the last byte
     );
 
