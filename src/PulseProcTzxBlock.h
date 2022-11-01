@@ -33,6 +33,7 @@ private:
   PulseProcTzxGlue _ppTzxGlue;
   PulseProcPauseMillis* _ppPauseMillis;
   uint32_t _tsPerMs;
+  bool _is48k;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);
   int32_t skipSingle(InputStream *is, const int8_t* l, uint32_t n, uint32_t m);
@@ -78,7 +79,8 @@ public:
   void init(
     PulseProc *next,
     std::vector<uint32_t>* bi,
-    uint32_t tsPerMs
+    uint32_t tsPerMs,
+    bool is48k
   );
   
   virtual int32_t advance(

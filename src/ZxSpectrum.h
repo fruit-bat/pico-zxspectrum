@@ -42,9 +42,10 @@ private:
   ZxSpectrumType _type;
   uint32_t _modMul;
   bool _mute;
-  bool _pauseTape;
   uint32_t _buzzer;
-
+  
+  uint32_t tStatesPerMilliSecond();
+  
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
@@ -230,7 +231,7 @@ public:
         }
       }
       if (tud) _ay.step(tud);
-      _pulseChain.advance(_pauseTape ? 0 : c, &_ear);
+      _pulseChain.advance(c, &_ear);
   }
 
 #define EAR_BITS_PER_STEP 32
@@ -274,7 +275,7 @@ public:
           _ta32 -= MUL32(t, _moderate);
         }
       }
-      _pulseChain.advance(_pauseTape ? 0 : c, &_ear);
+      _pulseChain.advance(c, &_ear);
   }
 
   void interrupt();
@@ -293,9 +294,9 @@ public:
   void saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
   void loadTzx(InputStream *inputStream);
-  bool tapePaused() { return _pauseTape; }
-  void pauseTape(bool pause) { _pauseTape = pause; }
-  void togglePauseTape() { _pauseTape = !_pauseTape; }
+  bool tapePaused();
+  void pauseTape(bool pause);
+  void togglePauseTape();
   ZxSpectrumJoystick *joystick() { return _joystick; }
   ZxSpectrumKeyboard *keyboard1() { return _keyboard1; }
   ZxSpectrumKeyboard *keyboard2() { return _keyboard2; }

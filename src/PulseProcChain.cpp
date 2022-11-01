@@ -33,8 +33,15 @@ void PulseProcChain::init(InputStream *is, PulseProc* top) {
 }
 
 void PulseProcChain::pause(bool pause) {
-  if (_state >= 0) {
-    _state = PP_PAUSE; 
+  if (pause) {
+    if (_state >= PP_CONTINUE) {
+      _state = PP_PAUSE; 
+    }
+  }
+  else {
+    if (_state == PP_PAUSE) {
+      _state = PP_CONTINUE; 
+    }
   }
 }
 
@@ -75,11 +82,12 @@ void PulseProcChain::loadTap(
 
 void PulseProcChain::loadTzx(
   InputStream *is,
-  uint32_t tsPerMs
+  uint32_t tsPerMs,
+  bool is48k
 ) {
   DBG_PULSE("PulseProcChain::loadTzx Partially implemented \n");
   if (is) {
-    _ppTzx.init(0, tsPerMs);
+    _ppTzx.init(0, tsPerMs, is48k);
     init(is, &_ppTzx);
   }
   else {

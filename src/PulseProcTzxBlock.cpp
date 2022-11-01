@@ -29,14 +29,16 @@ PulseProcTzxBlock::PulseProcTzxBlock(
 void PulseProcTzxBlock::init(
     PulseProc *nxt,
     std::vector<uint32_t>* bi,
-    uint32_t tsPerMs
+    uint32_t tsPerMs,
+    bool is48k
 ) {
   next(nxt);
   _bi = bi;
   _i = 0;
   _tsPerMs = tsPerMs;
   _loopStart = 0;
-  _loopCount = 0;  
+  _loopCount = 0;
+  _is48k = is48k;
 }
 
 int32_t PulseProcTzxBlock::skipSingle(InputStream *is, const int8_t* l, uint32_t n, uint32_t m) {
@@ -305,7 +307,13 @@ int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is, PulseProc **top) {
  * 0x00	0	DWORD	Length of the block without these four bytes (0)
  */
 int32_t PulseProcTzxBlock::doStopTheTape48k(InputStream *is, PulseProc **top) {
-  return skipOnly(is, 4);
+  if (_is48k) {
+    DBG_PULSE("PulseProcTzxBlock: pausing the tape for 48k Spectrum\n");
+    return PP_PAUSE;
+  }
+  else {
+    return PP_CONTINUE;
+  }
 }
 
 /** ID 2B - Set signal level

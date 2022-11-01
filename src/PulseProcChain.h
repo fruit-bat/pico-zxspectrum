@@ -46,7 +46,8 @@ public:
     
   void loadTzx(
     InputStream *is,
-    uint32_t tsPerMs
+    uint32_t tsPerMs,
+    bool is48k
   );
   
   void pause(bool pause);

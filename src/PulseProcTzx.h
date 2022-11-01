@@ -17,6 +17,7 @@ private:
   PulseProcTzxBlock _pptBlock;
   uint32_t _tsPerMs;
   PulseProcPauseMillis _lastPause;
+  bool _is48k;
 
 public:
 
@@ -31,7 +32,8 @@ public:
   
   void init(
     PulseProc *next,
-    uint32_t tsPerMs
+    uint32_t tsPerMs,
+    bool is48k
   );
   
   virtual int32_t advance(

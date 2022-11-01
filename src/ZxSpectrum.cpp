@@ -693,10 +693,31 @@ void ZxSpectrum::saveZ80(OutputStream *os) {
   writeZ80(os, 3);
 }
 
+uint32_t ZxSpectrum::tStatesPerMilliSecond() {
+  return _moderate > 0 ? (32000 / _moderate) : 4000;
+}
+
 void ZxSpectrum::loadTap(InputStream *inputStream) {
-  _pulseChain.loadTap(inputStream, 3555); // TODO adjust with CPU speed
+  _pulseChain.loadTap(inputStream, tStatesPerMilliSecond());
 }
 
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
-  _pulseChain.loadTzx(inputStream, 3555); // TODO adjust with CPU speed
+  _pulseChain.loadTzx(
+    inputStream,
+    tStatesPerMilliSecond(),
+    _type == ZxSpectrum48k
+  ); 
 }
+
+void ZxSpectrum::pauseTape(bool pause) {
+  _pulseChain.pause(pause);
+}
+
+void ZxSpectrum::togglePauseTape() {
+  _pulseChain.pause(!_pulseChain.paused());
+}
+
+bool ZxSpectrum::tapePaused() {
+  return _pulseChain.paused();
+}
+
