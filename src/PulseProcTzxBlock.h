@@ -13,6 +13,7 @@
 #include "PulseProcTzxDirectRecording.h"
 #include "PulseProcCallStream.h"
 #include "PulseProcTzxGlue.h"
+#include "PulseProcPauseMillis.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -30,6 +31,7 @@ private:
   PulseProcTzxDirectRecording _ppTzxDirectRecording;
   PulseProcCallStream _ppCallStream;
   PulseProcTzxGlue _ppTzxGlue;
+  PulseProcPauseMillis* _ppPauseMillis;
   uint32_t _tsPerMs;
 
   int32_t doBlock(InputStream *is, int32_t bt, PulseProc **top);

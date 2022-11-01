@@ -49,4 +49,7 @@ public:
     uint32_t tsPerMs
   );
   
+  void pause(bool pause);
+  
+  inline bool paused() { return _state == PP_PAUSE; }
 };

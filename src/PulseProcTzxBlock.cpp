@@ -6,21 +6,23 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   PulseProcStdByteStream* data,
   PulseProcTone* ppTone1,
   PulseProcTone* ppTone2,
-  PulseProcPauseMillis* pause  
+  PulseProcPauseMillis* ppPauseMillis  
 ) :
   _bi(0),
   _i(0),
   _loopStart(0),
   _loopCount(0),
   _ppTap(ppTap),
-  _ppTzxTurbo(header, data, ppTone2, pause),
+  _ppTzxTurbo(header, data, ppTone2, ppPauseMillis),
   _ppTzxPureTone(ppTone1),
   _ppPulseStream(ppTone1),
   _ppTzxPulseSequence(&_ppPulseStream),
-  _ppTzxPureData(data, ppTone2, pause),
+  _ppTzxPureData(data, ppTone2, ppPauseMillis),
   _ppBitStream(ppTone1),
-  _ppTzxDirectRecording(&_ppBitStream, ppTone2, pause),
+  _ppTzxDirectRecording(&_ppBitStream, ppTone2, ppPauseMillis),
   _ppCallStream(&_i),
+  _ppTzxGlue(),
+  _ppPauseMillis(ppPauseMillis),
   _tsPerMs(3555)
 {}
   
@@ -181,7 +183,22 @@ int32_t PulseProcTzxBlock::doGeneralizedData(InputStream *is, PulseProc **top) {
  * 0x00	-	WORD	Pause duration (ms.)
  */
 int32_t PulseProcTzxBlock::doPause(InputStream *is, PulseProc **top) {
-  return skipOnly(is, 2);
+  const int8_t l[] = {2};
+  uint32_t delay;
+  if (is->decodeLsbf(&delay, l, 1) < 0) {
+    DBG_PULSE("PulseProcTzxBlock: failed to read pause delay\n");
+    return PP_ERROR;
+  }
+  DBG_PULSE("PulseProcTzxBlock: pause delay %ld ms\n", delay);
+  if (delay == 0) {
+    DBG_PULSE("PulseProcTzxBlock: pausing the tape\n");
+    return PP_PAUSE;
+  }
+  else {
+    _ppPauseMillis->init(this, delay, _tsPerMs);
+    *top = _ppPauseMillis;
+    return PP_CONTINUE;
+  }
 }
 
 /** ID 21 - Group start

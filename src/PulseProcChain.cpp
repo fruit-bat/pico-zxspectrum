@@ -32,6 +32,12 @@ void PulseProcChain::init(InputStream *is, PulseProc* top) {
   _acc = 0;
 }
 
+void PulseProcChain::pause(bool pause) {
+  if (_state >= 0) {
+    _state = PP_PAUSE; 
+  }
+}
+
 void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate) {
   if (_state < 0) return;
   _acc += tstates;
@@ -47,9 +53,8 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
       }
     }
   }
-  if (_state < 0) {
+  if (_state < 0 && _state != PP_PAUSE) {
     DBG_PULSE("PulseProcChain: closing input stream \n");
-    // TODO Think about PAUSE state
     if (_is) _is->close();
   }
 }
