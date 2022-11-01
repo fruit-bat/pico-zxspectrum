@@ -279,6 +279,7 @@ int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is, PulseProc **top
  * 0x03	-	SELECT[N]	List of selections
  */
 int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is, PulseProc **top) {
+  DBG_PULSE("PulseProcTzxBlock: ID 28 - Select block NOT IMPLEMENTED!\n");
   const int8_t l[] = {2};
   return skipSingle(is, l, 1, 1);
 }
@@ -351,7 +352,9 @@ int32_t PulseProcTzxBlock::doCustomInfo(InputStream *is, PulseProc **top) {
  *        Just do these 9 bytes and you will end up on the next ID.
  */
 int32_t PulseProcTzxBlock::doGlue(InputStream *is, PulseProc **top) {
-  return skipOnly(is, 9);
+  _ppTzxGlue.init(this);
+  *top = &_ppTzxGlue;
+  return PP_CONTINUE;
 }
 
 
