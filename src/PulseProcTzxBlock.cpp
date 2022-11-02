@@ -452,11 +452,15 @@ int32_t PulseProcTzxBlock::advance(
   if (_i < _bi->size()) {
     DBG_PULSE("PulseProcTzxBlock: seek to block %ld\n", _i);
     uint32_t p = _bi->at(_i++);
-    int32_t r = is->seek(p);
-    if (r < 0) {
-      DBG_PULSE("PulseProcTzxBlock: failed to seek to block\n");
-      return PP_ERROR;
-    }    
+    int32_t r;
+    uint32_t a = is->pos();
+    if (a != p) {
+      r = is->seek(p);
+      if (r < 0) {
+        DBG_PULSE("PulseProcTzxBlock: failed to seek to block\n");
+        return PP_ERROR;
+      }
+    }
     int32_t bt = is->readByte();
     DBG_PULSE("PulseProcTzxBlock: Read block type %02lX\n", bt);
     if (bt < 0) {
