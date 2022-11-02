@@ -4,12 +4,10 @@
 PulseProcTzxTurbo::PulseProcTzxTurbo(
   PulseProcStdHeader* header,
   PulseProcStdByteStream* data,
-  PulseProcTone* end,
   PulseProcPauseMillis* pause
 ) : 
   _header(header),
   _data(data),
-  _end(end),
   _pause(pause)
 {
 }
@@ -88,14 +86,12 @@ int32_t __not_in_flash_func(PulseProcTzxTurbo::advance)(
     );
 
     _data->init(
-      _end,
+      _pause,
       h[8],  // 8. BYTE[3]	Length of data that follow
       h[3],  // 3. WORD	Length of ZERO bit pulse {855}
       h[4],  // 4. WORD	Length of ONE bit pulse {1710}
       h[6]   // 6. BYTE	Used bits in the last byte
     );
-
-    _end->init(_pause, 0, 1);
 
     _pause->init(
       next(),

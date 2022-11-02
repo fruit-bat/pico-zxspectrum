@@ -13,7 +13,6 @@ private:
 
   PulseProcStdHeader* _header;
   PulseProcStdByteStream* _data;
-  PulseProcTone* _end;
   PulseProcPauseMillis* _pause;
   uint32_t _tsPerMs;
 
@@ -22,7 +21,6 @@ public:
   PulseProcTzxTurbo(
     PulseProcStdHeader* header,
     PulseProcStdByteStream* data,
-    PulseProcTone* end,
     PulseProcPauseMillis* pause
   );
   

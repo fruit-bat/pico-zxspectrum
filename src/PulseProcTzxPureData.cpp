@@ -3,11 +3,9 @@
 
 PulseProcTzxPureData::PulseProcTzxPureData(
   PulseProcStdByteStream* data,
-  PulseProcTone* end,
   PulseProcPauseMillis* pause
 ) : 
   _data(data),
-  _end(end),
   _pause(pause)
 {
 }
@@ -65,14 +63,12 @@ int32_t __not_in_flash_func(PulseProcTzxPureData::advance)(
     DBG_PULSE("PulseProcTzxPureData: Length of data that follow %ld\n", h[4]);
 
     _data->init(
-      _end,
+      _pause,
       h[4],  // 4. BYTE[3]	Length of data that follow
       h[0],  // 0. WORD	Length of ZERO bit pulse {855}
       h[1],  // 1. WORD	Length of ONE bit pulse {1710}
       h[2]   // 2. BYTE	Used bits in the last byte
     );
-
-    _end->init(_pause, 0, 1);
 
     _pause->init(
       next(),

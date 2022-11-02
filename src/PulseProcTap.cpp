@@ -5,13 +5,11 @@ PulseProcTap::PulseProcTap(
   PulseProcStdHeader* header,
   PulseProcStdByte* byte,
   PulseProcStdByteStream* data,
-  PulseProcTone* end,
   PulseProcPauseMillis* pause
 ) : 
   _header(header),
   _byte(byte),
   _data(data),
-  _end(end),
   _pause(pause),
   _pauseMillis(1000),
   _tsPerMs(3555)
@@ -57,8 +55,7 @@ int32_t __not_in_flash_func(PulseProcTap::advance)(
     }
     _header->init(_byte, m ? 3223 : 8063);
     _byte->init(_data, m);
-    _data->init(_end, l - 1);
-    _end->init(_pause, 0, 1);
+    _data->init(_pause, l - 1);
     _pause->init(next(), _pauseMillis, _tsPerMs);    
     *top = _header;
     return PP_CONTINUE;

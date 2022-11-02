@@ -14,7 +14,6 @@ private:
   PulseProcStdHeader* _header;
   PulseProcStdByte* _byte;
   PulseProcStdByteStream* _data;
-  PulseProcTone* _end;
   PulseProcPauseMillis* _pause;
   uint32_t _pauseMillis;
   uint32_t _tsPerMs;
@@ -25,7 +24,6 @@ public:
     PulseProcStdHeader* header,
     PulseProcStdByte* byte,
     PulseProcStdByteStream* data,
-    PulseProcTone* end,
     PulseProcPauseMillis* pause
   );
   

@@ -12,7 +12,6 @@ class PulseProcTzxPureData : public PulseProc {
 private:
 
   PulseProcStdByteStream* _data;
-  PulseProcTone* _end;
   PulseProcPauseMillis* _pause;
   uint32_t _tsPerMs;
 
@@ -20,7 +19,6 @@ public:
 
   PulseProcTzxPureData(
     PulseProcStdByteStream* data,
-    PulseProcTone* end,
     PulseProcPauseMillis* pause
   );
   

@@ -5,8 +5,9 @@ int32_t __not_in_flash_func(PulseProcTone::advance)(
   bool *pstate,
   PulseProc **top
 ) {
-  if (_n == 0) return PP_COMPLETE;
-  _n--;
-  *pstate = !*pstate;
+  if (_i++) {
+    *pstate = !*pstate;
+    if (_i > _n) return PP_COMPLETE;
+  }
   return _l;
 }
