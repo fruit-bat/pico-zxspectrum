@@ -27,7 +27,16 @@ int32_t __not_in_flash_func(PulseProcBitStream::advance)(
     if (r < 0) return PP_ERROR;
     _b = r | (1 << (--_l ? 8 : 16 - _blb));
   }
-  *pstate = (((_b >> 7) & 1) == 1);
-  _b <<= 1;
-  return _tspb;
+  
+  bool s = (((_b >> 7) & 1) == 1);
+  
+  *pstate = s;
+  
+  uint32_t d = 0;
+  do {
+    _b <<= 1;
+    d +=_tspb;
+  } while (!(_b & 0x10000) && (s == (((_b >> 7) & 1) == 1)));
+  
+  return d;
 }
