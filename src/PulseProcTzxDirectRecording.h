@@ -10,7 +10,6 @@ class PulseProcTzxDirectRecording : public PulseProc {
 private:
 
   PulseProcBitStream* _data;
-  PulseProcTone* _end;
   PulseProcPauseMillis* _pause;
   uint32_t _tsPerMs;
 
@@ -18,7 +17,6 @@ public:
 
   PulseProcTzxDirectRecording(
     PulseProcBitStream* data,
-    PulseProcTone* end,
     PulseProcPauseMillis* pause
   );
   

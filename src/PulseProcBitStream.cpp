@@ -1,7 +1,6 @@
 #include "PulseProcBitStream.h"
 
-PulseProcBitStream::PulseProcBitStream(PulseProcTone* ppTone) :
-  _ppTone(ppTone),
+PulseProcBitStream::PulseProcBitStream() :
   _l(0)
 {}
 
@@ -26,10 +25,9 @@ int32_t __not_in_flash_func(PulseProcBitStream::advance)(
   if (_b & 0x10000) {
     int32_t r = is->readByte();
     if (r < 0) return PP_ERROR;
-    _b = r | (1 << (_l == 1 ? (16 - _blb) : 8));
+    _b = r | (1 << (--_l ? 8 : 16 - _blb));
   }
-  *pstate = (_b >> 7) & 1;
-  *top = _ppTone;
+  *pstate = (((_b >> 7) & 1) == 1);
   _b <<= 1;
   return _tspb;
 }

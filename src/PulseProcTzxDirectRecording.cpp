@@ -3,11 +3,9 @@
 
 PulseProcTzxDirectRecording::PulseProcTzxDirectRecording(
   PulseProcBitStream* data,
-  PulseProcTone* end,
   PulseProcPauseMillis* pause
 ) : 
   _data(data),
-  _end(end),
   _pause(pause)
 {
 }
@@ -48,8 +46,8 @@ int32_t __not_in_flash_func(PulseProcTzxDirectRecording::advance)(
     3  // 3. BYTE[3]	Length of samples' data
   };
   
-  uint32_t h[5];
-  int32_t r = is->decodeLsbf(h, l, 5);
+  uint32_t h[4];
+  int32_t r = is->decodeLsbf(h, l, 4);
   
   if (r < 0) {
     DBG_PULSE("PulseProcTzxDirectRecording: Error (%ld) reading pure data header\n", r);
@@ -63,17 +61,15 @@ int32_t __not_in_flash_func(PulseProcTzxDirectRecording::advance)(
     DBG_PULSE("PulseProcTzxDirectRecording: Length of samples' data %ld\n", h[3]);
 
     _data->init(
-      _end,
+      _pause,
       h[3],  // 3. BYTE[3]	Length of samples' data
       h[0],  // 0. WORD	Number of T-states per sample (bit of data)
       h[2]   // 2. BYTE	Used bits (samples) in last byte of data (1-8)
     );
 
-    _end->init(_pause, 0, 1);
-
     _pause->init(
       next(),
-       h[3], // 3. WORD	Pause after this block (ms.) {1000}
+       h[1], // 1. WORD	Pause after this block in milliseconds (ms.)
        _tsPerMs
     );    
 

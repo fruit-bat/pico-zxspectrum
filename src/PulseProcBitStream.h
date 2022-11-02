@@ -7,7 +7,6 @@
 class PulseProcBitStream : public PulseProc {
 private:
 
-  PulseProcTone* _ppTone;
   uint32_t _l;
   uint32_t _tspb;
   uint32_t _blb;
@@ -15,7 +14,7 @@ private:
 
 public:
 
-  PulseProcBitStream(PulseProcTone* ppTone);
+  PulseProcBitStream();
   
   void init(
     PulseProc *next,
