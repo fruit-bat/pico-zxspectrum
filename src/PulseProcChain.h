@@ -19,7 +19,6 @@ private:
   uint32_t _acc;
   
   PulseProcTone _ppTone1;
-  PulseProcTone _ppTone2;
   PulseProcStdByte _ppStdByte;
   PulseProcStdByteStream _ppStdByteStream;
   PulseProcStdHeader _ppStdHeader;

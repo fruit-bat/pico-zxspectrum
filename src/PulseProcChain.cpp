@@ -6,13 +6,12 @@ PulseProcChain::PulseProcChain() :
   _state(PP_COMPLETE),
   _acc(0),
   _ppTone1(),
-  _ppTone2(),
   _ppStdByte(&_ppTone1),
   _ppStdByteStream(&_ppStdByte),
   _ppStdHeader(&_ppTone1),
   _ppPause(),
   _ppTap(&_ppStdHeader, &_ppStdByte, &_ppStdByteStream, &_ppPause),
-  _ppTzx(&_ppTap, &_ppStdHeader, &_ppStdByteStream, &_ppTone1, &_ppTone2, &_ppPause)
+  _ppTzx(&_ppTap, &_ppStdHeader, &_ppStdByteStream, &_ppTone1, &_ppPause)
 {
 }
 

@@ -26,7 +26,6 @@ public:
     PulseProcStdHeader* header,
     PulseProcStdByteStream* data,
     PulseProcTone* ppTone1,
-    PulseProcTone* ppTone2,
     PulseProcPauseMillis* pause
   );
   

@@ -5,7 +5,6 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   PulseProcStdHeader* header,
   PulseProcStdByteStream* data,
   PulseProcTone* ppTone1,
-  PulseProcTone* ppTone2,
   PulseProcPauseMillis* ppPauseMillis  
 ) :
   _bi(0),
