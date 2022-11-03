@@ -2,10 +2,8 @@
 
 #include <pico/stdlib.h>
 #include "PulseProc.h"
-#include "PulseProcTone.h"
 #include "PulseProcStdHeader.h"
 #include "PulseProcStdByteStream.h"
-#include "PulseProcStdByte.h"
 #include "PulseProcPauseMillis.h"
 
 class PulseProcTzxTurbo : public PulseProc {
