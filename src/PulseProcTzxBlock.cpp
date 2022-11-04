@@ -22,6 +22,7 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppCallStream(&_i),
   _ppTzxGlue(),
   _ppPauseMillis(ppPauseMillis),
+  _ppTzxGenData(ppPauseMillis),
   _tsPerMs(3555)
 {}
   
@@ -176,8 +177,9 @@ int32_t PulseProcTzxBlock::doCswRecording(InputStream *is, PulseProc **top) {
  * This field is present only if TOTD>0
  */
 int32_t PulseProcTzxBlock::doGeneralizedData(InputStream *is, PulseProc **top) {
-  const int8_t l[] = {4};
-  return skipSingle(is, l, 1, 1);
+  _ppTzxGenData.init(this, _tsPerMs);
+  *top = &_ppTzxGenData;
+  return PP_CONTINUE;
 }
 
 /** ID 20 - Pause (silence) or 'Stop the Tape' command

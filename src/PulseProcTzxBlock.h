@@ -14,6 +14,7 @@
 #include "PulseProcCallStream.h"
 #include "PulseProcTzxGlue.h"
 #include "PulseProcPauseMillis.h"
+#include "PulseProcTzxGenData.h"
 
 class PulseProcTzxBlock : public PulseProc {
 private:
@@ -32,6 +33,7 @@ private:
   PulseProcCallStream _ppCallStream;
   PulseProcTzxGlue _ppTzxGlue;
   PulseProcPauseMillis* _ppPauseMillis;
+  PulseProcTzxGenData _ppTzxGenData;
   uint32_t _tsPerMs;
   bool _is48k;
 
