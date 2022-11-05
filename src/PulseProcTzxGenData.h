@@ -3,13 +3,21 @@
 #include <pico/stdlib.h>
 #include "PulseProc.h"
 #include "PulseProcPauseMillis.h"
-#include "PulseProcSymbols.h"
+#include "PulseProcSymdefs.h"
+#include "PulseProcRleSym.h"
+#include "PulseProcSymbol.h"
+#include <vector>
 
 class PulseProcTzxGenData : public PulseProc {
 private:
 
+  std::vector<uint16_t> _sd;
   PulseProcPauseMillis* _pause;
-  PulseProcSymbols _symbols;
+  PulseProcSymdefs _symdefsPilot;
+  PulseProcSymbol _symbolPilot;
+  PulseProcRleSym _ppRle;
+  PulseProcSymdefs _symdefsData;
+  PulseProcSymbol _symbolData;
   uint32_t _tsPerMs;
 
 public:
@@ -23,7 +31,7 @@ public:
     uint32_t tsPerMs
   );
   
-  virtual int32_t __not_in_flash_func(advance)(
+  virtual int32_t advance(
     InputStream *is,
     bool *pstate,
     PulseProc **top

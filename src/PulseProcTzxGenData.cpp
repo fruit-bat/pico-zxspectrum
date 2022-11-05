@@ -4,7 +4,13 @@
 PulseProcTzxGenData::PulseProcTzxGenData(
   PulseProcPauseMillis* pause
 ) : 
-  _pause(pause)
+  _sd(10),
+  _pause(pause),
+  _symdefsPilot(&_sd),
+  _symbolPilot(&_symdefsPilot),
+  _ppRle(&_symbolPilot),
+  _symdefsData(&_sd),
+  _symbolData(&_symdefsData)
 {
 }
 
@@ -45,7 +51,7 @@ void PulseProcTzxGenData::init(
  * (2*NPD+1)*ASD	-	BYTE[DS]	Data stream
  * This field is present only if TOTD>0
 */
-int32_t __not_in_flash_func(PulseProcTzxGenData::advance)(
+int32_t PulseProcTzxGenData::advance(
   InputStream *is,
   bool *pstate,
   PulseProc **top
@@ -80,11 +86,24 @@ int32_t __not_in_flash_func(PulseProcTzxGenData::advance)(
   DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per data symbol %ld\n", h[6]);
   DBG_PULSE("PulseProcTzxGenData: Number of data symbols in the alphabet table %ld\n", h[7]);
   
-  _symbols.read(
-    is, 
+  _symdefsPilot.init(
+    &_ppRle,
     h[3], // 3. NPP	BYTE	Maximum number of pulses per pilot/sync symbol
     h[4]  // 4. ASP	BYTE	Number of pilot/sync symbols in the alphabet table (0=256)
   );
+  
+  _ppRle.init(
+    &_symdefsData,
+    h[2]  // 2. TOTP	DWORD	Total number of symbols in pilot/sync block (can be 0)
+  );
+  
+  _symdefsData.init(
+    _pause,
+    h[6], // 6. NPD	BYTE	Maximum number of pulses per data symbol
+    h[7]  // 7. ASD	BYTE	Number of data symbols in the alphabet table (0=256)
+  );
+  
+  // TODO Decode the data block
 
   _pause->init(
     next(),
@@ -92,6 +111,6 @@ int32_t __not_in_flash_func(PulseProcTzxGenData::advance)(
      _tsPerMs
   );    
 
-  *top = _pause;
+  *top = &_symdefsPilot;
   return PP_CONTINUE;
 }
