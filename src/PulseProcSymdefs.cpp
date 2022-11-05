@@ -14,7 +14,7 @@ void PulseProcSymdefs::init(
 ) {
   next(nxt);
   _np = np;
-  _as = as;
+  _as = as == 0 ? 256 : as;
 }
 
 int32_t PulseProcSymdefs::advance(

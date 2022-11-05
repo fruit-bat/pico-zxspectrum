@@ -10,7 +10,8 @@ PulseProcTzxGenData::PulseProcTzxGenData(
   _symbolPilot(&_symdefsPilot),
   _ppRle(&_symbolPilot),
   _symdefsData(&_sd),
-  _symbolData(&_symdefsData)
+  _symbolData(&_symdefsData),
+  _ppSymData(&_symbolData)
 {
 }
 
@@ -85,32 +86,59 @@ int32_t PulseProcTzxGenData::advance(
   DBG_PULSE("PulseProcTzxGenData: Total number of symbols in data stream %ld\n", h[5]);
   DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per data symbol %ld\n", h[6]);
   DBG_PULSE("PulseProcTzxGenData: Number of data symbols in the alphabet table %ld\n", h[7]);
-  
-  _symdefsPilot.init(
-    &_ppRle,
-    h[3], // 3. NPP	BYTE	Maximum number of pulses per pilot/sync symbol
-    h[4]  // 4. ASP	BYTE	Number of pilot/sync symbols in the alphabet table (0=256)
-  );
-  
-  _ppRle.init(
-    &_symdefsData,
-    h[2]  // 2. TOTP	DWORD	Total number of symbols in pilot/sync block (can be 0)
-  );
-  
-  _symdefsData.init(
-    _pause,
-    h[6], // 6. NPD	BYTE	Maximum number of pulses per data symbol
-    h[7]  // 7. ASD	BYTE	Number of data symbols in the alphabet table (0=256)
-  );
-  
-  // TODO Decode the data block
 
+    
+  bool hasPilot = h[2] > 0;
+  bool hasData = h[5] > 0;
+  
+  uint32_t bps = calcBps(h[7]);
+  DBG_PULSE("PulseProcTzxGenData: Calculated %ld bits required for %ld symbols\n", bps, h[7]);
+  if (hasData && h[7] < 2) {
+    DBG_PULSE("PulseProcTzxGenData: Error not enough data symbol definitions %ld\n", h[7]);
+    return PP_ERROR;
+  }
+
+  if (hasPilot) {
+    _symdefsPilot.init(
+      &_ppRle,
+      h[3], // 3. NPP	BYTE	Maximum number of pulses per pilot/sync symbol
+      h[4]  // 4. ASP	BYTE	Number of pilot/sync symbols in the alphabet table (0=256)
+    );
+    
+    _ppRle.init(
+      hasData ? (PulseProc*)&_symdefsData : (PulseProc*)_pause,
+      h[2]  // 2. TOTP	DWORD	Total number of symbols in pilot/sync block (can be 0)
+    );
+  }
+  
+  if (hasData) {
+    _symdefsData.init(
+      &_ppSymData,
+      h[6], // 6. NPD	BYTE	Maximum number of pulses per data symbol
+      h[7]  // 7. ASD	BYTE	Number of data symbols in the alphabet table (0=256)
+    );
+    
+    _ppSymData.init(
+      _pause,
+      h[5],  // 5, TOTD	DWORD	Total number of symbols in data stream (can be 0)
+      bps
+    );
+  }
+        
   _pause->init(
     next(),
-     h[1], // 1.      WORD	Pause after this block (ms)
+     h[1],   // 1. WORD	Pause after this block (ms)
      _tsPerMs
   );    
 
-  *top = &_symdefsPilot;
+  *top = hasPilot ? (PulseProc*)&_symdefsPilot : hasData ? (PulseProc*)&_symdefsData : (PulseProc*)_pause;
   return PP_CONTINUE;
+}
+
+uint32_t PulseProcTzxGenData::calcBps(uint32_t ns) {
+  if (ns == 0) return 8;
+  for (uint32_t i = 0; i < 8; ++i) {
+    if (ns <= (1UL << i)) return i;
+  }
+  return 8;
 }

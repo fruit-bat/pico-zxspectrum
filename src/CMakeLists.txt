@@ -37,8 +37,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymdefs.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcRleSym.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymbol.cpp
-
-
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymbolData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp

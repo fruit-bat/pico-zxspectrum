@@ -6,6 +6,7 @@
 #include "PulseProcSymdefs.h"
 #include "PulseProcRleSym.h"
 #include "PulseProcSymbol.h"
+#include "PulseProcSymbolData.h"
 #include <vector>
 
 class PulseProcTzxGenData : public PulseProc {
@@ -18,7 +19,10 @@ private:
   PulseProcRleSym _ppRle;
   PulseProcSymdefs _symdefsData;
   PulseProcSymbol _symbolData;
+  PulseProcSymbolData _ppSymData;
   uint32_t _tsPerMs;
+
+  uint32_t calcBps(uint32_t ns);
 
 public:
 
