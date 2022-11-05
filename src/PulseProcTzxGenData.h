@@ -3,11 +3,13 @@
 #include <pico/stdlib.h>
 #include "PulseProc.h"
 #include "PulseProcPauseMillis.h"
+#include "PulseProcSymbols.h"
 
 class PulseProcTzxGenData : public PulseProc {
 private:
 
   PulseProcPauseMillis* _pause;
+  PulseProcSymbols _symbols;
   uint32_t _tsPerMs;
 
 public:

@@ -70,25 +70,28 @@ int32_t __not_in_flash_func(PulseProcTzxGenData::advance)(
     DBG_PULSE("PulseProcTzxGenData: Error (%ld) reading pure data header\n", r);
     return PP_ERROR;
   }
-  else {
     
-    DBG_PULSE("PulseProcTzxGenData: Block length (without these four bytes) %ld\n", h[0]);
-    DBG_PULSE("PulseProcTzxGenData: Pause after this block (ms) %ld\n", h[1]);
-    DBG_PULSE("PulseProcTzxGenData: Total number of symbols in pilot/sync block %ld\n", h[2]);
-    DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per pilot/sync symbol %ld\n", h[3]);
-    DBG_PULSE("PulseProcTzxGenData: Number of pilot/sync symbols in the alphabet table %ld\n", h[4]);
-    DBG_PULSE("PulseProcTzxGenData: Total number of symbols in data stream %ld\n", h[5]);
-    DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per data symbol %ld\n", h[6]);
-    DBG_PULSE("PulseProcTzxGenData: Number of data symbols in the alphabet table %ld\n", h[7]);
+  DBG_PULSE("PulseProcTzxGenData: Block length (without these four bytes) %ld\n", h[0]);
+  DBG_PULSE("PulseProcTzxGenData: Pause after this block (ms) %ld\n", h[1]);
+  DBG_PULSE("PulseProcTzxGenData: Total number of symbols in pilot/sync block %ld\n", h[2]);
+  DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per pilot/sync symbol %ld\n", h[3]);
+  DBG_PULSE("PulseProcTzxGenData: Number of pilot/sync symbols in the alphabet table %ld\n", h[4]);
+  DBG_PULSE("PulseProcTzxGenData: Total number of symbols in data stream %ld\n", h[5]);
+  DBG_PULSE("PulseProcTzxGenData: Maximum number of pulses per data symbol %ld\n", h[6]);
+  DBG_PULSE("PulseProcTzxGenData: Number of data symbols in the alphabet table %ld\n", h[7]);
+  
+  _symbols.read(
+    is, 
+    h[3], // 3. NPP	BYTE	Maximum number of pulses per pilot/sync symbol
+    h[4]  // 4. ASP	BYTE	Number of pilot/sync symbols in the alphabet table (0=256)
+  );
 
+  _pause->init(
+    next(),
+     h[1], // 1.      WORD	Pause after this block (ms)
+     _tsPerMs
+  );    
 
-    _pause->init(
-      next(),
-       h[1], // 1.      WORD	Pause after this block (ms)
-       _tsPerMs
-    );    
-
-    *top = _pause;
-    return PP_CONTINUE;
-  }
+  *top = _pause;
+  return PP_CONTINUE;
 }
