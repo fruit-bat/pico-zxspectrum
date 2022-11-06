@@ -369,8 +369,8 @@ int32_t PulseProcTzxBlock::doHardwareType(InputStream *is, PulseProc **top) {
  * 0x14	-	BYTE[L]	Custom info
  */
 int32_t PulseProcTzxBlock::doCustomInfo(InputStream *is, PulseProc **top) {
-  const int8_t l[] = {-10, 4};
-  return skipSingle(is, l, 1, 1);
+  const int8_t l[] = {-0x10, 4};
+  return skipSingle(is, l, 2, 1);
 }
 
 /** ID 5A - "Glue" block
