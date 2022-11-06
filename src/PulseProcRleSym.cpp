@@ -12,8 +12,10 @@ int32_t __not_in_flash_func(PulseProcRleSym::advance)(
   bool *pstate,
   PulseProc **top
 ) {
-  if (_ns == 0) return PP_COMPLETE;
-  if (_nr == 0) {
+  while (_nr == 0) {
+    
+    if (_ns == 0) return PP_COMPLETE;
+    
     const int8_t l[] = {
       1, // 0. BYTE	Symbol to be represented
       2  // 1. 0x01	-	WORD	Number of repetitions
