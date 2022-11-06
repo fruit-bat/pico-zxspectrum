@@ -12,8 +12,8 @@ int32_t __not_in_flash_func(PulseProcSymbol::advance)(
     }
     uint16_t v = _symdefs->at(_si, _pi++);
     switch(v) {
-      case 0: *pstate = !*pstate; break;
-      case 1: break;
+      case 0: break;
+      case 1: *pstate = !*pstate; break;
       case 2: *pstate = false; break;
       case 3: *pstate = true; break;
       default:
@@ -27,10 +27,10 @@ int32_t __not_in_flash_func(PulseProcSymbol::advance)(
     return p;
   }
   else {
+    *pstate = !*pstate;
     if (_pi > _symdefs->np()) return PP_COMPLETE;
     uint16_t p = _symdefs->at(_si, _pi++);
     if (!p) return PP_COMPLETE;
-    *pstate = !*pstate;
     return p;
   }
 }

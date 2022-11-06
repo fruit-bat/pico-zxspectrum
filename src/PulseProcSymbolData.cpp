@@ -7,7 +7,6 @@ int32_t __not_in_flash_func(PulseProcSymbolData::advance)(
   PulseProc **top
 ) {
   if (_ns == 0)  {
-    *pstate = !*pstate;
     return PP_COMPLETE;
   }
   if (_sb < _bps)  {
