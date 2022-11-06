@@ -20,9 +20,17 @@ int32_t __not_in_flash_func(PulseProcSymbol::advance)(
         DBG_PULSE("PulseProcSymbol: Unexpected symbol type %d\n", v);
         return PP_ERROR;
     }
+    
+    if (_pi > _symdefs->np()) return PP_COMPLETE;
+    uint16_t p = _symdefs->at(_si, _pi++);
+    if (!p) return PP_COMPLETE;
+    return p;
   }
-  
-  if (_pi > _symdefs->np()) return PP_COMPLETE;
-  
-  return _symdefs->at(_si, _pi++);
+  else {
+    if (_pi > _symdefs->np()) return PP_COMPLETE;
+    uint16_t p = _symdefs->at(_si, _pi++);
+    if (!p) return PP_COMPLETE;
+    *pstate = !*pstate;
+    return p;
+  }
 }
