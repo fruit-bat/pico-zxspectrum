@@ -31,10 +31,6 @@ int32_t __not_in_flash_func(PulseProcRleSym::advance)(
     _si = h[0];
     _nr = h[1];
     --_ns;
-
-    DBG_PULSE("PulseProcRleSym: Symbols remaining %ld\n", _ns);
-    DBG_PULSE("PulseProcRleSym: Symbol to be represented %ld\n", _si);
-    DBG_PULSE("PulseProcRleSym: Repetition %ld\n", _nr);
   }
   
   --_nr;
