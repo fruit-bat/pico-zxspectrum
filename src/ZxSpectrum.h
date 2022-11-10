@@ -238,8 +238,6 @@ public:
 
   void __not_in_flash_func(step)(uint32_t eb)
   {
-      int c = 0;
-
       uint32_t vA, vB, vC;
 
       const uint32_t tu32 = time_us_32() << 5;
@@ -257,9 +255,11 @@ public:
         _earDc = 0;
       }
       
+      int c = 0;
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
-        if (_pulseChain.end()) _ear = (eb >> i) & 1;
+        bool eot = _pulseChain.end();
+        if (eot) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
           int t = _Z80.step();
@@ -274,8 +274,11 @@ public:
           }
           _ta32 -= MUL32(t, _moderate);
         }
+        if (!eot && (i&3)==3) {
+          _pulseChain.advance(c, &_ear);
+          c = 0;
+        }
       }
-      _pulseChain.advance(c, &_ear);
   }
 
   void interrupt();
