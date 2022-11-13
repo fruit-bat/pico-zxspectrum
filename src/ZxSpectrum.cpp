@@ -709,6 +709,10 @@ void ZxSpectrum::loadTzx(InputStream *inputStream) {
   ); 
 }
 
+void ZxSpectrum::ejectTape() {
+  _pulseChain.reset();
+}
+
 void ZxSpectrum::pauseTape(bool pause) {
   _pulseChain.pause(pause);
 }

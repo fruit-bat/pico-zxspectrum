@@ -53,6 +53,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
+  _tis(0),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_MENU_SEP),
   _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
@@ -490,10 +491,9 @@ void ZxSpectrumMenu::quickSaveToSnap(int i, const char *name, const char *fname)
 }
 
 void ZxSpectrumMenu::ejectTape() {
-  // TODO ask the spectrum for the input stream
+  _zxSpectrum->ejectTape();
+  _tapeName.clear();
   if (_tis) {
-    _zxSpectrum->loadTap(0);
-    _tapeName.clear();
     delete _tis;
     _tis = 0;
   }

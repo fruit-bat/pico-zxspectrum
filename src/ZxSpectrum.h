@@ -297,6 +297,7 @@ public:
   void saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
   void loadTzx(InputStream *inputStream);
+  void ejectTape();
   bool tapePaused();
   void pauseTape(bool pause);
   void togglePauseTape();
