@@ -3,7 +3,7 @@
 
 <a href="docs/1280px-ZXSpectrum48k.jpg"><img src="docs/640px-ZXSpectrum48k.png" height="200"/></a><a href="docs/1280px-ZX_Spectrum128K.jpg"><img src="docs/640px-ZX_Spectrum128K.png" height="200"/></a>
 
-This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
+This is a 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
 ## Features
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
@@ -16,7 +16,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * Audio input (load from tape)
 * 12 quick save slots
 * Load from .z80 snapshot files
-* Read from .tap tape files
+* Read from .tap & .tzx tape files
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
@@ -37,6 +37,8 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 
 ## Updates
+* 13/11/22 - Slightly better PS/2 keyboard overflow handling
+* 13/11/22 - Partial support for TZX tape format
 * 24/09/22 - Fixed some problems with AY audio
 * 23/09/22 - Added support for Pimoroni Pico VGA Demo Base
 * 19/09/22 - Audio in (load from tape)
@@ -49,6 +51,10 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
+
+TZX support added with some omissions:
+* No CSW support (raise an issue if this is important to you)
+* No select block (where a choice of what to load needs to be made)
 
 Builds with an RP_AUDIO_IN pin can now load from tape. 
 Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
