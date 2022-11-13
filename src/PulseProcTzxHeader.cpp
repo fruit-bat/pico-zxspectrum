@@ -32,11 +32,12 @@ int32_t PulseProcTzxHeader::advance(
     DBG_PULSE("PulseProcTzxHeader: Could not find end of text file marker\n");
     return  PP_ERROR;
   }
-  
+  #ifdef DEBUG_PULSE
   uint8_t version_major = header[8];
   uint8_t version_minor = header[9];
   
   DBG_PULSE("PulseProcTzxHeader: Found TZX header version %d %d\n", version_major, version_minor);
-
+  #endif
+  
   return PP_COMPLETE;
 }

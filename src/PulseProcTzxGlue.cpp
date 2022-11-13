@@ -32,11 +32,11 @@ int32_t __not_in_flash_func(PulseProcTzxGlue::advance)(
     DBG_PULSE("Could not find end of text file marker\n");
     return  PP_ERROR;
   }
-  
+  #ifdef DEBUG_PULSE
   uint8_t version_major = header[7];
   uint8_t version_minor = header[8];
   
   DBG_PULSE("Found TZX glue version %d %d\n", version_major, version_minor);
-
+  #endif
   return PP_COMPLETE;
 }

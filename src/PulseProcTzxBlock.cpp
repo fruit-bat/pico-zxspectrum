@@ -385,8 +385,7 @@ int32_t PulseProcTzxBlock::doGlue(InputStream *is, PulseProc **top) {
 
 
 int32_t PulseProcTzxBlock::doBlock(InputStream *is, int32_t bt, PulseProc **top) {
-  uint32_t pos = is->pos() - 1;
-  DBG_PULSE("PulseProcTzxBlock: reading block type %02lX at %ld\n", bt, pos);
+  DBG_PULSE("PulseProcTzxBlock: reading block type %02lX at %ld\n", bt, is->pos() - 1);
   switch(bt) {
     // ID 10 - Standard speed data block
     case 0x10: return doStandardSpeedData(is, top); 
