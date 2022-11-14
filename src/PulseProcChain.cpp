@@ -52,7 +52,7 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
     _state = _top->advance(_is, pstate, &_top);
     if (_state == PP_COMPLETE) {
       _state = 0;
-      _top = _top->next();
+      _top = _top ? _top->next() : 0;
       if (!_top) { 
         _state = PP_COMPLETE;
         break;

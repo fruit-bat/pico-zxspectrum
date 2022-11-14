@@ -2,10 +2,11 @@
 
 #include <pico/stdlib.h>
 #include "PulseProc.h"
+#include <vector>
 
 class PulseProcTzxSelect : public PulseProc {
 private:
- 
+  std::vector<uint16_t> _offsets;
 public:
 
   PulseProcTzxSelect();
@@ -17,4 +18,6 @@ public:
     bool *pstate,
     PulseProc **top
   );
+  
+  int32_t offset(uint32_t choice);
 };
