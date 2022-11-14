@@ -23,6 +23,7 @@ PulseProcTzxBlock::PulseProcTzxBlock(
   _ppTzxGlue(),
   _ppPauseMillis(ppPauseMillis),
   _ppTzxGenData(ppPauseMillis),
+  _ppTzxSelect(),
   _tsPerMs(3555)
 {}
   
@@ -300,8 +301,9 @@ int32_t PulseProcTzxBlock::doReturnFromSequence(InputStream *is, PulseProc **top
  */
 int32_t PulseProcTzxBlock::doSelectBlock(InputStream *is, PulseProc **top) {
   DBG_PULSE("PulseProcTzxBlock: ID 28 - Select block NOT IMPLEMENTED!\n");
-  const int8_t l[] = {2};
-  return skipSingle(is, l, 1, 1);
+  _ppTzxSelect.init(this);
+  *top = &_ppTzxSelect;
+  return PP_CONTINUE;
 }
 
 /** ID 2A - Stop the tape if in 48K mode
