@@ -258,8 +258,7 @@ public:
       int c = 0;
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
-        bool eot = _pulseChain.end();
-        if (eot) _ear = (eb >> i) & 1;
+        if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
           int t = _Z80.step();
@@ -274,7 +273,7 @@ public:
           }
           _ta32 -= MUL32(t, _moderate);
         }
-        if (!eot && (i&3)==3) {
+        if ((i&3)==3 && _pulseChain.playing()) {
           _pulseChain.advance(c, &_ear);
           c = 0;
         }

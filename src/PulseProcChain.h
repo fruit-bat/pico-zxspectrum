@@ -34,7 +34,7 @@ public:
   
   void __not_in_flash_func(advance)(uint32_t tstates, bool *pstate);
   
-  inline bool end() { return _state < 0; }
+  inline bool end() { return _state < 0 && _state != PP_PAUSE; }
   
   void reset();
   
@@ -52,4 +52,7 @@ public:
   void pause(bool pause);
   
   inline bool paused() { return _state == PP_PAUSE; }
+
+  inline bool playing() { return _state >= 0; }
+
 };
