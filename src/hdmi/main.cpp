@@ -291,6 +291,32 @@ int main() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
+  // TZX tape option handlers
+  zxSpectrum.tzxOptionHandlers(
+    [&]() { // Clear options
+      printf("TZX CLEAR OPTIONS\n");
+      picoRootWin.clearTzxOptions();
+    },
+    [&](const char *s) { // Add option
+      printf("TZX OPTION %s\n", s);
+      picoRootWin.addTzxOption(s);
+    },
+    [&]() { // Show options
+      printf("TZX SHOW OPTIONS\n");
+      picoRootWin.showTzxOptions();
+      showMenu = true;
+      toggleMenu = false;
+    }
+  );
+  picoRootWin.tzxOption(
+    [&](uint32_t option) {
+      printf("TZX CHOICE %ld\n", option);
+      zxSpectrum.tzxOption(option);
+      showMenu = false;
+      toggleMenu = false;
+    }
+  );
+
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
  

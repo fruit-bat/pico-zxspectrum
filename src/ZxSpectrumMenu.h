@@ -75,6 +75,10 @@ private:
   PicoOptionText _quickSaveLoadOp;
   PicoOptionText _quickSaveToSnapOp;
   PicoOptionText _quickSaveClearOp;
+  
+  PicoSelect _tzxSelect;
+  std::function<void(uint32_t option)> _tzxOption;
+
   int _quickSaveSlot;
   QuickSave *_quickSaveHelper;
   PicoTextField _fileName;
@@ -110,6 +114,11 @@ private:
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
   void removeMessage();
+  
+  void showTzxOptions();
+  void clearTzxOptions();
+  void addTzxOption(const char *);
+  void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
 
   ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
 };

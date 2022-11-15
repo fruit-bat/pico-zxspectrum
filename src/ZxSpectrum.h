@@ -303,5 +303,18 @@ public:
   ZxSpectrumJoystick *joystick() { return _joystick; }
   ZxSpectrumKeyboard *keyboard1() { return _keyboard1; }
   ZxSpectrumKeyboard *keyboard2() { return _keyboard2; }
-
+  
+  void tzxOptionHandlers(
+    std::function<void()> clearOptions,
+    std::function<void(const char *)> addOption,
+    std::function<void()> showOptions
+  ) {
+    _pulseChain.optionHandlers(
+      clearOptions,
+      addOption,
+      showOptions
+    );
+  }
+  void tzxOption(uint32_t option) { _pulseChain.option(option); }
+  
 };

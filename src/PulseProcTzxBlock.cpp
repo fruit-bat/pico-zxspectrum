@@ -477,3 +477,8 @@ int32_t PulseProcTzxBlock::advance(
     return PP_COMPLETE;
   }
 }
+
+void PulseProcTzxBlock::option(uint32_t option) {
+  uint32_t offset = _ppTzxSelect.offset(option);
+  _i += offset - 1;
+}

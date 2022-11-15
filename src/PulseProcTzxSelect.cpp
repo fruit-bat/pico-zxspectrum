@@ -42,7 +42,8 @@ int32_t __not_in_flash_func(PulseProcTzxSelect::advance)(
   * 0x02	L	BYTE	Length of description text
   * 0x03	-	CHAR[L]	Description text (please use single line and max. 30 chars)
   */
-  _offsets.clear();  
+  _offsets.clear();
+  if (_clearOptions) _clearOptions();
   while (n-- > 0) {
     const int8_t lo[] = {
       2,
@@ -67,8 +68,10 @@ int32_t __not_in_flash_func(PulseProcTzxSelect::advance)(
       if (i < 63) text[i] = r;
     }
     DBG_PULSE("PulseProcTzxSelect: option text %s\n", text);
+    if (_addOption) _addOption((char *)text);
   }
   *top = next();
+  if (_showOptions) _showOptions();
   return PP_PAUSE;
 }
 

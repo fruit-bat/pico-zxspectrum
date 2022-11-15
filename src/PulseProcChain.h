@@ -10,6 +10,7 @@
 #include "PulseProcStdByte.h"
 #include "PulseProcTzx.h"
 #include "PulseProcPauseMillis.h"
+#include <functional>
 
 class PulseProcChain {
 private:
@@ -54,5 +55,18 @@ public:
   inline bool paused() { return _state == PP_PAUSE; }
 
   inline bool playing() { return _state >= 0; }
-
+  
+  void optionHandlers(
+    std::function<void()> clearOptions,
+    std::function<void(const char *)> addOption,
+    std::function<void()> showOptions
+  ) {
+    _ppTzx.optionHandlers(
+      clearOptions,
+      addOption,
+      showOptions
+    );
+  }
+  
+  void option(uint32_t option);
 };

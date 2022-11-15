@@ -93,10 +93,19 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _quickSaveToSnapOp("Save as SNAP"),
   _quickSaveClearOp("Clear"),
   
+  _tzxSelect(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
+  
   _quickSaveHelper(quickSave),
   
   _fileName(0, 0,SZ_WIZ_COLS, 64)
-{
+{ 
+  _tzxSelect.onToggle(
+    [=](PicoOption *option, int32_t i) {
+      _wiz.pop(true);
+      if (_tzxOption) _tzxOption(i);
+    }
+  );
+  
   addChild(&_devices, false);
   _devices.onPaint([=](PicoPen *pen){
     bool jl = _zxSpectrum->joystick()->isConnectedL();
@@ -227,7 +236,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       
     loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
 
-    _chooseSnap.onToggle([=](PicoOption *option) {
+    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
       PicoOptionText *textOption = (PicoOptionText *)option;
       std::string fname(SAVED_SNAPS_DIR);
       fname.append("/");
@@ -248,7 +257,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       
     loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
 
-    _chooseSnap.onToggle([=](PicoOption *option) {
+    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
       PicoOptionText *textOption = (PicoOptionText *)option;
       _fileName.clear();
       _fileName.onenter([=](const char* name) {
@@ -291,7 +300,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       
     loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
 
-    _chooseSnap.onToggle([=](PicoOption *option) {
+    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
       PicoOptionText *textOption = (PicoOptionText *)option;
       confirm(
         [=](PicoPen *pen){
@@ -363,7 +372,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
     _zxSpectrum->togglePauseTape();
   });
 
-  _chooseTape.onToggle([=](PicoOption *option) {
+  _chooseTape.onToggle([=](PicoOption *option, int32_t i) {
     PicoOptionText *textOption = (PicoOptionText *)option;
     ejectTape();
     std::string fname(SAVED_TAPES_DIR);
@@ -605,3 +614,17 @@ void ZxSpectrumMenu::confirm(
   });
 }
 
+void ZxSpectrumMenu::showTzxOptions() {
+  _wiz.push(
+    &_tzxSelect, 
+    [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose TZX tape option"); },
+    true);
+}
+
+void ZxSpectrumMenu::clearTzxOptions() {
+  _tzxSelect.deleteOptions();
+}
+
+void ZxSpectrumMenu::addTzxOption(const char *s) {
+  _tzxSelect.addOption(new PicoOptionText(s));
+}

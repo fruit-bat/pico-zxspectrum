@@ -7,6 +7,7 @@
 #include "PulseProcTzxGlue.h"
 #include "PulseProcTzxIndex.h"
 #include "PulseProcTzxBlock.h"
+#include <functional>
 
 class PulseProcTzx : public PulseProc {
 private:
@@ -40,4 +41,19 @@ public:
     bool *pstate,
     PulseProc **top
   );
+
+  void optionHandlers(
+    std::function<void()> clearOptions,
+    std::function<void(const char *)> addOption,
+    std::function<void()> showOptions
+  ) {
+    _pptBlock.optionHandlers(
+      clearOptions,
+      addOption,
+      showOptions
+    );
+  }
+  
+  void option(uint32_t option) { _pptBlock.option(option); }
+  
 };

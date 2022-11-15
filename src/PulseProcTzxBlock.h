@@ -3,6 +3,7 @@
 #include <pico/stdlib.h>
 #include "PulseProc.h"
 #include <vector>
+#include <functional>
 #include "PulseProcTap.h"
 #include "PulseProcTzxTurbo.h"
 #include "PulseProcTzxPureTone.h"
@@ -91,4 +92,19 @@ public:
     bool *pstate,
     PulseProc **top
   );
+  
+  void optionHandlers(
+    std::function<void()> clearOptions,
+    std::function<void(const char *)> addOption,
+    std::function<void()> showOptions
+  ) {
+    _ppTzxSelect.optionHandlers(
+      clearOptions,
+      addOption,
+      showOptions
+    );
+  }
+  
+  void option(uint32_t option);
+  
 };

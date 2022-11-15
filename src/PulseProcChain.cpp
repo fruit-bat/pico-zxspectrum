@@ -93,3 +93,13 @@ void PulseProcChain::loadTzx(
     reset();
   }
 }
+
+void PulseProcChain::option(uint32_t option) {
+  DBG_PULSE("PulseProcChain:option %ld\n", option);
+  if (_state == PP_PAUSE) {
+    _ppTzx.option(option);
+    pause(false);
+  }
+}
+
+

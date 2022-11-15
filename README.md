@@ -3,8 +3,6 @@
 
 <a href="docs/1280px-ZXSpectrum48k.jpg"><img src="docs/640px-ZXSpectrum48k.png" height="200"/></a><a href="docs/1280px-ZX_Spectrum128K.jpg"><img src="docs/640px-ZX_Spectrum128K.png" height="200"/></a>
 
-This is a 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
-
 ## Features
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789 320x240)
@@ -54,7 +52,6 @@ This is a 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
 
 TZX support added with some omissions:
 * No CSW support (raise an issue if this is important to you)
-* No select block (where a choice of what to load needs to be made)
 
 Builds with an RP_AUDIO_IN pin can now load from tape. 
 Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.

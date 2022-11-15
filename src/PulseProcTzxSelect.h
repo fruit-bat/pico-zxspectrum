@@ -3,10 +3,14 @@
 #include <pico/stdlib.h>
 #include "PulseProc.h"
 #include <vector>
+#include <functional>
 
 class PulseProcTzxSelect : public PulseProc {
 private:
   std::vector<uint16_t> _offsets;
+  std::function<void()> _clearOptions;
+  std::function<void(char *)> _addOption;
+  std::function<void()> _showOptions;
 public:
 
   PulseProcTzxSelect();
@@ -20,4 +24,14 @@ public:
   );
   
   int32_t offset(uint32_t choice);
+  
+  void optionHandlers(
+    std::function<void()> clearOptions,
+    std::function<void(const char *)> addOption,
+    std::function<void()> showOptions
+  ) {
+    _clearOptions = clearOptions; 
+    _addOption = addOption;
+    _showOptions = showOptions;
+  }
 };
