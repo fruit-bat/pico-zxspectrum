@@ -34,6 +34,9 @@
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 
+## Interesting projects
+[Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
+
 ## Updates
 * 13/11/22 - Slightly better PS/2 keyboard overflow handling
 * 13/11/22 - Partial support for TZX tape format
@@ -565,3 +568,5 @@ tio -m ODELBS /dev/ttyUSB0
 [Z80 Instruction set](https://clrhome.org/table/)</br>
 [Site with some WAV files](http://zx.zigg.net/zxsoftware/)</br>
 [ZX Modules Software](https://spectrumforeveryone.com/technical/zx-modules-software/)</br>
+[TZX format](https://www.alessandrogrussu.it/tapir/tzxform120.html#GRPSTART)</br>
+[A decoder for ZX format](https://github.com/kounch/playtzx)</br>

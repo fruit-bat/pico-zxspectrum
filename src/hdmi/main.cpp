@@ -294,15 +294,12 @@ int main() {
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options
-      printf("TZX CLEAR OPTIONS\n");
       picoRootWin.clearTzxOptions();
     },
     [&](const char *s) { // Add option
-      printf("TZX OPTION %s\n", s);
       picoRootWin.addTzxOption(s);
     },
     [&]() { // Show options
-      printf("TZX SHOW OPTIONS\n");
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
@@ -310,7 +307,6 @@ int main() {
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
-      printf("TZX CHOICE %ld\n", option);
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
