@@ -17,6 +17,7 @@ private:
   InputStream *_is;
   PulseProc* _top;
   int32_t _state;
+  int32_t _stateP;
   uint32_t _acc;
   
   PulseProcTone _ppTone1;

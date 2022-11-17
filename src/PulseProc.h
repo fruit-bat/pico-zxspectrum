@@ -4,7 +4,7 @@
 #include <pico/printf.h>
 #include "InputStream.h"
 
-//#define DEBUG_PULSE
+#define DEBUG_PULSE
 #ifdef DEBUG_PULSE
 #define DBG_PULSE(...) printf(__VA_ARGS__)
 #else

@@ -4,6 +4,7 @@ PulseProcChain::PulseProcChain() :
   _is(0),
   _top(0),
   _state(PP_COMPLETE),
+  _stateP(PP_CONTINUE),
   _acc(0),
   _ppTone1(),
   _ppStdByte(&_ppTone1),
@@ -34,12 +35,14 @@ void PulseProcChain::init(InputStream *is, PulseProc* top) {
 void PulseProcChain::pause(bool pause) {
   if (pause) {
     if (_state >= PP_CONTINUE) {
+      _stateP = _state;
       _state = PP_PAUSE; 
     }
   }
   else {
     if (_state == PP_PAUSE) {
-      _state = PP_CONTINUE; 
+      _state = _stateP;
+      _stateP = PP_CONTINUE;
     }
   }
 }
@@ -59,9 +62,14 @@ void __not_in_flash_func(PulseProcChain::advance)(uint32_t tstates, bool *pstate
       }
     }
   }
-  if (_state < 0 && _state != PP_PAUSE) {
-    DBG_PULSE("PulseProcChain: closing input stream \n");
-    if (_is) _is->close();
+  if (_state < 0) {
+    if (_state == PP_PAUSE) {
+      _stateP = PP_CONTINUE;
+    }
+    else {
+      DBG_PULSE("PulseProcChain: closing input stream \n");
+      if (_is) _is->close();
+    }
   }
 }
 
