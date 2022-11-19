@@ -698,7 +698,10 @@ uint32_t ZxSpectrum::tStatesPerMilliSecond() {
 }
 
 void ZxSpectrum::loadTap(InputStream *inputStream) {
-  _pulseChain.loadTap(inputStream, tStatesPerMilliSecond());
+  _pulseChain.loadTap(
+    inputStream,
+    tStatesPerMilliSecond()
+  );
 }
 
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
@@ -722,6 +725,6 @@ void ZxSpectrum::togglePauseTape() {
 }
 
 bool ZxSpectrum::tapePaused() {
-  return _pulseChain.paused();
+  return !_pulseChain.playing();
 }
 
