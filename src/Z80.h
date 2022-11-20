@@ -255,14 +255,14 @@ public:
   * this will return zero. In interrupt mode 0, data_on_bus must be a single
   * byte opcode.
   */
-  int __not_in_flash_func(IRQ)(int data_on_bus);
+  uint32_t __not_in_flash_func(IRQ)(int data_on_bus);
 
   /* Trigger a non maskable interrupt, then return the number of cycles elapsed
    * to accept it.
    */
-  int NMI();
+  uint32_t NMI();
 
-  int __not_in_flash_func(step)();
+  uint32_t __not_in_flash_func(step)();
 
 
   // CPU registers access
@@ -326,7 +326,7 @@ public:
   
 private:
 
-  int __not_in_flash_func(intemulate)(int opcode, int elapsed_cycles);
+  uint32_t __not_in_flash_func(intemulate)(int opcode, uint32_t elapsed_cycles);
 
 
   Z80_STATE         state;

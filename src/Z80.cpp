@@ -1819,7 +1819,7 @@ void Z80::reset()
 
 
 
-int Z80::IRQ(int data_on_bus)
+uint32_t Z80::IRQ(int data_on_bus)
 {
   state.status = 0;
   if (state.iff1) {
@@ -1841,7 +1841,7 @@ int Z80::IRQ(int data_on_bus)
 
       case Z80_INTERRUPT_MODE_1: {
 
-        int	elapsed_cycles;
+        uint32_t elapsed_cycles;
 
         elapsed_cycles = 0;
         SP -= 2;
@@ -1854,7 +1854,8 @@ int Z80::IRQ(int data_on_bus)
       case Z80_INTERRUPT_MODE_2:
       default: {
 
-        int	elapsed_cycles, vector;
+        uint32_t elapsed_cycles;
+        int vector;
 
         elapsed_cycles = 0;
         SP -= 2;
@@ -1880,9 +1881,9 @@ int Z80::IRQ(int data_on_bus)
 }
 
 
-int Z80::NMI()
+uint32_t Z80::NMI()
 {
-  int	elapsed_cycles;
+  uint32_t elapsed_cycles;
 
   state.status = 0;
 
@@ -1899,16 +1900,14 @@ int Z80::NMI()
 }
 
 
-int Z80::step()
+uint32_t Z80::step()
 {
   if (state.status != 0) return 0; 
-  int elapsed_cycles = 0;
   int pc = state.pc;
   int opcode;
   Z80_FETCH_BYTE(pc, opcode);
   state.pc = pc + 1;
-
-  return intemulate(opcode, elapsed_cycles);
+  return intemulate(opcode, 0);
 }
 
 
@@ -1916,7 +1915,7 @@ int Z80::step()
  * needed by Z80Interrupt() for interrupt mode 0.
  */
 
-int Z80::intemulate(int opcode, int elapsed_cycles)
+uint32_t Z80::intemulate(int opcode, uint32_t elapsed_cycles)
 {
   int pc = state.pc;
   int r = state.r & 0x7f;
@@ -1928,7 +1927,6 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
   bool repeatLoop;
 
   do {
-
     repeatLoop = false;
 
     elapsed_cycles += 4;
@@ -2254,7 +2252,6 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
 
       case LDIR_LDDR: {
-
         int     d, f, bc, de, hl, n;
 
   #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
@@ -2285,10 +2282,11 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           hl += d;
           de += d;
 
-          if (--bc)
+          if (--bc) {
 
             elapsed_cycles += 21;
 
+          }
           else {
 
             elapsed_cycles += 16;
@@ -2366,7 +2364,6 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
       }
 
       case CPIR_CPDR: {
-
         int     d, a, bc, hl, n, z, f;
 
         d = opcode == OPCODE_CPIR ? +1 : -1;
@@ -2385,10 +2382,11 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
           z = a - n;
 
           hl += d;
-          if (--bc && z)
+          if (--bc && z) {
 
             elapsed_cycles += 21;
 
+          }
           else {
 
             elapsed_cycles += 16;
@@ -3119,7 +3117,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3163,7 +3161,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3206,7 +3204,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3249,7 +3247,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3292,7 +3290,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3335,7 +3333,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3378,7 +3376,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3421,7 +3419,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3499,13 +3497,12 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
         } else {
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           pc += 2;
 
           elapsed_cycles += 5;
-
         }
 
         READ_BYTE(d, x);
@@ -3549,7 +3546,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3592,7 +3589,7 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
 
           int     d;
 
-          Z80_FETCH_BYTE(pc, d);
+          READ_BYTE(pc, d);
           d = ((signed char) d) + HL_IX_IY;
 
           READ_BYTE(d, x);
@@ -3838,7 +3835,6 @@ int Z80::intemulate(int opcode, int elapsed_cycles)
         Z80_INPUT_BYTE((n | (A << 8)), A);
 
         elapsed_cycles += 4;
-
         break;
 
       }

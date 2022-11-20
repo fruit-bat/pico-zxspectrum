@@ -197,7 +197,7 @@ public:
     
   void __not_in_flash_func(step)()
   {
-      int c;
+      uint32_t c;
       if (_mute) {
         c = _Z80.step();
         c += _Z80.step();
@@ -255,13 +255,13 @@ public:
         _earDc = 0;
       }
       
-      int c = 0;
+      uint32_t c = 0;
       for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
         if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
-          int t = _Z80.step();
+          uint32_t t = _Z80.step();
           c += t;
           if (!_mute) {
             stepBuzzer();
