@@ -135,28 +135,18 @@ private:
     return ((ZxSpectrum*)context)->readByte(address);
   }
   
-  static uint8_t __not_in_flash_func(readByteInt)(void * context, uint16_t address) {
-    ZxSpectrum* z = ((ZxSpectrum*)context);
-    z80_int(&(z->_Z80), false);
-    return z->readByte(address);
-  }
-  
   static void __not_in_flash_func(writeByte)(void * context, uint16_t address, uint8_t value) {
     ((ZxSpectrum*)context)->writeByte(address, value);
   }
    
   static uint8_t __not_in_flash_func(readIO)(void * context, uint16_t address)
   {
-    //printf("readIO %04X\n", address);
-    const auto m = (ZxSpectrum*)context;
-    return m->readIO(address);
+    return ((ZxSpectrum*)context)->readIO(address);
   }
 
   static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value)
   {
-    //printf("writeIO %04X %02X\n", address, value);
-    const auto m = (ZxSpectrum*)context;
-    m->writeIO(address, value);
+    ((ZxSpectrum*)context)->writeIO(address, value);
   }
 
   uint8_t _RAM[8][1<<14];
@@ -286,7 +276,10 @@ public:
       }
   }
 
-  void interrupt();
+  void interrupt(bool s) {
+    z80_int(&_Z80, s);
+  }
+
   void moderate(uint32_t mul);
   void toggleModerate();
   uint32_t moderate() { return _moderate; }

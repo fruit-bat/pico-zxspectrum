@@ -29,7 +29,6 @@ ZxSpectrum::ZxSpectrum(
   _Z80.write = writeByte;
   _Z80.in = readIO;
   _Z80.out = writeIO;
-  _Z80.int_fetch = readByteInt; // HACK rubbish way to reset interrupt line
   reset(ZxSpectrum128k);
 }
 
@@ -71,10 +70,6 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _tu32 = time_us_32() << 5;
 }
 
-void ZxSpectrum::interrupt() {
-  z80_int(&_Z80, true);
-}
-
 // 0 - Z80 unmoderated
 // 8 - Z80 at 4.0Mhz
 // 9 - Z80 at 3.5Mhz
@@ -86,7 +81,6 @@ void ZxSpectrum::moderate(uint32_t mul) {
   }
   _moderate = mul;
 }
-
 
 void ZxSpectrum::toggleModerate() {
   switch(_moderate) {

@@ -251,7 +251,10 @@ void __not_in_flash_func(main_loop)() {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          zxSpectrum.interrupt(true);
+        }
+        else {
+          zxSpectrum.interrupt(false);
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
