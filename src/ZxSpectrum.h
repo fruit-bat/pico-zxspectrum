@@ -62,29 +62,29 @@ private:
     _pageaddr[page] = ptr - (page << 14);
   }
   
-  inline unsigned char* memaddr(int address) {
+  inline unsigned char* memaddr(uint16_t address) {
     return address + _pageaddr[address >> 14];
   }
   
-  inline int readByte(int address) {
+  inline int readByte(uint16_t address) {
     return *memaddr(address);
   }
   
-  inline void writeByte(int address, int value) {
+  inline void writeByte(uint16_t address, uint8_t value) {
     if (address < 0x4000) return;    
     *(memaddr(address)) = value;
   }
   
-  inline int readWord(int addr) { 
+  inline int readWord(uint16_t addr) { 
     return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
   }
   
-  inline void writeWord(int addr, int value) { 
+  inline void writeWord(uint16_t addr, uint8_t value) { 
     writeByte(addr, value & 0xFF); 
     writeByte((addr + 1) & 0xffff, value >> 8);
   }
   
-  inline int readIO(int address)
+  inline uint8_t readIO(uint16_t address)
   {
     if (!(address & 0x0001)) {
       uint8_t kb = _keyboard1->read(address);
@@ -110,7 +110,7 @@ private:
     }
   }
   
-  inline void writeIO(int address, int value)
+  inline void writeIO(uint16_t address, uint8_t value)
   {
     if (!(address & 0x0001)) {
       _port254 = value;
@@ -147,6 +147,12 @@ private:
   static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value)
   {
     ((ZxSpectrum*)context)->writeIO(address, value);
+  }
+
+  static uint8_t __not_in_flash_func(readInt)(void * context, uint16_t address)
+  {
+    z80_int(&(((ZxSpectrum*)context)->_Z80), false);
+    return 0xff;
   }
 
   uint8_t _RAM[8][1<<14];
@@ -276,8 +282,8 @@ public:
       }
   }
 
-  void interrupt(bool s) {
-    z80_int(&_Z80, s);
+  void interrupt() {
+    z80_int(&_Z80, true);
   }
 
   void moderate(uint32_t mul);

@@ -215,7 +215,7 @@ public:
     // for a possilbly nicer way to switch between the envelope and register volumes
     vA =  MUL32((mtb     ) & 1, _envA ? ae : _volA);
     vB =  MUL32((mtb >> 1) & 1, _envB ? ae : _volB);
-    vC =  MUL32((mtb >> 2) & 1, _envC ? ae : _volC);
+    vC =  MUL32((mtb >> 2) & 1, _envC ? ae : _volC);   
   }
 
   int32_t __not_in_flash_func(vol)() {

@@ -29,6 +29,7 @@ ZxSpectrum::ZxSpectrum(
   _Z80.write = writeByte;
   _Z80.in = readIO;
   _Z80.out = writeIO;
+  _Z80.inta = readInt;
   reset(ZxSpectrum128k);
 }
 
@@ -371,7 +372,8 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   Z80_B(_Z80) = buf[3];
   Z80_L(_Z80) = buf[4];
   Z80_H(_Z80) = buf[5];
-  Z80_PC(_Z80) = pc;
+  Z80_PCL(_Z80) = buf[6];
+  Z80_PCH(_Z80) = buf[7];
   Z80_SPL(_Z80) = buf[8];
   Z80_SPH(_Z80) = buf[9];
   _Z80.i = buf[10];
@@ -492,7 +494,8 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
     printf("Failed to read Z80 V2 header\n");
     return -2; // error
   }
-  Z80_PC(_Z80) = ((unsigned int)buf[0]) + (((unsigned int)buf[1]) << 8);
+  Z80_PCL(_Z80) = buf[0];
+  Z80_PCH(_Z80) = buf[1];
   const int v = (hl >=54) ? 3 : 2;
 /*
         Value:          Meaning in v2           Meaning in v3
