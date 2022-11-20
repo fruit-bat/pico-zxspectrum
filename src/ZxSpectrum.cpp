@@ -21,7 +21,15 @@ ZxSpectrum::ZxSpectrum(
   _earDc(0),
   _buzzer(0)
 {
-  _Z80.setCallbacks(this, readByte, writeByte, readWord, writeWord, readIO, writeIO);
+  z80Power(true);
+  _Z80.context = this;
+  _Z80.read = readByte;
+  _Z80.fetch = readByte;
+  _Z80.fetch_opcode = readByte;
+  _Z80.write = writeByte;
+  _Z80.in = readIO;
+  _Z80.out = writeIO;
+  _Z80.int_fetch = readByteInt; // HACK rubbish way to reset interrupt line
   reset(ZxSpectrum128k);
 }
 
@@ -43,8 +51,8 @@ void ZxSpectrum::transmute(ZxSpectrumType type) {
 void ZxSpectrum::reset(ZxSpectrumType type)
 {
   _type = type;
-  _Z80.reset();
-  _Z80.setPC(0x0000);
+  z80Reset();
+  Z80_PC(_Z80) = 0x0000;
   _ta32 = 0;
   _earInvert = 0;
   _earDc = 0;
@@ -64,7 +72,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
 }
 
 void ZxSpectrum::interrupt() {
-  _Z80.IRQ(0xff);
+  z80_int(&_Z80, true);
 }
 
 // 0 - Z80 unmoderated
@@ -275,43 +283,41 @@ int ZxSpectrum::writeZ80Header(
   bool compresed = version == 1;
   unsigned char buf[30];
 
-  buf[0] = _Z80.getA();
-  buf[1] = _Z80.getF();
-  buf[2] = _Z80.getC();
-  buf[3] = _Z80.getB();
-  buf[4] = _Z80.getL();
-  buf[5] = _Z80.getH();
-  buf[6] = version > 1 ? 0 : _Z80.getPC() & 0xff;
-  buf[7] = version > 1 ? 0 : _Z80.getPC() >> 8;
-  buf[8] = _Z80.getSPL();
-  buf[9] = _Z80.getSPH();
-  buf[10] = _Z80.getI();
-  buf[11] = _Z80.getR();
+  buf[0] = Z80_A(_Z80);
+  buf[1] = Z80_F(_Z80);
+  buf[2] = Z80_C(_Z80);
+  buf[3] = Z80_B(_Z80);
+  buf[4] = Z80_L(_Z80);
+  buf[5] = Z80_H(_Z80);
+  buf[6] = version > 1 ? 0 : Z80_PCL(_Z80);
+  buf[7] = version > 1 ? 0 : Z80_PCH(_Z80);
+  buf[8] = Z80_SPL(_Z80);
+  buf[9] = Z80_SPH(_Z80);
+  buf[10] = _Z80.i;
+  buf[11] = _Z80.r;
   buf[12] = (
-    (_Z80.getR() >> 7) |
+    (_Z80.r >> 7) |
     (_borderColour << 1) |
     ((samRom ? 1 : 0) << 4) |
     ((compresed ? 1 : 0) << 5)
   );
-  buf[13] = _Z80.getE();
-  buf[14] = _Z80.getD();
-  _Z80.swap();
-  buf[15] = _Z80.getC();
-  buf[16] = _Z80.getB();
-  buf[17] = _Z80.getE();
-  buf[18] = _Z80.getD();
-  buf[19] = _Z80.getL();
-  buf[20] = _Z80.getH();
-  buf[21] = _Z80.getA();
-  buf[22] = _Z80.getF();
-  _Z80.swap();
-  buf[23] = _Z80.getIYL();
-  buf[24] = _Z80.getIYH();
-  buf[25] = _Z80.getIXL();
-  buf[26] = _Z80.getIXH();
-  buf[27] = _Z80.getIFF1();
-  buf[28] = _Z80.getIFF2();
-  buf[29] = _Z80.getIM();
+  buf[13] = Z80_E(_Z80);
+  buf[14] = Z80_D(_Z80);
+  buf[15] = Z80_C_(_Z80);
+  buf[16] = Z80_B_(_Z80);
+  buf[17] = Z80_E_(_Z80);
+  buf[18] = Z80_D_(_Z80);
+  buf[19] = Z80_L_(_Z80);
+  buf[20] = Z80_H_(_Z80);
+  buf[21] = Z80_A_(_Z80);
+  buf[22] = Z80_F_(_Z80);
+  buf[23] = Z80_IYL(_Z80);
+  buf[24] = Z80_IYH(_Z80);
+  buf[25] = Z80_IXL(_Z80);
+  buf[26] = Z80_IXH(_Z80);
+  buf[27] = _Z80.iff1;
+  buf[28] = _Z80.iff2;
+  buf[29] = _Z80.im;
 
   return os->write(buf, 30);
 }
@@ -365,37 +371,35 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   if (buf[12] == 255) buf[12] = 1;
   unsigned int pc = ((unsigned int)buf[6]) + (((unsigned int)buf[7]) << 8);
   bool compressed = (1 << 5) & buf[12];
-  _Z80.setA(buf[0]);
-  _Z80.setF(buf[1]);
-  _Z80.setC(buf[2]);
-  _Z80.setB(buf[3]);
-  _Z80.setL(buf[4]);
-  _Z80.setH(buf[5]);
-  _Z80.setPC(pc);
-  _Z80.setSPL(buf[8]);
-  _Z80.setSPH(buf[9]);
-  _Z80.setI(buf[10]);
-  _Z80.setR((buf[11] & 0x7f) + ((buf[12] & 1) << 7));
+  Z80_A(_Z80) = buf[0];
+  Z80_F(_Z80) = buf[1];
+  Z80_C(_Z80) = buf[2];
+  Z80_B(_Z80) = buf[3];
+  Z80_L(_Z80) = buf[4];
+  Z80_H(_Z80) = buf[5];
+  Z80_PC(_Z80) = pc;
+  Z80_SPL(_Z80) = buf[8];
+  Z80_SPH(_Z80) = buf[9];
+  _Z80.i = buf[10];
+  _Z80.r = (buf[11] & 0x7f) + ((buf[12] & 1) << 7);
   _borderColour = (buf[12] & (7 << 1)) >> 1;
-  _Z80.setE(buf[13]);
-  _Z80.setD(buf[14]);
-  _Z80.swap();
-  _Z80.setC(buf[15]);
-  _Z80.setB(buf[16]);
-  _Z80.setE(buf[17]);
-  _Z80.setD(buf[18]);
-  _Z80.setL(buf[19]);
-  _Z80.setH(buf[20]);
-  _Z80.setA(buf[21]);
-  _Z80.setF(buf[22]);
-  _Z80.swap();
-  _Z80.setIYL(buf[23]);
-  _Z80.setIYH(buf[24]);
-  _Z80.setIXL(buf[25]);
-  _Z80.setIXH(buf[26]);
-  _Z80.setIFF1(buf[27] ? 1 : 0);
-  _Z80.setIFF2(buf[28] ? 1 : 0);
-  _Z80.setIM(buf[29] & 3);
+  Z80_E(_Z80) = buf[13];
+  Z80_D(_Z80) = buf[14];
+  Z80_C_(_Z80) = buf[15];
+  Z80_B_(_Z80) = buf[16];
+  Z80_E_(_Z80) = buf[17];
+  Z80_D_(_Z80) = buf[18];
+  Z80_L_(_Z80) = buf[19];
+  Z80_H_(_Z80) = buf[20];
+  Z80_A_(_Z80) = buf[21];
+  Z80_F_(_Z80) = buf[22];
+  Z80_IYL(_Z80) = buf[23];
+  Z80_IYH(_Z80) = buf[24];
+  Z80_IXL(_Z80) = buf[25];
+  Z80_IXH(_Z80) = buf[26];
+  _Z80.iff1 = buf[27] ? 1 : 0;
+  _Z80.iff2 = buf[28] ? 1 : 0;
+  _Z80.im = buf[29] & 3;
   if (buf[12] & (1<<4)) printf("WARNING: SamRom enabled\n");
   printf("PC %04X\n", pc);
   printf("IFF1 %02X\n", buf[27]);
@@ -411,8 +415,8 @@ int ZxSpectrum::writeZ80HeaderV3(OutputStream *os) {
   uint8_t buf[57];
   buf[30 - 30] = (sizeof(buf)-2) & 0xff;
   buf[31 - 30] = (sizeof(buf)-2) >> 8;
-  buf[32 - 30] = _Z80.getPC() & 0xff;
-  buf[33 - 30] = _Z80.getPC() >> 8;
+  buf[32 - 30] = Z80_PCL(_Z80);
+  buf[33 - 30] = Z80_PCH(_Z80);
   switch(_type) {
     case ZxSpectrum48k: {
       buf[34 - 30] = 0;
@@ -494,7 +498,7 @@ int ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
     printf("Failed to read Z80 V2 header\n");
     return -2; // error
   }
-  _Z80.setPC(((unsigned int)buf[0]) + (((unsigned int)buf[1]) << 8));
+  Z80_PC(_Z80) = ((unsigned int)buf[0]) + (((unsigned int)buf[1]) << 8);
   const int v = (hl >=54) ? 3 : 2;
 /*
         Value:          Meaning in v2           Meaning in v3

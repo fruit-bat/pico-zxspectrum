@@ -44,3 +44,4 @@ set(Zeta_INCLUDE_DIR                "${PICO_FOLDER}/Zeta")
 set(Zeta_VERSION                    "v0.1")
 
 add_subdirectory(${PICO_FOLDER}/Z80 "${CMAKE_CURRENT_BINARY_DIR}/Z80")
+include_directories(${PICO_FOLDER}/Z80/API)

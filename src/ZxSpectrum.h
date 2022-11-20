@@ -46,6 +46,18 @@ private:
   
   uint32_t tStatesPerMilliSecond();
   
+  inline uint32_t z80Step(uint32_t tstates) {
+    return z80_run(&_Z80, tstates);
+  }
+  
+  inline void z80Power(bool state) {
+    z80_power(&_Z80, true);
+  }
+  
+  inline void z80Reset() {
+    z80_instant_reset(&_Z80);
+  }
+  
   inline void setPageaddr(int page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
@@ -119,32 +131,28 @@ private:
     }
   }
   
-  static inline int readByte(void * context, int address) {
+  static uint8_t __not_in_flash_func(readByte)(void * context, uint16_t address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
-
-  static inline void writeByte(void * context, int address, int value) {
+  
+  static uint8_t __not_in_flash_func(readByteInt)(void * context, uint16_t address) {
+    ZxSpectrum* z = ((ZxSpectrum*)context);
+    z80_int(&(z->_Z80), false);
+    return z->readByte(address);
+  }
+  
+  static void __not_in_flash_func(writeByte)(void * context, uint16_t address, uint8_t value) {
     ((ZxSpectrum*)context)->writeByte(address, value);
   }
-  
-  // TODO Can addr ever be odd (if not readWord can be simplified)? 
-  static inline int readWord(void * context, int addr) { 
-    return ((ZxSpectrum*)context)->readWord(addr); 
-  }
-  
-  // TODO Can addr ever be odd (if not writeWord can be simplified)?
-  static inline void writeWord(void * context, int addr, int value) { 
-    ((ZxSpectrum*)context)->writeWord(addr, value);
-  }
-  
-  static inline int readIO(void * context, int address)
+   
+  static uint8_t __not_in_flash_func(readIO)(void * context, uint16_t address)
   {
     //printf("readIO %04X\n", address);
     const auto m = (ZxSpectrum*)context;
     return m->readIO(address);
   }
 
-  static inline void writeIO(void * context, int address, int value)
+  static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value)
   {
     //printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
@@ -199,20 +207,18 @@ public:
   {
       uint32_t c;
       if (_mute) {
-        c = _Z80.step();
-        c += _Z80.step();
-        c += _Z80.step();
+        c = z80Step(32);
       }
       else {
         uint32_t vA, vB, vC;
         _ay.vol(vA, vB, vC);
-        c = _Z80.step();
+        c = z80Step(32);
         stepBuzzer();
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
-        c += _Z80.step();
+        c += z80Step(32);
         stepBuzzer();
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
-        c += _Z80.step();
+        c += z80Step(32);
         stepBuzzer();
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());        
       }
@@ -261,7 +267,7 @@ public:
         if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
-          uint32_t t = _Z80.step();
+          uint32_t t = z80Step(32);
           c += t;
           if (!_mute) {
             stepBuzzer();
