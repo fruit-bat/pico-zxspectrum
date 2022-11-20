@@ -35,3 +35,12 @@ include_directories(${PICO_FOLDER}/pimoroni-pico/drivers/sdcard)
 
 add_subdirectory(src  "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
+add_subdirectory(${PICO_FOLDER}/Zeta "${CMAKE_CURRENT_BINARY_DIR}/Zeta")
+
+set(Z80_SHARED_LIBS                 NO  CACHE BOOL "")
+set(Z80_WITH_Q                      YES CACHE BOOL "")
+set(Z80_WITH_ZILOG_NMOS_LD_A_IR_BUG YES CACHE BOOL "")
+set(Zeta_INCLUDE_DIR                "${PICO_FOLDER}/Zeta")
+set(Zeta_VERSION                    "v0.1")
+
+add_subdirectory(${PICO_FOLDER}/Z80 "${CMAKE_CURRENT_BINARY_DIR}/Z80")

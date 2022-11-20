@@ -440,7 +440,8 @@ git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
-
+git clone git@github.com:redcode/Z80.git
+git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
@@ -451,6 +452,8 @@ git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
+git clone https://github.com/redcode/Z80.git
+git clone https://github.com/redcode/Zeta.git
 ```
 Edit:
 ```sh

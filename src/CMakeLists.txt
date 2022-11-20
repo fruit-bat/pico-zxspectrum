@@ -72,6 +72,8 @@ set(zxspectrum_common_libs
   sdcard
   fatfs
   hardware_dma
+  Zeta
+  Z80
 )
 
 set(zxspectrum_audio_i2s_pio
