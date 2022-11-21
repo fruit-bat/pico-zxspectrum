@@ -75,15 +75,6 @@ private:
     *(memaddr(address)) = value;
   }
   
-  inline int readWord(uint16_t addr) { 
-    return readByte(addr) | (readByte((addr + 1) & 0xffff) << 8);
-  }
-  
-  inline void writeWord(uint16_t addr, uint8_t value) { 
-    writeByte(addr, value & 0xFF); 
-    writeByte((addr + 1) & 0xffff, value >> 8);
-  }
-  
   inline uint8_t readIO(uint16_t address)
   {
     if (!(address & 0x0001)) {
@@ -139,18 +130,15 @@ private:
     ((ZxSpectrum*)context)->writeByte(address, value);
   }
    
-  static uint8_t __not_in_flash_func(readIO)(void * context, uint16_t address)
-  {
+  static uint8_t __not_in_flash_func(readIO)(void * context, uint16_t address) {
     return ((ZxSpectrum*)context)->readIO(address);
   }
 
-  static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value)
-  {
+  static void __not_in_flash_func(writeIO)(void * context, uint16_t address, uint8_t value) {
     ((ZxSpectrum*)context)->writeIO(address, value);
   }
-
-  static uint8_t __not_in_flash_func(readInt)(void * context, uint16_t address)
-  {
+  
+  static uint8_t __not_in_flash_func(readInt)(void * context, uint16_t address) {
     z80_int(&(((ZxSpectrum*)context)->_Z80), false);
     return 0xff;
   }
