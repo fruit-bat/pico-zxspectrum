@@ -52,7 +52,6 @@ void ZxSpectrum::reset(ZxSpectrumType type)
 {
   _type = type;
   z80Reset();
-  Z80_PC(_Z80) = 0x0000;
   _ta32 = 0;
   _earInvert = 0;
   _earDc = 0;
@@ -404,6 +403,7 @@ int ZxSpectrum::loadZ80Header(InputStream *is) {
   printf("Joystick %02X\n", buf[29] >> 6);
   printf("Applied Z80 header\n");
 
+  Z80_MEMPTR(_Z80) = Z80_PC(_Z80);
   return pc == 0 ? 2 : compressed ? 1 : 0;
 }
 
@@ -413,6 +413,7 @@ int ZxSpectrum::writeZ80HeaderV3(OutputStream *os) {
   buf[31 - 30] = (sizeof(buf)-2) >> 8;
   buf[32 - 30] = Z80_PCL(_Z80);
   buf[33 - 30] = Z80_PCH(_Z80);
+  Z80_MEMPTR(_Z80) = Z80_PC(_Z80);
   switch(_type) {
     case ZxSpectrum48k: {
       buf[34 - 30] = 0;

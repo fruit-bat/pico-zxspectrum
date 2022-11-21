@@ -114,10 +114,10 @@ private:
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
-    else if (address == 0xfffd) {
+    else if ((address | 0x0f00) == 0xfffd) {
       _ay.writeCtrl(value);
     }
-    else if (address == 0xbffd) {
+    else if ((address | 0x0f00) == 0xbffd) {
       _ay.writeData(value);
     }
   }
@@ -142,7 +142,7 @@ private:
     z80_int(&(((ZxSpectrum*)context)->_Z80), false);
     return 0xff;
   }
-
+  
   uint8_t _RAM[8][1<<14];
   
   void transmute(ZxSpectrumType type);
