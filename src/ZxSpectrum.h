@@ -58,11 +58,11 @@ private:
     z80_instant_reset(&_Z80);
   }
   
-  inline void setPageaddr(int page, uint8_t *ptr) {
+  inline void setPageaddr(uint32_t page, uint8_t *ptr) {
     _pageaddr[page] = ptr - (page << 14);
   }
   
-  inline unsigned char* memaddr(uint16_t address) {
+  inline uint8_t* memaddr(uint32_t address) {
     return address + _pageaddr[address >> 14];
   }
   
