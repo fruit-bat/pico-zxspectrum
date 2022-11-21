@@ -119,32 +119,32 @@ private:
     }
   }
   
-  static inline int readByte(void * context, int address) {
+  static inline int __not_in_flash_func(readByte)(void * context, int address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
 
-  static inline void writeByte(void * context, int address, int value) {
+  static inline void __not_in_flash_func(writeByte)(void * context, int address, int value) {
     ((ZxSpectrum*)context)->writeByte(address, value);
   }
   
   // TODO Can addr ever be odd (if not readWord can be simplified)? 
-  static inline int readWord(void * context, int addr) { 
+  static inline int __not_in_flash_func(readWord)(void * context, int addr) { 
     return ((ZxSpectrum*)context)->readWord(addr); 
   }
   
   // TODO Can addr ever be odd (if not writeWord can be simplified)?
-  static inline void writeWord(void * context, int addr, int value) { 
+  static inline void __not_in_flash_func(writeWord)(void * context, int addr, int value) { 
     ((ZxSpectrum*)context)->writeWord(addr, value);
   }
   
-  static inline int readIO(void * context, int address)
+  static inline int __not_in_flash_func(readIO)(void * context, int address)
   {
     //printf("readIO %04X\n", address);
     const auto m = (ZxSpectrum*)context;
     return m->readIO(address);
   }
 
-  static inline void writeIO(void * context, int address, int value)
+  static inline void __not_in_flash_func(writeIO)(void * context, int address, int value)
   {
     //printf("writeIO %04X %02X\n", address, value);
     const auto m = (ZxSpectrum*)context;
