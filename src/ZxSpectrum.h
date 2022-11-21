@@ -107,7 +107,7 @@ private:
       _port254 = value;
       _borderColour = value & 7;
     }
-    else if (address  == 0x7ffd) {
+    else if ((address | 0x0f00)  == 0x7ffd) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
