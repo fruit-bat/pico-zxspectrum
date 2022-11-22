@@ -56,7 +56,7 @@
 
 I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
 * It comes with a test suite
-* It is much faster than the previous version
+* It is much faster than the previous emulator
 
 TZX support added with some omissions:
 * No CSW support (raise an issue if this is important to you)
