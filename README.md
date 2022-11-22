@@ -60,7 +60,7 @@ I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
 
 TZX support added with some omissions:
 * No CSW support (raise an issue if this is important to you)
-* There a some compatiblity issues
+* There are some compatiblity issues
 
 Builds with an RP_AUDIO_IN pin can now load from tape. 
 Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
