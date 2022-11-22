@@ -38,7 +38,7 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
-* 22/11/22 - Move to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
+* 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 13/11/22 - Slightly better PS/2 keyboard overflow handling
 * 13/11/22 - Partial support for TZX tape format
 * 24/09/22 - Fixed some problems with AY audio
