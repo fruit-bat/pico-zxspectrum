@@ -14,6 +14,13 @@
 #include "hardware/pwm.h"
 #include "ZxSpectrumAudio.h"
 
+#define DEBUG_SPEC
+#ifdef DEBUG_SPEC
+#define DBG_SPEC(...) printf(__VA_ARGS__)
+#else
+#define DBG_SPEC(...)
+#endif
+
 enum ZxSpectrumType {
   ZxSpectrum48k,
   ZxSpectrum128k
@@ -66,7 +73,7 @@ private:
     return address + _pageaddr[address >> 14];
   }
   
-  inline int readByte(uint16_t address) {
+  inline uint8_t readByte(uint16_t address) {
     return *memaddr(address);
   }
   
@@ -87,7 +94,7 @@ private:
     }
     if (address == 0x7ffd) {
       // reading #7FFD port is the same as writing #FF into it.
-      int value = 0xff;
+      uint8_t value = 0xff;
       _portMem = value;
       setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
       setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -103,21 +110,22 @@ private:
   
   inline void writeIO(uint16_t address, uint8_t value)
   {
+    address |= 0x0f00;
     if (!(address & 0x0001)) {
       _port254 = value;
       _borderColour = value & 7;
     }
-    else if ((address | 0x0f00)  == 0x7ffd) {
+    else if (address == 0x7ffd) {
       if ((_portMem & 0x20) == 0) { 
         _portMem = value;
         setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
         setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
       }
     }
-    else if ((address | 0x0f00) == 0xfffd) {
+    else if (address == 0xfffd) {
       _ay.writeCtrl(value);
     }
-    else if ((address | 0x0f00) == 0xbffd) {
+    else if (address == 0xbffd) {
       _ay.writeData(value);
     }
   }
@@ -146,20 +154,20 @@ private:
   uint8_t _RAM[8][1<<14];
   
   void transmute(ZxSpectrumType type);
-  int loadZ80MemV0(InputStream *is);
-  int loadZ80MemV1(InputStream *is);
-  int loadZ80Header(InputStream *is);
-  int loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type);
-  int loadZ80MemBlock(InputStream *is, const ZxSpectrumType type);
-  int writeZ80Header(OutputStream *os, int version);
-  int writeZ80HeaderV3(OutputStream *os);
-  int writeZ80(OutputStream *os, int version);
-  int writeZ80MemV0(OutputStream *os);
-  int writeZ80MemV1(OutputStream *os);
-  int writeZ80MemV2(OutputStream *os, uint8_t *blk);
-  int writeZ80MemV2(OutputStream *os, const uint8_t b, const uint8_t p);
-  int writeZ80MemV2(OutputStream *os);
-  int z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
+  int32_t loadZ80MemV0(InputStream *is);
+  int32_t loadZ80MemV1(InputStream *is);
+  int32_t loadZ80Header(InputStream *is);
+  int32_t loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type);
+  int32_t loadZ80MemBlock(InputStream *is, const ZxSpectrumType type);
+  int32_t writeZ80Header(OutputStream *os, int32_t version);
+  int32_t writeZ80HeaderV3(OutputStream *os);
+  int32_t writeZ80(OutputStream *os, int32_t version);
+  int32_t writeZ80MemV0(OutputStream *os);
+  int32_t writeZ80MemV1(OutputStream *os);
+  int32_t writeZ80MemV2(OutputStream *os, uint8_t *blk);
+  int32_t writeZ80MemV2(OutputStream *os, const uint8_t b, const uint8_t p);
+  int32_t writeZ80MemV2(OutputStream *os);
+  int32_t z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
 
   inline void stepBuzzer() {
     uint32_t d = (_port254 >> 4) & 1;
@@ -246,7 +254,7 @@ public:
       }
       
       uint32_t c = 0;
-      for (int i = 0; i < EAR_BITS_PER_STEP; ++i) {
+      for (uint32_t i = 0; i < EAR_BITS_PER_STEP; ++i) {
         _ta32 += 32;
         if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
@@ -281,7 +289,7 @@ public:
   void toggleMute() { _mute = !_mute; }
   bool mute() { return _mute; }
 
-  inline unsigned int borderColour() { return _borderColour; }
+  inline uint8_t borderColour() { return _borderColour; }
 
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
