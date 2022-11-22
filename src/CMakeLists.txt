@@ -5,7 +5,6 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Z80.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidJoystick.cpp
@@ -72,6 +71,8 @@ set(zxspectrum_common_libs
   sdcard
   fatfs
   hardware_dma
+  Zeta
+  Z80
 )
 
 set(zxspectrum_audio_i2s_pio

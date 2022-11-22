@@ -38,6 +38,7 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+* 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 13/11/22 - Slightly better PS/2 keyboard overflow handling
 * 13/11/22 - Partial support for TZX tape format
 * 24/09/22 - Fixed some problems with AY audio
@@ -53,8 +54,13 @@
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
 
+I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
+* It comes with a test suite
+* It is much faster than the previous emulator
+
 TZX support added with some omissions:
 * No CSW support (raise an issue if this is important to you)
+* There a some compatiblity issues
 
 Builds with an RP_AUDIO_IN pin can now load from tape. 
 Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
@@ -440,7 +446,8 @@ git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
-
+git clone git@github.com:redcode/Z80.git
+git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
@@ -451,6 +458,8 @@ git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
+git clone https://github.com/redcode/Z80.git
+git clone https://github.com/redcode/Zeta.git
 ```
 Edit:
 ```sh
@@ -539,6 +548,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 [badrianiulian](https://github.com/badrianiulian) for help testing and design work on the audio circuitry<br/>
+[redcode](https://github.com/redcode/Z80) for the [Z80 emulator](https://github.com/redcode/Z80)<br/>
 
 ## References
 [Z80 Test suite](https://github.com/raxoft/z80test)<br/>
