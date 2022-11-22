@@ -72,7 +72,7 @@ int32_t __not_in_flash_func(PulseProcTzxTurbo::advance)(
     DBG_PULSE("PulseProcTzxTurbo: Length of SYNC second pulse %ld\n", h[2]);
     DBG_PULSE("PulseProcTzxTurbo: Length of ZERO bit pulse %ld\n", h[3]);
     DBG_PULSE("PulseProcTzxTurbo: Length of ONE bit pulse %ld\n", h[4]);
-    DBG_PULSE("PulseProcTzxTurbo: Length of PILOT tone (number of pulses) { %ld\n", h[5]);
+    DBG_PULSE("PulseProcTzxTurbo: Length of PILOT tone (number of pulses) %ld\n", h[5]);
     DBG_PULSE("PulseProcTzxTurbo: Used bits in the last byte %ld\n", h[6]);
     DBG_PULSE("PulseProcTzxTurbo: Pause after this block %ld\n", h[7]);
     DBG_PULSE("PulseProcTzxTurbo: Length of data that follow %ld\n", h[8]);
