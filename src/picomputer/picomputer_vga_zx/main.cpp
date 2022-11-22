@@ -232,7 +232,29 @@ int main(){
   
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-
+  
+  // TZX tape option handlers
+  zxSpectrum.tzxOptionHandlers(
+    [&]() { // Clear options
+      picoRootWin.clearTzxOptions();
+    },
+    [&](const char *s) { // Add option
+      picoRootWin.addTzxOption(s);
+    },
+    [&]() { // Show options
+      picoRootWin.showTzxOptions();
+      showMenu = true;
+      toggleMenu = false;
+    }
+  );
+  picoRootWin.tzxOption(
+    [&](uint32_t option) {
+      zxSpectrum.tzxOption(option);
+      showMenu = false;
+      toggleMenu = false;
+    }
+  );
+  
   tusb_init();
 
   // Configure the GPIO pins for audio

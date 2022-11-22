@@ -5,18 +5,39 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Z80.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidJoystick.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumDualJoystick.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrum.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuickSave.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Pulse.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseByte.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseByteStream.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulsePreamble.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/PulseBlock.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProc.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTone.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdHeader.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdByte.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcStdByteStream.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcChain.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxBlock.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxTurbo.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTap.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzx.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxHeader.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxGlue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxIndex.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcPauseMillis.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureTone.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcPulseStream.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPulseSequence.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxPureData.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcBitStream.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxDirectRecording.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcCallStream.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxGenData.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcTzxSelect.cpp 
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymdefs.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcRleSym.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymbol.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymbolData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp
@@ -50,6 +71,8 @@ set(zxspectrum_common_libs
   sdcard
   fatfs
   hardware_dma
+  Zeta
+  Z80
 )
 
 set(zxspectrum_audio_i2s_pio

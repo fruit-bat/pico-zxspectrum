@@ -3,8 +3,6 @@
 
 <a href="docs/1280px-ZXSpectrum48k.jpg"><img src="docs/640px-ZXSpectrum48k.png" height="200"/></a><a href="docs/1280px-ZX_Spectrum128K.jpg"><img src="docs/640px-ZX_Spectrum128K.png" height="200"/></a>
 
-This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA output.
-
 ## Features
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789 320x240)
@@ -16,7 +14,7 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * Audio input (load from tape)
 * 12 quick save slots
 * Load from .z80 snapshot files
-* Read from .tap tape files
+* Read from .tap & .tzx tape files
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
@@ -36,7 +34,13 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 
+## Interesting projects
+[Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
+
 ## Updates
+* 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
+* 13/11/22 - Slightly better PS/2 keyboard overflow handling
+* 13/11/22 - Partial support for TZX tape format
 * 24/09/22 - Fixed some problems with AY audio
 * 23/09/22 - Added support for Pimoroni Pico VGA Demo Base
 * 19/09/22 - Audio in (load from tape)
@@ -49,6 +53,14 @@ This is a basic 48k/128k ZX Spectrum emulation on the RP2040 with DVI/LCD/VGA ou
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
+
+I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
+* It comes with a test suite
+* It is much faster than the previous emulator
+
+TZX support added with some omissions:
+* No CSW support (raise an issue if this is important to you)
+* There a some compatiblity issues
 
 Builds with an RP_AUDIO_IN pin can now load from tape. 
 Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
@@ -434,7 +446,8 @@ git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
 git clone git@github.com:fruit-bat/pico-emu-utils
-
+git clone git@github.com:redcode/Z80.git
+git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
@@ -445,6 +458,8 @@ git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
+git clone https://github.com/redcode/Z80.git
+git clone https://github.com/redcode/Zeta.git
 ```
 Edit:
 ```sh
@@ -533,6 +548,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Lin Ke-Fong](https://github.com/anotherlin) for the [Z80 emulator](https://github.com/anotherlin/z80emu)<br/>
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 [badrianiulian](https://github.com/badrianiulian) for help testing and design work on the audio circuitry<br/>
+[redcode](https://github.com/redcode/Z80) for the [Z80 emulator](https://github.com/redcode/Z80)<br/>
 
 ## References
 [Z80 Test suite](https://github.com/raxoft/z80test)<br/>
@@ -562,3 +578,5 @@ tio -m ODELBS /dev/ttyUSB0
 [Z80 Instruction set](https://clrhome.org/table/)</br>
 [Site with some WAV files](http://zx.zigg.net/zxsoftware/)</br>
 [ZX Modules Software](https://spectrumforeveryone.com/technical/zx-modules-software/)</br>
+[TZX format](https://www.alessandrogrussu.it/tapir/tzxform120.html#GRPSTART)</br>
+[A decoder for ZX format](https://github.com/kounch/playtzx)</br>
