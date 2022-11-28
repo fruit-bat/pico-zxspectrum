@@ -700,6 +700,10 @@ uint32_t ZxSpectrum::tStatesPerMilliSecond() {
 }
 
 void ZxSpectrum::loadTap(InputStream *inputStream) {
+  _earInvert = 0;
+  _earDc = 0;
+  _ear = false;
+  
   _pulseChain.loadTap(
     inputStream,
     tStatesPerMilliSecond()
@@ -707,6 +711,10 @@ void ZxSpectrum::loadTap(InputStream *inputStream) {
 }
 
 void ZxSpectrum::loadTzx(InputStream *inputStream) {
+  _earInvert = 0;
+  _earDc = 0;
+  _ear = false;
+  
   _pulseChain.loadTzx(
     inputStream,
     tStatesPerMilliSecond(),
