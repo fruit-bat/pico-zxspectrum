@@ -10,6 +10,7 @@
 #include "InputStream.h"
 #include <functional>
 #include "QuickSave.h"
+#include "PicoExplorer.h"
 
 class ZxSpectrum;
 
@@ -49,7 +50,7 @@ private:
   PicoOption _pauseTapeOp;
 
   PicoSelect _chooseTape;
-  PicoSelect _chooseSnap;
+  PicoExplorer _chooseSnap;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -120,5 +121,9 @@ public:
   void addTzxOption(const char *);
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
 
-  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
+  ZxSpectrumMenu(
+    FatFsDirCache* snapDirCache,
+    SdCardFatFsSpi* sdCard,
+    ZxSpectrum *zxSpectrum,
+    QuickSave *quickSave);
 };

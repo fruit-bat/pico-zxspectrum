@@ -49,7 +49,11 @@ static const char *fext(const char *filename) {
   return dot + 1;
 }
 
-ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave) :
+ZxSpectrumMenu::ZxSpectrumMenu(
+    FatFsDirCache* snapDirCache,
+    SdCardFatFsSpi* sdCard,
+    ZxSpectrum *zxSpectrum,
+    QuickSave *quickSave) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
@@ -69,7 +73,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
   _chooseTape(0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
-  _chooseSnap(0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
+  _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
   
   _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _reset48kOp("Reset 48K ZX Spectrum"),
@@ -234,14 +238,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to load"); },
       true);
       
-    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
-
-    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
-      PicoOptionText *textOption = (PicoOptionText *)option;
+    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
       std::string fname(SAVED_SNAPS_DIR);
       fname.append("/");
-      fname.append(textOption->text());
-      _snapName = textOption->text();
+      fname.append(finfo->fname);
+      _snapName = finfo->fname;
       FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
       _zxSpectrum->loadZ80(is);
       delete is;
@@ -255,10 +256,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to rename"); },
       true);
       
-    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
-
-    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
-      PicoOptionText *textOption = (PicoOptionText *)option;
+    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
       _fileName.clear();
       _fileName.onenter([=](const char* name) {
         std::string fname;
@@ -270,10 +268,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
         }
         else {
           std::string fnameo;
-          snapName(fnameo, textOption->text());
+          snapName(fnameo, finfo->fname);
 
           if(renameSave(fnameo.c_str(), fname.c_str())) {
-            loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+            snapDirCache->reload();
             _wiz.pop(true);
           }
           else {
@@ -286,7 +284,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       _wiz.push(
         &_fileName, 
         [=](PicoPen *pen){ 
-          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", textOption->text()); 
+          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", finfo->fname); 
         },
         true);
     });
@@ -298,17 +296,14 @@ ZxSpectrumMenu::ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, Q
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to delete"); },
       true);
       
-    loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
-
-    _chooseSnap.onToggle([=](PicoOption *option, int32_t i) {
-      PicoOptionText *textOption = (PicoOptionText *)option;
+    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
       confirm(
         [=](PicoPen *pen){
-          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", textOption->text());
+          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", finfo->fname);
         },
         [=]() {
-          deleteSave(SAVED_SNAPS_DIR, textOption->text());
-          loadDirAlphabetical(SAVED_SNAPS_DIR, &_chooseSnap);
+          deleteSave(SAVED_SNAPS_DIR, finfo->fname);
+          snapDirCache->reload();
         }
       );
     });

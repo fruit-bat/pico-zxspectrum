@@ -104,6 +104,7 @@ static ZxSpectrum zxSpectrum(
   &joystick
 );
 static ZxSpectrumMenu picoRootWin(
+  &snapDirCache,
   &sdCard0,
   &zxSpectrum,
   &quickSave
