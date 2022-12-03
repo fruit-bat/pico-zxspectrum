@@ -60,6 +60,7 @@ private:
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
 
+  std::string _tmpName;
   std::string _tapeName;
   std::string _snapName;
 

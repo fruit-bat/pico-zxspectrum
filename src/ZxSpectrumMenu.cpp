@@ -257,6 +257,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
       
     _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
+      _tmpName = finfo->fname;
       _fileName.clear();
       _fileName.onenter([=](const char* name) {
         std::string fname;
@@ -268,7 +269,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
         }
         else {
           std::string fnameo;
-          snapName(fnameo, finfo->fname);
+          snapName(fnameo, _tmpName.c_str());
 
           if(renameSave(fnameo.c_str(), fname.c_str())) {
             snapDirCache->reload();
@@ -284,7 +285,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       _wiz.push(
         &_fileName, 
         [=](PicoPen *pen){ 
-          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", finfo->fname); 
+          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", _tmpName.c_str()); 
         },
         true);
     });
@@ -297,12 +298,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
       
     _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
+      _tmpName = finfo->fname;
       confirm(
         [=](PicoPen *pen){
-          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", finfo->fname);
+          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", _tmpName.c_str());
         },
         [=]() {
-          deleteSave(SAVED_SNAPS_DIR, finfo->fname);
+          deleteSave(SAVED_SNAPS_DIR, _tmpName.c_str());
           snapDirCache->reload();
         }
       );
