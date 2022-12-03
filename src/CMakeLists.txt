@@ -40,9 +40,9 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PulseProcSymbolData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFile.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsSpiFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAy.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatFsCacheFileLoop.cpp
 )
 
 set(zxspectrum_rgb_src

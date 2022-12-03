@@ -38,7 +38,7 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFatFsSpiFileLoop.h"
+#include "ZxSpectrumFatFsCacheFileLoop.h"
 #include "ZxSpectrumPrepareDviScanline.h"
 
 #include "PicoWinHidKeyboard.h"
@@ -46,6 +46,10 @@ extern "C" {
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
+
+// TODO remove
+#include "FatFsDirCache.h"
+
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -71,14 +75,13 @@ static SdCardFatFsSpi sdCard0(0);
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
+); 
+static FatFsDirCache snapDirCache(
+  &sdCard0
 );
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
+static ZxSpectrumFatFsCacheFileLoop zxSpectrumSnaps(
   &sdCard0, 
-  "zxspectrum/snapshots"
-);
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
-  &sdCard0, 
-  "zxspectrum/tapes"
+  &snapDirCache
 );
 static QuickSave quickSave(
   &sdCard0, 
@@ -87,13 +90,11 @@ static QuickSave quickSave(
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &zxSpectrumSnaps,
-  &zxSpectrumTapes,
   &quickSave,
   &joystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
   &zxSpectrumSnaps, 
-  &zxSpectrumTapes,
   &quickSave, 
   0
 );
@@ -291,6 +292,10 @@ int main() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
+  snapDirCache.attach("zxspectrum/snapshots");
+  snapDirCache.create();
+  snapDirCache.open();
+  
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options
@@ -355,9 +360,8 @@ int main() {
   
   if (sdCard0.mount()) {
     
-    // Set up the quick load loops
+    // Set up the quick load loop
     zxSpectrumSnaps.reload();
-    zxSpectrumTapes.reload();
 
     // Load quick save slot 1 if present
     if (quickSave.used(0)) {

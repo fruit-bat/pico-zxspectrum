@@ -67,7 +67,7 @@ void ZxSpectrumFatFsSpiFileLoop::load(ZxSpectrum* zxSpectrum) {
   DBG_PRINTF("File to load %s\n", name);
   
   if (_is) {
-    zxSpectrum->loadTap(0);
+    zxSpectrum->ejectTape();
     delete _is;
   }
   FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, name);
