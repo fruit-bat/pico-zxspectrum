@@ -7,7 +7,7 @@ class ZxSpectrumFatFsCacheFileLoop : public ZxSpectrumFileLoop {
   FatFsDirCache* _cache;
   uint32_t _i;
 
-  const char *fext(const char *filename);
+  static const char *fext(const char *filename);
   void load(ZxSpectrum* zxSpectrum);
   
 public:

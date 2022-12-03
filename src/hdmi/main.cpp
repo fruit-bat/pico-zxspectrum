@@ -293,9 +293,7 @@ int main() {
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
   snapDirCache.attach("zxspectrum/snapshots");
-  snapDirCache.create();
-  snapDirCache.open();
-  
+
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options

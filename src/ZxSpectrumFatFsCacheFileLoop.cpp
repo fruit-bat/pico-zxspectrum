@@ -16,6 +16,10 @@ ZxSpectrumFatFsCacheFileLoop::ZxSpectrumFatFsCacheFileLoop(SdCardFatFsSpi* sdCar
   _cache(cache),
   _i(0)
 {
+  cache->filter([](const char* fname) -> bool {
+    const char *ext = fext(fname);
+    return (0 == strcmp(ext, "z80") || 0 == strcmp(ext, "Z80"));
+  });
 }
 
 const char *ZxSpectrumFatFsCacheFileLoop::fext(const char *filename) {
@@ -63,14 +67,8 @@ void ZxSpectrumFatFsCacheFileLoop::load(ZxSpectrum* zxSpectrum) {
     
     FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, name.c_str());
    
-    const char *ext = fext(name.c_str());
-    if (0 == strcmp(ext, "z80") || 0 == strcmp(ext, "Z80")) {
-      zxSpectrum->loadZ80(is);
-      delete is;
-    }
-    else {
-      delete is;
-    }
+    zxSpectrum->loadZ80(is);
+    delete is;
   }
 }
 
