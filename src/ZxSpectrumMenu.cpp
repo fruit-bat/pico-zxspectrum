@@ -51,6 +51,7 @@ static const char *fext(const char *filename) {
 
 ZxSpectrumMenu::ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,
+    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
     QuickSave *quickSave) :
@@ -67,12 +68,14 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _snapLoadOp("Load"),
   _snapRenameOp("Rename"),
   _snapDeleteOp("Delete"),
+  _snapRescanDirOp("Rescan folder"),
   
   _tapePlayer(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
 
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
-  _chooseTape(0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
+  _tapeRescanDirOp("Rescan folder"),
+  _chooseTape(tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
   _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
   
   _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
@@ -230,6 +233,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _snapMgr.addOption(_snapLoadOp.addQuickKey(&_k1));
   _snapMgr.addOption(_snapRenameOp.addQuickKey(&_k2));
   _snapMgr.addOption(_snapDeleteOp.addQuickKey(&_k3));
+  _snapMgr.addOption(_snapRescanDirOp.addQuickKey(&_k4));
+
   _snapMgr.enableQuickKeys();
   
   _snapLoadOp.toggle([=]() {
@@ -311,6 +316,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     });
   });
   
+  _snapRescanDirOp.toggle([=]() {
+    showMessage([=](PicoPen *pen) {
+      pen->printAtF(0, 0, false, "Scan complete!");
+    });
+    snapDirCache->reload();
+  });
+  
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
   _reset.addOption(_reset128kOp.addQuickKey(&_k2));
   _reset.enableQuickKeys();
@@ -346,14 +358,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
   _tapePlayer.addOption(_pauseTapeOp.addQuickKey(&_k3));
+  _tapePlayer.addOption(_tapeRescanDirOp.addQuickKey(&_k4));
+  
   _tapePlayer.enableQuickKeys();
 
   _chooseTapeOp.toggle([=]() {
+    tapeDirCache->load();
     _wiz.push(
       &_chooseTape, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
       true);
-    loadDirAlphabetical(SAVED_TAPES_DIR, &_chooseTape);
   });
 
   _ejectTapeOp.toggle([=]() {
@@ -368,16 +382,20 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _pauseTapeOp.toggle([=]() {
     _zxSpectrum->togglePauseTape();
   });
-
-  _chooseTape.onToggle([=](PicoOption *option, int32_t i) {
-    PicoOptionText *textOption = (PicoOptionText *)option;
+  
+  tapeDirCache->filter([](const char* fname) -> bool {
+    const char *ext = fext(fname);
+    return (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX") || 0 == strcmp(ext, "tap") || 0 == strcmp(ext, "TAP"));
+  });
+    
+  _chooseTape.onToggle([=](FILINFO *finfo, int32_t i) {
     ejectTape();
     std::string fname(SAVED_TAPES_DIR);
     fname.append("/");
-    fname.append(textOption->text());
-    _tapeName = textOption->text();
+    fname.append(finfo->fname);
+    _tapeName = finfo->fname;
     _tis = new FatFsSpiInputStream(_sdCard, fname.c_str());
-    const char *ext = fext(textOption->text());
+    const char *ext = fext(finfo->fname);
     if (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX")) {
       _zxSpectrum->loadTzx(_tis);
     }
@@ -385,6 +403,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       _zxSpectrum->loadTap(_tis); 
     }
     _wiz.pop(true);
+  });
+  
+  _tapeRescanDirOp.toggle([=]() {
+    showMessage([=](PicoPen *pen) {
+      pen->printAtF(0, 0, false, "Scan complete!");
+    });
+    tapeDirCache->reload();
   });
   
   _quickSavesOp.toggle([=]() {
@@ -441,11 +466,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
           },
           [=]() {
             quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
+            tapeDirCache->reload();
           }
         );
       }
       else {
         quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
+        tapeDirCache->reload();
       }
     });
   });
@@ -467,7 +494,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(0, 2, false, "Menu System version 0.2");
+     pen->printAt(0, 2, false, "Menu System version 0.3");
 
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");

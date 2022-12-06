@@ -79,6 +79,9 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static FatFsDirCache snapDirCache(
   &sdCard0
 );
+static FatFsDirCache tapeDirCache(
+  &sdCard0
+);
 static ZxSpectrumFatFsCacheFileLoop zxSpectrumSnaps(
   &sdCard0, 
   &snapDirCache
@@ -105,6 +108,7 @@ static ZxSpectrum zxSpectrum(
 );
 static ZxSpectrumMenu picoRootWin(
   &snapDirCache,
+  &tapeDirCache,
   &sdCard0,
   &zxSpectrum,
   &quickSave
@@ -294,6 +298,7 @@ int main() {
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
   snapDirCache.attach("zxspectrum/snapshots");
+  tapeDirCache.attach("zxspectrum/tapes");
 
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(

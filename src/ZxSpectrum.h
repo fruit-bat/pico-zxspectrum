@@ -259,7 +259,7 @@ public:
         if (_pulseChain.end()) _ear = (eb >> i) & 1;
 
         while (_ta32 > 0) {
-          uint32_t t = z80Step(12);
+          uint32_t t = z80Step(8);
           c += t;
           if (!_mute) {
             stepBuzzer();

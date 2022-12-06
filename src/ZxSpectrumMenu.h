@@ -43,13 +43,15 @@ private:
   PicoOptionText _snapLoadOp;
   PicoOptionText _snapRenameOp;
   PicoOptionText _snapDeleteOp;
+  PicoOptionText _snapRescanDirOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
   PicoOption _pauseTapeOp;
+  PicoOptionText _tapeRescanDirOp;
 
-  PicoSelect _chooseTape;
+  PicoExplorer _chooseTape;
   PicoExplorer _chooseSnap;
 
   PicoSelect _reset;
@@ -124,6 +126,7 @@ public:
 
   ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,
+    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
     QuickSave *quickSave);

@@ -73,7 +73,7 @@ void ZxSpectrumFatFsCacheFileLoop::load(ZxSpectrum* zxSpectrum) {
 }
 
 void ZxSpectrumFatFsCacheFileLoop::reload() {
-  _cache->reload();
+  _cache->load();
   _i = 0;
 }
 
