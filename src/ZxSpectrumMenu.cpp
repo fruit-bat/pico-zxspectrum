@@ -37,8 +37,11 @@
 #ifndef SZ_MENU_SEP
 #define SZ_MENU_SEP 2
 #endif
+#ifndef SZ_FILE_SEP
+#define SZ_FILE_SEP 1
+#endif
 #ifndef SZ_FILE_ROWS
-#define SZ_FILE_ROWS 9
+#define SZ_FILE_ROWS 18
 #endif
 
 #define SZ_WIZ_COLS (SZ_FRAME_COLS-(2*SZ_WIZ_ML))
@@ -75,8 +78,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
   _tapeRescanDirOp("Rescan folder"),
-  _chooseTape(tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
-  _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_MENU_SEP),
+  _chooseTape(tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
   
   _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _reset48kOp("Reset 48K ZX Spectrum"),

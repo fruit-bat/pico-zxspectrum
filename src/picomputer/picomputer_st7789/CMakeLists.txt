@@ -4,7 +4,7 @@ include_directories(${picomputer_common_inc})
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
   ${picomputer_common_src}
-	main.cpp
+  main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
 )
@@ -27,7 +27,8 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   SZ_FRAME_X=0
   SZ_FRAME_Y=0
   SZ_MENU_SEP=2
-  SZ_FILE_ROWS=9
+  SZ_FILE_SEP=1
+  SZ_FILE_ROWS=18
   SPK_PIN=0
   PICOMPUTER_MAX
 )
@@ -74,7 +75,8 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   SZ_FRAME_X=3
   SZ_FRAME_Y=3
   SZ_MENU_SEP=1
-  SZ_FILE_ROWS=11    
+  SZ_FILE_SEP=1
+  SZ_FILE_ROWS=11
   SPK_PIN=0
   PICOMPUTER_ZX
 )
