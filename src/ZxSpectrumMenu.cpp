@@ -63,7 +63,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _tis(0),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
-  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_MENU_SEP),
+  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_FILE_SEP),
   _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
   _quickSavesOp("Quick saves"),
   
@@ -567,8 +567,9 @@ void ZxSpectrumMenu::loadDirAlphabetical(const char* folder, PicoSelect *select)
   select->deleteOptions();
   std::vector<std::string> fnames;
   std::vector<const FILINFO*> infos;
-  dirReader.foreach([&](const FILINFO* info) { 
+  dirReader.foreach([&](const FILINFO* info) bool { 
     fnames.push_back(info->fname);
+    return true;
   });
   std::sort(fnames.begin(), fnames.end(), [](const std::string& a, const std::string& b) -> bool {
     for (size_t c = 0; c < a.size() and c < b.size(); c++) {

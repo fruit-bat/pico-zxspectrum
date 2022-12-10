@@ -52,13 +52,9 @@ void ZxSpectrumFatFsCacheFileLoop::curr(ZxSpectrum* zxSpectrum) {
 void ZxSpectrumFatFsCacheFileLoop::load(ZxSpectrum* zxSpectrum) {
   
   if (_cache->size() == 0) return;
-   
-  if (_cache->pos() != _i) {
-    _cache->seek(_i);
-  }
   
   FILINFO info;
-  if (_cache->read(&info)) {
+  if (_cache->read(_i, &info)) {
     
     std::string name(_cache->folder());
     name.append("/");
