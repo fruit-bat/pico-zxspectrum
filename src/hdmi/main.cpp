@@ -302,7 +302,11 @@ int main() {
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   zxSpectrumSnaps.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
-  
+  picoRootWin.snapLoaded([&](const char *name) {
+      showMenu = false;
+      toggleMenu = false;
+    }
+  );
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options

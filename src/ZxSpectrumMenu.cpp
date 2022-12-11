@@ -255,7 +255,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
       _zxSpectrum->loadZ80(is);
       delete is;
-      _wiz.pop(true);
+      if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
     });
   });
   

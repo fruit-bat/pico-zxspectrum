@@ -89,6 +89,7 @@ private:
   bool _quickSaveSlotUsed[12];
   
   std::function<void()> _refresh;
+  std::function<void(const char *name)> _snapLoadedListener;
   
   void snapName(std::string &fname, const char *name);
 
@@ -127,6 +128,7 @@ public:
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
   void refresh(std::function<void()> refresh) { _refresh = refresh; }
   void snapName(const char* name);
+  void snapLoaded(std::function<void(const char *name)> listener) { _snapLoadedListener = listener; }
   
   ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,

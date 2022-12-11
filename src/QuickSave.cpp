@@ -28,7 +28,7 @@ void QuickSave::load(ZxSpectrum *specy, int slot) {
   printf("Quick save file to load %s\n", name);
   FatFsSpiInputStream is(_sdCard, name);
   specy->loadZ80(&is);
-  sprintf(name, "Quick Save (%d)", slot); 
+  sprintf(name, "Quick Save %d", slot + 1); 
   if (_listener) _listener(slot, name);
 }
 
