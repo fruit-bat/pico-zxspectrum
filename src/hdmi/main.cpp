@@ -300,7 +300,9 @@ int main() {
   snapDirCache.attach("zxspectrum/snapshots");
   tapeDirCache.attach("zxspectrum/tapes");
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
-
+  zxSpectrumSnaps.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
+  quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
+  
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options

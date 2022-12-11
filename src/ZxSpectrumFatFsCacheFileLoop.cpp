@@ -55,14 +55,16 @@ void ZxSpectrumFatFsCacheFileLoop::load(ZxSpectrum* zxSpectrum) {
   
   FILINFO info;
   if (_cache->read(_i, &info)) {
-    
+
     std::string name(_cache->folder());
     name.append("/");
     name.append(info.fname);
     DBG_PRINTF("File to load %s\n", name.c_str());
     
     FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, name.c_str());
-   
+    
+    if (_listener) _listener(_i, info.fname);
+    
     zxSpectrum->loadZ80(is);
     delete is;
   }

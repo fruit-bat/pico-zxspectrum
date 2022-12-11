@@ -251,7 +251,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       std::string fname(SAVED_SNAPS_DIR);
       fname.append("/");
       fname.append(finfo->fname);
-      _snapName = finfo->fname;
+      snapName(finfo->fname);
       FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
       _zxSpectrum->loadZ80(is);
       delete is;
@@ -507,6 +507,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");
    }); 
+}
+
+void ZxSpectrumMenu::snapName(const char* name) {
+  _snapName = name;
 }
 
 void ZxSpectrumMenu::snapName(std::string &fname, const char *name) {

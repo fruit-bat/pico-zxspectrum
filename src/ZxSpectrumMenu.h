@@ -126,6 +126,7 @@ public:
   void addTzxOption(const char *);
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
   void refresh(std::function<void()> refresh) { _refresh = refresh; }
+  void snapName(const char* name);
   
   ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,
