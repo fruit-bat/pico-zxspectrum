@@ -40,14 +40,11 @@ extern "C" {
 #include "QuickSave.h"
 #include "ZxSpectrumFatFsCacheFileLoop.h"
 #include "ZxSpectrumPrepareDviScanline.h"
-
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
-
-// TODO remove
 #include "FatFsDirCache.h"
 
 
