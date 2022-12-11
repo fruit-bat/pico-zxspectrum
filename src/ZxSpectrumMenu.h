@@ -92,8 +92,6 @@ private:
   std::function<void(const char *name)> _snapLoadedListener;
   
   void snapName(std::string &fname, const char *name);
-
-  void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
   

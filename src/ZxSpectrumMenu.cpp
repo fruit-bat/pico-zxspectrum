@@ -570,29 +570,6 @@ bool ZxSpectrumMenu::renameSave(const char *fileo, const char *filen) {
   return f_rename(fileo, filen) == FR_OK;
 }
 
-void ZxSpectrumMenu::loadDirAlphabetical(const char* folder, PicoSelect *select) {
-  FatFsSpiDirReader dirReader(_sdCard, folder);
-  int32_t focus = select->focus();
-  select->deleteOptions();
-  std::vector<std::string> fnames;
-  std::vector<const FILINFO*> infos;
-  dirReader.foreach([&](const FILINFO* info) bool { 
-    fnames.push_back(info->fname);
-    return true;
-  });
-  std::sort(fnames.begin(), fnames.end(), [](const std::string& a, const std::string& b) -> bool {
-    for (size_t c = 0; c < a.size() and c < b.size(); c++) {
-      if (std::tolower(a[c]) != std::tolower(b[c]))
-        return (std::tolower(a[c]) < std::tolower(b[c]));
-      }
-    return a.size() < b.size();
-  });
-  for (auto &fname : fnames) {
-    select->addOption(new PicoOptionText(fname.c_str()));
-  };
-  select->focus(focus);
-}
-
 void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {
   _wiz.push(
     &_message, 
