@@ -87,7 +87,9 @@ private:
   QuickSave *_quickSaveHelper;
   PicoTextField _fileName;
   bool _quickSaveSlotUsed[12];
-
+  
+  std::function<void()> _refresh;
+  
   void snapName(std::string &fname, const char *name);
 
   void loadDirAlphabetical(const char* folder, PicoSelect *select);
@@ -123,7 +125,8 @@ public:
   void clearTzxOptions();
   void addTzxOption(const char *);
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
-
+  void refresh(std::function<void()> refresh) { _refresh = refresh; }
+  
   ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,
     FatFsDirCache* tapeDirCache,

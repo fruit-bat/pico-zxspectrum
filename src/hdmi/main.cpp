@@ -299,6 +299,7 @@ int main() {
   
   snapDirCache.attach("zxspectrum/snapshots");
   tapeDirCache.attach("zxspectrum/tapes");
+  picoRootWin.refresh([&]() { picoDisplay.refresh(); });
 
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(

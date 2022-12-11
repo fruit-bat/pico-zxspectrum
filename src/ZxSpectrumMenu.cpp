@@ -57,7 +57,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
-    QuickSave *quickSave) :
+    QuickSave *quickSave
+) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
@@ -321,9 +322,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _snapRescanDirOp.toggle([=]() {
     showMessage([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Scan complete!");
+      pen->printAtF(0, 0, false, "Scanning folder");
     });
+    if (_refresh) _refresh();
     snapDirCache->reload();
+    _wiz.pop(true);
   });
   
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
@@ -410,9 +413,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _tapeRescanDirOp.toggle([=]() {
     showMessage([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Scan complete!");
+      pen->printAtF(0, 0, false, "Scanning folder");
     });
+    if (_refresh) _refresh();
     tapeDirCache->reload();
+    _wiz.pop(true);
   });
   
   _quickSavesOp.toggle([=]() {
