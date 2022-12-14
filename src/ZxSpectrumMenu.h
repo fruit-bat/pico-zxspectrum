@@ -10,6 +10,7 @@
 #include "InputStream.h"
 #include <functional>
 #include "QuickSave.h"
+#include "PicoExplorer.h"
 
 class ZxSpectrum;
 
@@ -42,14 +43,16 @@ private:
   PicoOptionText _snapLoadOp;
   PicoOptionText _snapRenameOp;
   PicoOptionText _snapDeleteOp;
+  PicoOptionText _snapRescanDirOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
   PicoOption _pauseTapeOp;
+  PicoOptionText _tapeRescanDirOp;
 
-  PicoSelect _chooseTape;
-  PicoSelect _chooseSnap;
+  PicoExplorer _chooseTape;
+  PicoExplorer _chooseSnap;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -59,6 +62,7 @@ private:
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
 
+  std::string _tmpName;
   std::string _tapeName;
   std::string _snapName;
 
@@ -83,10 +87,11 @@ private:
   QuickSave *_quickSaveHelper;
   PicoTextField _fileName;
   bool _quickSaveSlotUsed[12];
-
+  
+  std::function<void()> _refresh;
+  std::function<void(const char *name)> _snapLoadedListener;
+  
   void snapName(std::string &fname, const char *name);
-
-  void loadDirAlphabetical(const char* folder, PicoSelect *select);
   
   void ejectTape();
   
@@ -119,6 +124,14 @@ public:
   void clearTzxOptions();
   void addTzxOption(const char *);
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
-
-  ZxSpectrumMenu(SdCardFatFsSpi* sdCard, ZxSpectrum *zxSpectrum, QuickSave *quickSave);
+  void refresh(std::function<void()> refresh) { _refresh = refresh; }
+  void snapName(const char* name);
+  void snapLoaded(std::function<void(const char *name)> listener) { _snapLoadedListener = listener; }
+  
+  ZxSpectrumMenu(
+    FatFsDirCache* snapDirCache,
+    FatFsDirCache* tapeDirCache,
+    SdCardFatFsSpi* sdCard,
+    ZxSpectrum *zxSpectrum,
+    QuickSave *quickSave);
 };

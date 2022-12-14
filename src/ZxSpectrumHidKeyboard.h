@@ -9,14 +9,12 @@
 class ZxSpectrumHidKeyboard : public ZxSpectrumKeyboard {
   ZxSpectrum *_ZxSpectrum;  
   ZxSpectrumFileLoop* _zxSpectrumSnapList;
-  ZxSpectrumFileLoop* _zxSpectrumTapeList;
   QuickSave* _quickSave;
   bool _kiosk;
   uint8_t _mounted;
 public:
   ZxSpectrumHidKeyboard(
     ZxSpectrumFileLoop* zxSpectrumSnapList,
-    ZxSpectrumFileLoop* zxSpectrumTapeList, 
     QuickSave* quickSave, 
     ZxSpectrumJoystick * zxSpectrumJoystick
   );

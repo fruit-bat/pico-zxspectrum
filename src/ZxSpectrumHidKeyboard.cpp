@@ -120,13 +120,11 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
 
 ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   ZxSpectrumFileLoop *zxSpectrumSnapList,
-  ZxSpectrumFileLoop* zxSpectrumTapeList, 
   QuickSave* quickSave, 
   ZxSpectrumJoystick * zxSpectrumJoystick
 ) :
   ZxSpectrumKeyboard(zxSpectrumJoystick),
   _zxSpectrumSnapList(zxSpectrumSnapList),
-  _zxSpectrumTapeList(zxSpectrumTapeList),
   _quickSave(quickSave),
   _kiosk(false)
 {
@@ -139,7 +137,6 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
 ) :
   ZxSpectrumKeyboard(zxSpectrumJoystick),
   _zxSpectrumSnapList(0),
-  _zxSpectrumTapeList(0),
   _quickSave(quickSave),
   _kiosk(false)
 {
@@ -236,15 +233,6 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
       if (fkp & (1 << 8)) _zxSpectrumSnapList->prev(_ZxSpectrum);
       // F10 next snap
       if (fkp & (1 << 9)) _zxSpectrumSnapList->next(_ZxSpectrum);
-    }
-
-    if (_zxSpectrumTapeList) {
-      // F5 curr tape
-      if (fkp & (1 << 4)) _zxSpectrumTapeList->curr(_ZxSpectrum);
-      // F6 previous tape
-      if (fkp & (1 << 5)) _zxSpectrumTapeList->prev(_ZxSpectrum);
-      // F7 next tape
-      if (fkp & (1 << 6)) _zxSpectrumTapeList->next(_ZxSpectrum);
     }
   }
   

@@ -38,14 +38,15 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFatFsSpiFileLoop.h"
+#include "ZxSpectrumFatFsCacheFileLoop.h"
 #include "ZxSpectrumPrepareDviScanline.h"
-
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
+#include "FatFsDirCache.h"
+
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -71,14 +72,16 @@ static SdCardFatFsSpi sdCard0(0);
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
+); 
+static FatFsDirCache snapDirCache(
+  &sdCard0
 );
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumSnaps(
-  &sdCard0, 
-  "zxspectrum/snapshots"
+static FatFsDirCache tapeDirCache(
+  &sdCard0
 );
-static ZxSpectrumFatFsSpiFileLoop zxSpectrumTapes(
+static ZxSpectrumFatFsCacheFileLoop zxSpectrumSnaps(
   &sdCard0, 
-  "zxspectrum/tapes"
+  &snapDirCache
 );
 static QuickSave quickSave(
   &sdCard0, 
@@ -87,13 +90,11 @@ static QuickSave quickSave(
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &zxSpectrumSnaps,
-  &zxSpectrumTapes,
   &quickSave,
   &joystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
   &zxSpectrumSnaps, 
-  &zxSpectrumTapes,
   &quickSave, 
   0
 );
@@ -103,6 +104,8 @@ static ZxSpectrum zxSpectrum(
   &joystick
 );
 static ZxSpectrumMenu picoRootWin(
+  &snapDirCache,
+  &tapeDirCache,
   &sdCard0,
   &zxSpectrum,
   &quickSave
@@ -291,6 +294,16 @@ int main() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
+  snapDirCache.attach("zxspectrum/snapshots");
+  tapeDirCache.attach("zxspectrum/tapes");
+  picoRootWin.refresh([&]() { picoDisplay.refresh(); });
+  zxSpectrumSnaps.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
+  quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
+  picoRootWin.snapLoaded([&](const char *name) {
+      showMenu = false;
+      toggleMenu = false;
+    }
+  );
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options
@@ -355,9 +368,8 @@ int main() {
   
   if (sdCard0.mount()) {
     
-    // Set up the quick load loops
+    // Set up the quick load loop
     zxSpectrumSnaps.reload();
-    zxSpectrumTapes.reload();
 
     // Load quick save slot 1 if present
     if (quickSave.used(0)) {

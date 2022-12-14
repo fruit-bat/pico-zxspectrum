@@ -38,6 +38,7 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+* 14/12/22 - Support for more files in snapshots and tapes folders
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 13/11/22 - Slightly better PS/2 keyboard overflow handling
 * 13/11/22 - Partial support for TZX tape format
@@ -53,6 +54,11 @@
 * 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
+
+The emulator can now cope with more files in the snapshots and tapes folders without running out of memory.
+I've tested up to 400 but it may survive more that this.
+Directory entries are now written to a file .dcache which can be updated from the menus by 'rescanning' the folder.
+If you are adding files to the folders on a PC you can just delete the .dcache and it will get regenerated on next power-on.
 
 I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
 * It comes with a test suite
