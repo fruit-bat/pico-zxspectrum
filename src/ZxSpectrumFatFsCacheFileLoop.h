@@ -10,6 +10,7 @@ class ZxSpectrumFatFsCacheFileLoop : public ZxSpectrumFileLoop {
   std::function<void(uint32_t i, const char *)> _listener;
   
   static const char *fext(const char *filename);
+  static bool isZ80(const char* filename);
   void load(ZxSpectrum* zxSpectrum);
   
 public:
