@@ -11,11 +11,14 @@
 #include <functional>
 #include "QuickSave.h"
 #include "PicoExplorer.h"
+#include "FatFsDirCache.h"
 
 class ZxSpectrum;
 
 class ZxSpectrumMenu : public PicoWin {
 private:
+  FatFsDirCache _snapDirCache;
+  FatFsDirCache _tapeDirCache;
   SdCardFatFsSpi *_sdCard;
   ZxSpectrum *_zxSpectrum;
   InputStream* _tis;
@@ -131,8 +134,6 @@ public:
   void nextSnap(int d);
 
   ZxSpectrumMenu(
-    FatFsDirCache* snapDirCache,
-    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
     QuickSave *quickSave);

@@ -53,13 +53,13 @@ static const char *fext(const char *filename) {
 }
 
 ZxSpectrumMenu::ZxSpectrumMenu(
-    FatFsDirCache* snapDirCache,
-    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
     QuickSave *quickSave
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
+  _snapDirCache(sdCard),
+  _tapeDirCache(sdCard),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
   _tis(0),
@@ -79,8 +79,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _chooseTapeOp("Choose a tape"),
   _ejectTapeOp("Eject tape"),
   _tapeRescanDirOp("Rescan folder"),
-  _chooseTape(tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
-  _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseTape(&_tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseSnap(&_snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
   
   _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _reset48kOp("Reset 48K ZX Spectrum"),
@@ -110,6 +110,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _fileName(0, 0,SZ_WIZ_COLS, 64)
 { 
+  _snapDirCache.attach("zxspectrum/snapshots");
+  _tapeDirCache.attach("zxspectrum/tapes");
+  _snapDirCache.load();
+
   _tzxSelect.onToggle(
     [=](PicoOption *option, int32_t i) {
       _wiz.pop(true);
@@ -281,7 +285,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
           snapName(fnameo, _tmpName.c_str());
 
           if(renameSave(fnameo.c_str(), fname.c_str())) {
-            snapDirCache->reload();
+            _snapDirCache.reload();
             _wiz.pop(true);
           }
           else {
@@ -314,7 +318,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
         },
         [=]() {
           deleteSave(SAVED_SNAPS_DIR, _tmpName.c_str());
-          snapDirCache->reload();
+          _snapDirCache.reload();
         }
       );
     });
@@ -325,7 +329,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       pen->printAtF(0, 0, false, "Scanning folder");
     });
     if (_refresh) _refresh();
-    snapDirCache->reload();
+    _snapDirCache.reload();
     _wiz.pop(true);
   });
   
@@ -369,7 +373,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _tapePlayer.enableQuickKeys();
 
   _chooseTapeOp.toggle([=]() {
-    tapeDirCache->load();
+    _tapeDirCache.load();
     _wiz.push(
       &_chooseTape, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
@@ -389,7 +393,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _zxSpectrum->togglePauseTape();
   });
   
-  tapeDirCache->filter([](const char* fname) -> bool {
+  _tapeDirCache.filter([](const char* fname) -> bool {
     const char *ext = fext(fname);
     return (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX") || 0 == strcmp(ext, "tap") || 0 == strcmp(ext, "TAP"));
   });
@@ -416,7 +420,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       pen->printAtF(0, 0, false, "Scanning folder");
     });
     if (_refresh) _refresh();
-    tapeDirCache->reload();
+    _tapeDirCache.reload();
     _wiz.pop(true);
   });
   
@@ -474,13 +478,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
           },
           [=]() {
             quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-            tapeDirCache->reload();
+            _tapeDirCache.reload();
           }
         );
       }
       else {
         quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-        tapeDirCache->reload();
+        _tapeDirCache.reload();
       }
     });
   });

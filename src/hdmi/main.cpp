@@ -45,7 +45,6 @@ extern "C" {
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
-#include "FatFsDirCache.h"
 
 
 #define UART_ID uart0
@@ -73,12 +72,6 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
 ); 
-static FatFsDirCache snapDirCache(
-  &sdCard0
-);
-static FatFsDirCache tapeDirCache(
-  &sdCard0
-);
 static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave(
   &sdCard0, 
@@ -101,8 +94,6 @@ static ZxSpectrum zxSpectrum(
   &joystick
 );
 static ZxSpectrumMenu picoRootWin(
-  &snapDirCache,
-  &tapeDirCache,
   &sdCard0,
   &zxSpectrum,
   &quickSave
@@ -291,8 +282,6 @@ int main() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
-  snapDirCache.attach("zxspectrum/snapshots");
-  tapeDirCache.attach("zxspectrum/tapes");
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   picoRootWin.snapLoaded([&](const char *name) {
@@ -322,7 +311,6 @@ int main() {
     }
   );
   snapFileLoop.set(&picoRootWin);
-  snapDirCache.load();
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
