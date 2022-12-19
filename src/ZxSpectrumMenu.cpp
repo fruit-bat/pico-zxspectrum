@@ -240,23 +240,23 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _snapMgr.addOption(_snapRescanDirOp.addQuickKey(&_k4));
 
   _snapMgr.enableQuickKeys();
+
+  _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
+    std::string fname(SAVED_SNAPS_DIR);
+    fname.append("/");
+    fname.append(finfo->fname);
+    snapName(finfo->fname);
+    FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
+    _zxSpectrum->loadZ80(is);
+    delete is;
+    if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
+  });
   
   _snapLoadOp.toggle([=]() {
     _wiz.push(
       &_chooseSnap, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to load"); },
       true);
-      
-    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
-      std::string fname(SAVED_SNAPS_DIR);
-      fname.append("/");
-      fname.append(finfo->fname);
-      snapName(finfo->fname);
-      FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
-      _zxSpectrum->loadZ80(is);
-      delete is;
-      if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
-    });
   });
   
   _snapRenameOp.toggle([=]() {
@@ -641,4 +641,15 @@ void ZxSpectrumMenu::clearTzxOptions() {
 
 void ZxSpectrumMenu::addTzxOption(const char *s) {
   _tzxSelect.addOption(new PicoOptionText(s));
+}
+
+bool ZxSpectrumMenu::isZ80(const char* filename) {
+    const char *ext = fext(filename);
+    return (0 == strcmp(ext, "z80") || 0 == strcmp(ext, "Z80"));
+}
+
+void ZxSpectrumMenu::nextSnap(int d) {
+  _chooseSnap.next([](FILINFO* finfo) bool {
+    return !(finfo->fattrib & AM_DIR) && isZ80(finfo->fname);
+  }, d);
 }

@@ -38,7 +38,7 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFatFsCacheFileLoop.h"
+#include "ZxSpectrumFileLoop.h"
 #include "ZxSpectrumPrepareDviScanline.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -79,22 +79,19 @@ static FatFsDirCache snapDirCache(
 static FatFsDirCache tapeDirCache(
   &sdCard0
 );
-static ZxSpectrumFatFsCacheFileLoop zxSpectrumSnaps(
-  &sdCard0, 
-  &snapDirCache
-);
+static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave(
   &sdCard0, 
   "zxspectrum/quicksaves"
 );
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
-  &zxSpectrumSnaps,
+  &snapFileLoop,
   &quickSave,
   &joystick
 );
 static ZxSpectrumHidKeyboard keyboard2(
-  &zxSpectrumSnaps, 
+  &snapFileLoop, 
   &quickSave, 
   0
 );
@@ -297,7 +294,6 @@ int main() {
   snapDirCache.attach("zxspectrum/snapshots");
   tapeDirCache.attach("zxspectrum/tapes");
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
-  zxSpectrumSnaps.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
@@ -325,6 +321,8 @@ int main() {
       toggleMenu = false;
     }
   );
+  snapFileLoop.set(&picoRootWin);
+  snapDirCache.load();
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
@@ -368,9 +366,6 @@ int main() {
   
   if (sdCard0.mount()) {
     
-    // Set up the quick load loop
-    zxSpectrumSnaps.reload();
-
     // Load quick save slot 1 if present
     if (quickSave.used(0)) {
       quickSave.load(&zxSpectrum, 0);

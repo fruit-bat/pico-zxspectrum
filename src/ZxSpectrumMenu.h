@@ -115,6 +115,7 @@ private:
   bool deleteSave(const char *folder, const char *file);
   
   void quickSaveToSnap(int i, const char *folder, const char *file);
+  static bool isZ80(const char* filename);
   
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
@@ -127,7 +128,8 @@ public:
   void refresh(std::function<void()> refresh) { _refresh = refresh; }
   void snapName(const char* name);
   void snapLoaded(std::function<void(const char *name)> listener) { _snapLoadedListener = listener; }
-  
+  void nextSnap(int d);
+
   ZxSpectrumMenu(
     FatFsDirCache* snapDirCache,
     FatFsDirCache* tapeDirCache,
