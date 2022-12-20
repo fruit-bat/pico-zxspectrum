@@ -11,14 +11,15 @@
 #include <functional>
 #include "QuickSave.h"
 #include "PicoExplorer.h"
-#include "FatFsDirCache.h"
+#include "FatFsFilePath.h"
 
 class ZxSpectrum;
 
 class ZxSpectrumMenu : public PicoWin {
 private:
-  FatFsDirCache _snapDirCache;
-  FatFsDirCache _tapeDirCache;
+  FatFsFilePath _pathZxSpectrum;
+  FatFsFilePath _pathSnaps;
+  FatFsFilePath _pathTapes;
   SdCardFatFsSpi *_sdCard;
   ZxSpectrum *_zxSpectrum;
   InputStream* _tis;
