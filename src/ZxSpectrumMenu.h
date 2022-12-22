@@ -43,17 +43,10 @@ private:
   PicoOption _joystickOp;
   PicoOptionText _quickSavesOp;
 
-  PicoSelect _snapMgr;
-  PicoOptionText _snapLoadOp;
-  PicoOptionText _snapRenameOp;
-  PicoOptionText _snapDeleteOp;
-  PicoOptionText _snapRescanDirOp;
-
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
   PicoOption _pauseTapeOp;
-  PicoOptionText _tapeRescanDirOp;
 
   PicoExplorer _chooseTape;
   PicoExplorer _chooseSnap;
@@ -113,14 +106,13 @@ private:
   );
   
   bool checkExists(const char *file);
-  
-  bool renameSave(const char *fileo, const char *filen);
-
-  bool deleteSave(const char *folder, const char *file);
-  
   void quickSaveToSnap(int i, const char *folder, const char *file);
   static bool isZ80(const char* filename);
   
+  void renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
+  void deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
+  void refreshFolder(PicoExplorer*);
+
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
   void removeMessage();
