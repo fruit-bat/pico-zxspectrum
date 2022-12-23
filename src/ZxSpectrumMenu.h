@@ -111,6 +111,7 @@ private:
   
   void renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
   void deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
+  void pasteFile(PicoExplorer* exp, const char* name);
   void refreshFolder(PicoExplorer*);
 
 public:

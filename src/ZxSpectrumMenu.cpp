@@ -9,6 +9,7 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 
+// TODO get rid of these
 #define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
 #define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
 #define SAVED_TAPES_DIR "/zxspectrum/tapes"
@@ -153,7 +154,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_chooseSnap, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Snapshot", SZ_WIZ_CW2, _snapName.c_str());
+        pen->printAtF(0, 0, false,"%-*s[ %s ]", SZ_WIZ_CW1, "Snapshot", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
       },
       true);
   });
@@ -240,6 +241,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     renameFile(&_chooseSnap, finfo, i);
   };
   
+  _chooseSnap.onPasteFile = [&](const char* name) {
+    pasteFile(&_chooseSnap, name);
+  };
+  
   _chooseSnap.onDeleteFile = [&](FILINFO *finfo, int32_t i) {
     deleteFile(&_chooseSnap, finfo, i);
   };
@@ -289,7 +294,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _chooseTapeOp.toggle([=]() {
     _wiz.push(
       &_chooseTape, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
+      [](PicoPen *pen){ 
+        pen->printAtF(0, 0, false,"%-*s[ %s ]", SZ_WIZ_CW1, "Tapes", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+      },
       true);
   });
 
@@ -322,6 +329,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _chooseTape.onRenameFile = [&](FILINFO *finfo, int32_t i) {
     renameFile(&_chooseTape, finfo, i);
+  };
+  
+  _chooseTape.onPasteFile = [&](const char* name) {
+    pasteFile(&_chooseTape, name);
   };
   
   _chooseTape.onDeleteFile = [&](FILINFO *finfo, int32_t i) {
@@ -378,7 +389,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
     _fileName.onenter([=](const char* name) {
       std::string fname;
-      snapName(fname, name);
+      snapName(fname, name); // TODO FIX ME ?
       if (checkExists(fname.c_str())) {
         confirm(
           [=](PicoPen *pen){
@@ -551,7 +562,7 @@ void ZxSpectrumMenu::nextSnap(int d) {
 
 void ZxSpectrumMenu::renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
   _tmpName = finfo->fname;
-  _fileName.clear();
+  _fileName.set(finfo->fname);
   _fileName.onenter([=](const char* name) {
     if (exp->checkExists(name)) {
       showError([=](PicoPen *pen) {
@@ -577,11 +588,39 @@ void ZxSpectrumMenu::renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
     true);
 }
 
+void ZxSpectrumMenu::pasteFile(PicoExplorer* exp, const char* origname) {
+  _tmpName = origname;
+  _fileName.set(origname);
+  _fileName.onenter([=](const char* name) {
+    if (exp->checkExists(name)) {
+      showError([=](PicoPen *pen) {
+        pen->printAtF(0, 0, false, "Error: already exists '%s'", name);
+      });
+    }
+    else {
+      if(exp->pasteFile(name)) {
+        _wiz.pop(true);
+      }
+      else {
+        showError([=](PicoPen *pen) {
+          pen->printAtF(0, 0, false, "Error: failed to paste '%s'", name);
+        });
+      }
+    }
+  });
+  _wiz.push(
+    &_fileName, 
+    [=](PicoPen *pen){ 
+      pen->printAtF(0, 0, false, "Enter file name [ %s ]", _tmpName.c_str()); 
+    },
+    true);
+}
+
 void ZxSpectrumMenu::deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
   _tmpName = finfo->fname;
   confirm(
     [=](PicoPen *pen){
-      pen->printAtF(0, 0, false, "Delete snapshot '%s'?", _tmpName.c_str());
+      pen->printAtF(0, 0, false, "Delete '%s'?", _tmpName.c_str());
     },
     [=]() {
       exp->deleteFile(_tmpName.c_str());
