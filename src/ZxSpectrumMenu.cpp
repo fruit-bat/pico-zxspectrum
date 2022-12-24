@@ -9,10 +9,13 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 
-// TODO get rid of these
-#define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
-#define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
-#define SAVED_TAPES_DIR "/zxspectrum/tapes"
+#define DEBUG_ZX_MENU
+
+#ifdef DEBUG_ZX_MENU
+#define DBG_PRINTF(...) printf(__VA_ARGS__)
+#else
+#define DBG_PRINTF(...)
+#endif
 
 #ifndef SZ_WIZ_ML
 #define SZ_WIZ_ML 3
@@ -55,20 +58,19 @@ static const char *fext(const char *filename) {
 
 ZxSpectrumMenu::ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
-    ZxSpectrum *zxSpectrum,
-    QuickSave *quickSave
+    ZxSpectrum *zxSpectrum
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
    _pathZxSpectrum("zxspectrum"),
    _pathSnaps(&_pathZxSpectrum, "snapshots"),
    _pathTapes(&_pathZxSpectrum, "tapes"),
+   _pathQuickSaves(&_pathSnaps, "quicksaves"),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
   _tis(0),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_FILE_SEP),
   _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
-  _quickSavesOp("Quick saves"),
   
   _tapePlayer(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
 
@@ -92,19 +94,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _confirmNo("No"),
   _confirmYes("Yes"),
   
-  _quickSaves(0, 0, SZ_WIZ_COLS, 12, 1),
-  
-  _quickSave(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  _quickSaveLoadOp("Load"),
-  _quickSaveToSnapOp("Save as SNAP"),
-  _quickSaveClearOp("Clear"),
-  
   _tzxSelect(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  
-  _quickSaveHelper(quickSave),
-  
+    
   _fileName(0, 0, SZ_WIZ_COLS, 64)
 { 
+  _pathQuickSaves.createFolders(sdCard);
+  _pathTapes.createFolders(sdCard);
+  
   _tzxSelect.onToggle(
     [=](PicoOption *option, int32_t i) {
       _wiz.pop(true);
@@ -139,11 +135,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
   _main.addOption(_snapOp.addQuickKey(&_k1));
   _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
-  _main.addOption(_quickSavesOp.addQuickKey(&_k3));
-  _main.addOption(_freqOp.addQuickKey(&_k4));
-  _main.addOption(_muteOp.addQuickKey(&_k5));
-  _main.addOption(_resetOp.addQuickKey(&_k6));
-  _main.addOption(_joystickOp.addQuickKey(&_k7));
+  _main.addOption(_freqOp.addQuickKey(&_k3));
+  _main.addOption(_muteOp.addQuickKey(&_k4));
+  _main.addOption(_resetOp.addQuickKey(&_k5));
+  _main.addOption(_joystickOp.addQuickKey(&_k6));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -343,85 +338,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     refreshFolder(&_chooseTape);
   };
   
-  _quickSavesOp.toggle([=]() {
-    for(int i = 0; i <12; ++i) {
-      _quickSaveSlotUsed[i] = _quickSaveHelper->used(i);
-    }
-    _wiz.push(
-      &_quickSaves, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Quick save"); }, 
-      true);
-  });
-  
-  for(int i = 0; i < 12; ++i) {
-    PicoOption *qs = &_quickOps[i]; 
-    _quickSaves.addOption(qs);
-    qs->onPaint([=](PicoPen *pen){
-      pen->clear();
-      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-4s ]", i + 1, "", _quickSaveSlotUsed[i] ? "used" : "");
-    });
-    qs->toggle([=]() {
-      if (_quickSaveHelper->used(i)) {
-        _wiz.push(
-          &_quickSave, 
-          [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", i + 1); }, 
-          true);
-        _quickSaveSlot = i;
-      }
-    });
-  }
-
-  _quickSave.addOption(_quickSaveLoadOp.addQuickKey(&_k1));
-  _quickSave.addOption(_quickSaveClearOp.addQuickKey(&_k2));
-  _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k3));
-  _quickSave.enableQuickKeys();
-
-  _quickSaveLoadOp.toggle([=]() {
-    _quickSaveHelper->load(_zxSpectrum, _quickSaveSlot);
-    _wiz.pop(true);
-  });
-  
-  _quickSaveToSnapOp.toggle([=]() {
-    _fileName.clear();
-    _wiz.push(
-      &_fileName, 
-      [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", _quickSaveSlot + 1); }, 
-      true);
-    _fileName.onenter([=](const char* name) {
-      std::string fname;
-      snapName(fname, name); // TODO FIX ME ?
-      if (checkExists(fname.c_str())) {
-        confirm(
-          [=](PicoPen *pen){
-            pen->printAtF(0, 0, false, "'%s' exits. Overwrite?", name);
-          },
-          [=]() {
-            quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-            _chooseTape.reload();
-          }
-        );
-      }
-      else {
-        quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-        _chooseTape.reload();
-      }
-    });
-  });
-
-  _quickSaveClearOp.toggle([=]() {
-    confirm(
-      [=](PicoPen *pen){
-        pen->printAt(0, 0, false, "Remove quick save ?");
-      },
-      [=]() {
-        if (_quickSaveHelper->clear(_quickSaveSlot)) {
-           _quickSaveSlotUsed[_quickSaveSlot] = false;
-        }
-        _wiz.pop(true);
-      }
-    );
-  });
-  
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
@@ -434,28 +350,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
 void ZxSpectrumMenu::snapName(const char* name) {
   _snapName = name;
-}
-
-void ZxSpectrumMenu::snapName(std::string &fname, const char *name) {
-  fname.clear();
-  fname.append(SAVED_SNAPS_DIR);
-  fname.append("/");
-  fname.append(name);
-  auto nl = strlen(name);
-  if (nl < 4 || !((strncmp(name + nl - 4, ".z80", 4) == 0) || (strncmp(name + nl - 4, ".Z80", 4) == 0))) {
-    fname.append(".z80");
-  }
-}
-
-void ZxSpectrumMenu::quickSaveToSnap(int i, const char *name, const char *fname) {
-  if (!_quickSaveHelper->copy(i, fname)) {
-    showError([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Error: failed to create SNAP '%s'", name);
-    });
-  }
-  else {
-    _wiz.pop(true);
-  }
 }
 
 void ZxSpectrumMenu::ejectTape() {
@@ -566,7 +460,7 @@ void ZxSpectrumMenu::renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
   _fileName.onenter([=](const char* name) {
     if (exp->checkExists(name)) {
       showError([=](PicoPen *pen) {
-        pen->printAtF(0, 0, false, "Error: already exists '%s'", name);
+        pen->printAtF(0, 0, false, "Already exists '%s'", name);
       });
     }
     else {
@@ -575,7 +469,7 @@ void ZxSpectrumMenu::renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
       }
       else {
         showError([=](PicoPen *pen) {
-          pen->printAtF(0, 0, false, "Error: failed to rename to '%s'", name);
+          pen->printAtF(0, 0, false, "Failed to rename to '%s'", name);
         });
       }
     }
@@ -594,7 +488,7 @@ void ZxSpectrumMenu::pasteFile(PicoExplorer* exp, const char* origname) {
   _fileName.onenter([=](const char* name) {
     if (exp->checkExists(name)) {
       showError([=](PicoPen *pen) {
-        pen->printAtF(0, 0, false, "Error: already exists '%s'", name);
+        pen->printAtF(0, 0, false, "Already exists '%s'", name);
       });
     }
     else {
@@ -603,7 +497,7 @@ void ZxSpectrumMenu::pasteFile(PicoExplorer* exp, const char* origname) {
       }
       else {
         showError([=](PicoPen *pen) {
-          pen->printAtF(0, 0, false, "Error: failed to paste '%s'", name);
+          pen->printAtF(0, 0, false, "Failed to paste '%s'", name);
         });
       }
     }
@@ -635,6 +529,59 @@ void ZxSpectrumMenu::refreshFolder(PicoExplorer* exp) {
   if (_refresh) _refresh();
   exp->reload();
   _wiz.pop(true);
+}
+
+void ZxSpectrumMenu::quickSave(int slot) {
+
+  // Make sure we have a folder for the quick-save
+  if (!_pathQuickSaves.createFolders(_sdCard)) return;
+  
+  {
+    char name[32];
+    snprintf(name, 32, "slot%d.z80", slot + 1);
+
+    DBG_PRINTF("Quick save file to save name '%s'\n", name);
+    
+    FatFsFilePath pname(&_pathQuickSaves, name);
+    std::string fullpath;
+    pname.appendTo(fullpath);
+    
+    DBG_PRINTF("Quick save file to save path '%s'\n", fullpath.c_str());
+    
+    FatFsSpiOutputStream os(_sdCard, fullpath.c_str());
+    
+    _zxSpectrum->saveZ80(&os);
+  }
+  
+  {
+    std::string fullpath;
+    _pathQuickSaves.appendTo(fullpath);
+    _chooseSnap.folderModified(fullpath.c_str());
+  }
+}
+
+void ZxSpectrumMenu::quickLoad(int slot) {
+  char name[32];
+  snprintf(name, 32, "slot%d.z80", slot + 1);
+
+  DBG_PRINTF("Quick save file to load name '%s'\n", name);
+  
+  FatFsFilePath pname(&_pathQuickSaves, name);
+  std::string fullpath;
+  pname.appendTo(fullpath);
+  
+  DBG_PRINTF("Quick save file to load path '%s'\n", fullpath.c_str());  
+  
+  FatFsSpiInputStream is(_sdCard, fullpath.c_str());
+  
+  if (is.closed()) {
+    printf("No quick save in slot '%d' to load\n", slot);  
+    return;
+  }
+  
+  _zxSpectrum->loadZ80(&is);
+  
+  snapName(name);
 }
 
 

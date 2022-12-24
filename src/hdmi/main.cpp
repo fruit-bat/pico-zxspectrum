@@ -73,10 +73,7 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   "zxspectrum"
 ); 
 static ZxSpectrumFileLoop snapFileLoop;
-static QuickSave quickSave(
-  &sdCard0, 
-  "zxspectrum/quicksaves"
-);
+static QuickSave quickSave;
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
@@ -95,8 +92,7 @@ static ZxSpectrum zxSpectrum(
 );
 static ZxSpectrumMenu picoRootWin(
   &sdCard0,
-  &zxSpectrum,
-  &quickSave
+  &zxSpectrum
 );
 static PicoDisplay picoDisplay(
   pcw_screen(),
@@ -283,7 +279,6 @@ int main() {
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
-  quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
@@ -311,6 +306,7 @@ int main() {
     }
   );
   snapFileLoop.set(&picoRootWin);
+  quickSave.set(&picoRootWin);
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
@@ -355,9 +351,7 @@ int main() {
   if (sdCard0.mount()) {
     
     // Load quick save slot 1 if present
-    if (quickSave.used(0)) {
-      quickSave.load(&zxSpectrum, 0);
-    }
+    quickSave.load(&zxSpectrum, 0);
     
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
