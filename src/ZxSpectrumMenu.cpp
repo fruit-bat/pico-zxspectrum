@@ -9,7 +9,7 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 
-#define DEBUG_ZX_MENU
+// #define DEBUG_ZX_MENU
 
 #ifdef DEBUG_ZX_MENU
 #define DBG_PRINTF(...) printf(__VA_ARGS__)
@@ -61,7 +61,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     ZxSpectrum *zxSpectrum
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
-   _pathZxSpectrum("zxspectrum"),
+   _pathZxSpectrum("/zxspectrum"),
    _pathSnaps(&_pathZxSpectrum, "snapshots"),
    _pathTapes(&_pathZxSpectrum, "tapes"),
    _pathQuickSaves(&_pathSnaps, "quicksaves"),
@@ -538,15 +538,15 @@ void ZxSpectrumMenu::quickSave(int slot) {
   
   {
     char name[32];
-    snprintf(name, 32, "slot%d.z80", slot + 1);
+    snprintf(name, 32, "Slot %d.z80", slot + 1);
 
-    DBG_PRINTF("Quick save file to save name '%s'\n", name);
+    DBG_PRINTF("ZxSpectrumMenu: Quick save file to save name '%s'\n", name);
     
     FatFsFilePath pname(&_pathQuickSaves, name);
     std::string fullpath;
     pname.appendTo(fullpath);
     
-    DBG_PRINTF("Quick save file to save path '%s'\n", fullpath.c_str());
+    DBG_PRINTF("ZxSpectrumMenu: Quick save file to save path '%s'\n", fullpath.c_str());
     
     FatFsSpiOutputStream os(_sdCard, fullpath.c_str());
     
@@ -562,20 +562,20 @@ void ZxSpectrumMenu::quickSave(int slot) {
 
 void ZxSpectrumMenu::quickLoad(int slot) {
   char name[32];
-  snprintf(name, 32, "slot%d.z80", slot + 1);
+  snprintf(name, 32, "Slot %d.z80", slot + 1);
 
-  DBG_PRINTF("Quick save file to load name '%s'\n", name);
+  DBG_PRINTF("ZxSpectrumMenu: Quick save file to load name '%s'\n", name);
   
   FatFsFilePath pname(&_pathQuickSaves, name);
   std::string fullpath;
   pname.appendTo(fullpath);
   
-  DBG_PRINTF("Quick save file to load path '%s'\n", fullpath.c_str());  
+  DBG_PRINTF("ZxSpectrumMenu: Quick save file to load path '%s'\n", fullpath.c_str());  
   
   FatFsSpiInputStream is(_sdCard, fullpath.c_str());
   
   if (is.closed()) {
-    printf("No quick save in slot '%d' to load\n", slot);  
+    DBG_PRINTF("ZxSpectrumMenu: No quick save in slot '%d' to load\n", slot);  
     return;
   }
   

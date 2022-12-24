@@ -470,7 +470,7 @@ int32_t PulseProcTzxBlock::advance(
       return PP_ERROR;
     }
     r = doBlock(is, bt, top);
-    printf("PulseProcTzxBlock: do block type %02lX returned %ld\n", bt, r);
+    DBG_PULSE("PulseProcTzxBlock: do block type %02lX returned %ld\n", bt, r);
     return r;
   }
   else {
