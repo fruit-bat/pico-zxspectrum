@@ -14,7 +14,7 @@
 #include "hardware/pwm.h"
 #include "ZxSpectrumAudio.h"
 
-#define DEBUG_SPEC
+// #define DEBUG_SPEC
 #ifdef DEBUG_SPEC
 #define DBG_SPEC(...) printf(__VA_ARGS__)
 #else
