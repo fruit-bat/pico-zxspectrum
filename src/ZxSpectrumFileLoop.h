@@ -2,12 +2,17 @@
 
 #include "ZxSpectrum.h"
 
+class ZxSpectrumMenu;
+
 class ZxSpectrumFileLoop {
+private:
+  ZxSpectrumMenu* _menu;
 public:
-  ZxSpectrumFileLoop() {}
+  ZxSpectrumFileLoop() : _menu(0) {}
+  void set(ZxSpectrumMenu* menu) { _menu = menu; }
   virtual ~ZxSpectrumFileLoop() {}
-  virtual void next(ZxSpectrum* zxSpectrum);
-  virtual void prev(ZxSpectrum* zxSpectrum);
-  virtual void curr(ZxSpectrum* zxSpectrum);
-  virtual void reload();
+  void next(ZxSpectrum* zxSpectrum);
+  void prev(ZxSpectrum* zxSpectrum);
+  void curr(ZxSpectrum* zxSpectrum);
+  void reload();
 };

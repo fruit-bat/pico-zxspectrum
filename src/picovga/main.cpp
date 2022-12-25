@@ -24,8 +24,7 @@
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFatFsCacheFileLoop.h"
-
+#include "ZxSpectrumFileLoop.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "ZxSpectrumMenu.h"
@@ -57,23 +56,11 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
 );
-static FatFsDirCache snapDirCache(
-  &sdCard0
-);
-static FatFsDirCache tapeDirCache(
-  &sdCard0
-);
-static ZxSpectrumFatFsCacheFileLoop zxSpectrumSnaps(
-  &sdCard0, 
-  &snapDirCache
-);
-static QuickSave quickSave(
-  &sdCard0, 
-  "zxspectrum/quicksaves"
-);
+static ZxSpectrumFileLoop snapFileLoop;
+static QuickSave quickSave;
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
-  &zxSpectrumSnaps,
+  &snapFileLoop,
   &quickSave,
   &joystick
 );
@@ -83,11 +70,8 @@ static ZxSpectrum zxSpectrum(
   &joystick
 );
 static ZxSpectrumMenu picoRootWin(
-  &snapDirCache,
-  &tapeDirCache,
-  &sdCard0,
-  &zxSpectrum,
-  &quickSave
+ &sdCard0,
+  &zxSpectrum
 );
 static PicoDisplay picoDisplay(
   pcw_screen(),
@@ -263,11 +247,7 @@ int main(){
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   
-  snapDirCache.attach("zxspectrum/snapshots");
-  tapeDirCache.attach("zxspectrum/tapes");
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
-  zxSpectrumSnaps.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
-  quickSave.listener([&] (uint32_t i, const char *name){ picoRootWin.snapName(name); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
@@ -294,6 +274,8 @@ int main(){
       toggleMenu = false;
     }
   );
+  snapFileLoop.set(&picoRootWin);
+  quickSave.set(&picoRootWin);
   
   tusb_init();
 #ifdef USE_PS2_KBD
@@ -331,14 +313,9 @@ int main(){
   sem_release(&dvi_start_sem);
  
   if (sdCard0.mount()) {
-    
-    // Set up the quick load loop
-    zxSpectrumSnaps.reload();
 
     // Load quick save slot 1 if present
-    if (quickSave.used(0)) {
-      quickSave.load(&zxSpectrum, 0);
-    }
+    quickSave.load(&zxSpectrum, 0);
   
     // See if the board is in kiosk mode    
     bool isKiosk = zxSpectrumKisok.isKiosk();

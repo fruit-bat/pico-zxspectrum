@@ -11,11 +11,16 @@
 #include <functional>
 #include "QuickSave.h"
 #include "PicoExplorer.h"
+#include "FatFsFilePath.h"
 
 class ZxSpectrum;
 
 class ZxSpectrumMenu : public PicoWin {
 private:
+  FatFsFilePath _pathZxSpectrum;
+  FatFsFilePath _pathSnaps;
+  FatFsFilePath _pathTapes;
+  FatFsFilePath _pathQuickSaves;
   SdCardFatFsSpi *_sdCard;
   ZxSpectrum *_zxSpectrum;
   InputStream* _tis;
@@ -37,19 +42,11 @@ private:
   PicoOption _muteOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
-  PicoOptionText _quickSavesOp;
-
-  PicoSelect _snapMgr;
-  PicoOptionText _snapLoadOp;
-  PicoOptionText _snapRenameOp;
-  PicoOptionText _snapDeleteOp;
-  PicoOptionText _snapRescanDirOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
   PicoOptionText _ejectTapeOp;
   PicoOption _pauseTapeOp;
-  PicoOptionText _tapeRescanDirOp;
 
   PicoExplorer _chooseTape;
   PicoExplorer _chooseSnap;
@@ -71,28 +68,15 @@ private:
   PicoSelect _confirm;
   PicoOptionText _confirmNo;
   PicoOptionText _confirmYes;
-  
-  PicoSelect _quickSaves;
-  PicoOption _quickOps[12];
-
-  PicoSelect _quickSave;
-  PicoOptionText _quickSaveLoadOp;
-  PicoOptionText _quickSaveToSnapOp;
-  PicoOptionText _quickSaveClearOp;
-  
+   
   PicoSelect _tzxSelect;
   std::function<void(uint32_t option)> _tzxOption;
 
-  int _quickSaveSlot;
-  QuickSave *_quickSaveHelper;
   PicoTextField _fileName;
-  bool _quickSaveSlotUsed[12];
   
   std::function<void()> _refresh;
   std::function<void(const char *name)> _snapLoadedListener;
-  
-  void snapName(std::string &fname, const char *name);
-  
+   
   void ejectTape();
   
   void showError(std::function<void(PicoPen *pen)> message);
@@ -109,13 +93,13 @@ private:
   );
   
   bool checkExists(const char *file);
+  static bool isZ80(const char* filename);
   
-  bool renameSave(const char *fileo, const char *filen);
+  void renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
+  void deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
+  void pasteFile(PicoExplorer* exp, const char* name);
+  void refreshFolder(PicoExplorer*);
 
-  bool deleteSave(const char *folder, const char *file);
-  
-  void quickSaveToSnap(int i, const char *folder, const char *file);
-  
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
   void removeMessage();
@@ -127,11 +111,12 @@ public:
   void refresh(std::function<void()> refresh) { _refresh = refresh; }
   void snapName(const char* name);
   void snapLoaded(std::function<void(const char *name)> listener) { _snapLoadedListener = listener; }
-  
+  void nextSnap(int d);
+  void quickSave(int slot);
+  void quickLoad(int slot);
+
   ZxSpectrumMenu(
-    FatFsDirCache* snapDirCache,
-    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
-    ZxSpectrum *zxSpectrum,
-    QuickSave *quickSave);
+    ZxSpectrum *zxSpectrum
+  );
 };

@@ -9,9 +9,13 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 
-#define SAVED_SNAPS_DIR "/zxspectrum/snapshots"
-#define SAVED_QUICK_DIR "/zxspectrum/quicksaves"
-#define SAVED_TAPES_DIR "/zxspectrum/tapes"
+// #define DEBUG_ZX_MENU
+
+#ifdef DEBUG_ZX_MENU
+#define DBG_PRINTF(...) printf(__VA_ARGS__)
+#else
+#define DBG_PRINTF(...)
+#endif
 
 #ifndef SZ_WIZ_ML
 #define SZ_WIZ_ML 3
@@ -53,34 +57,27 @@ static const char *fext(const char *filename) {
 }
 
 ZxSpectrumMenu::ZxSpectrumMenu(
-    FatFsDirCache* snapDirCache,
-    FatFsDirCache* tapeDirCache,
     SdCardFatFsSpi* sdCard,
-    ZxSpectrum *zxSpectrum,
-    QuickSave *quickSave
+    ZxSpectrum *zxSpectrum
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
+   _pathZxSpectrum("/zxspectrum"),
+   _pathSnaps(&_pathZxSpectrum, "snapshots"),
+   _pathTapes(&_pathZxSpectrum, "tapes"),
+   _pathQuickSaves(&_pathSnaps, "quicksaves"),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
   _tis(0),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_FILE_SEP),
   _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
-  _quickSavesOp("Quick saves"),
-  
-  _snapMgr(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  _snapLoadOp("Load"),
-  _snapRenameOp("Rename"),
-  _snapDeleteOp("Delete"),
-  _snapRescanDirOp("Rescan folder"),
   
   _tapePlayer(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
 
-  _chooseTapeOp("Choose a tape"),
+  _chooseTapeOp("Tapes"),
   _ejectTapeOp("Eject tape"),
-  _tapeRescanDirOp("Rescan folder"),
-  _chooseTape(tapeDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
-  _chooseSnap(snapDirCache, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseTape(sdCard, &_pathTapes, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseSnap(sdCard, &_pathSnaps, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
   
   _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
   _reset48kOp("Reset 48K ZX Spectrum"),
@@ -97,19 +94,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _confirmNo("No"),
   _confirmYes("Yes"),
   
-  _quickSaves(0, 0, SZ_WIZ_COLS, 12, 1),
-  
-  _quickSave(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  _quickSaveLoadOp("Load"),
-  _quickSaveToSnapOp("Save as SNAP"),
-  _quickSaveClearOp("Clear"),
-  
   _tzxSelect(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
-  
-  _quickSaveHelper(quickSave),
-  
-  _fileName(0, 0,SZ_WIZ_COLS, 64)
+    
+  _fileName(0, 0, SZ_WIZ_COLS, 64)
 { 
+  _pathQuickSaves.createFolders(sdCard);
+  _pathTapes.createFolders(sdCard);
+  
   _tzxSelect.onToggle(
     [=](PicoOption *option, int32_t i) {
       _wiz.pop(true);
@@ -144,11 +135,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
   _main.addOption(_snapOp.addQuickKey(&_k1));
   _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
-  _main.addOption(_quickSavesOp.addQuickKey(&_k3));
-  _main.addOption(_freqOp.addQuickKey(&_k4));
-  _main.addOption(_muteOp.addQuickKey(&_k5));
-  _main.addOption(_resetOp.addQuickKey(&_k6));
-  _main.addOption(_joystickOp.addQuickKey(&_k7));
+  _main.addOption(_freqOp.addQuickKey(&_k3));
+  _main.addOption(_muteOp.addQuickKey(&_k4));
+  _main.addOption(_resetOp.addQuickKey(&_k5));
+  _main.addOption(_joystickOp.addQuickKey(&_k6));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -157,9 +147,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
   _snapOp.toggle([=]() {
     _wiz.push(
-      &_snapMgr, 
+      &_chooseSnap, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Snapshot", SZ_WIZ_CW2, _snapName.c_str());
+        pen->printAtF(0, 0, false,"%s  [%s]", "Snaps", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
       },
       true);
   });
@@ -233,101 +223,30 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Joystick mode"); }, 
       true);
   });
-  
-  _snapMgr.addOption(_snapLoadOp.addQuickKey(&_k1));
-  _snapMgr.addOption(_snapRenameOp.addQuickKey(&_k2));
-  _snapMgr.addOption(_snapDeleteOp.addQuickKey(&_k3));
-  _snapMgr.addOption(_snapRescanDirOp.addQuickKey(&_k4));
 
-  _snapMgr.enableQuickKeys();
+  _chooseSnap.onToggle = [=](FILINFO *finfo, int32_t i, const char* path) {
+    snapName(finfo->fname);
+    FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, path);
+    _zxSpectrum->loadZ80(is);
+    delete is;
+    if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
+  };
   
-  _snapLoadOp.toggle([=]() {
-    _wiz.push(
-      &_chooseSnap, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to load"); },
-      true);
-      
-    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
-      std::string fname(SAVED_SNAPS_DIR);
-      fname.append("/");
-      fname.append(finfo->fname);
-      snapName(finfo->fname);
-      FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, fname.c_str());
-      _zxSpectrum->loadZ80(is);
-      delete is;
-      if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
-    });
-  });
+  _chooseSnap.onRenameFile = [&](FILINFO *finfo, int32_t i) {
+    renameFile(&_chooseSnap, finfo, i);
+  };
   
-  _snapRenameOp.toggle([=]() {
-    _wiz.push(
-      &_chooseSnap, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to rename"); },
-      true);
-      
-    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
-      _tmpName = finfo->fname;
-      _fileName.clear();
-      _fileName.onenter([=](const char* name) {
-        std::string fname;
-        snapName(fname, name);
-        if (checkExists(fname.c_str())) {
-          showError([=](PicoPen *pen) {
-            pen->printAtF(0, 0, false, "Error: already exists '%s'", name);
-          });
-        }
-        else {
-          std::string fnameo;
-          snapName(fnameo, _tmpName.c_str());
-
-          if(renameSave(fnameo.c_str(), fname.c_str())) {
-            snapDirCache->reload();
-            _wiz.pop(true);
-          }
-          else {
-            showError([=](PicoPen *pen) {
-              pen->printAtF(0, 0, false, "Error: failed to rename to '%s'", name);
-            });
-          }
-        }
-      });
-      _wiz.push(
-        &_fileName, 
-        [=](PicoPen *pen){ 
-          pen->printAtF(0, 0, false, "Enter new name for [ %s ]", _tmpName.c_str()); 
-        },
-        true);
-    });
-  });
+  _chooseSnap.onPasteFile = [&](const char* name) {
+    pasteFile(&_chooseSnap, name);
+  };
   
-  _snapDeleteOp.toggle([=]() {
-    _wiz.push(
-      &_chooseSnap, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose snapshot to delete"); },
-      true);
-      
-    _chooseSnap.onToggle([=](FILINFO *finfo, int32_t i) {
-      _tmpName = finfo->fname;
-      confirm(
-        [=](PicoPen *pen){
-          pen->printAtF(0, 0, false, "Delete snapshot '%s'?", _tmpName.c_str());
-        },
-        [=]() {
-          deleteSave(SAVED_SNAPS_DIR, _tmpName.c_str());
-          snapDirCache->reload();
-        }
-      );
-    });
-  });
+  _chooseSnap.onDeleteFile = [&](FILINFO *finfo, int32_t i) {
+    deleteFile(&_chooseSnap, finfo, i);
+  };
   
-  _snapRescanDirOp.toggle([=]() {
-    showMessage([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Scanning folder");
-    });
-    if (_refresh) _refresh();
-    snapDirCache->reload();
-    _wiz.pop(true);
-  });
+  _chooseSnap.onRefresh = [&]() {
+    refreshFolder(&_chooseSnap);
+  };
   
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
   _reset.addOption(_reset128kOp.addQuickKey(&_k2));
@@ -364,15 +283,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
   _tapePlayer.addOption(_pauseTapeOp.addQuickKey(&_k3));
-  _tapePlayer.addOption(_tapeRescanDirOp.addQuickKey(&_k4));
   
   _tapePlayer.enableQuickKeys();
 
   _chooseTapeOp.toggle([=]() {
-    tapeDirCache->load();
     _wiz.push(
       &_chooseTape, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Choose tape:"); },
+      [](PicoPen *pen){ 
+        pen->printAtF(0, 0, false,"%s  [%s]", "Tapes", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+      },
       true);
   });
 
@@ -389,18 +308,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _zxSpectrum->togglePauseTape();
   });
   
-  tapeDirCache->filter([](const char* fname) -> bool {
-    const char *ext = fext(fname);
-    return (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX") || 0 == strcmp(ext, "tap") || 0 == strcmp(ext, "TAP"));
-  });
-    
-  _chooseTape.onToggle([=](FILINFO *finfo, int32_t i) {
+  _chooseTape.onToggle = [=](FILINFO *finfo, int32_t i, const char* path) {
     ejectTape();
-    std::string fname(SAVED_TAPES_DIR);
-    fname.append("/");
-    fname.append(finfo->fname);
     _tapeName = finfo->fname;
-    _tis = new FatFsSpiInputStream(_sdCard, fname.c_str());
+    _tis = new FatFsSpiInputStream(_sdCard, path);
     const char *ext = fext(finfo->fname);
     if (0 == strcmp(ext, "tzx") || 0 == strcmp(ext, "TZX")) {
       _zxSpectrum->loadTzx(_tis);
@@ -409,98 +320,26 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       _zxSpectrum->loadTap(_tis); 
     }
     _wiz.pop(true);
-  });
+  };
   
-  _tapeRescanDirOp.toggle([=]() {
-    showMessage([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Scanning folder");
-    });
-    if (_refresh) _refresh();
-    tapeDirCache->reload();
-    _wiz.pop(true);
-  });
+  _chooseTape.onRenameFile = [&](FILINFO *finfo, int32_t i) {
+    renameFile(&_chooseTape, finfo, i);
+  };
   
-  _quickSavesOp.toggle([=]() {
-    for(int i = 0; i <12; ++i) {
-      _quickSaveSlotUsed[i] = _quickSaveHelper->used(i);
-    }
-    _wiz.push(
-      &_quickSaves, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Quick save"); }, 
-      true);
-  });
+  _chooseTape.onPasteFile = [&](const char* name) {
+    pasteFile(&_chooseTape, name);
+  };
   
-  for(int i = 0; i < 12; ++i) {
-    PicoOption *qs = &_quickOps[i]; 
-    _quickSaves.addOption(qs);
-    qs->onPaint([=](PicoPen *pen){
-      pen->clear();
-      pen->printAtF(0, 0, false,"Slot %2d%-9s[ %-4s ]", i + 1, "", _quickSaveSlotUsed[i] ? "used" : "");
-    });
-    qs->toggle([=]() {
-      if (_quickSaveHelper->used(i)) {
-        _wiz.push(
-          &_quickSave, 
-          [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", i + 1); }, 
-          true);
-        _quickSaveSlot = i;
-      }
-    });
-  }
-
-  _quickSave.addOption(_quickSaveLoadOp.addQuickKey(&_k1));
-  _quickSave.addOption(_quickSaveClearOp.addQuickKey(&_k2));
-  _quickSave.addOption(_quickSaveToSnapOp.addQuickKey(&_k3));
-  _quickSave.enableQuickKeys();
-
-  _quickSaveLoadOp.toggle([=]() {
-    _quickSaveHelper->load(_zxSpectrum, _quickSaveSlot);
-    _wiz.pop(true);
-  });
+  _chooseTape.onDeleteFile = [&](FILINFO *finfo, int32_t i) {
+    deleteFile(&_chooseTape, finfo, i);
+  };
   
-  _quickSaveToSnapOp.toggle([=]() {
-    _fileName.clear();
-    _wiz.push(
-      &_fileName, 
-      [=](PicoPen *pen){ pen->printAtF(0, 0, false, "Quick save slot %d", _quickSaveSlot + 1); }, 
-      true);
-    _fileName.onenter([=](const char* name) {
-      std::string fname;
-      snapName(fname, name);
-      if (checkExists(fname.c_str())) {
-        confirm(
-          [=](PicoPen *pen){
-            pen->printAtF(0, 0, false, "'%s' exits. Overwrite?", name);
-          },
-          [=]() {
-            quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-            tapeDirCache->reload();
-          }
-        );
-      }
-      else {
-        quickSaveToSnap(_quickSaveSlot, name, fname.c_str());
-        tapeDirCache->reload();
-      }
-    });
-  });
-
-  _quickSaveClearOp.toggle([=]() {
-    confirm(
-      [=](PicoPen *pen){
-        pen->printAt(0, 0, false, "Remove quick save ?");
-      },
-      [=]() {
-        if (_quickSaveHelper->clear(_quickSaveSlot)) {
-           _quickSaveSlotUsed[_quickSaveSlot] = false;
-        }
-        _wiz.pop(true);
-      }
-    );
-  });
+  _chooseTape.onRefresh = [&]() {
+    refreshFolder(&_chooseTape);
+  };
   
   onPaint([](PicoPen *pen) {
-     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K emulator");
+     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
      pen->printAt(0, 2, false, "Menu System version 0.3");
 
@@ -511,28 +350,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
 void ZxSpectrumMenu::snapName(const char* name) {
   _snapName = name;
-}
-
-void ZxSpectrumMenu::snapName(std::string &fname, const char *name) {
-  fname.clear();
-  fname.append(SAVED_SNAPS_DIR);
-  fname.append("/");
-  fname.append(name);
-  auto nl = strlen(name);
-  if (nl < 4 || !((strncmp(name + nl - 4, ".z80", 4) == 0) || (strncmp(name + nl - 4, ".Z80", 4) == 0))) {
-    fname.append(".z80");
-  }
-}
-
-void ZxSpectrumMenu::quickSaveToSnap(int i, const char *name, const char *fname) {
-  if (!_quickSaveHelper->copy(i, fname)) {
-    showError([=](PicoPen *pen) {
-      pen->printAtF(0, 0, false, "Error: failed to create SNAP '%s'", name);
-    });
-  }
-  else {
-    _wiz.pop(true);
-  }
 }
 
 void ZxSpectrumMenu::ejectTape() {
@@ -551,23 +368,6 @@ bool ZxSpectrumMenu::checkExists(const char *file) {
   FILINFO fno;
   FRESULT fr = f_stat(file, &fno);
   return fr == FR_OK;
-}
-
-bool ZxSpectrumMenu::deleteSave(const char *folder, const char *file) {
-  if (!_sdCard->mounted()) {
-    if (!_sdCard->mount()) return false;
-  }
-  std::string fname(folder);
-  fname.append("/");
-  fname.append(file);
-  return f_unlink(fname.c_str()) == FR_OK;
-}
-
-bool ZxSpectrumMenu::renameSave(const char *fileo, const char *filen) {
-  if (!_sdCard->mounted()) {
-    if (!_sdCard->mount()) return false;
-  }
-  return f_rename(fileo, filen) == FR_OK;
 }
 
 void ZxSpectrumMenu::showError(std::function<void(PicoPen *pen)> message) {
@@ -642,3 +442,147 @@ void ZxSpectrumMenu::clearTzxOptions() {
 void ZxSpectrumMenu::addTzxOption(const char *s) {
   _tzxSelect.addOption(new PicoOptionText(s));
 }
+
+bool ZxSpectrumMenu::isZ80(const char* filename) {
+    const char *ext = fext(filename);
+    return (0 == strcmp(ext, "z80") || 0 == strcmp(ext, "Z80"));
+}
+
+void ZxSpectrumMenu::nextSnap(int d) {
+  _chooseSnap.next([](FILINFO* finfo) bool {
+    return !(finfo->fattrib & AM_DIR) && isZ80(finfo->fname);
+  }, d);
+}
+
+void ZxSpectrumMenu::renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
+  _tmpName = finfo->fname;
+  _fileName.set(finfo->fname);
+  _fileName.onenter([=](const char* name) {
+    if (exp->checkExists(name)) {
+      showError([=](PicoPen *pen) {
+        pen->printAtF(0, 0, false, "Already exists '%s'", name);
+      });
+    }
+    else {
+      if(exp->renameFile(_tmpName.c_str(), name)) {
+        _wiz.pop(true);
+      }
+      else {
+        showError([=](PicoPen *pen) {
+          pen->printAtF(0, 0, false, "Failed to rename to '%s'", name);
+        });
+      }
+    }
+  });
+  _wiz.push(
+    &_fileName, 
+    [=](PicoPen *pen){ 
+      pen->printAtF(0, 0, false, "Enter new name for [ %s ]", _tmpName.c_str()); 
+    },
+    true);
+}
+
+void ZxSpectrumMenu::pasteFile(PicoExplorer* exp, const char* origname) {
+  _tmpName = origname;
+  _fileName.set(origname);
+  _fileName.onenter([=](const char* name) {
+    if (exp->checkExists(name)) {
+      showError([=](PicoPen *pen) {
+        pen->printAtF(0, 0, false, "Already exists '%s'", name);
+      });
+    }
+    else {
+      if(exp->pasteFile(name)) {
+        _wiz.pop(true);
+      }
+      else {
+        showError([=](PicoPen *pen) {
+          pen->printAtF(0, 0, false, "Failed to paste '%s'", name);
+        });
+      }
+    }
+  });
+  _wiz.push(
+    &_fileName, 
+    [=](PicoPen *pen){ 
+      pen->printAtF(0, 0, false, "Enter file name [ %s ]", _tmpName.c_str()); 
+    },
+    true);
+}
+
+void ZxSpectrumMenu::deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i) {
+  _tmpName = finfo->fname;
+  confirm(
+    [=](PicoPen *pen){
+      pen->printAtF(0, 0, false, "Delete '%s'?", _tmpName.c_str());
+    },
+    [=]() {
+      exp->deleteFile(_tmpName.c_str());
+    }
+  );
+}
+
+void ZxSpectrumMenu::refreshFolder(PicoExplorer* exp) {
+  showMessage([=](PicoPen *pen) {
+    pen->printAtF(0, 0, false, "Scanning folder");
+  });
+  if (_refresh) _refresh();
+  exp->reload();
+  _wiz.pop(true);
+}
+
+void ZxSpectrumMenu::quickSave(int slot) {
+
+  // Make sure we have a folder for the quick-save
+  if (!_pathQuickSaves.createFolders(_sdCard)) return;
+  
+  {
+    char name[32];
+    snprintf(name, 32, "Slot %d.z80", slot + 1);
+
+    DBG_PRINTF("ZxSpectrumMenu: Quick save file to save name '%s'\n", name);
+    
+    FatFsFilePath pname(&_pathQuickSaves, name);
+    std::string fullpath;
+    pname.appendTo(fullpath);
+    
+    DBG_PRINTF("ZxSpectrumMenu: Quick save file to save path '%s'\n", fullpath.c_str());
+    
+    FatFsSpiOutputStream os(_sdCard, fullpath.c_str());
+    
+    _zxSpectrum->saveZ80(&os);
+  }
+  
+  {
+    std::string fullpath;
+    _pathQuickSaves.appendTo(fullpath);
+    _chooseSnap.folderModified(fullpath.c_str());
+  }
+}
+
+void ZxSpectrumMenu::quickLoad(int slot) {
+  char name[32];
+  snprintf(name, 32, "Slot %d.z80", slot + 1);
+
+  DBG_PRINTF("ZxSpectrumMenu: Quick save file to load name '%s'\n", name);
+  
+  FatFsFilePath pname(&_pathQuickSaves, name);
+  std::string fullpath;
+  pname.appendTo(fullpath);
+  
+  DBG_PRINTF("ZxSpectrumMenu: Quick save file to load path '%s'\n", fullpath.c_str());  
+  
+  FatFsSpiInputStream is(_sdCard, fullpath.c_str());
+  
+  if (is.closed()) {
+    DBG_PRINTF("ZxSpectrumMenu: No quick save in slot '%d' to load\n", slot);  
+    return;
+  }
+  
+  _zxSpectrum->loadZ80(&is);
+  
+  snapName(name);
+}
+
+
+
