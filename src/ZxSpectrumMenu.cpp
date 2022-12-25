@@ -149,7 +149,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_chooseSnap, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%-*s[ %s ]", SZ_WIZ_CW1, "Snapshot", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+        pen->printAtF(0, 0, false,"%s  [%s]", "Snaps", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
       },
       true);
   });
@@ -290,7 +290,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_chooseTape, 
       [](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%-*s[ %s ]", SZ_WIZ_CW1, "Tapes", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+        pen->printAtF(0, 0, false,"%s  [%s]", "Tapes", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
       },
       true);
   });
