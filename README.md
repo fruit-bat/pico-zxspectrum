@@ -38,6 +38,7 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+* 25/12/22 - Support for sub-folders in snapshots and tapes storage
 * 14/12/22 - Support for more files in snapshots and tapes folders
 * 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
 * 13/11/22 - Slightly better PS/2 keyboard overflow handling
@@ -55,7 +56,22 @@
 * 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
 * 10/07/22 - Added basic support for PS/2 keyboards
 
-The emulator can now cope with more files in the snapshots and tapes folders without running out of memory.
+25/12/22 - Very basic support for sub-folders in the 'snapshots' and 'tapes' storage areas has been added.
+Files can be renamed, copied and deleted from the menu system.
+The quick-saves folder is now under the snapshots folder and behaves just like any other folder.
+The file 'explorer' has the following commands:
+* &lt;space&gt;/&lt;enter&gt; - enter a folder/load a file
+* ESC   - Go up a folder
+* 1=DEL - Delete the file
+* 2=REN - Rename the file
+* 3=CPY - Copy the file
+* 4=PST - Paste the file
+* 5=REF - Reload the list of files in the current folder
+
+The function keys for playing tapes have been removed. 
+The idea is that in the future more used controls will be added like 'play', 'stop' and 'eject'.
+
+5/12/22 - The emulator can now cope with more files in the snapshots and tapes folders without running out of memory.
 I've tested up to 400 but it may survive more that this.
 Directory entries are now written to a file .dcache which can be updated from the menus by 'rescanning' the folder.
 If you are adding files to the folders on a PC you can just delete the .dcache and it will get regenerated on next power-on.
@@ -521,9 +537,6 @@ The following folders need to be created on the SD card:
 | F1 | Toggle on screen menu |
 | F3 | Toggle mute |
 | F4 | Toggle the Z80 moderator. Cycles through 3.5Mhz, 4.0Mhz and unmoderated |
-| F5 | play current tape |
-| F6 | play previous tape |
-| F7 | play next tape |
 | F8 | Reload current snap |
 | F9 | previous snap |
 | F10 | next snap |
