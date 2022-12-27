@@ -69,7 +69,7 @@ The file 'explorer' has the following commands:
 * 5=REF - Reload the list of files in the current folder
 
 The function keys for playing tapes have been removed. 
-The idea is that in the future more used controls will be added like 'play', 'stop' and 'eject'.
+The idea is that in the future more useful controls will be added like 'play', 'stop' and 'eject'.
 
 5/12/22 - The emulator can now cope with more files in the snapshots and tapes folders without running out of memory.
 I've tested up to 400 but it may survive more that this.
