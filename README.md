@@ -521,13 +521,14 @@ cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
 
 ## Prepare an SD card
-The following folders need to be created on the SD card:
+The following table shows the folders used by the emulator on the SD card.
+If not already present, they will be created as the emulator starts up.
 
 | Folder | Contents |
 | ------ | -------- |
 | zxspectrum/snapshots | Put your .z80 snapshot files in here. |
-| zxspectrum/quicksaves | Folder for quick saves. |
-| zxspectrum/tapes | Folder for .tap tape files. |
+| zxspectrum/snapshots/quicksaves | Folder for quick saves. |
+| zxspectrum/tapes | Folder for .tap and .tzx tape files. |
 
 ## Special keys
 
