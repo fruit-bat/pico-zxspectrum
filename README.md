@@ -233,7 +233,7 @@ Here are the pin assignments:
 ![image](docs/ZxSpectrumPicoDv.png)
 
 ### ZxSpectrumBreadboardHdmiKbd1PinAudio
-This is a target similar to the HDMI prototype which uses can read from an original Spectrum keyboard matrix.
+This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
 
 It is a work in progress.
 
