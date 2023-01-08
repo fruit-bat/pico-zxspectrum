@@ -419,17 +419,6 @@ To get this to work I have done some hacking and slashing in [TinyUSB](https://g
 
 https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser
 
-*update*
-
-Updates suggested by Ryzee119 are getting harder to merge into the latest code:
-
-https://github.com/Ryzee119/tinyusb/tree/multi-hub
-
-The combined efforts were here, but are now out of date:
-
-https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser_and_hub
-
-
 ## Build
 The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
 will need to be replaced with a version containing a HID report parser and USB hub support.
