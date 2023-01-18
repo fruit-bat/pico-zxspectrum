@@ -39,7 +39,7 @@
 
 ## Updates
 
-19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK)
+19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK).
 This target can read from a standard 48k Spectrum keyboard matrix.
 
 25/12/22 - Very basic support for sub-folders in the 'snapshots' and 'tapes' storage areas has been added.
@@ -249,7 +249,7 @@ for setting the Spectrum ROM boot mode and a Joystick Keyboard.
 
 Please see the Schematic diagram for more information on GPIO pins used.
 
-<a href="docs/pico-zxspectrum-realkeyboard-schematic.jpg"><img src="docs/pico-zxspectrum-realkeyboard-schematic.jpg" height="200"/>
+<a href="docs/pico-zxspectrum-realkeyboard-schematic.jpg"><img src="docs/pico-zxspectrum-realkeyboard-schematic.jpg" /></a>
 
 
 ## Audio pins
