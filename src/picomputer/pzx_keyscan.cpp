@@ -289,11 +289,6 @@ static uint8_t kbits[5][6][6] = {
     #define KEY_FIRE_BIT 0x01
     #define KEY_SHIFT_ROW 0
     #define KEY_SHIFT_BIT 0x20
-    #define KEY_CURSOR_ROW 6
-    #define KEY_CURSOR_BIT 0x20
-    #define KEY_KEMPSTON_ROW 6
-    #define KEY_KEMPSTON_BIT 0x40 
-    #define LED_PIN 25
   #endif  
 #endif
 
@@ -415,6 +410,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   }
 #else
   bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
+  #ifndef REAL_ZXKEYBOARD
   // Cursor mode 
   if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
@@ -427,6 +423,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
       gpio_put(LED_PIN, 1);
     }
   }
+  #endif
   kbi = kempstonJoystick + (shift ? 1 : 0 );
 #endif
   
