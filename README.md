@@ -38,23 +38,9 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
-* 25/12/22 - Support for sub-folders in snapshots and tapes storage
-* 14/12/22 - Support for more files in snapshots and tapes folders
-* 22/11/22 - Moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80)
-* 13/11/22 - Slightly better PS/2 keyboard overflow handling
-* 13/11/22 - Partial support for TZX tape format
-* 24/09/22 - Fixed some problems with AY audio
-* 23/09/22 - Added support for Pimoroni Pico VGA Demo Base
-* 19/09/22 - Audio in (load from tape)
-* 31/08/22 - Fix multiple Z80 self-test failures
-* 27/08/22 - Fix for joysticks with single xy axis
-* 13/08/22 - Added support for PICOZX
-* 04/08/22 - Update wiring documentation
-* 26/07/22 - Better quality 48k sound for 1 pin PWM and DAC
-* 23/07/22 - Added target for Pico DV board
-* 23/07/22 - Audio output via PCM 5100A DAC for Pico DV board
-* 23/07/22 - Moved to Pimoroni FATFS to support Pimoroni Pico DV board
-* 10/07/22 - Added basic support for PS/2 keyboards
+
+19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK).
+This target can read from a standard 48k Spectrum keyboard matrix.
 
 25/12/22 - Very basic support for sub-folders in the 'snapshots' and 'tapes' storage areas has been added.
 Files can be renamed, copied and deleted from the menu system.
@@ -114,6 +100,8 @@ Connect your Pico Pi with a USB cable, while holding down the program button:
 | Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
 | Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
+| ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
+
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -252,6 +240,17 @@ Here are the pin assignments:
 ![image](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.png)
 
 I don't know how the original keyboard pins were numbered but mine go from left to right with the keyboard oriented as you would type on it.
+
+### ZxSpectrumPicomputerVgaAuk
+
+All keys are fully functional and the Emulator Menus can only be accessed via an external button connected to one of the GPIO pins.
+The Menu can be navigated using the Spectrum's keyboard number keys. There are an extra 8 external buttons that can been used
+for setting the Spectrum ROM boot mode and a Joystick Keyboard.
+
+Please see the Schematic diagram for more information on GPIO pins used.
+
+<a href="docs/pico-zxspectrum-realkeyboard-schematic.jpg"><img src="docs/pico-zxspectrum-realkeyboard-schematic.jpg" /></a>
+
 
 ## Audio pins
 There are two techniques for audio output. 
