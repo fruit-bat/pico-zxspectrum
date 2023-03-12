@@ -126,7 +126,7 @@ target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   SZ_MENU_SEP=2
   SZ_FILE_SEP=1
   SZ_FILE_ROWS=18
-  SPK_PIN=0
+  SPK_PIN=7
   PICOMPUTER_PICOZX
   LCD_NO_BL
   LCD_PIN_CLK=2
