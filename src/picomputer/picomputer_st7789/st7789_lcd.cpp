@@ -89,17 +89,17 @@ void st7789_init(PIO pio, uint sm) {
 
     gpio_init(LCD_PIN_CS);
     gpio_init(LCD_PIN_DC);
-#ifdef LCD_NO_BL
+#ifndef LCD_NO_BL
     gpio_init(LCD_PIN_BL);
 #endif
     gpio_set_dir(LCD_PIN_CS, GPIO_OUT);
     gpio_set_dir(LCD_PIN_DC, GPIO_OUT);
-#ifdef LCD_NO_BL
+#ifndef LCD_NO_BL
     gpio_set_dir(LCD_PIN_BL, GPIO_OUT);
 #endif
     gpio_put(LCD_PIN_CS, 1);
     lcd_init(pio, sm, st7789_init_seq);
-#ifdef LCD_NO_BL
+#ifndef LCD_NO_BL
     gpio_put(LCD_PIN_BL, 1);
 #endif
 
