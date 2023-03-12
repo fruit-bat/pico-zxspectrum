@@ -136,6 +136,7 @@ void __not_in_flash_func(core1_main)() {
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
+    _frames = linebuf->frame;
     if (showMenu) {
       pcw_prepare_vga332_scanline_80(
         buf,
@@ -165,10 +166,8 @@ void __not_in_flash_func(core1_main)() {
         showMenu = !showMenu;
         toggleMenu = false;
 //        picomputerJoystick.enabled(!showMenu);
-      }
-      
-      _frames = linebuf->frame;
-    }    
+      }      
+    }
   }
   __builtin_unreachable();
 }
