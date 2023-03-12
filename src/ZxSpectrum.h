@@ -280,6 +280,7 @@ public:
 
   void interrupt() {
     z80_int(&_Z80, true);
+    _Z80.int_line = false;
   }
 
   void moderate(uint32_t mul);
