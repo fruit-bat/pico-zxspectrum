@@ -170,6 +170,7 @@ static volatile uint _frames = 0;
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
+  if (y == 24) _frames++;
   if (showMenu) {
     uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
     if (0 == (y & 7)) {
@@ -183,7 +184,6 @@ void __not_in_flash_func(core1_scanline_callback)() {
   zx_keyscan_row();
 #endif
   if (y == FRAME_HEIGHT) {
-    _frames++;
     y = 0;
     ys = 0;
     

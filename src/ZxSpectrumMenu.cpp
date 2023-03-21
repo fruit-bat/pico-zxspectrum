@@ -353,7 +353,7 @@ bool ZxSpectrumMenu::isZ80(const char* filename) {
 }
 
 void ZxSpectrumMenu::nextSnap(int d) {
-  _chooseSnap.next([](FILINFO* finfo) bool {
+  _chooseSnap.next([](FILINFO* finfo) {
     return !(finfo->fattrib & AM_DIR) && isZ80(finfo->fname);
   }, d);
 }

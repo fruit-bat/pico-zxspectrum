@@ -6,26 +6,34 @@
 #include "class/hid/hid.h"
 #include "pzx_keyscan.h"
 
+// define REAL_ZXKEYBOARD to use ZX Spectum 5x8 real keyboard matrix
+
 #define SAMPLES 4 
 
 #define CN_VGA 6
 #define CN_MAX 6
 #define CN_PZX 7
+#define CN_PZX_REAL 8
 #define RN_VGA 6
 #define RN_MAX 6
 #define RN_PZX 7
+#define RN_PZX_REAL 6
 #define CP_VGA 20, 21, 22, 26, 27, 28
 #define CP_MAX 1, 2, 3, 4, 5, 14
 #define CP_PZX 19, 20, 21, 22, 26, 27, 28
+#define CP_PZX_REAL 18, 19, 20, 21, 22, 26, 27, 28
 #define RP_VGA 14, 15, 16, 17, 18, 19
 #define RP_MAX 6, 9, 15, 8, 7, 22
 #define RP_PZX 8, 9, 14, 15, 16, 17, 18
+#define RP_PZX_REAL 8, 9, 14, 15, 16, 17
 #define CP_SHIFT_VGA 20
 #define CP_SHIFT_MAX 1
 #define CP_SHIFT_PZX 19
+#define CP_SHIFT_PZX_REAL 18
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
 #define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (7 << 4)))
+#define CP_JOIN_PZX_REAL(a) ((a & 31) | ((a >> 3) & (7 << 5)))
 
 #ifdef PICOMPUTER_VGA
   #define CP CP_VGA
@@ -44,12 +52,21 @@
   #define CN CN_MAX
 #endif
 #ifdef PICOMPUTER_PICOZX
-  #define CP CP_PZX
-  #define RP RP_PZX
-  #define CP_JOIN CP_JOIN_PZX
-  #define CP_SHIFT CP_SHIFT_PZX
-  #define RN RN_PZX
-  #define CN CN_PZX
+  #ifdef REAL_ZXKEYBOARD
+    #define CP CP_PZX_REAL
+    #define RP RP_PZX_REAL
+    #define CP_JOIN CP_JOIN_PZX_REAL
+    #define CP_SHIFT CP_SHIFT_PZX_REAL
+    #define RN RN_PZX_REAL
+    #define CN CN_PZX_REAL
+  #else
+    #define CP CP_PZX
+    #define RP RP_PZX
+    #define CP_JOIN CP_JOIN_PZX
+    #define CP_SHIFT CP_SHIFT_PZX
+    #define RN RN_PZX
+    #define CN CN_PZX
+  #endif
 #endif
 
 static uint8_t cp[] = {CP};                      // Column pins
@@ -60,9 +77,50 @@ static hid_keyboard_report_t hr[2];              // Current and previous hid rep
 static uint8_t hri = 0;                          // Currenct hid report index
 static uint8_t kbi = 0;
 
+//Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
+#ifdef REAL_ZXKEYBOARD
+static uint8_t kbits[5][6][8] = { 
+  // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
+  {
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
+    { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
+    { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
+    { HID_KEY_ALT_RIGHT, HID_KEY_L, HID_KEY_Z, HID_KEY_O, HID_KEY_9, HID_KEY_S, HID_KEY_W, HID_KEY_2 },
+    { HID_KEY_SPACE, HID_KEY_ENTER, HID_KEY_SHIFT_LEFT, HID_KEY_P, HID_KEY_0, HID_KEY_A, HID_KEY_Q, HID_KEY_1 }
+  },
+  // Shifted normal mappings + cursor
+  {
+    { HID_KEY_ESCAPE, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
+    { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
+    { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
+    { HID_KEY_ALT_RIGHT, HID_KEY_L, HID_KEY_Z, HID_KEY_O, HID_KEY_9, HID_KEY_S, HID_KEY_W, HID_KEY_2 },
+    { HID_KEY_SPACE, HID_KEY_ENTER, HID_KEY_SHIFT_LEFT, HID_KEY_P, HID_KEY_0, HID_KEY_A, HID_KEY_Q, HID_KEY_1 }
+  },
+  // Normal mappings + joystick
+  {
+    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
+    { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
+    { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
+    { HID_KEY_ALT_RIGHT, HID_KEY_L, HID_KEY_Z, HID_KEY_O, HID_KEY_9, HID_KEY_S, HID_KEY_W, HID_KEY_2 },
+    { HID_KEY_SPACE, HID_KEY_ENTER, HID_KEY_SHIFT_LEFT, HID_KEY_P, HID_KEY_0, HID_KEY_A, HID_KEY_Q, HID_KEY_1 }
+  },
+  // Shifted normal mappings + joystick
+  {
+    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
+    { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
+    { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
+    { HID_KEY_ALT_RIGHT, HID_KEY_L, HID_KEY_Z, HID_KEY_O, HID_KEY_9, HID_KEY_S, HID_KEY_W, HID_KEY_2 },
+    { HID_KEY_SPACE, HID_KEY_ENTER, HID_KEY_SHIFT_LEFT, HID_KEY_P, HID_KEY_0, HID_KEY_A, HID_KEY_Q, HID_KEY_1 }
+  }
+};
+#else
 static uint8_t kbits[5][7][7] = { 
-  // Normal mappings + cursor
+  // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
   {
     { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
     { HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_6, HID_KEY_7 },
@@ -103,6 +161,7 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
   }
 };
+#endif
 #else
 static uint8_t kbits[5][6][6] = { 
   // Normal mappings + cursor joystick
@@ -199,23 +258,38 @@ static uint8_t kbits[5][6][6] = {
   #define KEY_ENTER_ROW 1
   #define KEY_ENTER_BIT 0x01
 #else
-  #define KEY_UP_ROW 0
-  #define KEY_UP_BIT 0x04
-  #define KEY_DOWN_ROW 0
-  #define KEY_DOWN_BIT 0x10
-  #define KEY_LEFT_ROW 0
-  #define KEY_LEFT_BIT 0x02
-  #define KEY_RIGHT_ROW 0
-  #define KEY_RIGHT_BIT 0x08
-  #define KEY_FIRE_ROW 0
-  #define KEY_FIRE_BIT 0x01
-  #define KEY_SHIFT_ROW 0
-  #define KEY_SHIFT_BIT 0x20
-  #define KEY_CURSOR_ROW 6
-  #define KEY_CURSOR_BIT 0x20
-  #define KEY_KEMPSTON_ROW 6
-  #define KEY_KEMPSTON_BIT 0x40 
-  #define LED_PIN 25
+  #ifdef REAL_ZXKEYBOARD
+    #define KEY_UP_ROW 0
+    #define KEY_UP_BIT 0x04
+    #define KEY_DOWN_ROW 0
+    #define KEY_DOWN_BIT 0x10
+    #define KEY_LEFT_ROW 0
+    #define KEY_LEFT_BIT 0x02
+    #define KEY_RIGHT_ROW 0
+    #define KEY_RIGHT_BIT 0x08
+    #define KEY_FIRE_ROW 0
+    #define KEY_FIRE_BIT 0x01
+    #define KEY_SHIFT_ROW 5
+    #define KEY_SHIFT_BIT 0x04
+  #else
+    #define KEY_UP_ROW 0
+    #define KEY_UP_BIT 0x04
+    #define KEY_DOWN_ROW 0
+    #define KEY_DOWN_BIT 0x10
+    #define KEY_LEFT_ROW 0
+    #define KEY_LEFT_BIT 0x02
+    #define KEY_RIGHT_ROW 0
+    #define KEY_RIGHT_BIT 0x08
+    #define KEY_FIRE_ROW 0
+    #define KEY_FIRE_BIT 0x01
+    #define KEY_SHIFT_ROW 0
+    #define KEY_SHIFT_BIT 0x20
+    #define KEY_CURSOR_ROW 6
+    #define KEY_CURSOR_BIT 0x20
+    #define KEY_KEMPSTON_ROW 6
+    #define KEY_KEMPSTON_BIT 0x40 
+    #define LED_PIN 25    
+  #endif  
 #endif
 
 
@@ -336,6 +410,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   }
 #else
   bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
+  #ifndef REAL_ZXKEYBOARD
   // Cursor mode 
   if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
@@ -348,6 +423,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
       gpio_put(LED_PIN, 1);
     }
   }
+  #endif
   kbi = kempstonJoystick + (shift ? 1 : 0 );
 #endif
   
@@ -388,4 +464,3 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   hri++;
   *prev = &hr[hri & 1];
 }
-
