@@ -13,6 +13,9 @@
 #include "PicoExplorer.h"
 #include "FatFsFilePath.h"
 
+#include "PicoWizUtils.h"
+#include "PicoWizExplorer.h"
+
 class ZxSpectrum;
 
 class ZxSpectrumMenu : public PicoWin {
@@ -34,6 +37,7 @@ private:
   PicoQuickKeyAscii _k7;
 
   PicoWiz _wiz;
+  PicoWizUtils _wizUtils;
   PicoSelect _main;
 
   PicoOption _tapePlayerOp;
@@ -48,8 +52,8 @@ private:
   PicoOptionText _ejectTapeOp;
   PicoOption _pauseTapeOp;
 
-  PicoExplorer _chooseTape;
-  PicoExplorer _chooseSnap;
+  PicoWizExplorer _chooseTape;
+  PicoWizExplorer _chooseSnap;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -59,46 +63,17 @@ private:
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
 
-  std::string _tmpName;
   std::string _tapeName;
   std::string _snapName;
 
   PicoWin _devices;
-  PicoWin _message;
-  PicoSelect _confirm;
-  PicoOptionText _confirmNo;
-  PicoOptionText _confirmYes;
-   
   PicoSelect _tzxSelect;
   std::function<void(uint32_t option)> _tzxOption;
-
-  PicoTextField _fileName;
-  
-  std::function<void()> _refresh;
   std::function<void(const char *name)> _snapLoadedListener;
    
   void ejectTape();
   
-  void showError(std::function<void(PicoPen *pen)> message);
-
-  void confirm(
-    std::function<void(PicoPen *pen)> message,
-    std::function<void()> no,
-    std::function<void()> yes
-  );
-  
-  void confirm(
-    std::function<void(PicoPen *pen)> message,
-    std::function<void()> yes
-  );
-  
-  bool checkExists(const char *file);
   static bool isZ80(const char* filename);
-  
-  void renameFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
-  void deleteFile(PicoExplorer* exp, FILINFO *finfo, int32_t i);
-  void pasteFile(PicoExplorer* exp, const char* name);
-  void refreshFolder(PicoExplorer*);
 
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
@@ -108,7 +83,7 @@ public:
   void clearTzxOptions();
   void addTzxOption(const char *);
   void tzxOption(std::function<void(uint32_t option)> tzxOption) { _tzxOption = tzxOption; }
-  void refresh(std::function<void()> refresh) { _refresh = refresh; }
+  void refresh(std::function<void()> refresh);
   void snapName(const char* name);
   void snapLoaded(std::function<void(const char *name)> listener) { _snapLoadedListener = listener; }
   void nextSnap(int d);
