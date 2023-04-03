@@ -130,6 +130,11 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
 static  PIO pio = pio0;
 static  uint sm = 0;
 
+void __not_in_flash_func(setMenuState)(bool showMenu) {
+  picomputerJoystick.enabled(!showMenu);  
+  pzx_menu_mode(showMenu);
+}
+
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
@@ -168,7 +173,7 @@ void __not_in_flash_func(core1_main)() {
     if (toggleMenu) {
       showMenu = !showMenu;
       toggleMenu = false;
-      picomputerJoystick.enabled(!showMenu);
+      setMenuState(showMenu);
     }
    
     while((time_us_32() - t1) < 20000) {
@@ -231,6 +236,7 @@ int main() {
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   // TZX tape option handlers
@@ -245,6 +251,7 @@ int main() {
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   picoRootWin.tzxOption(
@@ -252,6 +259,7 @@ int main() {
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   snapFileLoop.set(&picoRootWin);
