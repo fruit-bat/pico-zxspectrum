@@ -42,7 +42,11 @@ inline void is2_audio_put(uint32_t x) {
       #define PWM_WRAP (255 + 255 + 255)
     #endif
   #else
-    #define PWM_WRAP (255 + 255 + 255)
+    #ifdef PICOMPUTER_PICOZX
+      #define PWM_WRAP (255 + 255 + 255 + 255)
+    #else
+      #define PWM_WRAP (255 + 255 + 255)
+    #endif
   #endif
 
 static void init_pwm_pin(uint32_t pin) { 
