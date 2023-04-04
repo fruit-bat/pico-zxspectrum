@@ -120,7 +120,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   addChild(&_wiz, true);
   _wiz.push(&_main, [](PicoPen *pen){ pen->printAt(0, 0, false, "Main menu"); }, true);
   _wiz.onKeydown([=](uint8_t keycode, uint8_t modifiers, uint8_t ascii) {
-     return (ascii != 27) || !_wiz.pop(true);
+     // Escape or Left for back
+     return (ascii != 27 && ascii != 129) || !_wiz.pop(true);
    });
    
   _main.addOption(_snapOp.addQuickKey(&_k1));

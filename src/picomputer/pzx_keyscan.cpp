@@ -89,7 +89,7 @@ void __not_in_flash_func(pzx_menu_mode)(bool m) {
 //Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
 #ifdef REAL_ZXKEYBOARD
-static uint8_t kbits[5][6][8] = { 
+static uint8_t kbits[4][6][8] = { 
   // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
   {
     { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
@@ -177,7 +177,7 @@ static uint8_t kbits[6][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_F8, HID_KEY_F9, HID_KEY_F10 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, HID_KEY_ESCAPE, HID_KEY_PAGE_UP, HID_KEY_PAGE_DOWN },
   },
   // Shifted menu mappings
   {
@@ -187,7 +187,7 @@ static uint8_t kbits[6][7][7] = {
     { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
-    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_ESCAPE, 0, 0, 0 },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, 0, 0, 0, 0 },
   },
 };
 #endif
