@@ -42,11 +42,7 @@ inline void is2_audio_put(uint32_t x) {
       #define PWM_WRAP (255 + 255 + 255)
     #endif
   #else
-    #ifdef PICOMPUTER_PICOZX
-      #define PWM_WRAP (255 + 255 + 255 + 255)
-    #else
-      #define PWM_WRAP (255 + 255 + 255)
-    #endif
+    #define PWM_WRAP (255 + 255 + 255)
   #endif
 
 static void init_pwm_pin(uint32_t pin) { 
@@ -122,7 +118,11 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
     #endif
   #else
       uint32_t ayt = vA + vB + vC;
-      pwm_set_gpio_level(SPK_PIN, ayt >= 255 + 255 + 255 ? ayt - s : ayt + s);
+    #ifdef DD_PICOMPUTER_PICOZX
+      pwm_set_gpio_level(SPK_PIN, (ayt + s) >> 1);
+    #else
+      pwm_set_gpio_level(SPK_PIN, ayt + s >= 255 + 255 + 255 ? ayt - s : ayt + s);
+    #endif      
   #endif
 #endif
 }
