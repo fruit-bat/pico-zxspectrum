@@ -101,6 +101,7 @@ pico_add_extra_outputs(ZxSpectrumPicomputerZX)
 add_executable(ZxSpectrumPicomputerZxLcd
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_rgb_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
@@ -128,17 +129,23 @@ target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   SZ_FILE_ROWS=18
   SPK_PIN=7
   PICOMPUTER_PICOZX
+  PICOMPUTER_PICOZX_LCD
   LCD_NO_BL
   LCD_PIN_CLK=2
   LCD_PIN_DC=6
   LCD_PIN_CS=5
   LCD_PIN_DIN=3
+  VGA_ENC_RGB_222
+  VGA_GPIO_SYNC=6
+  VGA_GPIO_OUTNUM=6
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxLcd
   ${zxspectrum_common_libs}
   pico_emu_utils
   pico_st7789_menu
+  pico_vga_menu
+  pico_vga_332
   tinyusb_host
   tinyusb_board
   hardware_pio
