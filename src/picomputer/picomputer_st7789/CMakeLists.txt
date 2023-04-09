@@ -113,20 +113,6 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxLcd
 
 target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   ${picomputer_common_defines}
-  # Set the resolution of the menu screen
-  PCS_COLS=40 
-  PCS_ROWS=30
-  # Set the size of the menus
-  SZ_WIZ_ML=0
-  SZ_WIZ_CW1=12
-  SZ_WIZ_CW2=18
-  SZ_FRAME_COLS=40
-  SZ_FRAME_ROWS=30
-  SZ_FRAME_X=0
-  SZ_FRAME_Y=0
-  SZ_MENU_SEP=2
-  SZ_FILE_SEP=1
-  SZ_FILE_ROWS=18
   SPK_PIN=7
   PICOMPUTER_PICOZX
   PICOMPUTER_PICOZX_LCD

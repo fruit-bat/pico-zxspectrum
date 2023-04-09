@@ -150,51 +150,53 @@ void __not_in_flash_func(core1_main)() {
 
   printf("Core 1 running...\n");
 
+  if (true) {
 
+    // TODO fetch the resolution from the mode ?
+    VgaInit(vmode,640,480);
 
-  // TODO fetch the resolution from the mode ?
-  VgaInit(vmode,640,480);
+    while (1) {
 
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    _frames = linebuf->frame;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      zx_prepare_rgb_scanline(
-        buf, 
-        y, 
-        linebuf->frame,
-        screenPtr,
-        attrPtr,
-        zxSpectrum.borderColour()
-      );
-    }
-      
-    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-      
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-      
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-        setMenuState(showMenu);
+      VgaLineBuf *linebuf = get_vga_line();
+      uint32_t* buf = (uint32_t*)&(linebuf->line);
+      uint32_t y = linebuf->row;
+      _frames = linebuf->frame;
+      if (showMenu) {
+        pcw_prepare_vga332_scanline_80(
+          buf,
+          y,
+          linebuf->frame);
       }
-    }    
+      else {
+        zx_prepare_rgb_scanline(
+          buf, 
+          y, 
+          linebuf->frame,
+          screenPtr,
+          attrPtr,
+          zxSpectrum.borderColour()
+        );
+      }
+        
+      pzx_keyscan_row();
+      
+      if (y == 239) { // TODO use a const / get from vmode
+        
+        // TODO Tidy this mechanism up
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+        
+        if (toggleMenu) {
+          showMenu = !showMenu;
+          toggleMenu = false;
+          setMenuState(showMenu);
+        }
+      }    
+    }
   }
 
-
+  picoRootWin.move(0,0,40,30);
+  picoRootWin.setWizLayout(0, 12, 18);
 
   // Start up the LCD
   st7789_init(pio, sm);
