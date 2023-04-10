@@ -280,7 +280,8 @@ int main(){
   
   // Initialise the menu renderer
   pcw_init_renderer();
-
+  pcw_init_vga332_renderer();
+  
   // Initialise the keyboard scan
 //  pzx_keyscan_init();
   

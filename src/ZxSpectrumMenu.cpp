@@ -56,11 +56,35 @@ static const char *fext(const char *filename) {
   return dot + 1;
 }
 
+void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) {
+   _wizCol1Width = cols1;
+   _wizCol2Width = cols2;
+   _wizLeftMargin = margin;
+   _wizCols = ww() - (2 * margin);
+   _wiz.move(_wizLeftMargin, _wiz.wy(), _wizCols, _wiz.wh());
+   _main.move(0, 0, _wizCols, _main.wh());
+   _tapePlayer.move(0, 0, _wizCols, _tapePlayer.wh());
+   _chooseTape.move(0, 0, _wizCols, _chooseTape.wh());
+   _chooseSnap.move(0, 0, _wizCols, _chooseSnap.wh());
+   _reset.move(0, 0, _wizCols, _reset.wh());
+   _joystick.move(0, 0, _wizCols, _joystick.wh());
+   _devices.move(0, 0, _wizCols, _devices.wh());
+   _tzxSelect.move(0, 0, _wizCols, _tzxSelect.wh());
+   repaint();
+}
+
 ZxSpectrumMenu::ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
+   _wizCol1Width(SZ_WIZ_CW1),
+   _wizCol2Width(SZ_WIZ_CW2),
+   _wizLeftMargin(SZ_WIZ_ML),
+   _wizCols(SZ_WIZ_COLS),
+   _menuRowsPerItem(SZ_MENU_SEP),
+   _explorerRowsPerFile(SZ_FILE_SEP),
+   _explorerRows(SZ_FILE_ROWS),
    _pathZxSpectrum("/zxspectrum"),
    _pathSnaps(&_pathZxSpectrum, "snapshots"),
    _pathTapes(&_pathZxSpectrum, "tapes"),
@@ -69,28 +93,28 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _tis(0),
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
-  _wiz(SZ_WIZ_ML, 6, SZ_WIZ_COLS, SZ_FILE_ROWS * SZ_FILE_SEP),
-  _wizUtils(&_wiz, SZ_FILE_SEP, &_k1, &_k2),
-  _main(0, 0, SZ_WIZ_COLS, 7, SZ_MENU_SEP),
+  _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
+  _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
+  _main(0, 0, _wizCols, 7, _menuRowsPerItem),
   
-  _tapePlayer(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
+  _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
   _chooseTapeOp("Tapes"),
   _ejectTapeOp("Eject tape"),
-  _chooseTape(&_wizUtils, sdCard, &_pathTapes, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
-  _chooseSnap(&_wizUtils, sdCard, &_pathSnaps, 0, 0, SZ_WIZ_COLS, SZ_FILE_ROWS, SZ_FILE_SEP),
+  _chooseTape(&_wizUtils, sdCard, &_pathTapes, 0, 0, _wizCols, _explorerRows, _explorerRowsPerFile),
+  _chooseSnap(&_wizUtils, sdCard, &_pathSnaps, 0, 0, _wizCols, _explorerRows, _explorerRowsPerFile),
   
-  _reset(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
+  _reset(0, 0, _wizCols, 6, _menuRowsPerItem),
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
   
-  _joystick(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP),
+  _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
   _joystickKemstonOp("Kempston"),
   _joystickSinclairOp("Sinclair"),
 
-  _devices(0, 3, SZ_WIZ_COLS, 1),
+  _devices(0, 3, _wizCols, 1),
  
-  _tzxSelect(0, 0, SZ_WIZ_COLS, 6, SZ_MENU_SEP)
+  _tzxSelect(0, 0, _wizCols, 6, _menuRowsPerItem)
 { 
   _pathQuickSaves.createFolders(sdCard);
   _pathTapes.createFolders(sdCard);
@@ -134,7 +158,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Snapshot", SZ_WIZ_CW2, _snapName.c_str());
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Snapshot", _wizCol2Width, _snapName.c_str());
   });
   _snapOp.toggle([=]() {
     _wiz.push(
@@ -146,13 +170,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
   _tapePlayerOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Tape player", SZ_WIZ_CW2, _tapeName.c_str());
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Tape player", _wizCol2Width, _tapeName.c_str());
   });
   _tapePlayerOp.toggle([=]() {
     _wiz.push(
       &_tapePlayer, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"Tape player [ %-*s]", SZ_WIZ_CW2, _tapeName.c_str());
+        pen->printAtF(0, 0, false,"Tape player [ %-*s]", _wizCol2Width, _tapeName.c_str());
       }, 
       true);
   });
@@ -169,7 +193,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       case 0: m = "Unmoderated" ; break;
       default: m = "Unknown" ; break;
     }
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "CPU Speed", SZ_WIZ_CW2, m);
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "CPU Speed", _wizCol2Width, m);
   });
   _muteOp.toggle([=]() {
     _zxSpectrum->toggleMute();
@@ -177,7 +201,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Audio", SZ_WIZ_CW2, _zxSpectrum->mute() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio", _wizCol2Width, _zxSpectrum->mute() ? "off" : "on");
   });
   _resetOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -187,7 +211,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       case ZxSpectrum128k: m = "128k ZX Spectrum" ; break;
       default: m = "" ; break;
     }
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Reset", SZ_WIZ_CW2, m);
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Reset", _wizCol2Width, m);
   });
   _resetOp.toggle([=]() {
     _wiz.push(
@@ -206,7 +230,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
         default: m = "N/A" ; break;
       }
     }
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Joystick", SZ_WIZ_CW2, m);
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Joystick", _wizCol2Width, m);
   });
   _joystickOp.toggle([=]() {
     _wiz.push(
@@ -277,7 +301,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _pauseTapeOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", SZ_WIZ_CW1, "Motor", SZ_WIZ_CW2, _zxSpectrum->tapePaused() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Motor", _wizCol2Width, _zxSpectrum->tapePaused() ? "off" : "on");
   });
   _pauseTapeOp.toggle([=]() {
     _zxSpectrum->togglePauseTape();

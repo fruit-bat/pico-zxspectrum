@@ -3,11 +3,17 @@
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
-
+#include "ZxSpectrumPrepareRgbScanline.h"
 #include "pzx_prepare_rgb444_scanline.h"
 #include "PicoCharRendererSt7789.h"
+#include "PicoCharRendererVga.h"
+
 #include "st7789_lcd.h"
 
+#ifdef PICOMPUTER_PICOZX_LCD
+#include "vga.h"
+#include "ZxSpectrumPrepareRgbScanline.h"
+#endif
 #include "pzx_keyscan.h"
 
 #include "PicoWinHidKeyboard.h"
@@ -40,6 +46,11 @@
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
+
+#ifdef PICOMPUTER_PICOZX_LCD
+static const sVmode* vmode = NULL;
+static bool useVga = false;
+#endif
 
 uint8_t* screenPtr;
 uint8_t* attrPtr;
@@ -137,7 +148,63 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
 
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
+
   printf("Core 1 running...\n");
+
+#ifdef PICOMPUTER_PICOZX_LCD
+  if (useVga) {
+
+    // TODO fetch the resolution from the mode ?
+    VgaInit(vmode,640,480);
+
+    while (1) {
+
+      VgaLineBuf *linebuf = get_vga_line();
+      uint32_t* buf = (uint32_t*)&(linebuf->line);
+      uint32_t y = linebuf->row;
+      _frames = linebuf->frame;
+      if (showMenu) {
+        pcw_prepare_vga332_scanline_80(
+          buf,
+          y,
+          linebuf->frame);
+      }
+      else {
+        zx_prepare_rgb_scanline(
+          buf, 
+          y, 
+          linebuf->frame,
+          screenPtr,
+          attrPtr,
+          zxSpectrum.borderColour()
+        );
+      }
+        
+      pzx_keyscan_row();
+      
+      if (y == 239) { // TODO use a const / get from vmode
+        
+        // TODO Tidy this mechanism up
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+        
+        if (toggleMenu) {
+          showMenu = !showMenu;
+          toggleMenu = false;
+          setMenuState(showMenu);
+        }
+      }    
+    }
+  }
+#endif
+
+  picoRootWin.move(0,0,40,30);
+  picoRootWin.setWizLayout(0, 12, 18);
+
+  // Start up the LCD
+  st7789_init(pio, sm);
+  
+  sleep_ms(10);
 
   uint32_t t1 = time_us_32();
 
@@ -224,7 +291,12 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
+#ifdef PICOMPUTER_PICOZX_LCD  
+  vmode = Video(DEV_VGA, RES_HVGA);
+  sleep_ms(100);
+#else
   set_sys_clock_khz(200000, true);
+#endif
 
   //Initialise I/O
   stdio_init_all(); 
@@ -281,12 +353,12 @@ int main() {
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
-
-  // Start up the LCD
-  st7789_init(pio, sm);
-  
-  sleep_ms(10);
    
+#ifdef PICOMPUTER_PICOZX_LCD
+  pcw_init_vga332_renderer();
+  useVga = pzx_fire_raw();
+#endif
+
   sem_init(&dvi_start_sem, 0, 1);
   
   multicore_launch_core1(core1_main);
