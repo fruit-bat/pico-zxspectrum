@@ -373,6 +373,22 @@ void __not_in_flash_func(pzx_keyscan_row)() {
 
 static uint8_t kempstonJoystick = 0;
 
+void pzx_scan_matrix() {
+  for( int i = 0; i < RN; ++i) {
+    sleep_ms(2);
+    pzx_keyscan_row();
+  }
+}
+
+bool pzx_fire_raw() {
+  pzx_scan_matrix();
+  for(int si = 0; si < SAMPLES; ++si) {
+    uint8_t s = rs[KEY_FIRE_ROW][si];
+    if (s & KEY_FIRE_BIT) return true;  
+  }
+  return false;
+}
+
 uint8_t __not_in_flash_func(pzx_kempston)() {
 // 000FUDLR
 #ifdef PICOMPUTER_PICOZX

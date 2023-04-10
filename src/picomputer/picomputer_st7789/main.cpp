@@ -49,6 +49,7 @@ struct semaphore dvi_start_sem;
 
 #ifdef PICOMPUTER_PICOZX_LCD
 static const sVmode* vmode = NULL;
+static bool useVga = false;
 #endif
 
 uint8_t* screenPtr;
@@ -151,7 +152,7 @@ void __not_in_flash_func(core1_main)() {
   printf("Core 1 running...\n");
 
 #ifdef PICOMPUTER_PICOZX_LCD
-  if (true) {
+  if (useVga) {
 
     // TODO fetch the resolution from the mode ?
     VgaInit(vmode,640,480);
@@ -349,13 +350,15 @@ int main() {
 
   // Initialise the menu renderer
   pcw_init_renderer();
-#ifdef PICOMPUTER_PICOZX_LCD
-  pcw_init_vga332_renderer();
-#endif
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
    
+#ifdef PICOMPUTER_PICOZX_LCD
+  pcw_init_vga332_renderer();
+  useVga = pzx_fire_raw();
+#endif
+
   sem_init(&dvi_start_sem, 0, 1);
   
   multicore_launch_core1(core1_main);
