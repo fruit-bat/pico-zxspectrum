@@ -45,11 +45,11 @@
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
-#ifdef PICOMPUTER_PICOZX_LCD
 struct semaphore dvi_start_sem;
-#endif
 
+#ifdef PICOMPUTER_PICOZX_LCD
 static const sVmode* vmode = NULL;
+#endif
 
 uint8_t* screenPtr;
 uint8_t* attrPtr;
@@ -150,6 +150,7 @@ void __not_in_flash_func(core1_main)() {
 
   printf("Core 1 running...\n");
 
+#ifdef PICOMPUTER_PICOZX_LCD
   if (true) {
 
     // TODO fetch the resolution from the mode ?
@@ -194,6 +195,7 @@ void __not_in_flash_func(core1_main)() {
       }    
     }
   }
+#endif
 
   picoRootWin.move(0,0,40,30);
   picoRootWin.setWizLayout(0, 12, 18);

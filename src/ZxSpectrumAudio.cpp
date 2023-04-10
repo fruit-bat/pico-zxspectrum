@@ -118,7 +118,7 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
     #endif
   #else
       uint32_t ayt = vA + vB + vC;
-    #ifdef PICOMPUTER_PICOZX
+    #ifdef PICO_AUDIO_HALF_VOLUME
       pwm_set_gpio_level(SPK_PIN, (ayt + s) >> 1);
     #else
       pwm_set_gpio_level(SPK_PIN, ayt + s >= 255 + 255 + 255 ? ayt - s : ayt + s);
