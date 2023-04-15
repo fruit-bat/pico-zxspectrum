@@ -196,6 +196,11 @@ void __not_in_flash_func(core1_main)() {
       }    
     }
   }
+
+  // Turn on the LCD backlight
+  gpio_init(4);
+  gpio_set_dir(4, GPIO_OUT);
+  gpio_put(4, 1);
 #endif
 
   picoRootWin.move(0,0,40,30);
