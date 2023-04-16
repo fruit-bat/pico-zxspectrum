@@ -1,12 +1,11 @@
 #pragma once
 
 #include "ZxSpectrumKiosk.h"
-#include "SdCardFatFsSpi.h"
+#include "ZxSpectrumFatSpiExists.h"
 
 class ZxSpectrumFatSpiKiosk : public ZxSpectrumKiosk {
 private:
-  SdCardFatFsSpi* _sdCard;
-  const char *_folder;
+  ZxSpectrumFatSpiExists _exists;
 public:
   ZxSpectrumFatSpiKiosk(SdCardFatFsSpi* sdCard, const char *folder);
   virtual ~ZxSpectrumFatSpiKiosk() {}

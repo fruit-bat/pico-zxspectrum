@@ -13,6 +13,7 @@
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "vga.h"
 #include "ZxSpectrumPrepareRgbScanline.h"
+#include "ZxSpectrumFatSpiKiosk.h"
 #endif
 #include "pzx_keyscan.h"
 
@@ -358,10 +359,12 @@ int main() {
 
   // Initialise the keyboard scan
   pzx_keyscan_init();
-   
+
 #ifdef PICOMPUTER_PICOZX_LCD
   pcw_init_vga332_renderer();
   useVga = pzx_fire_raw();
+  ZxSpectrumFatSpiExists vgaoption(&sdCard0, "zxspectrum", "vga.txt");
+  useVga |= vgaoption.exists();  
 #endif
 
   sem_init(&dvi_start_sem, 0, 1);
