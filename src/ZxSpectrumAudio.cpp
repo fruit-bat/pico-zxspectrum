@@ -2,6 +2,11 @@
 #include "hardware/gpio.h"
 #include "hardware/clocks.h"
 
+#ifndef INITIAL_VOL
+#define INITIAL_VOL 0x100
+#endif
+static uint32_t _vol = INITIAL_VOL;
+
 #ifdef PICO_AUDIO_I2S
 
 #include "audio_i2s.pio.h"
@@ -103,9 +108,11 @@ void zxSpectrumAudioInit() {
 void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer) {
 #ifdef PICO_AUDIO_I2S
   if (!is2_audio_ready()) return;
-  uint32_t l = ((((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
-  uint32_t r = ((((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1))) & 0xffff;
-  is2_audio_put((l << 16) | r);
+  uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+  uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+  uint32_t ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
+  uint32_t rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
+  is2_audio_put((ll << 16) | rr);
 #else
   #ifdef BZR_PIN
     gpio_put(BZR_PIN, buzzer);
@@ -117,13 +124,10 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
       pwm_set_gpio_level(AY8912_C_PIN, vC);
     #endif
   #else
-      uint32_t ayt = vA + vB + vC;
-    #ifdef PICO_AUDIO_HALF_VOLUME
-      pwm_set_gpio_level(SPK_PIN, (ayt + s) >> 1);
-    #else
-      pwm_set_gpio_level(SPK_PIN, ayt + s >= 255 + 255 + 255 ? ayt - s : ayt + s);
-    #endif      
+    uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
+    uint32_t ss  = __mul_instruction(_vol, s) >> 8;
+    uint32_t t   = ayt + ss;
+    pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
   #endif
 #endif
 }
-
