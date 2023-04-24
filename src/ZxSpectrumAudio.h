@@ -27,3 +27,7 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
 uint32_t __not_in_flash_func(zxSpectrumReadEar)();
 #endif
 
+uint32_t zxSpectrumAudioGetVolume();
+
+void zxSpectrumAudioSetVolume(uint32_t vol);
+

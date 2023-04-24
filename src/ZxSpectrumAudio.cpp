@@ -131,3 +131,7 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
   #endif
 #endif
 }
+
+uint32_t zxSpectrumAudioGetVolume() { return _vol; }
+
+void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }

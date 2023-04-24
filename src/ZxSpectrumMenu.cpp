@@ -111,6 +111,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
   _joystickKemstonOp("Kempston"),
   _joystickSinclairOp("Sinclair"),
+  _volume(0, 0, 17, 16),
 
   _devices(0, 3, _wizCols, 1),
  
@@ -154,6 +155,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_muteOp.addQuickKey(&_k4));
   _main.addOption(_resetOp.addQuickKey(&_k5));
   _main.addOption(_joystickOp.addQuickKey(&_k6));
+  _main.addOption(_volumeOp.addQuickKey(&_k7));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -219,7 +221,22 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Reset options"); }, 
       true);
   });
-  
+
+  _volume.config(
+    [](uint32_t v) { zxSpectrumAudioSetVolume(v); },
+    []() { return zxSpectrumAudioGetVolume(); }
+  );
+  _volumeOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Volume", _wizCol2Width, _volume.getChars());
+  });
+  _volumeOp.toggle([=]() {
+    _wiz.push(
+      &_volume, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Volume control"); }, 
+      true);
+  });
+
   _joystickOp.onPaint([=](PicoPen *pen){
     pen->clear();
     const char *m = "N/A";
@@ -324,7 +341,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   onPaint([](PicoPen *pen) {
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(0, 2, false, "Menu System version 0.31");
+     pen->printAt(0, 2, false, "Menu System version 0.32");
 
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");

@@ -15,6 +15,7 @@
 
 #include "PicoWizUtils.h"
 #include "PicoWizExplorer.h"
+#include "PicoSlider.h"
 
 class ZxSpectrum;
 
@@ -54,6 +55,7 @@ private:
   PicoOption _muteOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
+  PicoOption _volumeOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -70,6 +72,8 @@ private:
   PicoSelect _joystick;
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
+
+  PicoSlider _volume;
 
   std::string _tapeName;
   std::string _snapName;
