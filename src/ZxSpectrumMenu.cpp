@@ -68,7 +68,7 @@ void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) 
    _chooseSnap.move(0, 0, _wizCols, _chooseSnap.wh());
    _reset.move(0, 0, _wizCols, _reset.wh());
    _joystick.move(0, 0, _wizCols, _joystick.wh());
-   _devices.move(0, 0, _wizCols, _devices.wh());
+   _devices.move(0, 3, _wizCols, _devices.wh());
    _tzxSelect.move(0, 0, _wizCols, _tzxSelect.wh());
    repaint();
 }
@@ -95,7 +95,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
-  _main(0, 0, _wizCols, 7, _menuRowsPerItem),
+  _main(0, 0, _wizCols, 9, _menuRowsPerItem),
   
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
