@@ -111,7 +111,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
   _joystickKemstonOp("Kempston"),
   _joystickSinclairOp("Sinclair"),
-  _volume(0, 0, 17, 16),
+  _volume(0, 0, 16, 16),
 
   _devices(0, 3, _wizCols, 1),
  
@@ -155,8 +155,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_muteOp.addQuickKey(&_k4));
   _main.addOption(_resetOp.addQuickKey(&_k5));
   _main.addOption(_joystickOp.addQuickKey(&_k6));
+#ifndef BZR_PIN  
   _main.addOption(_volumeOp.addQuickKey(&_k7));
-
+#endif
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
