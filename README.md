@@ -165,7 +165,24 @@ It supports:
 * USB joysticks
 * VGA video (RGB222)
 * PWM sound (1 pin)
-* Audio input (load from tape)
+* SPI SD card
+
+Here are the pin assignments:
+
+![image](docs/ZxSpectrumPicomputerVga222Zx.png)
+
+### ZxSpectrumPicomputerZxLcd
+This is a target written for Bobricius' PICOZX with built in LCD 
+
+<a href=""><img src="docs/picozxlcd.png" width="300"/></a>
+
+It supports:
+* USB keyboard
+* Keyboard martix
+* USB joysticks
+* VGA video (RGB222)
+* LCD video (ST7789)
+* PWM sound (1 pin)
 * SPI SD card
 
 Here are the pin assignments:
@@ -223,6 +240,8 @@ It supports the following:
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicoDv.png)
+
+Please note that an SD card must be present for this version to start up.
 
 ### ZxSpectrumBreadboardHdmiKbd1PinAudio
 This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
