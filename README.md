@@ -42,6 +42,7 @@
 ## Updates
 
 11/03/23 - Added new target for Bobricious PICOZX LCD.
+
 19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK).
 This target can read from a standard 48k Spectrum keyboard matrix.
 
