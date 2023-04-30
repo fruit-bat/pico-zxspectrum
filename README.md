@@ -42,7 +42,7 @@
 ## Updates
 
 29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
-* Boot and run either the LCD or VGA output
+* PICOZX with LCD can now use either the LCD or VGA output
 * Volume control (for target where it makes sense)
 * Some changes to key mappings and menu navigation
 
