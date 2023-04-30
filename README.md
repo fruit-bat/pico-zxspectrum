@@ -46,6 +46,8 @@
 * Volume control (for target where it makes sense)
 * Some changes to key mappings and menu navigation
 
+To boot into VGA mode hold down the 'fire' button during reset.
+
 The key mapping changes were intended to make navigating the menus with a joystick a bit easier.
 In particular, now left (usually) goes 'back' and right enters/activates an item. 
 Paging in the file-explorer is now achieved with the Page-Up and Page-Down keys.
@@ -193,6 +195,10 @@ It supports:
 * LCD video (ST7789)
 * PWM sound (1 pin)
 * SPI SD card
+
+By default, the board starts up using the LCD as its display.
+To boot into VGA mode hold down the 'fire' button during reset.
+Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
 
 Here are the pin assignments:
 
