@@ -41,7 +41,15 @@
 
 ## Updates
 
-11/03/23 - Added new target for Bobricious PICOZX LCD.
+29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
+* Boot and run either the LCD or VGA output
+* Volume control (for target where it makes sense)
+* Some changes to key mappings and menu navigation
+
+The key mapping changes were intended to make navigating the menus with a joystick a bit easier.
+In particular, now left (usually) goes 'back' and right enters/activates an item. 
+Paging in the file-explorer is now achieved with the Page-Up and Page-Down keys.
+Not sure it will stay like this; mapping keys and directions in a way that works for the emulator and the menus can be tricky.
 
 19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK).
 This target can read from a standard 48k Spectrum keyboard matrix.
