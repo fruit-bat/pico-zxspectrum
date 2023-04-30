@@ -15,11 +15,20 @@
 
 #include "PicoWizUtils.h"
 #include "PicoWizExplorer.h"
+#include "PicoSlider.h"
 
 class ZxSpectrum;
 
 class ZxSpectrumMenu : public PicoWin {
 private:
+  int32_t _wizCol1Width;
+  int32_t _wizCol2Width;
+  int32_t _wizLeftMargin;
+  int32_t _wizCols;
+  int32_t _menuRowsPerItem;
+  int32_t _explorerRowsPerFile;
+  int32_t _explorerRows;
+
   FatFsFilePath _pathZxSpectrum;
   FatFsFilePath _pathSnaps;
   FatFsFilePath _pathTapes;
@@ -46,6 +55,7 @@ private:
   PicoOption _muteOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
+  PicoOption _volumeOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -62,6 +72,8 @@ private:
   PicoSelect _joystick;
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
+
+  PicoSlider _volume;
 
   std::string _tapeName;
   std::string _snapName;
@@ -89,6 +101,7 @@ public:
   void nextSnap(int d);
   void quickSave(int slot);
   void quickLoad(int slot);
+  void setWizLayout(int32_t margin, int32_t cols1, int32_t cols2);
 
   ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,

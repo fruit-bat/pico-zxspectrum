@@ -14,11 +14,21 @@
 #include "st7789_lcd.h"
 #include "st7789_lcd.pio.h"
 
-#define PIN_DIN 19
-#define PIN_CLK 18
-#define PIN_CS 21
-#define PIN_DC 16
-#define PIN_BL 20
+#ifndef LCD_PIN_DIN
+#define LCD_PIN_DIN 19
+#endif
+#ifndef LCD_PIN_CLK
+#define LCD_PIN_CLK 18
+#endif
+#ifndef LCD_PIN_CS
+#define LCD_PIN_CS 21
+#endif
+#ifndef LCD_PIN_DC
+#define LCD_PIN_DC 16
+#endif
+#ifndef LCD_PIN_BL
+#define LCD_PIN_BL 20
+#endif
 
 #define SERIAL_CLK_DIV (2.0f)
 
@@ -39,7 +49,7 @@ static const uint8_t st7789_init_seq[] = {
 
 static inline void lcd_set_dc_cs(bool dc, bool cs) {
     sleep_us(1);
-    gpio_put_masked((1u << PIN_DC) | (1u << PIN_CS), !!dc << PIN_DC | !!cs << PIN_CS);
+    gpio_put_masked((1u << LCD_PIN_DC) | (1u << LCD_PIN_CS), !!dc << LCD_PIN_DC | !!cs << LCD_PIN_CS);
     sleep_us(1);
 }
 
@@ -75,21 +85,26 @@ static inline void st7789_start_pixels(PIO pio, uint sm) {
 void st7789_init(PIO pio, uint sm) {
     
     uint offset = pio_add_program(pio, &st7789_lcd_program);
-    st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 8);
+    st7789_lcd_program_init(pio, sm, offset, LCD_PIN_DIN, LCD_PIN_CLK, SERIAL_CLK_DIV, 8);
 
-    gpio_init(PIN_CS);
-    gpio_init(PIN_DC);
-    gpio_init(PIN_BL);
-    gpio_set_dir(PIN_CS, GPIO_OUT);
-    gpio_set_dir(PIN_DC, GPIO_OUT);
-    gpio_set_dir(PIN_BL, GPIO_OUT);
-
-    gpio_put(PIN_CS, 1);
+    gpio_init(LCD_PIN_CS);
+    gpio_init(LCD_PIN_DC);
+#ifndef LCD_NO_BL
+    gpio_init(LCD_PIN_BL);
+#endif
+    gpio_set_dir(LCD_PIN_CS, GPIO_OUT);
+    gpio_set_dir(LCD_PIN_DC, GPIO_OUT);
+#ifndef LCD_NO_BL
+    gpio_set_dir(LCD_PIN_BL, GPIO_OUT);
+#endif
+    gpio_put(LCD_PIN_CS, 1);
     lcd_init(pio, sm, st7789_init_seq);
-    gpio_put(PIN_BL, 1);
+#ifndef LCD_NO_BL
+    gpio_put(LCD_PIN_BL, 1);
+#endif
 
     st7789_start_pixels(pio, sm);
     st7789_lcd_wait_idle(pio, sm);
-    st7789_lcd_program_init(pio, sm, offset, PIN_DIN, PIN_CLK, SERIAL_CLK_DIV, 24);
+    st7789_lcd_program_init(pio, sm, offset, LCD_PIN_DIN, LCD_PIN_CLK, SERIAL_CLK_DIV, 24);
 }
 

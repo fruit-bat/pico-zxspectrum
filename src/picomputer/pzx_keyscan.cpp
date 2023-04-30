@@ -76,11 +76,20 @@ static uint8_t rdb[RN];                          // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
 static uint8_t hri = 0;                          // Currenct hid report index
 static uint8_t kbi = 0;
+static uint8_t menu = 0;
+
+void __not_in_flash_func(pzx_menu_mode)(bool m) {
+#ifdef PICOMPUTER_PICOZX
+#ifndef REAL_ZXKEYBOARD  
+  menu = m ? 1 : 0; 
+#endif
+#endif
+}
 
 //Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
 #ifdef REAL_ZXKEYBOARD
-static uint8_t kbits[5][6][8] = { 
+static uint8_t kbits[4][6][8] = { 
   // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
   {
     { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
@@ -119,7 +128,7 @@ static uint8_t kbits[5][6][8] = {
   }
 };
 #else
-static uint8_t kbits[5][7][7] = { 
+static uint8_t kbits[6][7][7] = { 
   // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
   {
     { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
@@ -159,7 +168,27 @@ static uint8_t kbits[5][7][7] = {
     { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
     { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
     { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F13, HID_KEY_F14, 0, 0 },
-  }
+  },
+  // Normal menu mappings
+  {
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
+    { HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_6, HID_KEY_7 },
+    { HID_KEY_8, HID_KEY_9, HID_KEY_0, HID_KEY_Q, HID_KEY_W, HID_KEY_E, HID_KEY_R },
+    { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
+    { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
+    { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, HID_KEY_F1, 0, HID_KEY_PAGE_UP, HID_KEY_PAGE_DOWN },
+  },
+  // Shifted menu mappings
+  {
+    { HID_KEY_ESCAPE, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, HID_KEY_ALT_RIGHT },
+    { HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_6, HID_KEY_7 },
+    { HID_KEY_8, HID_KEY_9, HID_KEY_0, HID_KEY_Q, HID_KEY_W, HID_KEY_E, HID_KEY_R },
+    { HID_KEY_T, HID_KEY_Y, HID_KEY_U, HID_KEY_I, HID_KEY_O, HID_KEY_P, HID_KEY_A },
+    { HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_H, HID_KEY_J, HID_KEY_K },
+    { HID_KEY_L, HID_KEY_ENTER, HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_V, HID_KEY_B },
+    { HID_KEY_N, HID_KEY_M, HID_KEY_SPACE, 0, 0, 0, 0 },
+  },
 };
 #endif
 #else
@@ -344,11 +373,27 @@ void __not_in_flash_func(pzx_keyscan_row)() {
 
 static uint8_t kempstonJoystick = 0;
 
+void pzx_scan_matrix() {
+  for( int i = 0; i < RN; ++i) {
+    sleep_ms(2);
+    pzx_keyscan_row();
+  }
+}
+
+bool pzx_fire_raw() {
+  pzx_scan_matrix();
+  for(int si = 0; si < SAMPLES; ++si) {
+    uint8_t s = rs[KEY_FIRE_ROW][si];
+    if (s & KEY_FIRE_BIT) return true;  
+  }
+  return false;
+}
+
 uint8_t __not_in_flash_func(pzx_kempston)() {
 // 000FUDLR
 #ifdef PICOMPUTER_PICOZX
 // 000DRULF
-  return kempstonJoystick 
+  return kempstonJoystick && !menu
   ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) << 4)    // Kempston fire
   | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) )        // Kempston left
   | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) << 1)        // Kempston up
@@ -424,7 +469,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
     }
   }
   #endif
-  kbi = kempstonJoystick + (shift ? 1 : 0 );
+  kbi = (menu ? 4 : kempstonJoystick) + (shift ? 1 : 0 );
 #endif
   
   // Build the current hid report
