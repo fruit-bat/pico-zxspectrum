@@ -188,7 +188,7 @@ It supports:
 
 Here are the pin assignments:
 
-![image](docs/ZxSpectrumPicomputerVga222Zx.png)
+![image](docs/ZxSpectrumPicomputerZxLcd.png)
 
 ### ZxSpectrumPicomputerVga
 This is the target for Bobricius' Retro VGA board:
