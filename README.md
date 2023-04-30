@@ -252,11 +252,11 @@ It supports the following:
 * I2S sound
 * SPI SD card
 
+Please note that an SD card must be present for this version to start up.
+
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicoDv.png)
-
-Please note that an SD card must be present for this version to start up.
 
 ### ZxSpectrumBreadboardHdmiKbd1PinAudio
 This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
@@ -626,3 +626,5 @@ tio -m ODELBS /dev/ttyUSB0
 [ZX Modules Software](https://spectrumforeveryone.com/technical/zx-modules-software/)</br>
 [TZX format](https://www.alessandrogrussu.it/tapir/tzxform120.html#GRPSTART)</br>
 [A decoder for ZX format](https://github.com/kounch/playtzx)</br>
+[Circuit diagram editor](https://www.circuit-diagram.org/)</br>
+
