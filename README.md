@@ -46,6 +46,8 @@
 * Volume control (for target where it makes sense)
 * Some changes to key mappings and menu navigation
 
+To boot into VGA mode hold down the 'fire' button during reset.
+
 The key mapping changes were intended to make navigating the menus with a joystick a bit easier.
 In particular, now left (usually) goes 'back' and right enters/activates an item. 
 Paging in the file-explorer is now achieved with the Page-Up and Page-Down keys.
@@ -198,6 +200,10 @@ It supports:
 * PWM sound (1 pin)
 * SPI SD card
 
+By default, the board starts up using the LCD as its display.
+To boot into VGA mode hold down the 'fire' button during reset.
+Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
+
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerZxLcd.png)
@@ -250,11 +256,11 @@ It supports the following:
 * I2S sound
 * SPI SD card
 
+Please note that an SD card must be present for this version to start up.
+
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicoDv.png)
-
-Please note that an SD card must be present for this version to start up.
 
 ### ZxSpectrumBreadboardHdmiKbd1PinAudio
 This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
@@ -624,3 +630,5 @@ tio -m ODELBS /dev/ttyUSB0
 [ZX Modules Software](https://spectrumforeveryone.com/technical/zx-modules-software/)</br>
 [TZX format](https://www.alessandrogrussu.it/tapir/tzxform120.html#GRPSTART)</br>
 [A decoder for ZX format](https://github.com/kounch/playtzx)</br>
+[Circuit diagram editor](https://www.circuit-diagram.org/)</br>
+
