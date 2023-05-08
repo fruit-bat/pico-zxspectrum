@@ -97,7 +97,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Audio samples
 * [The Swarm - 4 pin PWM](docs/audio/the_swarm_pwm_4pin.mp3)
-* [The Goblin- 4 pin PWM](docs/audio/the_goblin_pwm_4pin.mp3)
+* [The Goblin - 4 pin PWM](docs/audio/the_goblin_pwm_4pin.mp3)
 
 ## Targets
 Pre-built binary targets can be copied directly to a Pico Pi. 
