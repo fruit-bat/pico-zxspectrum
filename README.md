@@ -96,8 +96,8 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 <img src="docs/screenshots/the_swarm_is_coming_1.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_2.png" height="200px"/> <img src="docs/screenshots/the_goblin_1.png" height="200px"/> <img src="docs/screenshots/the_goblin_2.png" height="200px"/> <img src="docs/screenshots/menu_main_vol.png" height="200px"/>
 
 ## Audio samples
-![The Swarm - 4 pin PWM](docs/audio/the_swarm_pwm_4pin.mp3)
-![The Goblin - 4 pin PWM](docs/audio/the_goblin_pwm_4pin.mp3)
+* [The Swarm](docs/audio/the_swarm_pwm_4pin.mp3)
+* [The Goblin](docs/audio/the_goblin_pwm_4pin.mp3)
 
 ## Targets
 Pre-built binary targets can be copied directly to a Pico Pi. 
