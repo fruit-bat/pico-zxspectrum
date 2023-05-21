@@ -26,7 +26,7 @@
 * PicomputerMax
 * PicomputerZX
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
-* MURMULATOR (HDMI/VGA)
+* [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
 <a href=""><img src="docs/picozxlcd.png" width="280"/></a>
