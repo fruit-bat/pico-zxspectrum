@@ -243,7 +243,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     const char *m = "N/A";
     if (_zxSpectrum->joystick()) {
       switch(_zxSpectrum->joystick()->mode()) {
-        case ZxSpectrumJoystickModeKempston: m = "Kemptson" ; break;
+        case ZxSpectrumJoystickModeKempston: m = "Kempston" ; break;
         case ZxSpectrumJoystickModeSinclair: m = "Sinclair" ; break;
         default: m = "N/A" ; break;
       }
@@ -340,11 +340,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   };
 
   onPaint([](PicoPen *pen) {
-  #ifdef MURMULATOR
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat on MURMULATOR");
-  #else
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
-  #endif
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
      pen->printAt(0, 2, false, "Menu System version 0.32");
 
