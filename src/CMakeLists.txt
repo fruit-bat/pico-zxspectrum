@@ -87,4 +87,4 @@ add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
 add_subdirectory(picovga)
-
+add_subdirectory(murmulator)

@@ -81,7 +81,35 @@ private:
     if (address < 0x4000) return;    
     *(memaddr(address)) = value;
   }
-  
+
+#ifdef MURMULATOR
+ inline uint8_t readIO(uint16_t address)
+  {
+    if (!(address & 0x0001)) {
+      uint8_t kb = _keyboard1->read(address);
+      if (_keyboard2) kb &= _keyboard2->read(address);
+      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
+    }else
+    if (address == 0xfffd) {
+      return _ay.readData();
+    }else
+    if (address == 0x7ffd) {
+      // reading #7FFD port is the same as writing #FF into it.
+      uint8_t value = 0xff;
+      _portMem = value;
+      setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
+      setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+      return 0xff;
+    }
+    if ((!(address==0x7ffd))&&(!(address&0x00e0))) {
+       return _joystick ? _joystick->getKempston() : 0;
+    }
+    else {
+      return 0xff;
+    }
+    return 0xff;
+  }
+#else
   inline uint8_t readIO(uint16_t address)
   {
     if (!(address & 0x0001)) {
@@ -107,7 +135,45 @@ private:
       return 0xff;
     }
   }
-  
+  #endif
+
+#ifdef MURMULATOR
+inline void writeIO(uint16_t address, uint8_t value)
+  {
+
+	  if (address&1)
+	  {
+		  register uint16_t not_port16=~address;
+  		if (((not_port16&0x0002)==0x0002)&&((address&0xc000)==0xc000)) 
+	  	{ 
+		  	_ay.writeCtrl(value);
+			  return;
+  		} //fffd
+		
+	  	if (((not_port16&0x4002)==0x4002)&&((address&0x8000)==0x8000)) 
+		  { 
+			  _ay.writeData(value);
+  			return;
+	  	} //bffd
+		
+		  if (((not_port16 & 0x8002) == 0x8002))//7ffd
+  		{
+        if ((_portMem & 0x20) == 0) { 
+          _portMem = value;
+          setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
+          setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
+        }
+			  return;
+		  }; 
+  	}
+    else
+	    {
+        _port254 = value;
+        _borderColour = value & 7;
+	    }
+
+  }
+#else
   inline void writeIO(uint16_t address, uint8_t value)
   {
     address |= 0x0f00;
@@ -129,7 +195,8 @@ private:
       _ay.writeData(value);
     }
   }
-  
+#endif
+
   static uint8_t __not_in_flash_func(readByte)(void * context, uint16_t address) {
     return ((ZxSpectrum*)context)->readByte(address);
   }
