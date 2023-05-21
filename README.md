@@ -131,7 +131,7 @@ cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 These targets are discussed in more detail in the following sections.
 
 ### MURMULATOR platform
-<img src="docs/photo_MURMULATOR_VGA.png" height="200"/>
+<img src="docs/photo1_MURMULATOR_VGA.png" height="200"/>
 
 <img src="docs/ZX_Murmulator1_schem.JPG" height="300"/>
 
