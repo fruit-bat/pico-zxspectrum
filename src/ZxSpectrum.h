@@ -88,26 +88,27 @@ private:
     if (!(address & 0x0001)) {
       uint8_t kb = _keyboard1->read(address);
       if (_keyboard2) kb &= _keyboard2->read(address);
-      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
+      return (kb & 0xBF) | (((_ear ^ _earInvert) << 6) & (1 << 6));
     }else
-    if (address == 0xfffd) {
+    if (address == 0xFFFD) {
       return _ay.readData();
     }else
-    if (address == 0x7ffd) {
+    if (address == 0x7FFD) {
       // reading #7FFD port is the same as writing #FF into it.
-      uint8_t value = 0xff;
+      uint8_t value = 0xFF;
       _portMem = value;
       setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
       setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
-      return 0xff;
+      return 0xFF;
     }
-    if ((!(address==0x7ffd))&&(!(address&0x00e0))) {
+
+    if ((!(address==0x7FFD))&&(!(address&0x00E0))) {
        return _joystick ? _joystick->getKempston() : 0;
+    }else {
+      return 0xFF;
     }
-    else {
-      return 0xff;
-    }
-    return 0xff;
+
+    return 0xFF;
   }
 #else
   inline uint8_t readIO(uint16_t address)
@@ -140,23 +141,21 @@ private:
 #ifdef MURMULATOR
 inline void writeIO(uint16_t address, uint8_t value)
   {
-
-	  if (address&1)
+	  if (address & 0x0001)
 	  {
-		  register uint16_t not_port16=~address;
-  		if (((not_port16&0x0002)==0x0002)&&((address&0xc000)==0xc000)) 
+      if ((address & 0xC002) == 0xC000)
 	  	{ 
 		  	_ay.writeCtrl(value);
 			  return;
-  		} //fffd
+  		} //FFFD
 		
-	  	if (((not_port16&0x4002)==0x4002)&&((address&0x8000)==0x8000)) 
+      if ((address & 0xC002) == 0x8000) 
 		  { 
 			  _ay.writeData(value);
   			return;
-	  	} //bffd
+	  	} //BFFD
 		
-		  if (((not_port16 & 0x8002) == 0x8002))//7ffd
+      if (!(address & 0x8002))
   		{
         if ((_portMem & 0x20) == 0) { 
           _portMem = value;
@@ -170,8 +169,7 @@ inline void writeIO(uint16_t address, uint8_t value)
 	    {
         _port254 = value;
         _borderColour = value & 7;
-	    }
-
+      }
   }
 #else
   inline void writeIO(uint16_t address, uint8_t value)

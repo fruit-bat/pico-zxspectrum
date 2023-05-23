@@ -36,7 +36,7 @@
 #include "FatFsDirCache.h"
 
 //=============================================================================
-#define LED_PIN 25
+#define LED_PIN 14 //25
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
@@ -113,11 +113,12 @@ static Ps2Kbd_Mrmltr ps2kbd(
   process_kbd_report
 );
 #endif
-
+//=============================================================================
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-//=============================================================================
+static volatile uint interrupt_line = 0; //
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
@@ -126,7 +127,6 @@ void __not_in_flash_func(core1_main)() {
   VgaInit(vmode,640,480);
 
   while (1) {
-
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
@@ -148,7 +148,14 @@ void __not_in_flash_func(core1_main)() {
       );
     }
       
-//    pzx_keyscan_row();
+    // pzx_keyscan_row();
+    
+    // Z80 INT Interrupt = 50Hz
+    if (interrupt_line++ >= 313) {
+      interrupt_line = 0;
+      zxSpectrum.interrupt();
+    }
+
     
     if (y == 239) { // TODO use a const / get from vmode
       
@@ -159,19 +166,19 @@ void __not_in_flash_func(core1_main)() {
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
+        //picomputerJoystick.enabled(!showMenu);
       }      
     }
   }
   __builtin_unreachable();
 }
-
+//=============================================================================
 #ifdef EAR_PIN
 #define CPU_STEP_LOOP 10
 #else
 #define CPU_STEP_LOOP 100
 #endif
-//=============================================================================
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;
@@ -195,7 +202,7 @@ void __not_in_flash_func(main_loop)(){
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          //zxSpectrum.interrupt();   // Z80 INT Interrupt = 60Hz
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
@@ -214,10 +221,11 @@ void __not_in_flash_func(main_loop)(){
       picoDisplay.refresh();
     }
   }
+  __builtin_unreachable();
 }
 
 //=============================================================================
-//=============================================================================
+//-----------------------------------------------------------------------------
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);

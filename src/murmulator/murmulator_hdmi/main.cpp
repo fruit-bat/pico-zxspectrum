@@ -152,11 +152,11 @@ static Ps2Kbd_Mrmltr ps2kbd(
   process_kbd_report
 );
 #endif
-
+//=============================================================================
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-//=============================================================================
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
@@ -185,6 +185,7 @@ void __not_in_flash_func(core1_scanline_callback)() {
     }
   }
 }
+
 //=============================================================================
 void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
@@ -199,12 +200,13 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+//=============================================================================
 #ifdef EAR_PIN
 #define CPU_STEP_LOOP 10
 #else
 #define CPU_STEP_LOOP 100
 #endif
-
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)() {
   
   unsigned int lastInterruptFrame = _frames;
@@ -244,7 +246,7 @@ void __not_in_flash_func(main_loop)() {
 }
 
 //=============================================================================
-//=============================================================================
+//-----------------------------------------------------------------------------
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
