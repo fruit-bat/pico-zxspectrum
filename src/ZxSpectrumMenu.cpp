@@ -117,9 +117,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
  
   _tzxSelect(0, 0, _wizCols, 6, _menuRowsPerItem)
 { 
-  _pathQuickSaves.createFolders(sdCard);
-  _pathTapes.createFolders(sdCard);
-  
   _tzxSelect.onToggle(
     [=](PicoOption *option, int32_t i) {
       _wiz.pop(true);
@@ -454,5 +451,7 @@ void ZxSpectrumMenu::quickLoad(int slot) {
   snapName(name);
 }
 
-
-
+void ZxSpectrumMenu::initFolders() {
+  _pathQuickSaves.createFolders(_sdCard);
+  _pathTapes.createFolders(_sdCard);
+}

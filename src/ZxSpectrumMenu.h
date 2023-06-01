@@ -102,6 +102,7 @@ public:
   void quickSave(int slot);
   void quickLoad(int slot);
   void setWizLayout(int32_t margin, int32_t cols1, int32_t cols2);
+  void initFolders();
 
   ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
