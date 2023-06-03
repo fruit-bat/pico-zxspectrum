@@ -349,7 +349,10 @@ int main() {
   sem_release(&dvi_start_sem);
   
   if (sdCard0.mount()) {
-    
+
+    // Create folders on the SD card if they are missing
+    picoRootWin.initFolders();
+
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
     

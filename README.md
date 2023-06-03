@@ -41,6 +41,8 @@
 
 ## Updates
 
+03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
+
 29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
 * PICOZX with LCD can now use either the LCD or VGA output
 * Volume control (for target where it makes sense)
@@ -93,7 +95,7 @@ The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-
 RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
 
 ## Screen shots
-<img src="docs/screenshots/the_swarm_is_coming_1.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_2.png" height="200px"/> <img src="docs/screenshots/the_goblin_1.png" height="200px"/> <img src="docs/screenshots/the_goblin_2.png" height="200px"/> <img src="docs/screenshots/menu_main_vol.png" height="200px"/>
+<img src="docs/screenshots/48k_boot_screen.png" height="200px"/> <img src="docs/screenshots/128k_boot_screen.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_1.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_2.png" height="200px"/> <img src="docs/screenshots/the_goblin_1.png" height="200px"/> <img src="docs/screenshots/the_goblin_2.png" height="200px"/> <img src="docs/screenshots/menu_main_vol.png" height="200px"/>
 
 ## Audio samples
 * [The Swarm - 4 pin PWM](docs/audio/the_swarm_pwm_4pin.mp3)
