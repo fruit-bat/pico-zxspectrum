@@ -41,6 +41,8 @@
 
 ## Updates
 
+03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
+
 29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
 * PICOZX with LCD can now use either the LCD or VGA output
 * Volume control (for target where it makes sense)
