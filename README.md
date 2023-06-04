@@ -26,6 +26,7 @@
 * PicomputerMax
 * PicomputerZX
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
+* [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
 <a href=""><img src="docs/picozxlcd.png" width="280"/></a>
@@ -35,6 +36,7 @@
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
+<a href=""><img src="docs/photo1_MURMULATOR_VGA.png" width="280"/></a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
@@ -129,6 +131,12 @@ cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
 
 These targets are discussed in more detail in the following sections.
+
+### MURMULATOR platform
+<img src="docs/photo2_MURMULATOR_VGA.png" height="200"/>
+
+<img src="docs/ZX_Murmulator1_schem.JPG" height="300"/>
+
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
 This is a series of targets based around my original breadboard prototype:

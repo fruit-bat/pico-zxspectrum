@@ -1,0 +1,23 @@
+; Copyright (C) 1883 Thomas Edison - All Rights Reserved
+; You may use, distribute and modify this code under the
+; terms of the GPLv2 license, which unfortunately won't be
+; written for another century.
+;
+; SPDX-License-Identifier: GPL-2.0-or-later
+;
+.program ps2kbd
+
+; Ps2 for MURMULATOR  0->CLK 1->DAT
+;================================================
+    wait 0 gpio 0     ; skip start bit
+    wait 1 gpio 0
+;----------------------
+    set x, 9         ; 8 bit counter
+bitloop:
+    wait 0 gpio 0 [1] ; wait negative clock edge
+;----------------------
+    in pins, 1       ; sample data
+    wait 1 gpio 0     ; wait for positive edge
+;----------------------
+    jmp x-- bitloop
+
