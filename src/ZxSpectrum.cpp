@@ -24,9 +24,7 @@ ZxSpectrum::ZxSpectrum(
 {
   z80Power(true);
   _Z80.context = this;
-#ifdef MURMULATOR
   _Z80.options = Z80_MODEL_ZILOG_NMOS;
-#endif
   _Z80.read = readByte;
   _Z80.fetch = readByte;
   _Z80.fetch_opcode = readByte;

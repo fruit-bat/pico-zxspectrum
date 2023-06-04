@@ -34,6 +34,8 @@ target_compile_definitions(ZX-MURMULATOR_VGA PRIVATE
   AY8912_A_PIN=27
   # Right chanel audio out
   AY8912_C_PIN=26
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP
   # Tape audio in
   EAR_PIN=22
   # Enable the PS/2 keyboard

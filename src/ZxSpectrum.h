@@ -82,7 +82,6 @@ private:
     *(memaddr(address)) = value;
   }
 
-#ifdef MURMULATOR
  inline uint8_t readIO(uint16_t address)
   {
     if (!(address & 0x0001)) {
@@ -104,41 +103,11 @@ private:
 
     if ((!(address==0x7FFD))&&(!(address&0x00E0))) {
        return _joystick ? _joystick->getKempston() : 0;
-    }else {
-      return 0xFF;
     }
 
     return 0xFF;
   }
-#else
-  inline uint8_t readIO(uint16_t address)
-  {
-    if (!(address & 0x0001)) {
-      uint8_t kb = _keyboard1->read(address);
-      if (_keyboard2) kb &= _keyboard2->read(address);
-      return (kb & 0xbf) | (((_ear ^ _earInvert) << 6) & (1 << 6));
-    }
-    if (address == 0xfffd) {
-      return _ay.readData();
-    }
-    if (address == 0x7ffd) {
-      // reading #7FFD port is the same as writing #FF into it.
-      uint8_t value = 0xff;
-      _portMem = value;
-      setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
-      setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
-      return 0xff;
-    }
-    else if (!(address & 0x00e0)) {
-       return _joystick ? _joystick->getKempston() : 0;
-    }
-    else {
-      return 0xff;
-    }
-  }
-  #endif
 
-#ifdef MURMULATOR
 inline void writeIO(uint16_t address, uint8_t value)
   {
 	  if (address & 0x0001)
@@ -171,29 +140,6 @@ inline void writeIO(uint16_t address, uint8_t value)
         _borderColour = value & 7;
       }
   }
-#else
-  inline void writeIO(uint16_t address, uint8_t value)
-  {
-    address |= 0x0f00;
-    if (!(address & 0x0001)) {
-      _port254 = value;
-      _borderColour = value & 7;
-    }
-    else if (address == 0x7ffd) {
-      if ((_portMem & 0x20) == 0) { 
-        _portMem = value;
-        setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
-        setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
-      }
-    }
-    else if (address == 0xfffd) {
-      _ay.writeCtrl(value);
-    }
-    else if (address == 0xbffd) {
-      _ay.writeData(value);
-    }
-  }
-#endif
 
   static uint8_t __not_in_flash_func(readByte)(void * context, uint16_t address) {
     return ((ZxSpectrum*)context)->readByte(address);
