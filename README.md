@@ -43,6 +43,8 @@
 
 ## Updates
 
+04/06/23 - Add MURMULATOR platform.
+
 03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
 
 29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
@@ -123,6 +125,10 @@ Connect your Pico Pi with a USB cable, while holding down the program button:
 | Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 | ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
+| HDMI MURMULATOR | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
+| VGA breadboard | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
+
+MURMULATOR
 
 
 e.g. for the HDMI breadboard wiring show above use:
