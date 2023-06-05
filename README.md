@@ -36,7 +36,7 @@
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
-<a href=""><img src="docs/MURMULATOR_VGA_photo1.png" width="280"/></a>
+<a href=""><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
