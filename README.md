@@ -134,7 +134,7 @@ These targets are discussed in more detail in the following sections.
 <img src="docs/MURMULATOR_VGA_photo2.png" height="200"/>
 
 <img src="docs/Murmulator_BSchem_v1.JPG" height="300"/>
-<img src="docs/Murmulator_Schem_v1.png" height="300"/>
+<img src="docs/MURMULATOR_Schem_v1.png" height="300"/>
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
 This is a series of targets based around my original breadboard prototype:
