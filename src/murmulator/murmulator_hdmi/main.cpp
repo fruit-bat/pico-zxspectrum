@@ -156,10 +156,17 @@ static Ps2Kbd_Mrmltr ps2kbd(
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
+static volatile uint _lines  = 0; // MADEIT for INT=50Hz
+static volatile uint _int50  = 0; // MADEIT for INT=50Hz
+static volatile uint8_t borderBuf[240]; //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
+  //-------------------------------------------------------
+  _int50++;
+  //gpio_put(LED_PIN, 1); //TEST--->
+  //-----------------------------------------------------*/
   if (y == 24) _frames++;
   if (showMenu) {
     uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
@@ -168,7 +175,15 @@ void __not_in_flash_func(core1_scanline_callback)() {
     }
   }
   else {
-    zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+    //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+    if (_int50 >= 288) {
+      _int50 = 0;
+      _lines  = 0;
+      zxSpectrum.interrupt();
+    }
+    if (_lines < 240) {borderBuf[_lines++] = zxSpectrum.borderColour();}
+    zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, borderBuf[y]);
+    y++;
   }
 
   if (y == FRAME_HEIGHT) {
@@ -209,7 +224,7 @@ void __not_in_flash_func(core1_main)() {
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)() {
   
-  unsigned int lastInterruptFrame = _frames;
+//  unsigned int lastInterruptFrame = _frames;
   
   uint frames = 0;
   
@@ -222,9 +237,15 @@ void __not_in_flash_func(main_loop)() {
 
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
-        if (lastInterruptFrame != _frames) {
-          lastInterruptFrame = _frames;
+        //if (lastInterruptFrame != _frames) {
+        //  lastInterruptFrame = _frames;
+        //  zxSpectrum.interrupt();
+        //}
+        if (_int50 >= 288) {
+          _int50 = 0;
+          _lines  = 0;
           zxSpectrum.interrupt();
+          //gpio_put(LED_PIN, 0);  //TEST--->
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
