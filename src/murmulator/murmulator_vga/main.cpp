@@ -3,10 +3,11 @@
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
-
+//---------------------------
+#include "hardware/timer.h"
 //#include "ps2kbd.h"
 #include "ps2kbd_mrmltr.h"
-
+//---------------------------
 #include "vga.h"
 #include "ZxSpectrumPrepareRgbScanline.h"
 
@@ -36,7 +37,7 @@
 #include "FatFsDirCache.h"
 
 //=============================================================================
-#define LED_PIN 14 //25
+#define LED_PIN 25 //25
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
 struct semaphore dvi_start_sem;
@@ -113,11 +114,15 @@ static Ps2Kbd_Mrmltr ps2kbd(
   process_kbd_report
 );
 #endif
+
 //=============================================================================
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-static volatile uint interrupt_line = 0; //
+// MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
+static volatile uint _lines50 = 0; // MADEIT for INT=50Hz
+//static volatile uint _lines   = 0; // 
+static volatile u8 borderBuf[240]; //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
@@ -127,38 +132,48 @@ void __not_in_flash_func(core1_main)() {
   VgaInit(vmode,640,480);
 
   while (1) {
+    //-------------------------------------------------------------------------*/  
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
     _frames = linebuf->frame;
+
     if (showMenu) {
       pcw_prepare_vga332_scanline_80(
         buf,
         y,
-        linebuf->frame);
+        linebuf->frame
+      );
     }
     else {
+
+      if (_lines50 < 240) {borderBuf[_lines50] = zxSpectrum.borderColour();}
       zx_prepare_rgb_scanline(
         buf, 
         y, 
         linebuf->frame,
         screenPtr,
         attrPtr,
-        zxSpectrum.borderColour()
+        //zxSpectrum.borderColour()
+        borderBuf[y]
       );
+      //---------------------------------------------------
+      // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
+      if (++_lines50 >= 288) {
+        _lines50 = 0;
+        zxSpectrum.interrupt();
+      }
+      /*-------------------------------  
+      if (!(timer_hw->armed) & 1) {
+        timer_hw->alarm[1] = (uint32_t)(timer_hw->timerawl + 19800); // + 20mS 
+        zxSpectrum.interrupt();
+        _lines = 0;
+      } 
+      //-----------------------------*/
     }
-      
-    // pzx_keyscan_row();
-    
-    // Z80 INT Interrupt = 50Hz
-    if (interrupt_line++ >= 313) {
-      interrupt_line = 0;
-      zxSpectrum.interrupt();
-    }
-
-    
+    //-----------------------------------------------------
     if (y == 239) { // TODO use a const / get from vmode
-      
+
       // TODO Tidy this mechanism up
       screenPtr = zxSpectrum.screenPtr();
       attrPtr = screenPtr + (32 * 24 * 8);
@@ -172,6 +187,7 @@ void __not_in_flash_func(core1_main)() {
   }
   __builtin_unreachable();
 }
+
 //=============================================================================
 #ifdef EAR_PIN
 #define CPU_STEP_LOOP 10
@@ -181,29 +197,27 @@ void __not_in_flash_func(core1_main)() {
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)(){
 
-  unsigned int lastInterruptFrame = _frames;
+  //  unsigned int lastInterruptFrame = _frames;
 
   //Main Loop 
   uint frames = 0;
-  
+  //-------------------------------------------------------------------  
   while(1){
 
     tuh_task();
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
 #endif
-
-//    hid_keyboard_report_t const *curr;
-//    hid_keyboard_report_t const *prev;
-//    pzx_keyscan_get_hid_reports(&curr, &prev);
-//    process_picomputer_kbd_report(curr, prev);
-    
+    //-----------------------------------------------------------------  
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
+        //---------------------------------------
+        /*// Z80 INT Interrupt = 60Hz
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          //zxSpectrum.interrupt();   // Z80 INT Interrupt = 60Hz
+          zxSpectrum.interrupt();   
         }
+        //-------------------------------------*/
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
           zxSpectrum.step(zxSpectrumReadEar());
@@ -220,12 +234,12 @@ void __not_in_flash_func(main_loop)(){
       frames = _frames;
       picoDisplay.refresh();
     }
+//-------------------------------------------------------------------
   }
   __builtin_unreachable();
 }
 
 //=============================================================================
-//-----------------------------------------------------------------------------
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
