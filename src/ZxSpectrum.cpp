@@ -16,6 +16,7 @@ ZxSpectrum::ZxSpectrum(
   _keyboard2(keyboard2),
   _joystick(joystick),
   _borderColour(7),
+  _port254(0),
   _ear(false),
   _earInvert(0),
   _earDc(0),
@@ -23,6 +24,7 @@ ZxSpectrum::ZxSpectrum(
 {
   z80Power(true);
   _Z80.context = this;
+  _Z80.options = Z80_MODEL_ZILOG_NMOS;
   _Z80.read = readByte;
   _Z80.fetch = readByte;
   _Z80.fetch_opcode = readByte;
@@ -63,7 +65,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _ear = false;
   _pulseChain.reset();
   memset(_RAM, 0, sizeof(_RAM));
-  _port254 = 0x30;
+  _port254 = 0x20;  //0x30;
   _ay.reset();
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
@@ -513,7 +515,7 @@ int32_t ZxSpectrum::loadZ80HeaderV2(InputStream *is, ZxSpectrumType *type) {
   *type = (hm == 0) || (hm == 1) || ((hm == 3) && (v == 3)) ? ZxSpectrum48k : ZxSpectrum128k;
   DBG_SPEC("Found header for V%ld and hardware mode %ld is48k %s\n", v, hm, (*type == ZxSpectrum48k ? "yes" : "no"));
   transmute(*type);
-  _port254 = 0x30;
+  _port254 = 0x20;  //0x30;
   if (*type == ZxSpectrum128k) {
     _portMem = buf[35-32];
     setPageaddr(3, (uint8_t*)&_RAM[_portMem & 7]);

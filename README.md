@@ -26,6 +26,7 @@
 * PicomputerMax
 * PicomputerZX
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
+* [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
 <a href=""><img src="docs/picozxlcd.png" width="280"/></a>
@@ -35,11 +36,14 @@
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
+<a href=""><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+
+04/06/23 - Add MURMULATOR platform.
 
 03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
 
@@ -121,6 +125,10 @@ Connect your Pico Pi with a USB cable, while holding down the program button:
 | Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 | ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
+| HDMI MURMULATOR | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
+| VGA MURMULATOR | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
+
+MURMULATOR
 
 
 e.g. for the HDMI breadboard wiring show above use:
@@ -129,6 +137,10 @@ cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
 
 These targets are discussed in more detail in the following sections.
+
+### MURMULATOR platform
+<img src="docs/MURMULATOR_VGA_photo2.png" height="200"/>
+<img src="docs/Murmulator_BSchem_v1.JPG" height="300"/> <img src="docs/MURMULATOR_Schem_v1.png" height="300"/>
 
 ### ZxSpectrumBreadboardHdmiNPinAudio
 This is a series of targets based around my original breadboard prototype:

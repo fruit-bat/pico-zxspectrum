@@ -42,7 +42,11 @@ inline void is2_audio_put(uint32_t x) {
 #else
   #ifdef BZR_PIN
     #ifdef AY8912_A_PIN
-      #define PWM_WRAP (255)
+      #ifdef AY8912_ABC_STEREO
+        #define PWM_WRAP (255 + 255)
+      #else
+        #define PWM_WRAP (255)
+      #endif
     #else
       #define PWM_WRAP (255 + 255 + 255)
     #endif
@@ -119,15 +123,29 @@ void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, u
     #ifdef SPK_PIN
       pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
     #else
+      #ifdef AY8912_ABC_STERO
+      pwm_set_gpio_level(AY8912_A_PIN, vA + vB);
+      pwm_set_gpio_level(AY8912_C_PIN, vC + vB);
+      #else
       pwm_set_gpio_level(AY8912_A_PIN, vA);
       pwm_set_gpio_level(AY8912_B_PIN, vB);
       pwm_set_gpio_level(AY8912_C_PIN, vC);
+      #endif
     #endif
   #else
+    #ifdef AY8912_ABC_STEREO
+    uint32_t lt = __mul_instruction(_vol, vA + vB) >> 8;
+    uint32_t rt = __mul_instruction(_vol, vC + vB) >> 8;
+    uint32_t st  = __mul_instruction(_vol, s) >> 8;
+    pwm_set_gpio_level(AY8912_A_PIN, lt);
+    pwm_set_gpio_level(AY8912_C_PIN, rt);
+    pwm_set_gpio_level(SPK_PIN, st);
+    #else
     uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
     uint32_t ss  = __mul_instruction(_vol, s) >> 8;
     uint32_t t   = ayt + ss;
     pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
+    #endif
   #endif
 #endif
 }

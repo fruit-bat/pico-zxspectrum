@@ -15,11 +15,8 @@
 #include "hardware/pwm.h"
 
 #ifdef USE_PS2_KBD
-#include "ps2kbd.h"
-#endif
-
-#ifdef USE_KEY_MATRIX
-#include "ZxSpectrumKeyMatrix.h"
+// #include "ps2kbd.h"
+#include "ps2kbd_mrmltr.h"
 #endif
 
 extern "C" {
@@ -46,7 +43,7 @@ extern "C" {
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
 
-
+//=============================================================================
 #define UART_ID uart0
 #define BAUD_RATE 115200
 
@@ -61,7 +58,7 @@ extern "C" {
 #define DVI_TIMING dvi_timing_640x480p_60hz
 
 #define LED_PIN 25
-
+//=============================================================================
 struct dvi_inst dvi0;
 struct semaphore dvi_start_sem;
 
@@ -105,6 +102,7 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 
+//=============================================================================
 void print(hid_keyboard_report_t const *report) {
 	printf("HID key report modifiers %2.2X report ", report->modifier);
 	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
@@ -120,12 +118,6 @@ extern "C"  void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint
 }
 
 extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-#if 0
-  // Some help debugging keyboard input/drivers
-	printf("PREV ");print(prev_report);
-	printf("CURR ");print(report);
-#endif
-
   int r;
   if (showMenu) {
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
@@ -153,24 +145,29 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   }
 }
 
-
-
 #ifdef USE_PS2_KBD
-static Ps2Kbd ps2kbd(
+static Ps2Kbd_Mrmltr ps2kbd(
   pio1,
-  6,
+  0,
   process_kbd_report
 );
 #endif
-
+//=============================================================================
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-
+static volatile uint _lines  = 0; // MADEIT for INT=50Hz
+static volatile uint _int50  = 0; // MADEIT for INT=50Hz
+static volatile uint8_t borderBuf[240]; //Border Buffer 240 lines
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
-  if (y == 0) _frames++;
+  //-------------------------------------------------------
+  _int50++;
+  //gpio_put(LED_PIN, 1); //TEST--->
+  //-----------------------------------------------------*/
+  if (y == 24) _frames++;
   if (showMenu) {
     uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
     if (0 == (y & 7)) {
@@ -178,11 +175,17 @@ void __not_in_flash_func(core1_scanline_callback)() {
     }
   }
   else {
-    zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+    //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+    if (_int50 >= 288) {
+      _int50 = 0;
+      _lines  = 0;
+      zxSpectrum.interrupt();
+    }
+    if (_lines < 240) {borderBuf[_lines++] = zxSpectrum.borderColour();}
+    zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, borderBuf[y]);
+    y++;
   }
-#ifdef USE_KEY_MATRIX
-  zx_keyscan_row();
-#endif
+
   if (y == FRAME_HEIGHT) {
     y = 0;
     ys = 0;
@@ -198,6 +201,7 @@ void __not_in_flash_func(core1_scanline_callback)() {
   }
 }
 
+//=============================================================================
 void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
   sem_acquire_blocking(&dvi_start_sem);
@@ -211,34 +215,37 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
+//=============================================================================
 #ifdef EAR_PIN
 #define CPU_STEP_LOOP 10
 #else
 #define CPU_STEP_LOOP 100
 #endif
-
+//-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)() {
   
-  unsigned int lastInterruptFrame = _frames;
+//  unsigned int lastInterruptFrame = _frames;
   
   uint frames = 0;
   
   while (1) {
     tuh_task();
+
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
 #endif
-#ifdef USE_KEY_MATRIX
-    hid_keyboard_report_t const *curr;
-    hid_keyboard_report_t const *prev;
-    zx_keyscan_get_hid_reports(&curr, &prev);
-    process_picomputer_kbd_report(curr, prev);
-#endif
+
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
-        if (lastInterruptFrame != _frames) {
-          lastInterruptFrame = _frames;
+        //if (lastInterruptFrame != _frames) {
+        //  lastInterruptFrame = _frames;
+        //  zxSpectrum.interrupt();
+        //}
+        if (_int50 >= 288) {
+          _int50 = 0;
+          _lines  = 0;
           zxSpectrum.interrupt();
+          //gpio_put(LED_PIN, 0);  //TEST--->
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
@@ -259,6 +266,8 @@ void __not_in_flash_func(main_loop)() {
   }
 }
 
+//=============================================================================
+//-----------------------------------------------------------------------------
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
@@ -284,6 +293,7 @@ int main() {
       toggleMenu = false;
     }
   );
+  
   // TZX tape option handlers
   zxSpectrum.tzxOptionHandlers(
     [&]() { // Clear options
@@ -320,10 +330,6 @@ int main() {
   // Initialise the menu renderer
   pcw_init_renderer();
   
-#ifdef USE_KEY_MATRIX
-  // Initialise the keyboard scan
-  zx_keyscan_init();
-#endif
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
@@ -352,7 +358,7 @@ int main() {
 
     // Create folders on the SD card if they are missing
     picoRootWin.initFolders();
-
+    
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
     
