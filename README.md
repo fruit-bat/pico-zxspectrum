@@ -105,10 +105,13 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 * [The Swarm - 4 pin PWM](docs/audio/the_swarm_pwm_4pin.mp3)
 * [The Goblin - 4 pin PWM](docs/audio/the_goblin_pwm_4pin.mp3)
 
-## Targets
+## Firmware targets
 Pre-built binary targets can be copied directly to a Pico Pi. 
 They can be downloaded from the links in the table below or found in the uf2 folder.
-Connect your Pico Pi with a USB cable, while holding down the program button:
+
+Before attempting to update the firmware on your Pico make sure power supplies and any USB host devices have been disconnected (hub, keyboard, joysticks, etc.).
+
+Push and hold the BOOTSEL button and plug your Pico into the USB port of your computer. Release the BOOTSEL button after your Pico is connected. It will mount as a Mass Storage Device called RPI-RP2. Drag and drop the UF2 file onto the RPI-RP2 volume.
 
 | Board | Binary |
 | ------ | -------- |
