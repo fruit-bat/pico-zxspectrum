@@ -43,7 +43,7 @@
 
 ## Updates
 
-04/06/23 - Add MURMULATOR platform.
+04/06/23 - Add MURMULATOR platform, with thanks to [Javavi](https://github.com/javavi) 
 
 03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
 
@@ -615,6 +615,7 @@ tio -m ODELBS /dev/ttyUSB0
 [Pimoroni](https://github.com/pimoroni/pimoroni-pico) for lots of useful libraries</br>
 [badrianiulian](https://github.com/badrianiulian) for help testing and design work on the audio circuitry<br/>
 [redcode](https://github.com/redcode/Z80) for the [Z80 emulator](https://github.com/redcode/Z80)<br/>
+[Javavi](https://github.com/javavi) for adding support for the MURMULATOR platform <br/>
 
 ## References
 [Z80 Test suite](https://github.com/raxoft/z80test)<br/>
