@@ -115,6 +115,8 @@ Push and hold the BOOTSEL button and plug your Pico into the USB port of your co
 
 <img src="docs/pico-bootsel.png" />
 
+On hardware with a faceplate the button us usually accessible through a small hole; the PICOZX Lcd board has the Pico facing inwards and you will need to reach a finger inside to press the bootsel button.
+
 | Board | Binary |
 | ------ | -------- |
 | HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
