@@ -113,6 +113,8 @@ Before attempting to update the firmware on your Pico make sure power supplies a
 
 Push and hold the BOOTSEL button and plug your Pico into the USB port of your computer. Release the BOOTSEL button after your Pico is connected. It will mount as a Mass Storage Device called RPI-RP2. Drag and drop the UF2 file onto the RPI-RP2 volume.
 
+<img src="docs/pico-bootsel.png" />
+
 | Board | Binary |
 | ------ | -------- |
 | HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
