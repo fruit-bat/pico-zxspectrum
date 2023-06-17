@@ -1,7 +1,13 @@
 #include "pzx_prepare_rgb444_scanline.h"
 #include "st7789_lcd.pio.h"
 
-#define VGA_RGB_444(r,g,b) ((r##UL<<8)|(g##UL <<4)|b##UL)
+#ifdef INVERSE_LCD
+#define VGA_COL(c) (0xf-c##UL)
+#else
+#define VGA_COL(c) (c##UL)
+#endif
+#define VGA_RGB_444_POS(r,g,b) ((r<<8)|(g<<4)|b)
+#define VGA_RGB_444(r,g,b) VGA_RGB_444_POS(VGA_COL(r),VGA_COL(g), VGA_COL(b))
 #define X2(a) ((a << 20) | (a << 8))
 
 static uint32_t zx_colour_words[16] = {

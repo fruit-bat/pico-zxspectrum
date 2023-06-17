@@ -97,8 +97,7 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerZX 0)
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerZX)
 
-
-add_executable(ZxSpectrumPicomputerZxLcd
+set(picomputer_zx_lcd_src
   ${zxspectrum_common_src}
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
@@ -107,11 +106,7 @@ add_executable(ZxSpectrumPicomputerZxLcd
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerZxLcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
-
-target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
+set(picomputer_zx_lcd_common_defines PRIVATE
   ${picomputer_common_defines}
   SPK_PIN=7
   PICOMPUTER_PICOZX
@@ -127,7 +122,7 @@ target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   VGA_GPIO_OUTNUM=6
 )
 
-target_link_libraries(ZxSpectrumPicomputerZxLcd
+set(zxspectrum_zx_lcd_common_libs
   ${zxspectrum_common_libs}
   pico_emu_utils
   pico_st7789_menu
@@ -139,8 +134,48 @@ target_link_libraries(ZxSpectrumPicomputerZxLcd
   hardware_pwm
 )
 
+add_executable(ZxSpectrumPicomputerZxLcd
+  ${picomputer_zx_lcd_src}
+)
+
+pico_generate_pio_header(ZxSpectrumPicomputerZxLcd 
+  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+)
+
+target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+)
+
+target_link_libraries(ZxSpectrumPicomputerZxLcd
+  ${zxspectrum_zx_lcd_common_libs}
+)
+
 pico_enable_stdio_usb(ZxSpectrumPicomputerZxLcd 0)
 pico_enable_stdio_uart(ZxSpectrumPicomputerZxLcd 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerZxLcd)
+
+
+add_executable(ZxSpectrumPicomputerZxInverseLcd
+  ${picomputer_zx_lcd_src}
+)
+
+pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd 
+  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+)
+
+target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  INVERSE_LCD
+)
+
+target_link_libraries(ZxSpectrumPicomputerZxInverseLcd
+  ${zxspectrum_zx_lcd_common_libs}
+)
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerZxInverseLcd 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerZxInverseLcd 0)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPicomputerZxInverseLcd)
