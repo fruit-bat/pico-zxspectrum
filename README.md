@@ -136,9 +136,6 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | HDMI MURMULATOR | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
 | VGA MURMULATOR | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
 
-MURMULATOR
-
-
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
 cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
