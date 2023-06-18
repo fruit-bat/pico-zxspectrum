@@ -156,17 +156,14 @@ static Ps2Kbd_Mrmltr ps2kbd(
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-static volatile uint _lines  = 0; // MADEIT for INT=50Hz
-static volatile uint _int50  = 0; // MADEIT for INT=50Hz
-static volatile uint8_t borderBuf[240]; //Border Buffer 240 lines
+// MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
+static volatile uint8_t LineBorderSync = 0;   // MADEIT for BorderSync
+static volatile uint8_t borderBuf[240];       //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_scanline_callback)() {
   static uint y = 1;
   static uint ys = 0;
-  //-------------------------------------------------------
-  _int50++;
-  //gpio_put(LED_PIN, 1); //TEST--->
-  //-----------------------------------------------------*/
+
   if (y == 24) _frames++;
   if (showMenu) {
     uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
@@ -176,13 +173,14 @@ void __not_in_flash_func(core1_scanline_callback)() {
   }
   else {
     //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
-    if (_int50 >= 288) {
-      _int50 = 0;
-      _lines  = 0;
-      zxSpectrum.interrupt();
-    }
-    if (_lines < 240) {borderBuf[_lines++] = zxSpectrum.borderColour();}
-    zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, borderBuf[y]);
+    zx_prepare_hdmi_scanline(
+      &dvi0,
+      y, 
+      _frames, 
+      screenPtr, 
+      attrPtr,
+      borderBuf[y]  //Border Sync
+    );
     y++;
   }
 
@@ -225,7 +223,7 @@ void __not_in_flash_func(core1_main)() {
 void __not_in_flash_func(main_loop)() {
   
 //  unsigned int lastInterruptFrame = _frames;
-  
+  uint _INTcounter = 0;
   uint frames = 0;
   
   while (1) {
@@ -241,12 +239,20 @@ void __not_in_flash_func(main_loop)() {
         //  lastInterruptFrame = _frames;
         //  zxSpectrum.interrupt();
         //}
-        if (_int50 >= 288) {
-          _int50 = 0;
-          _lines  = 0;
+        //-------------------------------------*/
+        // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
+        if (_INTcounter++ >= 625) {
+          _INTcounter = 0;
+          LineBorderSync = 0;
           zxSpectrum.interrupt();
-          //gpio_put(LED_PIN, 0);  //TEST--->
         }
+
+        if (_INTcounter >= 78) {
+          if (LineBorderSync<240) {
+            if (_INTcounter & 1) {borderBuf[LineBorderSync++] = zxSpectrum.borderColour();}
+          }
+        }
+        //-------------------------------------*/
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
           zxSpectrum.step(zxSpectrumReadEar());
@@ -355,9 +361,6 @@ int main() {
   sem_release(&dvi_start_sem);
   
   if (sdCard0.mount()) {
-
-    // Create folders on the SD card if they are missing
-    picoRootWin.initFolders();
     
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
