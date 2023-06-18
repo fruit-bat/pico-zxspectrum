@@ -120,9 +120,8 @@ unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
 // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-static volatile uint _lines50 = 0; // MADEIT for INT=50Hz
-//static volatile uint _lines   = 0; // 
-static volatile u8 borderBuf[240]; //Border Buffer 240 lines
+static volatile uint8_t LineBorderSync = 0;   // MADEIT for BorderSync
+static volatile uint8_t borderBuf[240];       //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
@@ -132,7 +131,7 @@ void __not_in_flash_func(core1_main)() {
   VgaInit(vmode,640,480);
 
   while (1) {
-    //-------------------------------------------------------------------------*/  
+    //-------------------------------------------------------------------------*/
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
@@ -142,12 +141,9 @@ void __not_in_flash_func(core1_main)() {
       pcw_prepare_vga332_scanline_80(
         buf,
         y,
-        linebuf->frame
-      );
+        linebuf->frame);
     }
     else {
-
-      if (_lines50 < 240) {borderBuf[_lines50] = zxSpectrum.borderColour();}
       zx_prepare_rgb_scanline(
         buf, 
         y, 
@@ -157,19 +153,6 @@ void __not_in_flash_func(core1_main)() {
         //zxSpectrum.borderColour()
         borderBuf[y]
       );
-      //---------------------------------------------------
-      // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-      if (++_lines50 >= 288) {
-        _lines50 = 0;
-        zxSpectrum.interrupt();
-      }
-      /*-------------------------------  
-      if (!(timer_hw->armed) & 1) {
-        timer_hw->alarm[1] = (uint32_t)(timer_hw->timerawl + 19800); // + 20mS 
-        zxSpectrum.interrupt();
-        _lines = 0;
-      } 
-      //-----------------------------*/
     }
     //-----------------------------------------------------
     if (y == 239) { // TODO use a const / get from vmode
@@ -197,7 +180,8 @@ void __not_in_flash_func(core1_main)() {
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(main_loop)(){
 
-  //  unsigned int lastInterruptFrame = _frames;
+//  unsigned int lastInterruptFrame = _frames;
+  uint _INTcounter = 0;
 
   //Main Loop 
   uint frames = 0;
@@ -216,6 +200,19 @@ void __not_in_flash_func(main_loop)(){
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.interrupt();   
+        }
+        //-------------------------------------*/
+        // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz (ZX128=625;Pent128=628)
+        if (_INTcounter++ >= 625) {
+          _INTcounter = 0;
+          LineBorderSync = 0;
+          zxSpectrum.interrupt();
+        }
+
+        if (_INTcounter >= 78) {
+          if (LineBorderSync<240) {
+            if (_INTcounter & 1) {borderBuf[LineBorderSync++] = zxSpectrum.borderColour();}
+          }
         }
         //-------------------------------------*/
 #ifdef EAR_PIN
