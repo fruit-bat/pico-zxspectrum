@@ -202,11 +202,9 @@ It supports:
 
 
 While on the menu...
-
-SHIFT-Fire = ESC
-RELOAD = Backspace
-SHIFT-RELOAD = Del
-
+* SHIFT-Fire = ESC
+* RELOAD = Backspace
+* SHIFT-RELOAD = Del
 
 Here are the pin assignments:
 
@@ -232,11 +230,9 @@ Placing vga.txt on the SD card in the zxspectrum folder changes the default to V
 
 
 While on the menu...
-
-SHIFT-Fire = ESC
-RELOAD = Backspace
-SHIFT-RELOAD = Del
-
+* SHIFT-Fire = ESC
+* RELOAD = Backspace
+* SHIFT-RELOAD = Del
 
 Here are the pin assignments:
 
