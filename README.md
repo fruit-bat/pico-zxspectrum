@@ -200,6 +200,14 @@ It supports:
 * PWM sound (1 pin)
 * SPI SD card
 
+
+While on the menu...
+
+SHIFT-Fire = ESC
+RELOAD = Backspace
+SHIFT-RELOAD = Del
+
+
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga222Zx.png)
@@ -221,6 +229,14 @@ It supports:
 By default, the board starts up using the LCD as its display.
 To boot into VGA mode hold down the 'fire' button during reset.
 Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
+
+
+While on the menu...
+
+SHIFT-Fire = ESC
+RELOAD = Backspace
+SHIFT-RELOAD = Del
+
 
 Here are the pin assignments:
 
