@@ -5,7 +5,7 @@
 
 typedef struct {
   uint32_t volume;
-  ZxSpectrumJoystickMode mode;
+  ZxSpectrumJoystickMode joystickMode;
 } ZxSpectrumSettingValues;
 
 class ZxSpectrumSettings {

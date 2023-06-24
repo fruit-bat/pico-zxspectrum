@@ -75,7 +75,8 @@ void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) 
 
 ZxSpectrumMenu::ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
-    ZxSpectrum *zxSpectrum
+    ZxSpectrum *zxSpectrum,
+    ZxSpectrumSettings *settings
 ) :
  PicoWin(SZ_FRAME_X, SZ_FRAME_Y, SZ_FRAME_COLS, SZ_FRAME_ROWS),
    _wizCol1Width(SZ_WIZ_CW1),
@@ -91,8 +92,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
    _pathQuickSaves(&_pathSnaps, "quicksaves"),
   _sdCard(sdCard),
   _zxSpectrum(zxSpectrum),
+  _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'),
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'),
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
   _main(0, 0, _wizCols, 9, _menuRowsPerItem),
@@ -111,6 +113,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
   _joystickKemstonOp("Kempston"),
   _joystickSinclairOp("Sinclair"),
+
+  _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
+  _settingsSaveOp("Save"),
+  _settingsLoadOp("Load"),
+
   _volume(0, 0, 16, 16),
 
   _devices(0, 3, _wizCols, 1),
@@ -152,8 +159,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_muteOp.addQuickKey(&_k4));
   _main.addOption(_resetOp.addQuickKey(&_k5));
   _main.addOption(_joystickOp.addQuickKey(&_k6));
+  _main.addOption(_settingsOp.addQuickKey(&_k7));
 #ifndef BZR_PIN  
-  _main.addOption(_volumeOp.addQuickKey(&_k7));
+  _main.addOption(_volumeOp.addQuickKey(&_k8));
 #endif
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -217,6 +225,29 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_reset, 
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Reset options"); }, 
+      true);
+  });
+
+  _settings.addOption(_settingsSaveOp.addQuickKey(&_k1));
+  _settings.addOption(_settingsLoadOp.addQuickKey(&_k2));
+  _settings.enableQuickKeys();
+  _settingsSaveOp.toggle([=]() {
+    saveSettings();
+    _wiz.pop(true);
+  });
+  _settingsLoadOp.toggle([=]() {
+    loadSettings();
+    _wiz.pop(true);
+  });
+  _settingsOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s", _wizCol1Width, "Settings");
+//    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Settings", _wizCol2Width, "");
+  });  
+  _settingsOp.toggle([=]() {
+    _wiz.push(
+      &_settings, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Settings"); }, 
       true);
   });
 
@@ -458,4 +489,18 @@ void ZxSpectrumMenu::quickLoad(int slot) {
 void ZxSpectrumMenu::initFolders() {
   _pathQuickSaves.createFolders(_sdCard);
   _pathTapes.createFolders(_sdCard);
+}
+
+void ZxSpectrumMenu::saveSettings() {
+  ZxSpectrumSettingValues settings;
+  settings.volume = zxSpectrumAudioGetVolume();
+  settings.joystickMode = _zxSpectrum->joystick()->mode();
+  _zxSpectrumSettings->save(&settings);
+}
+
+void ZxSpectrumMenu::loadSettings() {
+  ZxSpectrumSettingValues settings;
+  _zxSpectrumSettings->load(&settings);
+  zxSpectrumAudioSetVolume(settings.volume);
+  _zxSpectrum->joystick()->mode(settings.joystickMode);
 }

@@ -16,6 +16,7 @@
 #include "PicoWizUtils.h"
 #include "PicoWizExplorer.h"
 #include "PicoSlider.h"
+#include "ZxSpectrumSettings.h"
 
 class ZxSpectrum;
 
@@ -35,6 +36,7 @@ private:
   FatFsFilePath _pathQuickSaves;
   SdCardFatFsSpi *_sdCard;
   ZxSpectrum *_zxSpectrum;
+  ZxSpectrumSettings *_zxSpectrumSettings;
   InputStream* _tis;
 
   PicoQuickKeyAscii _k1;
@@ -44,6 +46,7 @@ private:
   PicoQuickKeyAscii _k5;
   PicoQuickKeyAscii _k6;
   PicoQuickKeyAscii _k7;
+  PicoQuickKeyAscii _k8;
 
   PicoWiz _wiz;
   PicoWizUtils _wizUtils;
@@ -55,6 +58,7 @@ private:
   PicoOption _muteOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
+  PicoOption _settingsOp;
   PicoOption _volumeOp;
 
   PicoSelect _tapePlayer;
@@ -72,6 +76,10 @@ private:
   PicoSelect _joystick;
   PicoOptionText _joystickKemstonOp;
   PicoOptionText _joystickSinclairOp;
+
+  PicoSelect _settings;
+  PicoOptionText _settingsSaveOp;
+  PicoOptionText _settingsLoadOp;
 
   PicoSlider _volume;
 
@@ -103,9 +111,12 @@ public:
   void quickLoad(int slot);
   void setWizLayout(int32_t margin, int32_t cols1, int32_t cols2);
   void initFolders();
+  void saveSettings();
+  void loadSettings();
 
   ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
-    ZxSpectrum *zxSpectrum
+    ZxSpectrum *zxSpectrum,
+    ZxSpectrumSettings *settings
   );
 };
