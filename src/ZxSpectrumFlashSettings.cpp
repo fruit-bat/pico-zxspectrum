@@ -9,6 +9,9 @@ ZxSpectrumFlashSettings::ZxSpectrumFlashSettings()
 {
 }
 
+// https://www.makermatrix.com/blog/read-and-write-data-with-the-pi-pico-onboard-flash/
+// https://github.com/raspberrypi/pico-examples/issues/34
+// https://kevinboone.me/picoflash.html?i=1
 
 bool ZxSpectrumFlashSettings::onSave(ZxSpectrumSettingValues *values) {
 
@@ -16,8 +19,9 @@ bool ZxSpectrumFlashSettings::onSave(ZxSpectrumSettingValues *values) {
     uint32_t ints = save_and_disable_interrupts();
 
     // Erase the last sector of FLASH
-    // TODO this crashes :-(
+    // TODO This crashes :-(
     // TODO Probably need to disable interrupts/execution on the other core?
+    // TODO Possibly this is due to execution from flash on the other core?
     flash_range_erase (FLASH_TARGET_OFFSET, FLASH_SECTOR_SIZE);
 
     // Write the setting to FLASH
