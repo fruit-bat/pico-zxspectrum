@@ -72,6 +72,8 @@ set(zxspectrum_common_libs
   sdcard
   fatfs
   hardware_dma
+  hardware_flash
+  hardware_sync
   Zeta
   Z80
 )

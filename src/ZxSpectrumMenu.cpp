@@ -242,7 +242,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _settingsOp.onPaint([=](PicoPen *pen){
     pen->clear();
     pen->printAtF(0, 0, false,"%-*s", _wizCol1Width, "Settings");
-//    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Settings", _wizCol2Width, "");
   });  
   _settingsOp.toggle([=]() {
     _wiz.push(
@@ -486,9 +485,12 @@ void ZxSpectrumMenu::quickLoad(int slot) {
   snapName(name);
 }
 
+// TODO Rename to just initialise
 void ZxSpectrumMenu::initFolders() {
   _pathQuickSaves.createFolders(_sdCard);
   _pathTapes.createFolders(_sdCard);
+
+  loadSettings();
 }
 
 void ZxSpectrumMenu::saveSettings() {

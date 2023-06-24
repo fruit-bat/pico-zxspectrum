@@ -9,12 +9,14 @@ typedef struct {
 } ZxSpectrumSettingValues;
 
 class ZxSpectrumSettings {
-
+private:
+  void validate(ZxSpectrumSettingValues *values);
+protected:
+  virtual bool onSave(ZxSpectrumSettingValues *values);
+  virtual bool onLoad(ZxSpectrumSettingValues *values);
 public:
   ZxSpectrumSettings();
   virtual ~ZxSpectrumSettings();
-
-  virtual bool save(ZxSpectrumSettingValues *values);
-  virtual bool load(ZxSpectrumSettingValues *values);
+  bool save(ZxSpectrumSettingValues *values);
+  bool load(ZxSpectrumSettingValues *values);
 };
-
