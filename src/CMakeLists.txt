@@ -43,6 +43,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAy.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiExists
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumSettings
 )
 
 set(zxspectrum_rgb_src
