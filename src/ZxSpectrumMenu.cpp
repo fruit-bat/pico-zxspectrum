@@ -487,10 +487,10 @@ void ZxSpectrumMenu::quickLoad(int slot) {
 
 // TODO Rename to just initialise
 void ZxSpectrumMenu::initFolders() {
+  loadSettings();
+  
   _pathQuickSaves.createFolders(_sdCard);
   _pathTapes.createFolders(_sdCard);
-
-  loadSettings();
 }
 
 void ZxSpectrumMenu::saveSettings() {

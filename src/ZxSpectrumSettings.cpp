@@ -42,6 +42,7 @@ bool ZxSpectrumSettings::save(ZxSpectrumSettingValues *values)
 
 bool ZxSpectrumSettings::load(ZxSpectrumSettingValues *values)
 {
+    bool r = onLoad(values);
     validate(values);
-    return onLoad(values);
+    return r;
 }
