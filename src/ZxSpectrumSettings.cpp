@@ -42,7 +42,13 @@ bool ZxSpectrumSettings::save(ZxSpectrumSettingValues *values)
 
 bool ZxSpectrumSettings::load(ZxSpectrumSettingValues *values)
 {
+    defaults(values);
     bool r = onLoad(values);
     validate(values);
     return r;
+}
+
+void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
+  values->volume = 0x100;
+  values->joystickMode = ZxSpectrumJoystickModeKempston;
 }

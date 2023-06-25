@@ -19,4 +19,5 @@ public:
   virtual ~ZxSpectrumSettings();
   bool save(ZxSpectrumSettingValues *values);
   bool load(ZxSpectrumSettingValues *values);
+  void defaults(ZxSpectrumSettingValues *values);
 };

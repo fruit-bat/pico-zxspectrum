@@ -45,7 +45,7 @@ extern "C" {
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
-#include "ZxSpectrumFlashSettings.h"
+#include "ZxSpectrumFileSettings.h"
 
 
 #define UART_ID uart0
@@ -91,7 +91,10 @@ static ZxSpectrum zxSpectrum(
   &keyboard2,  
   &joystick
 );
-static ZxSpectrumFlashSettings zxSpectrumSettings;
+static ZxSpectrumFileSettings zxSpectrumSettings(
+  &sdCard0,
+  "zxspectrum", ".config"
+);
 static ZxSpectrumMenu picoRootWin(
   &sdCard0,
   &zxSpectrum,
