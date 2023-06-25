@@ -369,8 +369,8 @@ int main() {
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing
-    picoRootWin.initalise();
-    
+    picoRootWin.initialise();
+
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
     

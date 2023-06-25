@@ -11,6 +11,9 @@
 
 // #define DEBUG_ZX_MENU
 
+#define ZX_VERSION_MAJOR 0
+#define ZX_VERSION_MINOR 36
+
 #ifdef DEBUG_ZX_MENU
 #define DBG_PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -373,7 +376,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
 #endif
      pen->printAtF(0, 1, false, "on RP2040 Pico Pi at %3.1fMhz", (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAt(0, 2, false, "Menu System version 0.35");
+     pen->printAtF(0, 2, false, "Menu System version %d.%d", ZX_VERSION_MAJOR, ZX_VERSION_MINOR);
 
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");
