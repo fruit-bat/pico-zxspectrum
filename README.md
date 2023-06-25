@@ -43,6 +43,10 @@
 
 ## Updates
 
+25/06/23 - Ability to persist volume control and joystick type (Sinclair/Kempston). The settings are persisted to .config file on the SD card and are loaded as the defaults on reset.
+To save setting goto ''settings->save'' on the menu. 
+I was hoping to save to flash memory but not got that to work as of yet.
+        
 04/06/23 - Add MURMULATOR platform, with thanks to [Javavi](https://github.com/javavi) 
 
 03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33

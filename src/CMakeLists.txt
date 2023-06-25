@@ -2,6 +2,9 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(zxspectrum_common_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumSettings
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings # Needed for flash settings (not currently working)
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
@@ -71,6 +74,8 @@ set(zxspectrum_common_libs
   sdcard
   fatfs
   hardware_dma
+  hardware_flash # Needed for flash settings (not currently working)
+  hardware_sync  # Needed for flash settings (not currently working)
   Zeta
   Z80
 )
