@@ -10,7 +10,7 @@ typedef struct {
 
 class ZxSpectrumSettings {
 private:
-  void validate(ZxSpectrumSettingValues *values);
+  void sanitise(ZxSpectrumSettingValues *values);
 protected:
   virtual bool onSave(ZxSpectrumSettingValues *values);
   virtual bool onLoad(ZxSpectrumSettingValues *values);

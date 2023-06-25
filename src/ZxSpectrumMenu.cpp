@@ -498,11 +498,15 @@ void ZxSpectrumMenu::saveSettings() {
   settings.volume = zxSpectrumAudioGetVolume();
   settings.joystickMode = _zxSpectrum->joystick()->mode();
   _zxSpectrumSettings->save(&settings);
+  DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
+  DBG_PRINTF("ZxSpectrumMenu: Saved joystick setting '%d'\n", settings.joystickMode);  
 }
 
 void ZxSpectrumMenu::loadSettings() {
   ZxSpectrumSettingValues settings;
   _zxSpectrumSettings->load(&settings);
+  DBG_PRINTF("ZxSpectrumMenu: Loaded volume setting '%ld'\n", settings.volume);
+  DBG_PRINTF("ZxSpectrumMenu: Loaded joystick setting '%d'\n", settings.joystickMode);
   zxSpectrumAudioSetVolume(settings.volume);
   _zxSpectrum->joystick()->mode(settings.joystickMode);
 }

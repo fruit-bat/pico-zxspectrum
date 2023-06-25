@@ -8,7 +8,7 @@ ZxSpectrumSettings::~ZxSpectrumSettings()
 {
 }
 
-void ZxSpectrumSettings::validate(ZxSpectrumSettingValues *values) {
+void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
 
     // Volume
     if (values->volume > 0x100) values->volume = 0x100;
@@ -36,7 +36,7 @@ bool ZxSpectrumSettings::onLoad(ZxSpectrumSettingValues *values)
 
 bool ZxSpectrumSettings::save(ZxSpectrumSettingValues *values)
 {
-    validate(values);
+    sanitise(values);
     return onSave(values);
 }
 
@@ -44,7 +44,7 @@ bool ZxSpectrumSettings::load(ZxSpectrumSettingValues *values)
 {
     defaults(values);
     bool r = onLoad(values);
-    validate(values);
+    sanitise(values);
     return r;
 }
 

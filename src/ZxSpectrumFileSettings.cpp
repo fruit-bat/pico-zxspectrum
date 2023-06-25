@@ -15,7 +15,7 @@ bool ZxSpectrumFileSettings::onSave(ZxSpectrumSettingValues *values) {
   _path.appendTo(name);
   FatFsSpiOutputStream os(_sdCard, name.c_str());
   if (os.closed()) return false;
-  return os.write((uint8_t*)values, sizeof(values)) == sizeof(values);
+  return os.write((uint8_t*)values, sizeof(ZxSpectrumSettingValues)) == sizeof(values);
 }
 
 bool ZxSpectrumFileSettings::onLoad(ZxSpectrumSettingValues *values) {
@@ -23,5 +23,5 @@ bool ZxSpectrumFileSettings::onLoad(ZxSpectrumSettingValues *values) {
   _path.appendTo(name);
   FatFsSpiInputStream is(_sdCard, name.c_str());
   if (is.closed()) return false;
-  return is.read((uint8_t*)values, sizeof(values)) == sizeof(values);
+  return is.read((uint8_t*)values, sizeof(ZxSpectrumSettingValues)) == sizeof(values);
 }
