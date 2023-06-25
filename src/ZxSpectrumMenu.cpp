@@ -485,8 +485,7 @@ void ZxSpectrumMenu::quickLoad(int slot) {
   snapName(name);
 }
 
-// TODO Rename to just initialise
-void ZxSpectrumMenu::initFolders() {
+void ZxSpectrumMenu::initialise() {
   loadSettings();
   
   _pathQuickSaves.createFolders(_sdCard);
