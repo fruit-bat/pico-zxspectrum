@@ -30,6 +30,7 @@
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
+#include "ZxSpectrumFileSettings.h"
 
 #define LED_PIN 25
 #define SPK_PIN 9
@@ -69,9 +70,14 @@ static ZxSpectrum zxSpectrum(
   0, 
   &joystick
 );
+static ZxSpectrumFileSettings zxSpectrumSettings(
+  &sdCard0,
+  "zxspectrum", ".config"
+);
 static ZxSpectrumMenu picoRootWin(
- &sdCard0,
-  &zxSpectrum
+  &sdCard0,
+  &zxSpectrum,
+  &zxSpectrumSettings
 );
 static PicoDisplay picoDisplay(
   pcw_screen(),
@@ -315,7 +321,7 @@ int main(){
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing
-    picoRootWin.initFolders();
+    picoRootWin.initialise();
     
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);

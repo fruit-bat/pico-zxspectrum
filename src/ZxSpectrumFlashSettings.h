@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ZxSpectrumSettings.h"
 
 class ZxSpectrumFlashSettings : public ZxSpectrumSettings {

@@ -1,7 +1,8 @@
+#pragma once
+
 #include "ZxSpectrumSettings.h"
 #include "SdCardFatFsSpi.h"
 #include "FatFsFilePath.h"
-
 
 class ZxSpectrumFileSettings : public ZxSpectrumSettings {
 private:

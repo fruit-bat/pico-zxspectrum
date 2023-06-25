@@ -42,6 +42,7 @@ extern "C" {
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
+#include "ZxSpectrumFileSettings.h"
 
 //=============================================================================
 #define UART_ID uart0
@@ -87,9 +88,14 @@ static ZxSpectrum zxSpectrum(
   &keyboard2,  
   &joystick
 );
+static ZxSpectrumFileSettings zxSpectrumSettings(
+  &sdCard0,
+  "zxspectrum", ".config"
+);
 static ZxSpectrumMenu picoRootWin(
   &sdCard0,
-  &zxSpectrum
+  &zxSpectrum,
+  &zxSpectrumSettings
 );
 static PicoDisplay picoDisplay(
   pcw_screen(),
@@ -361,6 +367,9 @@ int main() {
   sem_release(&dvi_start_sem);
   
   if (sdCard0.mount()) {
+
+    // Create folders on the SD card if they are missing
+    picoRootWin.initalise();
     
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
