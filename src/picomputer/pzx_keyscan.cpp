@@ -86,6 +86,7 @@ void __not_in_flash_func(pzx_menu_mode)(bool m) {
 
 //Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
+#define JOYSTICK_OFFSET 2
 #ifdef REAL_ZXKEYBOARD
 static uint8_t kbits[6][6][8] = { 
   // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
@@ -208,6 +209,7 @@ static uint8_t kbits[6][7][7] = {
 };
 #endif
 #else
+#define JOYSTICK_OFFSET 1
 static uint8_t kbits[5][6][6] = { 
   // Normal mappings + cursor joystick
   {
@@ -337,6 +339,23 @@ static uint8_t kbits[5][6][6] = {
   #endif  
 #endif
 
+static uint8_t kempstonJoystick = 0;
+
+static void pzx_mode_joystick() {
+  // Joystick mode
+  kempstonJoystick = JOYSTICK_OFFSET;
+#ifdef LED_PIN
+  gpio_put(LED_PIN, 1);
+#endif
+}
+
+static void pzx_mode_cursor() {
+  // Cursor mode
+  kempstonJoystick = 0;
+#ifdef LED_PIN
+  gpio_put(LED_PIN, 0);
+#endif
+}
 
 void pzx_keyscan_init() {
 
@@ -355,6 +374,12 @@ void pzx_keyscan_init() {
    uint32_t row = rp[0];
    gpio_set_dir(row, GPIO_OUT);
    gpio_put(row, 0);
+
+#ifdef REAL_ZXKEYBOARD
+   pzx_mode_joystick();
+#else
+   pzx_mode_cursor();
+#endif
 }
 
 void __not_in_flash_func(pzx_keyscan_row)() {
@@ -386,8 +411,6 @@ void __not_in_flash_func(pzx_keyscan_row)() {
   // only change key state if all samples on or off
   rdb[ri] = (am | rdb[ri]) & om; 
 }
-
-static uint8_t kempstonJoystick = 0;
 
 void pzx_scan_matrix() {
   for( int i = 0; i < RN; ++i) {
@@ -455,12 +478,12 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
     }
     if (rdb[3] & (1<<3)) {
       // Cursor mode
-      kempstonJoystick = 0;
+      pzx_mode_cursor();
       kbi &= ~1;
     }
     else if (rdb[3] & (1<<4)) {
       // Joystick mode
-      kempstonJoystick = 1;
+      pzx_mode_joystick();
       kbi |= 1;
     }    
     rdb[KEY_UP_ROW] &= ~KEY_UP_BIT;
@@ -475,13 +498,11 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   // Cursor mode 
   if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
-      kempstonJoystick = 0;
-      gpio_put(LED_PIN, 0);
+      pzx_mode_cursor();
     }
     // Joystick mode
     if (rdb[KEY_KEMPSTON_ROW] & KEY_KEMPSTON_BIT) {
-      kempstonJoystick = 2;
-      gpio_put(LED_PIN, 1);
+      pzx_mode_joystick();
     }
   }
   #endif
