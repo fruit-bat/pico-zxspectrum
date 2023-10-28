@@ -109,7 +109,8 @@ static uint8_t kbits[6][6][8] = {
   },
   // Normal mappings + joystick
   {
-    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+//    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_F1, 0, 0, 0, 0, 0, HID_KEY_F11, HID_KEY_F12 },
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -118,7 +119,8 @@ static uint8_t kbits[6][6][8] = {
   },
   // Shifted normal mappings + joystick
   {
-    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+//    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+    { HID_KEY_F1, 0, 0, 0, 0, 0, HID_KEY_F11, HID_KEY_F12 },
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -289,6 +291,7 @@ static uint8_t kbits[5][6][6] = {
 };
 #endif
 
+#define COL_TO_BIT(col) (1<<(col-1))
 #if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   #define KEY_ALT_ROW 5
   #define KEY_ALT_BIT 0x20
@@ -306,16 +309,26 @@ static uint8_t kbits[5][6][6] = {
   #define KEY_ENTER_BIT 0x01
 #else
   #ifdef REAL_ZXKEYBOARD
+//    #define KEY_UP_COL 3
+//    #define KEY_DOWN_COL 5
+//    #define KEY_LEFT_COL 2
+//    #define KEY_RIGHT_COL 4
+//    #define KEY_FIRE_COL 1
+    #define KEY_UP_COL 4
+    #define KEY_DOWN_COL 6
+    #define KEY_LEFT_COL 3
+    #define KEY_RIGHT_COL 5
+    #define KEY_FIRE_COL 2
     #define KEY_UP_ROW 0
-    #define KEY_UP_BIT 0x04
+    #define KEY_UP_BIT COL_TO_BIT(KEY_UP_COL)
     #define KEY_DOWN_ROW 0
-    #define KEY_DOWN_BIT 0x10
+    #define KEY_DOWN_BIT COL_TO_BIT(KEY_DOWN_COL)
     #define KEY_LEFT_ROW 0
-    #define KEY_LEFT_BIT 0x02
+    #define KEY_LEFT_BIT COL_TO_BIT(KEY_LEFT_COL)
     #define KEY_RIGHT_ROW 0
-    #define KEY_RIGHT_BIT 0x08
+    #define KEY_RIGHT_BIT COL_TO_BIT(KEY_RIGHT_COL)
     #define KEY_FIRE_ROW 0
-    #define KEY_FIRE_BIT 0x01
+    #define KEY_FIRE_BIT COL_TO_BIT(KEY_FIRE_COL)
     #define KEY_SHIFT_ROW 5
     #define KEY_SHIFT_BIT 0x04
   #else
