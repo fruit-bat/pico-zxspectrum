@@ -291,6 +291,9 @@ static uint8_t kbits[5][6][6] = {
 };
 #endif
 
+// TODO this needs to go elsewhere!
+#define REAL_ZXKEYBOARD_00DRULF0
+
 #define COL_TO_BIT(col) (1<<(col-1))
 #if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   #define KEY_ALT_ROW 5
@@ -309,16 +312,21 @@ static uint8_t kbits[5][6][6] = {
   #define KEY_ENTER_BIT 0x01
 #else
   #ifdef REAL_ZXKEYBOARD
-//    #define KEY_UP_COL 3
-//    #define KEY_DOWN_COL 5
-//    #define KEY_LEFT_COL 2
-//    #define KEY_RIGHT_COL 4
-//    #define KEY_FIRE_COL 1
-    #define KEY_UP_COL 4
-    #define KEY_DOWN_COL 6
-    #define KEY_LEFT_COL 3
-    #define KEY_RIGHT_COL 5
-    #define KEY_FIRE_COL 2
+    #ifdef REAL_ZXKEYBOARD_00DRULF0
+      // 00DRULF0
+      #define KEY_UP_COL 4
+      #define KEY_DOWN_COL 6
+      #define KEY_LEFT_COL 3
+      #define KEY_RIGHT_COL 5
+      #define KEY_FIRE_COL 2
+    #else
+     // 000DRULF
+      #define KEY_UP_COL 3
+      #define KEY_DOWN_COL 5
+      #define KEY_LEFT_COL 2
+      #define KEY_RIGHT_COL 4
+      #define KEY_FIRE_COL 1
+    #endif
     #define KEY_UP_ROW 0
     #define KEY_UP_BIT COL_TO_BIT(KEY_UP_COL)
     #define KEY_DOWN_ROW 0
@@ -444,14 +452,25 @@ bool pzx_fire_raw() {
 uint8_t __not_in_flash_func(pzx_kempston)() {
 // 000FUDLR
 #ifdef PICOMPUTER_PICOZX
-// 000DRULF
-  return kempstonJoystick && !menu
-  ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) << 4)    // Kempston fire
-  | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) )        // Kempston left
-  | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) << 1)        // Kempston up
-  | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 3)  // Kempston right
-  | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 2)    // Kempston down
-  : 0;
+  #ifdef REAL_ZXKEYBOARD_00DRULF0
+    // 00DRULF0
+    return kempstonJoystick && !menu
+    ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) << 3)    // Kempston fire
+    | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) >> 1)    // Kempston left
+    | ((rdb[KEY_UP_ROW] & KEY_UP_BIT))             // Kempston up
+    | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 4)  // Kempston right
+    | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 3)    // Kempston down
+    : 0;
+  #else
+    // 000DRULF
+    return kempstonJoystick && !menu
+    ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) << 4)    // Kempston fire
+    | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) )        // Kempston left
+    | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) << 1)        // Kempston up
+    | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 3)  // Kempston right
+    | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 2)    // Kempston down
+    : 0;
+  #endif
 #else
   return kempstonJoystick
   ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) >> 1)    // Kempston fire
