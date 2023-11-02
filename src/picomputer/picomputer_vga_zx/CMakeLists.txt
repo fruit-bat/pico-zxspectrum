@@ -107,6 +107,9 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAuk 0)
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerVgaAuk)
 
+#
+# Temporary target for digitalmexer
+#
 add_executable(ZxSpectrumPicomputerVga00DRULF0
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
