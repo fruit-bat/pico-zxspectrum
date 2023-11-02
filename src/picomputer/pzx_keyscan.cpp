@@ -291,9 +291,6 @@ static uint8_t kbits[5][6][6] = {
 };
 #endif
 
-// TODO this needs to go elsewhere!
-#define REAL_ZXKEYBOARD_00DRULF0
-
 #define COL_TO_BIT(col) (1<<(col-1))
 #if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
   #define KEY_ALT_ROW 5

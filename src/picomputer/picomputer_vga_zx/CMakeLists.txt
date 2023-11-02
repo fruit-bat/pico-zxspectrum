@@ -87,6 +87,7 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAuk PRIVATE
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_000DRULF
 )
 
 target_link_libraries(ZxSpectrumPicomputerVgaAuk
@@ -105,3 +106,38 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAuk 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerVgaAuk)
+
+add_executable(ZxSpectrumPicomputerVga00DRULF0
+  ${zxspectrum_common_src}
+  ${zxspectrum_rgb_src}
+  ${picomputer_common_src}
+  main.cpp
+)
+
+target_compile_definitions(ZxSpectrumPicomputerVga00DRULF0 PRIVATE
+  ${picomputer_vgazx_defines}
+  VGA_ENC_RGB_222
+  VGA_GPIO_SYNC=6
+  VGA_GPIO_OUTNUM=6
+  SPK_PIN=7
+  PICOMPUTER_PICOZX
+  REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_00DRULF0
+)
+
+target_link_libraries(ZxSpectrumPicomputerVga00DRULF0
+  ${zxspectrum_common_libs}
+  pico_emu_utils
+  pico_vga_menu
+  pico_vga_332
+  tinyusb_host
+  tinyusb_board
+  hardware_pio
+  hardware_pwm
+)
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerVga00DRULF0 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerVga00DRULF0 0)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPicomputerVga00DRULF0)
