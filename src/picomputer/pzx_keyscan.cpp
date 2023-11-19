@@ -84,14 +84,20 @@ void __not_in_flash_func(pzx_menu_mode)(bool m) {
 #endif
 }
 
-//Keyboard Matrix Arrays [INDEX][ROWS][COLS]
+// Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
 #define JOYSTICK_OFFSET 2
 #ifdef REAL_ZXKEYBOARD
 static uint8_t kbits[6][6][8] = { 
   // Normal mappings + cursor SymShift = HID_KEY_ALT_RIGHT
   {
+#if defined(REAL_ZXKEYBOARD_DM)
+    { HID_KEY_F1, HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F11, HID_KEY_F12 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F9, HID_KEY_F10 },
+#else
     { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -100,7 +106,13 @@ static uint8_t kbits[6][6][8] = {
   },
   // Shifted normal mappings + cursor
   {
+#if defined(REAL_ZXKEYBOARD_DM)
+    { HID_KEY_F1, HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F11, HID_KEY_F12 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F5, 0, 0 },
+#else
     { HID_KEY_ESCAPE, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -109,8 +121,13 @@ static uint8_t kbits[6][6][8] = {
   },
   // Normal mappings + joystick
   {
-//    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#if defined(REAL_ZXKEYBOARD_DM)
     { HID_KEY_F1, 0, 0, 0, 0, 0, HID_KEY_F11, HID_KEY_F12 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F9, HID_KEY_F10 },
+#else
+    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -119,8 +136,13 @@ static uint8_t kbits[6][6][8] = {
   },
   // Shifted normal mappings + joystick
   {
-//    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#if defined(REAL_ZXKEYBOARD_DM)
     { HID_KEY_F1, 0, 0, 0, 0, 0, HID_KEY_F11, HID_KEY_F12 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { 0, 0, 0, 0, 0, HID_KEY_F5, 0, 0 },
+#else
+    { 0, 0, 0, 0, 0, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -129,7 +151,13 @@ static uint8_t kbits[6][6][8] = {
   },
   // Normal menu mappings
   {
-    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#if defined(REAL_ZXKEYBOARD_DM)
+    { HID_KEY_F1, HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, 0 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, 0, 0 },
+#else
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, 0, 0 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_6, HID_KEY_G, HID_KEY_T, HID_KEY_5 },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_7, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_8, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -138,7 +166,13 @@ static uint8_t kbits[6][6][8] = {
   },
   // Shifted menu mappings
   {
-    { HID_KEY_ESCAPE, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_F1, HID_KEY_F11, HID_KEY_F12 },
+#if defined(REAL_ZXKEYBOARD_DM)
+    { HID_KEY_ESCAPE, HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, 0, 0 },
+#elif defined(REAL_ZXKEYBOARD_BOB)
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_ESCAPE, 0, 0 },
+#else
+    { HID_KEY_ENTER, HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_ESCAPE, 0, 0 },
+#endif
     { HID_KEY_B, HID_KEY_H, HID_KEY_V, HID_KEY_Y, HID_KEY_ARROW_DOWN, HID_KEY_G, HID_KEY_T, HID_KEY_ARROW_LEFT },
     { HID_KEY_N, HID_KEY_J, HID_KEY_C, HID_KEY_U, HID_KEY_ARROW_UP, HID_KEY_F, HID_KEY_R, HID_KEY_4 },
     { HID_KEY_M, HID_KEY_K, HID_KEY_X, HID_KEY_I, HID_KEY_ARROW_RIGHT, HID_KEY_D, HID_KEY_E, HID_KEY_3 },
@@ -309,20 +343,27 @@ static uint8_t kbits[5][6][6] = {
   #define KEY_ENTER_BIT 0x01
 #else
   #ifdef REAL_ZXKEYBOARD
-    #ifdef REAL_ZXKEYBOARD_00DRULF0
+    #ifdef REAL_ZXKEYBOARD_DM
       // 00DRULF0
-      #define KEY_UP_COL 4
       #define KEY_DOWN_COL 6
-      #define KEY_LEFT_COL 3
       #define KEY_RIGHT_COL 5
+      #define KEY_UP_COL 4
+      #define KEY_LEFT_COL 3
       #define KEY_FIRE_COL 2
     #else
-     // 000DRULF
-      #define KEY_UP_COL 3
+      // KC0DRULF
+      #define KEY_KEMPSTON_COL 8
+      #define KEY_CURSOR_COL 7
       #define KEY_DOWN_COL 5
-      #define KEY_LEFT_COL 2
       #define KEY_RIGHT_COL 4
+      #define KEY_UP_COL 3
+      #define KEY_LEFT_COL 2
       #define KEY_FIRE_COL 1
+
+      #define KEY_CURSOR_ROW 0
+      #define KEY_CURSOR_BIT COL_TO_BIT(KEY_CURSOR_COL)
+      #define KEY_KEMPSTON_ROW 0
+      #define KEY_KEMPSTON_BIT COL_TO_BIT(KEY_KEMPSTON_COL)
     #endif
     #define KEY_UP_ROW 0
     #define KEY_UP_BIT COL_TO_BIT(KEY_UP_COL)
@@ -353,9 +394,10 @@ static uint8_t kbits[5][6][6] = {
     #define KEY_CURSOR_BIT 0x20
     #define KEY_KEMPSTON_ROW 6
     #define KEY_KEMPSTON_BIT 0x40 
-    #define LED_PIN 25    
   #endif  
 #endif
+
+#define LED_PIN 25
 
 static uint8_t kempstonJoystick = 0;
 
@@ -363,7 +405,7 @@ static void pzx_mode_joystick() {
   // Joystick mode
   kempstonJoystick = JOYSTICK_OFFSET;
 #ifdef LED_PIN
-  gpio_put(LED_PIN, 1);
+  gpio_put(LED_PIN, 0);
 #endif
 }
 
@@ -371,7 +413,7 @@ static void pzx_mode_cursor() {
   // Cursor mode
   kempstonJoystick = 0;
 #ifdef LED_PIN
-  gpio_put(LED_PIN, 0);
+  gpio_put(LED_PIN, 1);
 #endif
 }
 
@@ -449,7 +491,7 @@ bool pzx_fire_raw() {
 uint8_t __not_in_flash_func(pzx_kempston)() {
 // 000FUDLR
 #ifdef PICOMPUTER_PICOZX
-  #ifdef REAL_ZXKEYBOARD_00DRULF0
+  #ifdef REAL_ZXKEYBOARD_DM
     // 00DRULF0
     return kempstonJoystick && !menu
     ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) << 3)    // Kempston fire
@@ -523,7 +565,7 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   }
 #else
   bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
-  #ifndef REAL_ZXKEYBOARD
+  #ifdef KEY_CURSOR_ROW
   // Cursor mode 
   if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 

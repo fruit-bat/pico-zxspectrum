@@ -79,6 +79,31 @@ add_executable(ZxSpectrumPicomputerVgaAuk
   main.cpp
 )
 
+#
+# AUK Hardware + Compatible board from bobricius
+# ----------------------------------------------
+#
+# AUK extra keyboard key assignments:
+# 
+# F = Fire
+# U = Up
+# D = Down
+# L = Left
+# R = Right
+# N = Next snap
+# P = Previous snap
+# A = 48K
+# B = 128k
+# Q = Quick save 1
+# C = Joystick cursor mode
+# K = Joystick kempton mode
+#
+#                   Normal    Shifted
+# Column:           12345678  12345678
+# AUK original:     FLURDMAB  FLURDMAB
+# AUK digitalmexer: MFLURDAB  MFLURDAB
+# AUK bobrisius:    FLURDMPN  FLURDQCK
+#
 target_compile_definitions(ZxSpectrumPicomputerVgaAuk PRIVATE
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
@@ -87,7 +112,6 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAuk PRIVATE
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
-  REAL_ZXKEYBOARD_000DRULF
 )
 
 target_link_libraries(ZxSpectrumPicomputerVgaAuk
@@ -108,16 +132,16 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAuk 0)
 pico_add_extra_outputs(ZxSpectrumPicomputerVgaAuk)
 
 #
-# Temporary target for digitalmexer
+# Target for digitalmexer
 #
-add_executable(ZxSpectrumPicomputerVga00DRULF0
+add_executable(ZxSpectrumPicomputerVgaAukDM
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
   ${picomputer_common_src}
   main.cpp
 )
 
-target_compile_definitions(ZxSpectrumPicomputerVga00DRULF0 PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerVgaAukDM PRIVATE
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
@@ -125,10 +149,10 @@ target_compile_definitions(ZxSpectrumPicomputerVga00DRULF0 PRIVATE
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
-  REAL_ZXKEYBOARD_00DRULF0
+  REAL_ZXKEYBOARD_DM
 )
 
-target_link_libraries(ZxSpectrumPicomputerVga00DRULF0
+target_link_libraries(ZxSpectrumPicomputerVgaAukDM
   ${zxspectrum_common_libs}
   pico_emu_utils
   pico_vga_menu
@@ -139,8 +163,46 @@ target_link_libraries(ZxSpectrumPicomputerVga00DRULF0
   hardware_pwm
 )
 
-pico_enable_stdio_usb(ZxSpectrumPicomputerVga00DRULF0 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVga00DRULF0 0)
+pico_enable_stdio_usb(ZxSpectrumPicomputerVgaAukDM 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAukDM 0)
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVga00DRULF0)
+pico_add_extra_outputs(ZxSpectrumPicomputerVgaAukDM)
+
+#
+# Target for bobrisius
+#
+add_executable(ZxSpectrumPicomputerVgaAukBob
+  ${zxspectrum_common_src}
+  ${zxspectrum_rgb_src}
+  ${picomputer_common_src}
+  main.cpp
+)
+
+target_compile_definitions(ZxSpectrumPicomputerVgaAukBob PRIVATE
+  ${picomputer_vgazx_defines}
+  VGA_ENC_RGB_222
+  VGA_GPIO_SYNC=6
+  VGA_GPIO_OUTNUM=6
+  SPK_PIN=7
+  PICOMPUTER_PICOZX
+  REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_BOB
+)
+
+target_link_libraries(ZxSpectrumPicomputerVgaAukBob
+  ${zxspectrum_common_libs}
+  pico_emu_utils
+  pico_vga_menu
+  pico_vga_332
+  tinyusb_host
+  tinyusb_board
+  hardware_pio
+  hardware_pwm
+)
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerVgaAukBob 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAukBob 0)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPicomputerVgaAukBob)
