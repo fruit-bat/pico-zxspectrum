@@ -101,32 +101,35 @@ pico_add_extra_outputs(ZxSpectrum4PinAudioVga222Ps2)
 # 1) May need to move out from here
 # 2) May need code modifications for joystick handling
 # 3) PIN definitions not updated
-# 4) picomputer_vga_defines are probably not correct
-# 5) Need to change to 2 pin audio
 # 6) RGBY is probably the wrong order
 # 7) c-sync vs h-sync and v-sync
+# 8) May be better off basing this on the Murulator build
 #
 add_executable(ZxSpectrumPicoMiteVGA
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
+  ${murmulator_common_src}
   main.cpp
 )
 
 target_compile_definitions(ZxSpectrumPicoMiteVGA PRIVATE
-  ${picomputer_vga_defines}
+  PCS_COLS=80 
+  PCS_ROWS=30
+  # Configure the SPI sd card to use SPI0
+  SDCARD_PIN_SPI0_CS=10
+  SDCARD_PIN_SPI0_SCK=12
+  SDCARD_PIN_SPI0_MOSI=11
+  SDCARD_PIN_SPI0_MISO=13
   # VGA 1111
   VGA_ENC_RGBY_1111
-  VGA_GPIO_FIRST=12
-  VGA_GPIO_SYNC=16
+  VGA_GPIO_FIRST=18
+  VGA_GPIO_SYNC=17
   VGA_GPIO_OUTNUM=4
   # 4 pin audio
-  BZR_PIN=21
-  EAR_PIN=11  
-  AY8912_A_PIN=20
-  AY8912_B_PIN=26
-  AY8912_C_PIN=27
+  BZR_PIN=6
+  SPK_PIN=9
   # Enable the PS/2 keyboard
-  USE_PS2_KBD    
+  USE_MRMLTR_PS2_KBD    
 )
 
 target_link_libraries(ZxSpectrumPicoMiteVGA
@@ -140,8 +143,8 @@ target_link_libraries(ZxSpectrumPicoMiteVGA
   hardware_pwm
 )
 
-pico_generate_pio_header(ZxSpectrumPicoMiteVGA 
-  ${zxspectrum_ear_in_pio}
+pico_generate_pio_header(ZxSpectrumPicoMiteVGA
+  ${murmulator_ps2kbd_pio}
 )
 
 pico_enable_stdio_usb(ZxSpectrumPicoMiteVGA 0)
