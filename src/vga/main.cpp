@@ -40,7 +40,6 @@
 #include "ZxSpectrumFileSettings.h"
 
 #define LED_PIN 25
-#define SPK_PIN 9
 
 #define VREG_VSEL VREG_VOLTAGE_1_10
 
