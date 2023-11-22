@@ -123,7 +123,7 @@ target_compile_definitions(ZxSpectrumPicoMiteVGA PRIVATE
   # VGA 1111
   VGA_ENC_RGBY_1111
   VGA_GPIO_FIRST=18
-  VGA_GPIO_SYNC=17
+  VGA_GPIO_SYNC=16
   VGA_GPIO_OUTNUM=4
   # 4 pin audio
   BZR_PIN=6
