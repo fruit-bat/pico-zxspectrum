@@ -18,7 +18,7 @@ add_executable(ZxSpectrum4PinAudioVga1111Ps2
 target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2 PRIVATE
   ${picomputer_vga_defines}
   # VGA 1111
-  VGA_ENC_RGBY_1111
+  VGA_ENC_BGYR_1111
   VGA_GPIO_FIRST=12
   VGA_GPIO_SYNC=16
   VGA_GPIO_OUTNUM=4

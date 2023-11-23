@@ -1,5 +1,6 @@
 #include "ZxSpectrumPrepareRgbScanline.h"
 
+#define VGA_BGYR_1111(r,g,b,y) ((y##UL<<2)|(r##UL<<3)|(g##UL<<1)|b##UL)
 #define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
 #define VGA_RGB_332(r,g,b) ((r##UL<<5)|(g##UL<<2)|b##UL)
 #define VGA_RGB_222(r,g,b) ((r##UL<<4)|(g##UL<<2)|b##UL)
@@ -7,7 +8,24 @@
 #define X4(a) (a | (a << 8) | (a << 16) | (a << 24))
 
 static uint32_t zx_colour_words[16] = {
-#if defined(VGA_ENC_RGBY_1111)
+#if defined(VGA_ENC_BGYR_1111)
+  X4(VGA_BGYR_1111(0,0,0,0)), // Black
+  X4(VGA_BGYR_1111(0,0,1,0)), // Blue
+  X4(VGA_BGYR_1111(1,0,0,0)), // Red
+  X4(VGA_BGYR_1111(1,0,1,0)), // Magenta
+  X4(VGA_BGYR_1111(0,1,0,0)), // Green
+  X4(VGA_BGYR_1111(0,1,1,0)), // Cyan
+  X4(VGA_BGYR_1111(1,1,0,0)), // Yellow
+  X4(VGA_BGYR_1111(1,1,1,0)), // White
+  X4(VGA_BGYR_1111(0,0,0,0)), // Bright Black
+  X4(VGA_BGYR_1111(0,0,1,1)), // Bright Blue
+  X4(VGA_BGYR_1111(1,0,0,1)), // Bright Red
+  X4(VGA_BGYR_1111(1,0,1,1)), // Bright Magenta
+  X4(VGA_BGYR_1111(0,1,0,1)), // Bright Green
+  X4(VGA_BGYR_1111(0,1,1,1)), // Bright Cyan
+  X4(VGA_BGYR_1111(1,1,0,1)), // Bright Yellow
+  X4(VGA_BGYR_1111(1,1,1,1))  // Bright White
+#elif defined(VGA_ENC_RGBY_1111)
   X4(VGA_RGBY_1111(0,0,0,0)), // Black
   X4(VGA_RGBY_1111(0,0,1,0)), // Blue
   X4(VGA_RGBY_1111(1,0,0,0)), // Red
