@@ -188,6 +188,7 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAukBob PRIVATE
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
   REAL_ZXKEYBOARD_BOB
+  HID_KEY_MOD_SAVE=2
 )
 
 target_link_libraries(ZxSpectrumPicomputerVgaAukBob

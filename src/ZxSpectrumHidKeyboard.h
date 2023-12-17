@@ -6,6 +6,14 @@
 #include "QuickSave.h"
 #include "ZxSpectrumFileLoop.h"
 
+
+#ifndef HID_KEY_MOD_SAVE
+#define HID_KEY_MOD_SAVE KEYBOARD_MODIFIER_LEFTCTRL
+#endif
+#ifndef HID_KEY_MOD_LOAD
+#define HID_KEY_MOD_LOAD KEYBOARD_MODIFIER_LEFTALT
+#endif
+
 class ZxSpectrumHidKeyboard : public ZxSpectrumKeyboard {
   ZxSpectrum *_ZxSpectrum;  
   ZxSpectrumFileLoop* _zxSpectrumSnapList;
