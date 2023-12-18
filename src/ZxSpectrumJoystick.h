@@ -25,5 +25,5 @@ public:
   ZxSpectrumJoystickMode mode() { return _mode; }
   inline uint8_t getKempston() { return _mode == ZxSpectrumJoystickModeKempston ? kempston() : 0; }
   inline uint8_t getSinclairL() { return _mode == ZxSpectrumJoystickModeSinclair ? sinclairL() : 0xff; }
-  inline uint8_t getSinclairR()  { return _mode == ZxSpectrumJoystickModeSinclair ? sinclairL() : 0xff; } 
+  inline uint8_t getSinclairR()  { return _mode == ZxSpectrumJoystickModeSinclair ? sinclairR() : 0xff; } 
 };
