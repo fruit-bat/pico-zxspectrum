@@ -16,7 +16,8 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
     // Joystick
     switch(values->joystickMode) {
       case ZxSpectrumJoystickModeKempston:
-      case ZxSpectrumJoystickModeSinclair:
+      case ZxSpectrumJoystickModeSinclairLR:
+      case ZxSpectrumJoystickModeSinclairRL:
         break;
       default: 
         values->joystickMode = ZxSpectrumJoystickModeKempston;

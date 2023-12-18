@@ -4,7 +4,8 @@
 
 enum ZxSpectrumJoystickMode {
   ZxSpectrumJoystickModeKempston,
-  ZxSpectrumJoystickModeSinclair  
+  ZxSpectrumJoystickModeSinclairLR,
+  ZxSpectrumJoystickModeSinclairRL
 };
 
 class ZxSpectrumJoystick {
@@ -21,9 +22,10 @@ public:
   virtual bool isConnectedL();
   virtual bool isConnectedR();
   
-  void mode(ZxSpectrumJoystickMode mode) { _mode = mode; }
-  ZxSpectrumJoystickMode mode() { return _mode; }
-  inline uint8_t getKempston() { return _mode == ZxSpectrumJoystickModeKempston ? kempston() : 0; }
-  inline uint8_t getSinclairL() { return _mode == ZxSpectrumJoystickModeSinclair ? sinclairL() : 0xff; }
-  inline uint8_t getSinclairR()  { return _mode == ZxSpectrumJoystickModeSinclair ? sinclairR() : 0xff; } 
+  virtual void mode(ZxSpectrumJoystickMode mode) { _mode = mode; }
+
+  inline ZxSpectrumJoystickMode mode() { return _mode; }
+  uint8_t __not_in_flash_func(getKempston)();
+  uint8_t __not_in_flash_func(getSinclairL)();
+  uint8_t __not_in_flash_func(getSinclairR)();
 };

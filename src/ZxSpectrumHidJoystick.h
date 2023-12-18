@@ -5,8 +5,8 @@
 
 class ZxSpectrumHidJoystick : public ZxSpectrumJoystick {
 private:
-  uint32_t _updatedL;
-  uint32_t _updatedR;
+  uint32_t _updated1;
+  uint32_t _updated2;
   uint8_t _kempston;
   uint8_t _sinclairL;
   uint8_t _sinclairR;
