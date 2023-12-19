@@ -132,45 +132,7 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAuk 0)
 pico_add_extra_outputs(ZxSpectrumPicomputerVgaAuk)
 
 #
-# Target for digitalmexer
-#
-add_executable(ZxSpectrumPicomputerVgaAukDM
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
-  main.cpp
-)
-
-target_compile_definitions(ZxSpectrumPicomputerVgaAukDM PRIVATE
-  ${picomputer_vgazx_defines}
-  VGA_ENC_RGB_222
-  VGA_GPIO_SYNC=6
-  VGA_GPIO_OUTNUM=6
-  SPK_PIN=7
-  PICOMPUTER_PICOZX
-  REAL_ZXKEYBOARD
-  REAL_ZXKEYBOARD_DM
-)
-
-target_link_libraries(ZxSpectrumPicomputerVgaAukDM
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
-)
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerVgaAukDM 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAukDM 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVgaAukDM)
-
-#
-# Target for bobrisius
+# Target for bobricius
 #
 add_executable(ZxSpectrumPicomputerVgaAukBob
   ${zxspectrum_common_src}
