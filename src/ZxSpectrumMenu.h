@@ -75,7 +75,8 @@ private:
 
   PicoSelect _joystick;
   PicoOptionText _joystickKemstonOp;
-  PicoOptionText _joystickSinclairOp;
+  PicoOptionText _joystickSinclairLROp;
+  PicoOptionText _joystickSinclairRLOp;
 
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;

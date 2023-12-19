@@ -195,14 +195,14 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
     }
   }
 
-  if ((m & KEYBOARD_MODIFIER_LEFTCTRL) && !_kiosk) {
+  if ((m & HID_KEY_MOD_SAVE) && !_kiosk) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
         if (_quickSave) _quickSave->save(_ZxSpectrum, i);
       }
     }
   }
-  else if (m & KEYBOARD_MODIFIER_LEFTALT) {
+  else if (m & HID_KEY_MOD_LOAD) {
     for (int i = 0; i < 12; ++i) {
       if (fkp & (1 << i)) {
         if (_quickSave) _quickSave->load(_ZxSpectrum, i);

@@ -115,7 +115,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
   _joystickKemstonOp("Kempston"),
-  _joystickSinclairOp("Sinclair"),
+  _joystickSinclairLROp("Sinclair L+R"),
+  _joystickSinclairRLOp("Sinclair R+L"),
 
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
@@ -274,7 +275,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     if (_zxSpectrum->joystick()) {
       switch(_zxSpectrum->joystick()->mode()) {
         case ZxSpectrumJoystickModeKempston: m = "Kempston" ; break;
-        case ZxSpectrumJoystickModeSinclair: m = "Sinclair" ; break;
+        case ZxSpectrumJoystickModeSinclairLR: m = "Sinclair L+R" ; break;
+        case ZxSpectrumJoystickModeSinclairRL: m = "Sinclair R+L" ; break;
         default: m = "N/A" ; break;
       }
     }
@@ -311,7 +313,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
 
   _joystick.addOption(_joystickKemstonOp.addQuickKey(&_k1));
-  _joystick.addOption(_joystickSinclairOp.addQuickKey(&_k2));
+  _joystick.addOption(_joystickSinclairLROp.addQuickKey(&_k2));
+  _joystick.addOption(_joystickSinclairRLOp.addQuickKey(&_k3));
   _joystick.enableQuickKeys();
 
   _joystickKemstonOp.toggle([=]() {
@@ -320,9 +323,15 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     }
     _wiz.pop(true);
   });
-  _joystickSinclairOp.toggle([=]() {
+  _joystickSinclairLROp.toggle([=]() {
     if (_zxSpectrum->joystick()) {
-      _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeSinclair);
+      _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeSinclairLR);
+    }
+    _wiz.pop(true);
+  });
+  _joystickSinclairRLOp.toggle([=]() {
+    if (_zxSpectrum->joystick()) {
+      _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeSinclairRL);
     }
     _wiz.pop(true);
   });

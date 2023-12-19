@@ -23,3 +23,9 @@ uint8_t ZxSpectrumDualJoystick::sinclairR() {
 uint8_t ZxSpectrumDualJoystick::kempston() {
   return _joystick1->kempston() | _joystick2->kempston();
 }
+
+void ZxSpectrumDualJoystick::mode(ZxSpectrumJoystickMode mode) {
+  _joystick1->mode(mode);
+  _joystick2->mode(mode);
+  ZxSpectrumJoystick::mode(mode);
+}
