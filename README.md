@@ -20,6 +20,7 @@
 
 ## Supported Boards
 * Breadboard
+* [PICO ZX48/128](docs/pico_zx48_128)
 * PICOZX LCD
 * [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
