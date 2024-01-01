@@ -32,8 +32,9 @@ public:
     unsigned int a = 0xff;
     
     if (_zxSpectrumJoystick) {
-      if (address == 0xf7fe) a = _zxSpectrumJoystick->getSinclairL();
-      if (address == 0xeffe) a = _zxSpectrumJoystick->getSinclairR();
+      const unsigned int b =  address | 0xf0;
+      if (b == 0xf7fe) a = _zxSpectrumJoystick->getSinclairL();
+      if (b == 0xeffe) a = _zxSpectrumJoystick->getSinclairR();
     }
 
     for (int i = 0; i < 8; ++i) {
