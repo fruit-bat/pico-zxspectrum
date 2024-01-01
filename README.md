@@ -20,7 +20,7 @@
 
 ## Supported Boards
 * Breadboard
-* [PICO ZX48/128](docs/pico_zx48_128)
+* [PICO ZX48/128](docs/pico_zx48_128.md)
 * PICOZX LCD
 * [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
@@ -30,7 +30,7 @@
 * [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
-<a href="docs/pico_zx48_128"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
+<a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href=""><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
