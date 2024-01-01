@@ -29,6 +29,7 @@
 * [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
 <a><img src="docs/breadboard.png" width="200"/></a>
+<a href="docs/pico_zx48_128"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href=""><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
@@ -42,6 +43,7 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+01/01/24 - Added support for bobricius <a href="docs/pico_zx48_128">Pico ZX48/128</a>
 
 25/06/23 - Ability to persist volume control and joystick type (Sinclair/Kempston). The settings are persisted to .config file on the SD card and are loaded as the defaults on reset.
 To save setting goto ''settings->save'' on the menu. 
@@ -127,6 +129,7 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
 | HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
 | VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
+| Pico ZX48/128 | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
 | PICOZX LCD| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
 | PICOZX LCD with inverse/negative LCD| [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
 | PICOZX | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
