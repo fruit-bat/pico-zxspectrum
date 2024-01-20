@@ -44,6 +44,15 @@
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+20/01/24 - Maintenance release of pre-built firmware: 
+* All .uf2 files rebuilt (see the uf2 folder)
+* Minor bug fixes
+* Updated libraries (Z80 etc)
+* Misc joystick fixes
+  
+I've moved to a new build machine, so let me know if there are any issues.
+At some point, I will try and organise the spralling README file.
+  
 01/01/24 - Added support for bobricius <a href="docs/pico_zx48_128">Pico ZX48/128</a>
 
 25/06/23 - Ability to persist volume control and joystick type (Sinclair/Kempston). The settings are persisted to .config file on the SD card and are loaded as the defaults on reset.
