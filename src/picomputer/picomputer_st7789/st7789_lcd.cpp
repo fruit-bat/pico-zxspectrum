@@ -38,7 +38,7 @@ static const uint8_t st7789_init_seq[] = {
         1, 20, 0x01,                        // Software reset
         1, 10, 0x11,                        // Exit sleep mode
         2, 2, 0x3a, 0x63,                   // Set colour mode to 12 bit (16 bit 0x55)
-        2, 0, 0x36, 0x70,                   // Set MADCTL: row then column, refresh is bottom to top ????
+        2, 0, 0x36, 0x30,                   // Set MADCTL: row then column, refresh is bottom to top ????
         5, 0, 0x2a, 0x00, 0x00, 0x01, 0x40, // CASET: column addresses from 0 to 320
         5, 0, 0x2b, 0x00, 0x00, 0x00, 0xf0, // RASET: row addresses from 0 to 240
         1, 2, 0x21,                         // Inversion on, then 10 ms delay (supposedly a hack?)
