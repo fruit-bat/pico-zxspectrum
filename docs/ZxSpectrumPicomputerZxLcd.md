@@ -1,7 +1,7 @@
 ### ZxSpectrumPicomputerZxLcd
 This is a target written for Bobricius' PICOZX with built in LCD 
 
-<img src="docs/picozxlcd.png" width="300"/>
+<img src="picozxlcd.png" width="300"/>
 
 It supports:
 * USB keyboard
@@ -23,10 +23,10 @@ While on the menu...
 * SHIFT-RELOAD = Del
 
 #### Circuit Diagram
-![image](docs/ZxSpectrumPicomputerZxLcd.png)
+![image](ZxSpectrumPicomputerZxLcd.png)
 
 #### Firmware
-[ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2)
+[ZxSpectrumPicomputerZxLcd.uf2](/uf2/ZxSpectrumPicomputerZxLcd.uf2)
 
 #### Build system notes
 The LCD firmware has some switches to adapt it to different LCD panels:
@@ -37,6 +37,7 @@ The LCD firmware has some switches to adapt it to different LCD panels:
 
 
 #### References
-[hackster](https://www.hackster.io/news/peter-bobricius-misenko-s-picozx-lcd-is-the-handheld-sinclair-zx-spectrum-the-1980s-never-got-24c00f395b9d)
+[hackster](https://www.hackster.io/news/peter-bobricius-misenko-s-picozx-lcd-is-the-handheld-sinclair-zx-spectrum-the-1980s-never-got-24c00f395b9d)<br/>
+[raspberrypi.com](https://www.raspberrypi.com/news/build-your-own-handheld-zx-spectrum-with-raspberry-pi-pico/)
 
 
