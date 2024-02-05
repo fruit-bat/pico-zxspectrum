@@ -31,6 +31,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   SZ_FILE_ROWS=18
   SPK_PIN=0
   PICOMPUTER_MAX
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerMax
@@ -79,6 +80,7 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   SZ_FILE_ROWS=11
   SPK_PIN=0
   PICOMPUTER_ZX
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerZX
@@ -144,6 +146,7 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxLcd
 
 target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxLcd
@@ -167,6 +170,7 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd
 
 target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  LCD_MIRROR_X
   INVERSE_LCD
 )
 

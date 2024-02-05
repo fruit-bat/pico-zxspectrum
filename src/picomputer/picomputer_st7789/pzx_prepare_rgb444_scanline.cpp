@@ -8,7 +8,11 @@
 #else
 #define VGA_COL(c) (c##UL)
 #endif
+#ifdef LCD_RGB
 #define VGA_RGB_444_POS(r,g,b) ((b<<8)|(g<<4)|r)
+#else
+#define VGA_RGB_444_POS(r,g,b) ((r<<8)|(g<<4)|b)
+#endif
 #define VGA_RGB_444(r,g,b) VGA_RGB_444_POS(VGA_COL(r),VGA_COL(g), VGA_COL(b))
 #define X2(a) ((a << 20) | (a << 8))
 

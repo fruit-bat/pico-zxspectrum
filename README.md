@@ -21,7 +21,7 @@
 ## Supported Boards
 * Breadboard
 * [PICO ZX48/128](docs/pico_zx48_128.md)
-* PICOZX LCD
+* [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)
 * [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
@@ -140,7 +140,7 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
 | VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
-| PICOZX LCD| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
+| [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
 | PICOZX LCD with inverse/negative LCD| [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
 | PICOZX | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
 | RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
