@@ -31,6 +31,7 @@ While on the menu...
 #### Build system notes
 The LCD firmware has some switches to adapt it to different LCD panels:
 | Symbol | Description | Default in code | PICOZX | ILI19341 |
+| ------ | ----------- | --------------- | ------ | -------- |
 | INVERSE_LCD | invert the brightness of the RGB color components | undefined | undefined | defined |
 | LCD_MIRROR_X | Mirror the LCD output horizontally | undefined | defined | undefined |
 | LCD_RGB | Use RBG order rather than BGR | undefined | undefined |  defined |
