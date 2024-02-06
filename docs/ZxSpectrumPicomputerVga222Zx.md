@@ -30,5 +30,6 @@ While on the menu...
 
 #### References
 [Hackaday](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
-
+[Adafruit](https://blog.adafruit.com/2022/07/27/picozx-is-a-128kb-zx-spectrum-clone-using-a-raspberry-pi-pico-retrocomputing-opensource-pico-dirkdierickx/)
+[Hackster](https://www.hackster.io/news/pico-zx-spectrum-128k-is-a-recreation-of-the-sinclair-classic-computer-d51b59bca8d2)
 
