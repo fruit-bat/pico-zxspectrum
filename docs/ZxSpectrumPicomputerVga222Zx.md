@@ -1,21 +1,15 @@
 ### ZxSpectrumPicomputerZxLcd
-This is a target written for Bobricius' PICOZX with built in LCD 
+This is a target written for Bobricius' PICOZX
 
-<img src="picozxlcd.png" width="300"/>
+<img src="picomputer_picozx.png" width="300"/>
 
 It supports:
 * USB keyboard
 * Keyboard martix
 * USB joysticks
 * VGA video (RGB222)
-* LCD video (ST7789)
 * PWM sound (1 pin)
 * SPI SD card
-
-By default, the board starts up using the LCD as its display.
-To boot into VGA mode hold down the 'fire' button during reset.
-Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
-
 
 While on the menu...
 * SHIFT-Fire = ESC
@@ -23,7 +17,7 @@ While on the menu...
 * SHIFT-RELOAD = Del
 
 #### Circuit Diagram
-![image](ZxSpectrumPicomputerZxLcd.png)
+![image](ZxSpectrumPicomputerVga222Zx.png)
 
 #### Firmware
 [uf2/ZxSpectrumPicomputerVga222Zx.uf2](/uf2/ZxSpectrumPicomputerVga222Zx.uf2)
