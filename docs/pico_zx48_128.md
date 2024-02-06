@@ -1,6 +1,6 @@
 ### PICO ZX48/128
 This target matches the circuit board created by Bobricius.
-It mathches the original layout of the ZX Spectrum keyboard allowing it to be used with the old membranes.
+It matches the original layout of the ZX Spectrum keyboard allowing it to be used with the old membranes.
 
 <img src="pico_zx48_128_1.png" width="300"/>
 

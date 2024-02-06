@@ -22,7 +22,7 @@
 * Breadboard
 * [PICO ZX48/128](docs/pico_zx48_128.md)
 * [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)
-* [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
+* [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md)
 * [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
 * PicomputerMax
 * PicomputerZX
@@ -31,8 +31,8 @@
 
 <a><img src="docs/breadboard.png" width="200"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
-<a href=""><img src="docs/picozxlcd.png" width="280"/></a>
-<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
+<a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
+<a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
@@ -141,8 +141,8 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
 | [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
-| PICOZX LCD with inverse/negative LCD| [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
-| PICOZX | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
+| [PICOZX LCD with inverse/negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
+| [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
 | RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
 | PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
@@ -227,33 +227,6 @@ Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga222Zx.png)
 
-### ZxSpectrumPicomputerZxLcd
-This is a target written for Bobricius' PICOZX with built in LCD 
-
-<a href=""><img src="docs/picozxlcd.png" width="300"/></a>
-
-It supports:
-* USB keyboard
-* Keyboard martix
-* USB joysticks
-* VGA video (RGB222)
-* LCD video (ST7789)
-* PWM sound (1 pin)
-* SPI SD card
-
-By default, the board starts up using the LCD as its display.
-To boot into VGA mode hold down the 'fire' button during reset.
-Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
-
-
-While on the menu...
-* SHIFT-Fire = ESC
-* RELOAD = Backspace
-* SHIFT-RELOAD = Del
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerZxLcd.png)
 
 ### ZxSpectrumPicomputerVga
 This is the target for Bobricius' Retro VGA board:
@@ -271,6 +244,7 @@ It supports the following:
 Here are the pin assignments:
 
 ![image](docs/ZxSpectrumPicomputerVga.png)
+
 
 ### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
 These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
