@@ -171,7 +171,7 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd
 target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
   LCD_MIRROR_X
-  INVERSE_LCD
+  LCD_INVERSE
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxInverseLcd

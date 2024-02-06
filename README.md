@@ -29,7 +29,7 @@
 * [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
 * [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
 
-<a><img src="docs/breadboard.png" width="200"/></a>
+<a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md"><img src="docs/breadboard.png" width="200"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
@@ -38,7 +38,7 @@
 <a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
-<a href=""><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
+<a href="docs/MURMULATOR.md"><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
@@ -135,10 +135,10 @@ On hardware with a faceplate the button is usually accessible through a small ho
 
 | Board | Binary |
 | ------ | -------- |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
-| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
+| [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
 | [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
 | [PICOZX LCD with inverse/negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
@@ -150,8 +150,8 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
 | HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
 | ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
-| HDMI MURMULATOR | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
-| VGA MURMULATOR | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
+| [HDMI MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
+| [VGA MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -159,73 +159,6 @@ cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
 
 These targets are discussed in more detail in the following sections.
-
-### MURMULATOR platform
-<img src="docs/MURMULATOR_VGA_photo2.png" height="200"/>
-<img src="docs/Murmulator_BSchem_v1.JPG" height="300"/> <img src="docs/MURMULATOR_Schem_v1.png" height="300"/>
-
-### ZxSpectrumBreadboardHdmiNPinAudio
-This is a series of targets based around my original breadboard prototype:
-
-<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
-
-The targets are: 
-* ZxSpectrumBreadboardHdmi4PinAudio
-* ZxSpectrumBreadboardHdmi2PinAudio
-* ZxSpectrumBreadboardHdmi1PinAudio
-
-They support the following:
-* USB keyboard
-* PS/2 keyboard
-* USB joysticks
-* HDMI video
-* PWM sound
-* Audio input (load from tape)
-* SPI SD card
-* Serial port debug
-
-All of these targets share the same pinout but make different use of the 4 audio pins:
-
-![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
-
-### ZxSpectrum4PinAudioVga1111Ps2
-This is a target similar to the HDMI prototype which uses VGA video output.
-
-It supports the following:
-* USB keyboard
-* PS/2 keyboard
-* USB joysticks
-* VGA video (RGBY1111)
-* PWM sound (4 pin)
-* SPI SD card
-* Serial port debug
-
-This target uses 4 audio pins:
-
-![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
-
-### ZxSpectrumPicomputerVga222Zx
-This is a target written for Bobricius' PICOZX
-
-<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
-
-It supports:
-* USB keyboard
-* Keyboard martix
-* USB joysticks
-* VGA video (RGB222)
-* PWM sound (1 pin)
-* SPI SD card
-
-
-While on the menu...
-* SHIFT-Fire = ESC
-* RELOAD = Backspace
-* SHIFT-RELOAD = Del
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerVga222Zx.png)
 
 
 ### ZxSpectrumPicomputerVga
