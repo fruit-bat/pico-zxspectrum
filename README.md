@@ -19,15 +19,9 @@
 * Kempston and Sinclair joystick emulation
 
 ## Supported Boards
-* Breadboard
-* [PICO ZX48/128](docs/pico_zx48_128.md)
-* [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)
-* [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md)
-* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
-* PicomputerMax
-* PicomputerZX
-* [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
-* [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
+The idea of this project was for it to be relatively easy to breadboard or prototype in some other way. There are now a variety of boards that are also supported.
+
+Click on the images below for mnore inforation about a particular board.
 
 <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md"><img src="docs/breadboard.png" width="200"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
