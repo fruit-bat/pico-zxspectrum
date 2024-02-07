@@ -1,6 +1,7 @@
 ### ZxSpectrumPicomputerMax
 These is the target for Bobricius' Retro PICOmputerMAX.
-<img src="picomputermax.png" height="300"/>
+
+<img src="picomputermax.png" height="250"/>
 
 It supports the following:
 * USB keyboard
