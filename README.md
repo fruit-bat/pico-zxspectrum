@@ -27,11 +27,11 @@ Click on the images below for mnore inforation about a particular board.
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicomputerVga.md" width="200"/></a>
 <a href="docs/ZxSpectrumPicomputerMax.md"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicomputerZX.md"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicaVga.md"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 <a href="docs/MURMULATOR.md"><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 
 ## Interesting projects
@@ -137,13 +137,13 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
 | [PICOZX LCD with inverse/negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
 | [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
-| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
+| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
 | [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
-| Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
-| HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
-| ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
+| [Pimoroni Pico VGA](docs/ZxSpectrumPicoVga.md) | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
+| [HDMI + key matrix](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md) |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
+| [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
 | [HDMI MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
 | [VGA MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
 
@@ -151,59 +151,6 @@ e.g. for the HDMI breadboard wiring show above use:
 ```sh
 cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
-
-These targets are discussed in more detail in the following sections.
-
-
-### ZxSpectrumPicomputerVga
-This is the target for Bobricius' Retro VGA board:
-
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-
-It supports the following:
-* USB keyboard
-* USB joysticks
-* Matrix keyboard (6x6)
-* VGA video (RGB332)
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerVga.png)
-
-
-
-### ZxSpectrumBreadboardHdmiKbd1PinAudio
-This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
-
-It is a work in progress.
-
-<a href=""><img src="docs/proto_kbd.jpg" width="300"/></a>
-
-It supports the following:
-* USB keyboard
-* Matrix keyboard (8x8)
-* USB joysticks
-* HDMI video
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.png)
-
-I don't know how the original keyboard pins were numbered but mine go from left to right with the keyboard oriented as you would type on it.
-
-### ZxSpectrumPicomputerVgaAuk
-
-All keys are fully functional and the Emulator Menus can only be accessed via an external button connected to one of the GPIO pins.
-The Menu can be navigated using the Spectrum's keyboard number keys. There are an extra 8 external buttons that can been used
-for setting the Spectrum ROM boot mode and a Joystick Keyboard.
-
-Please see the Schematic diagram for more information on GPIO pins used.
-
-<a href="docs/pico-zxspectrum-realkeyboard-schematic.jpg"><img src="docs/pico-zxspectrum-realkeyboard-schematic.jpg" /></a>
 
 
 ## Audio pins
