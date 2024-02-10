@@ -1,6 +1,7 @@
 
 ### ZxSpectrum4PinAudioVga1111Ps2
-This is a target similar to the HDMI prototype which uses VGA video output.
+This is a target similar to the HDMI prototype which uses VGA video output.<br/>
+<img src="ZxSpectrum4PinAudioVga1111Ps2Breadboard.jpg" width="500"/>
 
 It supports the following:
 * USB keyboard
