@@ -26,12 +26,12 @@ The idea of this project was for it to be relatively easy to breadboard or proto
 <table>
   <tr>
     <td>
-      <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md">
+      <a href="docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md">
 <img src="docs/proto_kbd.jpg" width="200"/>
       </a>
     </td>
     <td>
-      <a href="docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md">
+      <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md">
         <img src="docs/pico_zxspectrum_prototype_1.jpg" width="200"/>
       </a>
       <a href="docs/ZxSpectrum4PinAudioVga1111Ps2.md">
