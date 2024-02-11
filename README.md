@@ -19,9 +19,30 @@
 * Kempston and Sinclair joystick emulation
 
 ## Supported Boards
-The idea of this project was for it to be relatively easy to breadboard or prototype in some other way. There are now a variety of boards that are also supported.
+Click on the images below for mnore inforation about a particular board...
 
-Click on the images below for mnore inforation about a particular board.
+The idea of this project was for it to be relatively easy to breadboard or prototype in some way...
+
+<table>
+  <tr>
+    <td>
+      <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md">
+<img src="docs/proto_kbd.jpg" width="200"/>
+      </a>
+    </td>
+    <td>
+      <a href="docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md">
+        <img src="docs/pico_zxspectrum_prototype_1.jpg" width="200"/>
+      </a>
+      <a href="docs/ZxSpectrum4PinAudioVga1111Ps2.md">
+        <img src="docs/ZxSpectrum4PinAudioVga1111Ps2Breadboard.jpg" width="200"/>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<br/>
+There are now a variety of boards that are also supported...
 
 <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md"><img src="docs/breadboard.png" width="200"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
