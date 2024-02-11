@@ -44,7 +44,6 @@ The idea of this project was for it to be relatively easy to breadboard or proto
 <br/>
 There are now a variety of boards that are also supported...
 
-<a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md"><img src="docs/breadboard.png" width="200"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
@@ -59,6 +58,10 @@ There are now a variety of boards that are also supported...
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+11/02/24 
+* Start to separate out docs for each target
+* Initial support for ILI9341
+
 20/01/24 - Maintenance release of pre-built firmware: 
 * All .uf2 files rebuilt (see the uf2 folder)
 * Minor bug fixes
