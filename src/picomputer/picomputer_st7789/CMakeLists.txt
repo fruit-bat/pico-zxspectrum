@@ -183,3 +183,27 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerZxInverseLcd 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerZxInverseLcd)
+
+
+add_executable(ZxSpectrumPicomputerZxILI9341Lcd
+  ${picomputer_zx_lcd_src}
+)
+
+pico_generate_pio_header(ZxSpectrumPicomputerZxILI9341Lcd 
+  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+)
+
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  LCD_INVERSE
+)
+
+target_link_libraries(ZxSpectrumPicomputerZxILI9341Lcd
+  ${zxspectrum_zx_lcd_common_libs}
+)
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerZxILI9341Lcd 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerZxILI9341Lcd 0)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPicomputerZxILI9341Lcd)
