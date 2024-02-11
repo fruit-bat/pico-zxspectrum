@@ -5,7 +5,7 @@
 
 ## Features
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
-* LCD support (ST7789 320x240)
+* LCD support (ST7789/ILI9341 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB keyboard & Joysticks
 * PS/2 keyboard
