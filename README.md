@@ -5,7 +5,7 @@
 
 ## Features
 * DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
-* LCD support (ST7789 320x240)
+* LCD support (ST7789/ILI9341 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB keyboard & Joysticks
 * PS/2 keyboard
@@ -19,31 +19,49 @@
 * Kempston and Sinclair joystick emulation
 
 ## Supported Boards
-* Breadboard
-* [PICO ZX48/128](docs/pico_zx48_128.md)
-* PICOZX LCD
-* [PICOZX](https://hackaday.io/project/186039-pico-zx-spectrum-128k)
-* [RetroVGA](https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer)
-* PicomputerMax
-* PicomputerZX
-* [Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
-* [MURMULATOR (HDMI/VGA)](https://t.me/ZX_MURMULATOR)
+Click on the images below for mnore inforation about a particular board...
 
-<a><img src="docs/breadboard.png" width="200"/></a>
+The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+
+<table>
+  <tr>
+    <td>
+      <a href="docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md">
+<img src="docs/proto_kbd.jpg" width="200"/>
+      </a>
+    </td>
+    <td>
+      <a href="docs/ZxSpectrumBreadboardHdmiNPinAudio.md">
+        <img src="docs/pico_zxspectrum_prototype_1.jpg" width="200"/>
+      </a>
+      <a href="docs/ZxSpectrum4PinAudioVga1111Ps2.md">
+        <img src="docs/ZxSpectrum4PinAudioVga1111Ps2Breadboard.jpg" width="200"/>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<br/>
+There are now a variety of boards that are also supported...
+
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
-<a href=""><img src="docs/picozxlcd.png" width="280"/></a>
-<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" width="200"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-vga-demo-base"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
-<a href=""><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
+<a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
+<a href="docs/ZxSpectrumPicomputerVga.md" width="200"/></a>
+<a href="docs/ZxSpectrumPicomputerMax.md"><img src="docs/picomputermax.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicomputerZX.md"><img src="docs/picomputerzx.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicaVga.md"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
+<a href="docs/MURMULATOR.md"><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
 
 ## Updates
+11/02/24 
+* Start to separate out docs for each target
+* Initial support for ILI9341
+
 20/01/24 - Maintenance release of pre-built firmware: 
 * All .uf2 files rebuilt (see the uf2 folder)
 * Minor bug fixes
@@ -135,210 +153,29 @@ On hardware with a faceplate the button is usually accessible through a small ho
 
 | Board | Binary |
 | ------ | -------- |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
-| HDMI breadboard | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
-| VGA breadboard | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
+| [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
-| PICOZX LCD| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
-| PICOZX LCD with inverse/negative LCD| [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
-| PICOZX | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
-| RetroVGA | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
-| PicomputerMax | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
-| PicomputerZX | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
-| Pimoroni Pico DV | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
-| Pimoroni Pico VGA | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
-| HDMI + key matrix |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.ufs](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
-| ArnoldUK| [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
-| HDMI MURMULATOR | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
-| VGA MURMULATOR | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
+| [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
+| [PICOZX LCD with negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
+| [PICO ZX LCD for ILI9341](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
+| [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
+| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
+| [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
+| [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
+| [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
+| [Pimoroni Pico VGA](docs/ZxSpectrumPicoVga.md) | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
+| [HDMI + key matrix](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md) |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
+| [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
+| [HDMI MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
+| [VGA MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
 cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
-
-These targets are discussed in more detail in the following sections.
-
-### MURMULATOR platform
-<img src="docs/MURMULATOR_VGA_photo2.png" height="200"/>
-<img src="docs/Murmulator_BSchem_v1.JPG" height="300"/> <img src="docs/MURMULATOR_Schem_v1.png" height="300"/>
-
-### ZxSpectrumBreadboardHdmiNPinAudio
-This is a series of targets based around my original breadboard prototype:
-
-<img src="docs/pico_zxspectrum_prototype_1.jpg" height="200"/>
-
-The targets are: 
-* ZxSpectrumBreadboardHdmi4PinAudio
-* ZxSpectrumBreadboardHdmi2PinAudio
-* ZxSpectrumBreadboardHdmi1PinAudio
-
-They support the following:
-* USB keyboard
-* PS/2 keyboard
-* USB joysticks
-* HDMI video
-* PWM sound
-* Audio input (load from tape)
-* SPI SD card
-* Serial port debug
-
-All of these targets share the same pinout but make different use of the 4 audio pins:
-
-![image](docs/ZxSpectrumBreadboardHdmi4PinAudio.png)
-
-### ZxSpectrum4PinAudioVga1111Ps2
-This is a target similar to the HDMI prototype which uses VGA video output.
-
-It supports the following:
-* USB keyboard
-* PS/2 keyboard
-* USB joysticks
-* VGA video (RGBY1111)
-* PWM sound (4 pin)
-* SPI SD card
-* Serial port debug
-
-This target uses 4 audio pins:
-
-![image](docs/ZxSpectrum4PinAudioVga1111Ps2.png)
-
-### ZxSpectrumPicomputerVga222Zx
-This is a target written for Bobricius' PICOZX
-
-<a href="https://hackaday.io/project/186039-pico-zx-spectrum-128k"><img src="docs/picomputer_picozx.png" width="300"/></a>
-
-It supports:
-* USB keyboard
-* Keyboard martix
-* USB joysticks
-* VGA video (RGB222)
-* PWM sound (1 pin)
-* SPI SD card
-
-
-While on the menu...
-* SHIFT-Fire = ESC
-* RELOAD = Backspace
-* SHIFT-RELOAD = Del
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerVga222Zx.png)
-
-### ZxSpectrumPicomputerZxLcd
-This is a target written for Bobricius' PICOZX with built in LCD 
-
-<a href=""><img src="docs/picozxlcd.png" width="300"/></a>
-
-It supports:
-* USB keyboard
-* Keyboard martix
-* USB joysticks
-* VGA video (RGB222)
-* LCD video (ST7789)
-* PWM sound (1 pin)
-* SPI SD card
-
-By default, the board starts up using the LCD as its display.
-To boot into VGA mode hold down the 'fire' button during reset.
-Placing vga.txt on the SD card in the zxspectrum folder changes the default to VGA.
-
-
-While on the menu...
-* SHIFT-Fire = ESC
-* RELOAD = Backspace
-* SHIFT-RELOAD = Del
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerZxLcd.png)
-
-### ZxSpectrumPicomputerVga
-This is the target for Bobricius' Retro VGA board:
-
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/retrovga.png" width="200"/></a>
-
-It supports the following:
-* USB keyboard
-* USB joysticks
-* Matrix keyboard (6x6)
-* VGA video (RGB332)
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerVga.png)
-
-### ZxSpectrumPicomputerMax & ZxSpectrumPicomputerZX
-These are the targets for Bobricius' Retro PICOmputerMAX and PICOmputerZX.
-The targets are very similar except the LCD on the PICOmputerZX has rounded corners and needs a different menu layout.
-
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputermax.png" height="170"/></a>
-<a href="https://hackaday.io/project/183398-retrovga-raspbery-pico-multi-retro-computer"><img src="docs/picomputerzx.png" height="170"/></a>
-
-It supports the following:
-* USB keyboard
-* USB joysticks
-* Matrix keyboard (6x6)
-* LCD video (ST7789)
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicomputerMax.png)
-
-### ZxSpectrumPicoDv
-This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) board:
-
-<a href="https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
-
-It supports the following:
-* USB keyboard
-* USB joysticks
-* HDMI video
-* I2S sound
-* SPI SD card
-
-Please note that an SD card must be present for this version to start up.
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumPicoDv.png)
-
-### ZxSpectrumBreadboardHdmiKbd1PinAudio
-This is a target similar to the HDMI prototype which can read from an original Spectrum keyboard matrix.
-
-It is a work in progress.
-
-<a href=""><img src="docs/proto_kbd.jpg" width="300"/></a>
-
-It supports the following:
-* USB keyboard
-* Matrix keyboard (8x8)
-* USB joysticks
-* HDMI video
-* PWM sound (1 pin)
-* SPI SD card
-
-Here are the pin assignments:
-
-![image](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.png)
-
-I don't know how the original keyboard pins were numbered but mine go from left to right with the keyboard oriented as you would type on it.
-
-### ZxSpectrumPicomputerVgaAuk
-
-All keys are fully functional and the Emulator Menus can only be accessed via an external button connected to one of the GPIO pins.
-The Menu can be navigated using the Spectrum's keyboard number keys. There are an extra 8 external buttons that can been used
-for setting the Spectrum ROM boot mode and a Joystick Keyboard.
-
-Please see the Schematic diagram for more information on GPIO pins used.
-
-<a href="docs/pico-zxspectrum-realkeyboard-schematic.jpg"><img src="docs/pico-zxspectrum-realkeyboard-schematic.jpg" /></a>
 
 
 ## Audio pins
@@ -461,36 +298,6 @@ Suggestions to improve this circuit are appreciated and please post them [here](
 </a>
 
 
-### RetroVGA and Picomputer keyboard mappings
-Trying to squeeze in all the key mappings is tricky but here is an attempt.
-
-These are the nomal key mappings:<br/>
-<img src="docs/retro_vga_keyboard_normal.svg" width="500"/><br/>
-
-These are the mappings with the ALt key down.:<br/>
-<img src="docs/retro_vga_keyboard_alt_down.svg" width="500"/><br/>
-Shifted and numeric mappings are turned on and off using the arrow keys (up, down, left, right).
-QS1, QS2, ...  save the emulator state to the appropriate Quick Save slot.
-
-If there is a save in QS1 it will load after the emulator is powered-on or reset.
-
-The SN keys load snapshots as if they are in a loop. 
-SN loads the current snapshot, SN- load the previous snapshot and SN+ loads the next snapshot.
-
-These are the mappings with the numeric shift on:<br/>
-<img src="docs/retro_vga_keyboard_num.svg" width="500"/><br/>
-
-Alt+V sets the arrow keys to behave like a Kempston joystick,
-Alt+C sets the arrow keys to operate the Spectrum cursor keys.
-
-### RetroVGA kiosk mode
-Kiosk mode disables the menu system and quick-save buttons. 
-Kiosk mode is enabled by placing the following file on the SD-card:
-```bash
-zxspectrum/kiosk.txt
-```
-
-
 ### Pico pinout
 
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
@@ -607,7 +414,7 @@ If not already present, they will be created as the emulator starts up.
 | zxspectrum/snapshots/quicksaves | Folder for quick saves. |
 | zxspectrum/tapes | Folder for .tap and .tzx tape files. |
 
-## Special keys
+## USB and PS2 Keyboard mappings
 
 | Key | Action |
 | --- | ------ |

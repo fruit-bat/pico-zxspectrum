@@ -31,6 +31,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   SZ_FILE_ROWS=18
   SPK_PIN=0
   PICOMPUTER_MAX
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerMax
@@ -79,6 +80,7 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   SZ_FILE_ROWS=11
   SPK_PIN=0
   PICOMPUTER_ZX
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerZX
@@ -144,6 +146,7 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxLcd
 
 target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  LCD_MIRROR_X
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxLcd
@@ -167,7 +170,8 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd
 
 target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
-  INVERSE_LCD
+  LCD_MIRROR_X
+  LCD_INVERSE
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxInverseLcd
@@ -179,3 +183,28 @@ pico_enable_stdio_uart(ZxSpectrumPicomputerZxInverseLcd 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicomputerZxInverseLcd)
+
+
+add_executable(ZxSpectrumPicomputerZxILI9341Lcd
+  ${picomputer_zx_lcd_src}
+)
+
+pico_generate_pio_header(ZxSpectrumPicomputerZxILI9341Lcd 
+  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+)
+
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  LCD_INVERSE
+  LCD_RGB
+)
+
+target_link_libraries(ZxSpectrumPicomputerZxILI9341Lcd
+  ${zxspectrum_zx_lcd_common_libs}
+)
+
+pico_enable_stdio_usb(ZxSpectrumPicomputerZxILI9341Lcd 0)
+pico_enable_stdio_uart(ZxSpectrumPicomputerZxILI9341Lcd 0)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPicomputerZxILI9341Lcd)
