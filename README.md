@@ -21,7 +21,7 @@
 ## Supported Boards
 Click on the images below for mnore inforation about a particular board...
 
-The idea of this project is for it to be relatively easy to breadboard or prototype in some way...
+The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
 
 <table>
   <tr>
