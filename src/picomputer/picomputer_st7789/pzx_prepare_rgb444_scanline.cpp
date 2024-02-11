@@ -1,8 +1,6 @@
 #include "pzx_prepare_rgb444_scanline.h"
 #include "st7789_lcd.pio.h"
 
-#define LCD_INVERSE
-
 #ifdef LCD_INVERSE
 #define VGA_COL(c) (0xf-c##UL)
 #else
