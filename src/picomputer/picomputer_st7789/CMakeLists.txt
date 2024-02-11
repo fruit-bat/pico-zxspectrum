@@ -196,6 +196,7 @@ pico_generate_pio_header(ZxSpectrumPicomputerZxILI9341Lcd
 target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd PRIVATE
   ${picomputer_zx_lcd_common_defines}
   LCD_INVERSE
+  LCD_RGB
 )
 
 target_link_libraries(ZxSpectrumPicomputerZxILI9341Lcd

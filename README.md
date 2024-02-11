@@ -21,7 +21,7 @@
 ## Supported Boards
 Click on the images below for mnore inforation about a particular board...
 
-The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
 
 <table>
   <tr>
@@ -159,7 +159,8 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
 | [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
-| [PICOZX LCD with inverse/negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
+| [PICOZX LCD with negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
+| [PICO ZX LCD for ILI9341](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
 | [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
 | [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
 | [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |

@@ -8,7 +8,7 @@ It supports:
 * Keyboard martix
 * USB joysticks
 * VGA video (RGB222)
-* LCD video (ST7789)
+* LCD video (ST7789/ILI9341)
 * PWM sound (1 pin)
 * SPI SD card
 
@@ -34,6 +34,9 @@ This is for the LCD on the board by Bobricius<br/>
 
 This one has each colour channel inverted to the LCD<br/>
 [ZxSpectrumPicomputerZxInverseLcd.uf2](/uf2/ZxSpectrumPicomputerZxInverseLcd.uf2)
+
+This one works on an ILI9341 panel. It outputs RGB rather than BGR and has inverted colour channels.
+[ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2)
 
 #### Build system notes
 The make system has some switches to adapt it to different LCD panels:
