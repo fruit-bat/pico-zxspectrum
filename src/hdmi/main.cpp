@@ -25,7 +25,11 @@
 extern "C" {
 #include "dvi.h"
 #include "dvi_serialiser.h"
+#ifdef DVI_CUSTOM_CONFIG
+#include "custom_dvi_pin_configs.h"
+#else
 #include "common_dvi_pin_configs.h"
+#endif
 #include "tmds_encode_zxspectrum.h"
 }
 #include "ZxSpectrumFatSpiKiosk.h"

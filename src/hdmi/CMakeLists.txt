@@ -209,5 +209,58 @@ target_link_libraries(ZxSpectrumPicoDv
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumPicoDv)
 
+########################################################################
+# Waveshare - RP2040 - PicoZero
+########################################################################
+
+add_executable(ZxSpectrumPiZero
+  ${zxspectrum_common_src}
+  ${zxspectrum_hdmi_src}
+)
+
+pico_generate_pio_header(ZxSpectrumPiZero 
+  ${zxspectrum_audio_i2s_pio}
+)
+
+target_compile_definitions(ZxSpectrumPiZero PRIVATE
+  # Set up the DVI output to match the Waveshare RP2040 PiZero
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  SDCARD_PIO=pio1
+  SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=21
+  SDCARD_PIN_SPI0_SCK=18
+  SDCARD_PIN_SPI0_MOSI=19
+  SDCARD_PIN_SPI0_MISO=20
+  # Single pin audio for now
+  SPK_PIN=17
+)
+
+set(zxspectrum_hdmi_libs
+  libdvi
+  tinyusb_host
+  tinyusb_board
+  pico_emu_utils
+  pico_dvi_menu
+)
+
+target_link_libraries(ZxSpectrumPiZero
+  ${zxspectrum_common_libs}
+  ${zxspectrum_hdmi_libs}
+)
+
+# create map/bin/hex file etc.
+pico_add_extra_outputs(ZxSpectrumPiZero)
+
+
 
 
