@@ -405,7 +405,15 @@ cp ./bin/breadboard_hdmi/ZxSpectrumBreadboardHdmi.uf2 /media/pi/RPI-RP2/
 ```
 
 ## Prepare an SD card
-The following table shows the folders used by the emulator on the SD card.
+I have used the following SD card formats:
+
+| |
+| - |
+| 2 GB FAT16 |
+| 2 GB FAT32 |
+| 4 GB W95 FAT32 (LBA) |
+
+The table shows the folders used by the emulator on the SD card.
 If not already present, they will be created as the emulator starts up.
 
 | Folder | Contents |
