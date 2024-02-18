@@ -53,6 +53,8 @@ There are now a variety of boards that are also supported...
 <a href="docs/ZxSpectrumPicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicaVga.md"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 <a href="docs/MURMULATOR.md"><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
+<a href="docs/ZxSpectrumPiZero.md"><img src="docs/RP2040-PiZero-1.png" width="200px" />
+</a>
 
 ## Interesting projects
 [Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
@@ -171,6 +173,8 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
 | [HDMI MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
 | [VGA MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
+| [RP2040-PiZero](docs/ZxSpectrumPiZero.md) | [ZxSpectrumPiZero.uf2](uf2/ZxSpectrumPiZero.uf2) |
+
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
