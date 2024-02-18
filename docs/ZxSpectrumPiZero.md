@@ -1,6 +1,10 @@
 ### ZxSpectrumPiZero
 <img src="./RP2040-PiZero-1.png" width="250px" />
 
+
+#### Pin Assignments
+GPIO4 for PWM audio
+
 #### Firmware
 [ZxSpectrumPiZero.uf2](/uf2/ZxSpectrumPiZero.uf2)
 

@@ -238,7 +238,7 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   SDCARD_PIN_SPI0_MOSI=19
   SDCARD_PIN_SPI0_MISO=20
   # Single pin audio for now
-  SPK_PIN=17
+  SPK_PIN=4
 )
 
 set(zxspectrum_hdmi_libs
