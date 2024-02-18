@@ -306,7 +306,7 @@ public:
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
   void loadZ80(InputStream *inputStream);
-  void saveZ80(OutputStream *outputStream);
+  bool saveZ80(OutputStream *outputStream);
   void loadTap(InputStream *inputStream);
   void loadTzx(InputStream *inputStream);
   void ejectTape();

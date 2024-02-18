@@ -693,8 +693,8 @@ void ZxSpectrum::loadZ80(InputStream *is) {
   is->close();
 }
 
-void ZxSpectrum::saveZ80(OutputStream *os) {
-  writeZ80(os, 3);
+bool ZxSpectrum::saveZ80(OutputStream *os) {
+  return writeZ80(os, 3) >= 0;
 }
 
 uint32_t ZxSpectrum::tStatesPerMilliSecond() {
