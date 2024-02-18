@@ -176,7 +176,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_chooseSnap, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%s  [%s]", "Snaps", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+        pen->printAtF(0, 0, false, "%s  [%s]", "Snaps", 
+          SZ_FRAME_COLS < 50 ? "1=DE 2=RN 3=CP 4=PA 5=RF 6=SA" : "1=DEL 2=REN 3=CPY 4=PST 5=REF 6=SAV");
       },
       true);
   });
@@ -296,7 +297,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     delete is;
     if (_snapLoadedListener) _snapLoadedListener(finfo->fname);
   };
-   
+  _chooseSnap.onWizSaveFile = [=](FatFsSpiOutputStream *os) {
+    return _zxSpectrum->saveZ80(os);
+  };
+
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
   _reset.addOption(_reset128kOp.addQuickKey(&_k2));
   _reset.enableQuickKeys();
@@ -346,7 +350,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_chooseTape, 
       [](PicoPen *pen){ 
-        pen->printAtF(0, 0, false,"%s  [%s]", "Tapes", "1=DEL 2=REN 3=CPY 4=PST 5=REF");
+        pen->printAtF(0, 0, false,"%s  [%s]", "Tapes", 
+          SZ_FRAME_COLS < 50 ? "1=DE 2=RN 3=CP 4=PA 5=RF" : "1=DEL 2=REN 3=CPY 4=PST 5=REF"
+        );
       },
       true);
   });
