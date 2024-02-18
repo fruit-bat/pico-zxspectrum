@@ -7,3 +7,4 @@
 #### References
 [RP2040-PiZero](https://www.waveshare.com/rp2040-pizero.htm)<br/>
 [Circuit diagram](http://cdn.static.spotpear.com/uploads/picture/learn/raspberry-pi/rpi-pico/rp2040-pizero/RP2040-PiZero.pdf)<br/>
+[OTG Adaptor]( https://www.amazon.co.uk/OTG/dp/B09CTSHZR7)<br/>

@@ -218,10 +218,6 @@ add_executable(ZxSpectrumPiZero
   ${zxspectrum_hdmi_src}
 )
 
-pico_generate_pio_header(ZxSpectrumPiZero 
-  ${zxspectrum_audio_i2s_pio}
-)
-
 target_compile_definitions(ZxSpectrumPiZero PRIVATE
   # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
