@@ -51,15 +51,16 @@ There are now a variety of boards that are also supported...
 <a href="docs/ZxSpectrumPicomputerMax.md"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicomputerZX.md"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
-<a href="docs/ZxSpectrumPicaVga.md"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
+<a href="docs/ZxSpectrumPicoVga.md"><img src="docs/pico-demo-base-9_1500x1500.png" width="200"/></a>
 <a href="docs/MURMULATOR.md"><img src="docs/MURMULATOR_VGA_photo1.png" width="200"/></a>
 <a href="docs/ZxSpectrumPiZero.md"><img src="docs/RP2040-PiZero-1.png" width="200px" />
 </a>
 
-## Interesting projects
-[Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
-
 ## Updates
+18/02/24 
+* Added firmware for the Waveshare RP2040 - PiZero
+* Added option to save snapshots from the menu 
+
 11/02/24 
 * Start to separate out docs for each target
 * Initial support for ILI9341
@@ -102,13 +103,14 @@ This target can read from a standard 48k Spectrum keyboard matrix.
 Files can be renamed, copied and deleted from the menu system.
 The quick-saves folder is now under the snapshots folder and behaves just like any other folder.
 The file 'explorer' has the following commands:
-* &lt;space&gt;/&lt;enter&gt; - enter a folder/load a file
+* &lt;Enter&gt; - enter a folder/load a file
 * ESC   - Go up a folder
 * 1=DEL - Delete the file
 * 2=REN - Rename the file
 * 3=CPY - Copy the file
 * 4=PST - Paste the file
 * 5=REF - Reload the list of files in the current folder
+* 6=SAV - Save a snapshot to the current folder
 
 The function keys for playing tapes have been removed. 
 The idea is that in the future more useful controls will be added like 'play', 'stop' and 'eject'.
@@ -499,3 +501,5 @@ tio -m ODELBS /dev/ttyUSB0
 [A decoder for ZX format](https://github.com/kounch/playtzx)</br>
 [Circuit diagram editor](https://www.circuit-diagram.org/)</br>
 
+## Interesting projects
+[Hermit Retro Products](https://mk-mk.facebook.com/hermitretro/)<br>
