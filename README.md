@@ -166,7 +166,7 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | [PICOZX LCD with negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
 | [PICO ZX LCD for ILI9341](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
 | [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
-| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2) |
+| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicomputerVga.uf2) |
 | [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
