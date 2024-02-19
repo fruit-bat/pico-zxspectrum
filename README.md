@@ -42,12 +42,12 @@ The idea of this project is for it to be relatively easy to breadboard or protot
 </table>
 
 <br/>
-There are now a variety of boards that are also supported...
+A variety of boards are also supported...
 
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
-<a href="docs/ZxSpectrumPicomputerVga.md" width="200"/></a>
+<a href="docs/ZxSpectrumPicomputerVga.md"><img src="docs/retrovga.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicomputerMax.md"><img src="docs/picomputermax.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicomputerZX.md"><img src="docs/picomputerzx.png" width="200"/></a>
 <a href="docs/ZxSpectrumPicoDv.md"><img src="docs/P1040672_1500x1500.png" width="200"/></a>
@@ -166,7 +166,7 @@ On hardware with a faceplate the button is usually accessible through a small ho
 | [PICOZX LCD with negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
 | [PICO ZX LCD for ILI9341](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
 | [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
-| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicomputerVga.uf2) |
+| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicomputerVga.uf2](uf2/ZxSpectrumPicomputerVga.uf2) |
 | [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
 | [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
 | [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
