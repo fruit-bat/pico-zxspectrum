@@ -19,7 +19,7 @@
 * Kempston and Sinclair joystick emulation
 
 ## Supported Boards
-Click on the images below for mnore inforation about a particular board...
+Click on the images below for mnore information about a particular board...
 
 The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
 
