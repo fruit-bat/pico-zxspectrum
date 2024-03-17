@@ -43,6 +43,7 @@ add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
 set(zxspectrum_hdmi_defines
   # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -61,10 +62,10 @@ set(zxspectrum_hdmi_defines
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   SPK_PIN=20
-  EAR_PIN=11
+#  EAR_PIN=11
   
   # Enable the PS/2 keyboard
-  USE_PS2_KBD
+#  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
