@@ -84,7 +84,9 @@ uint32_t __not_in_flash_func(zxSpectrumReadEar)() {
 #endif
 
 void zxSpectrumAudioInit() {
-#ifdef PICO_AUDIO_I2S
+#if defined(PICO_HDMI_AUDIO)
+
+#elif defined(PICO_AUDIO_I2S)
   init_is2_audio();
 #else  
   #ifdef BZR_PIN
@@ -109,8 +111,10 @@ void zxSpectrumAudioInit() {
 #endif
 }
 
-void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer) {
-#ifdef PICO_AUDIO_I2S
+void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer) {
+#if defined(PICO_HDMI_AUDIO)
+
+#elif defined(PICO_AUDIO_I2S)
   if (!is2_audio_ready()) return;
   uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
   uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
