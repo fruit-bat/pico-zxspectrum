@@ -1,11 +1,16 @@
 #include "ZxSpectrumAudio.h"
 #include "hardware/gpio.h"
 #include "hardware/clocks.h"
+#include "dvi.h"
 
 #ifndef INITIAL_VOL
 #define INITIAL_VOL 0x100
 #endif
 static uint32_t _vol = INITIAL_VOL;
+
+#if defined(PICO_HDMI_AUDIO)
+extern struct dvi_inst dvi0;
+#endif
 
 #ifdef PICO_AUDIO_I2S
 
@@ -113,7 +118,14 @@ void zxSpectrumAudioInit() {
 
 void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer) {
 #if defined(PICO_HDMI_AUDIO)
-
+  uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+  uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+  uint32_t ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
+  uint32_t rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
+	audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
+	audio_ptr->channels[0] = ll;
+	audio_ptr->channels[1] = rr;
+	increase_write_pointer(&dvi0.audio_ring, 1);
 #elif defined(PICO_AUDIO_I2S)
   if (!is2_audio_ready()) return;
   uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
@@ -157,3 +169,11 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
 uint32_t zxSpectrumAudioGetVolume() { return _vol; }
 
 void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }
+
+bool __not_in_flash_func(zxSpectrumAudioReady)() {
+#if defined(PICO_HDMI_AUDIO)
+  return get_write_size(&dvi0.audio_ring, true) > 0;
+#else
+  return true;
+#endif
+}

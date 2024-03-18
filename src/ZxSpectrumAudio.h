@@ -30,3 +30,4 @@ uint32_t zxSpectrumReadEar();
 uint32_t zxSpectrumAudioGetVolume();
 
 void zxSpectrumAudioSetVolume(uint32_t vol);
+bool zxSpectrumAudioReady();

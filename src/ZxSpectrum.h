@@ -208,6 +208,30 @@ public:
     
   void __not_in_flash_func(step)()
   {
+    const int32_t u32pas =  (1000000 << 5) / 44100;
+
+      uint32_t c;
+
+      uint32_t vA, vB, vC;
+      _ay.vol(vA, vB, vC);
+      c = z80Step(16);
+      _ta32 += MUL32(c, _moderate);
+      while(_ta32 > u32pas) {
+        while(!zxSpectrumAudioReady());
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        _ta32 -= u32pas;
+      }      
+      const uint32_t tu32 = time_us_32() << 5;
+      const uint32_t tud = tu32 - _tu32;
+      _tu32 = tu32;     
+      if (tud) _ay.step(tud);
+      _pulseChain.advance(c, &_ear);
+  }
+
+#if 0
+  void __not_in_flash_func(step)()
+  {
       uint32_t c;
       if (_mute) {
         c = z80Step(32);
@@ -242,6 +266,7 @@ public:
       if (tud) _ay.step(tud);
       _pulseChain.advance(c, &_ear);
   }
+#endif
 
 #define EAR_BITS_PER_STEP 32
 

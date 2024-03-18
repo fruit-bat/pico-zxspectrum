@@ -209,33 +209,6 @@ void __not_in_flash_func(core1_render)() {
   }
 }
 
-//Audio Related
-#define AUDIO_BUFFER_SIZE   256
-audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
-struct repeating_timer audio_timer;
-const int16_t sine[32] = {
-    (short)0x8000,(short)0x98f8,(short)0xb0fb,(short)0xc71c,(short)0xda82,(short)0xea6d,(short)0xf641,(short)0xfd89,
-    (short)0xffff,(short)0xfd89,(short)0xf641,(short)0xea6d,(short)0xda82,(short)0xc71c,(short)0xb0fb,(short)0x98f8,
-    (short)0x8000,(short)0x6707,(short)0x4f04,(short)0x38e3,(short)0x257d,(short)0x1592,(short)0x9be,(short)0x276,
-    (short)0x0000,(short)0x276,(short)0x9be,(short)0x1592,(short)0x257d,(short)0x38e3,(short)0x4f04,(short)0x6707
-};
-
-bool __not_in_flash_func(audio_timer_callback)(struct repeating_timer *t) {
-    int size = get_write_size(&dvi0.audio_ring, false);
-    audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
-    audio_sample_t sample;
-    static uint sample_count = 0;
-    for (int cnt = 0; cnt < size; cnt++) {
-        sample.channels[0] = sine[sample_count % 32] /8;
-        sample.channels[1] = sine[sample_count % 32] /8;
-        *audio_ptr++ = sample;
-        sample_count++;
-    }
-    increase_write_pointer(&dvi0.audio_ring, size);
- 
-    return true;
-}
-
 void __not_in_flash_func(core1_main)() {
   
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
@@ -373,7 +346,6 @@ int main() {
   dvi_get_blank_settings(&dvi0)->bottom = 0;
   dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
   dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
-  add_repeating_timer_ms(2, audio_timer_callback, NULL, &audio_timer);
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
