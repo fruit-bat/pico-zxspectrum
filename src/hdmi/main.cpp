@@ -72,6 +72,10 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
+//Audio Related
+#define AUDIO_BUFFER_SIZE   256
+audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
+
 // ZX Spectrum emulator
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
@@ -346,7 +350,7 @@ int main() {
   dvi_get_blank_settings(&dvi0)->bottom = 0;
   dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
   dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
-
+  increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
   hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);

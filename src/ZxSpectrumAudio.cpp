@@ -4,7 +4,7 @@
 #include "dvi.h"
 
 #ifndef INITIAL_VOL
-#define INITIAL_VOL 0x100
+#define INITIAL_VOL 0x010
 #endif
 static uint32_t _vol = INITIAL_VOL;
 
