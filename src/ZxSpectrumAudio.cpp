@@ -32,7 +32,7 @@ static void init_is2_audio() {
   gpio_set_function(PICO_AUDIO_I2S_BCLK + 1, PICO_AUDIO_I2S_PIO_FUNC);
   uint offset = pio_add_program(PICO_AUDIO_I2S_PIO, &audio_i2s_program);
   audio_i2s_program_init(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, offset, PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_BCLK);
-  update_pio_frequency(96000, PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
+  update_pio_frequency(44100, PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
   pio_sm_set_enabled(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, true);
 }
 
@@ -89,9 +89,7 @@ uint32_t __not_in_flash_func(zxSpectrumReadEar)() {
 #endif
 
 void zxSpectrumAudioInit() {
-#if defined(PICO_HDMI_AUDIO)
-
-#elif defined(PICO_AUDIO_I2S)
+#if defined(PICO_AUDIO_I2S)
   init_is2_audio();
 #else  
   #ifdef BZR_PIN
@@ -117,7 +115,7 @@ void zxSpectrumAudioInit() {
 }
 
 void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer, bool mute) {
-#if defined(PICO_HDMI_AUDIO)
+#if defined(PICO_HDMI_AUDIO) || defined(PICO_AUDIO_I2S)
   uint32_t ll, rr;
   if (mute) {
     ll = rr = 0;
@@ -128,17 +126,19 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
     ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
     rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
   }
+#if defined(PICO_HDMI_AUDIO)
   audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
 	audio_ptr->channels[0] = ll;
 	audio_ptr->channels[1] = rr;
 	increase_write_pointer(&dvi0.audio_ring, 1);
+#if defined(PICO_AUDIO_I2S)
+  if (is2_audio_ready()) {
+    is2_audio_put((ll << 16) | rr);
+  }  
+#endif
 #elif defined(PICO_AUDIO_I2S)
-  if (!is2_audio_ready()) return;
-  uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
-  uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
-  uint32_t ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
-  uint32_t rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
   is2_audio_put((ll << 16) | rr);
+#endif
 #else
   #ifdef BZR_PIN
     gpio_put(BZR_PIN, buzzer);
@@ -179,6 +179,8 @@ void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }
 bool __not_in_flash_func(zxSpectrumAudioReady)() {
 #if defined(PICO_HDMI_AUDIO)
   return get_write_size(&dvi0.audio_ring, true) > 0;
+#elif defined(PICO_AUDIO_I2S)
+  return is2_audio_ready();
 #else
   return true;
 #endif

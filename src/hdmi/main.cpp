@@ -195,7 +195,7 @@ void __not_in_flash_func(core1_render)() {
       zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
     }
   #ifdef USE_KEY_MATRIX
-  // zx_keyscan_row();
+    zx_keyscan_row();
   #endif
     if (y == FRAME_HEIGHT) {
       y = 0;
@@ -218,8 +218,7 @@ void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
   sem_acquire_blocking(&dvi_start_sem);
   dvi_start(&dvi0);
-
-core1_render();
+  core1_render();
   // The text display is completely IRQ driven (takes up around 30% of cycles @
   // VGA). We could do something useful, or we could just take a nice nap
   while (1) 
