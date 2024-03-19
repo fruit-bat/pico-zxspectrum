@@ -116,13 +116,19 @@ void zxSpectrumAudioInit() {
 #endif
 }
 
-void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer) {
+void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer, bool mute) {
 #if defined(PICO_HDMI_AUDIO)
-  uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
-  uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
-  uint32_t ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
-  uint32_t rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
-	audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
+  uint32_t ll, rr;
+  if (mute) {
+    ll = rr = 0;
+  }
+  else {
+    uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+    uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+    ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
+    rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
+  }
+  audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
 	audio_ptr->channels[0] = ll;
 	audio_ptr->channels[1] = rr;
 	increase_write_pointer(&dvi0.audio_ring, 1);

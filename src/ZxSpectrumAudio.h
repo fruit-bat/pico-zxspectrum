@@ -21,7 +21,7 @@
 //
 void zxSpectrumAudioInit();
 
-void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t buzzerSmoothed, uint32_t buzzer);
+void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t buzzerSmoothed, uint32_t buzzer, bool mute);
 
 #ifdef EAR_PIN
 uint32_t zxSpectrumReadEar();

@@ -183,11 +183,11 @@ inline void writeIO(uint16_t address, uint8_t value)
   inline void stepBuzzer() {
     uint32_t d = (_port254 >> 4) & 1;
     if (d == 0 && _buzzer > 0) --_buzzer;
-    else if (d == 1 && _buzzer < 10) ++_buzzer;
+    else if (d == 1 && _buzzer < 5) ++_buzzer;
   }
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = __mul_instruction(_buzzer, 21);
+    const int32_t a1 = __mul_instruction(_buzzer, 42);
     const int32_t a2 = _ear ? 31 : 0;
     return a1 + a2;
   }
@@ -208,25 +208,30 @@ public:
     
   void __not_in_flash_func(step)()
   {
-    const int32_t u32pas =  (1000000 << 5) / 44100;
-
-      uint32_t c;
-
-      uint32_t vA, vB, vC;
-      _ay.vol(vA, vB, vC);
-      c = z80Step(16);
+    const int32_t u32pas =  (1000000 << 5) / (44100 + 50);
+    uint32_t c, vA, vB, vC;
+    c = z80Step(32);
+    stepBuzzer();
+    if (_moderate) {
       _ta32 += MUL32(c, _moderate);
       while(_ta32 > u32pas) {
         while(!zxSpectrumAudioReady());
-        stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        _ay.vol(vA, vB, vC);
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
         _ta32 -= u32pas;
-      }      
-      const uint32_t tu32 = time_us_32() << 5;
-      const uint32_t tud = tu32 - _tu32;
-      _tu32 = tu32;     
-      if (tud) _ay.step(tud);
-      _pulseChain.advance(c, &_ear);
+      }
+    }
+    else {
+      if (zxSpectrumAudioReady()) {
+        _ay.vol(vA, vB, vC);
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      }
+    }
+    const uint32_t tu32 = time_us_32() << 5;
+    const uint32_t tud = tu32 - _tu32;
+    _tu32 = tu32;     
+    if (tud) _ay.step(tud);
+    _pulseChain.advance(c, &_ear);
   }
 
 #if 0
@@ -241,13 +246,13 @@ public:
         _ay.vol(vA, vB, vC);
         c = z80Step(32);
         stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
         c += z80Step(32);
         stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
         c += z80Step(32);
         stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());        
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer()), _mute;        
       }
       const uint32_t tu32 = time_us_32() << 5;
       const uint32_t tud = tu32 - _tu32;
@@ -299,7 +304,7 @@ public:
           c += t;
           if (!_mute) {
             stepBuzzer();
-            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
+            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
           }
           if (t == 0) {
             _ta32 = 0;
