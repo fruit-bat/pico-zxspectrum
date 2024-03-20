@@ -170,6 +170,7 @@ pico_generate_pio_header(ZxSpectrumPicoDv
 target_compile_definitions(ZxSpectrumPicoDv PRIVATE
   # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -224,6 +225,7 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -239,8 +241,8 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   SDCARD_PIN_SPI0_SCK=18
   SDCARD_PIN_SPI0_MOSI=19
   SDCARD_PIN_SPI0_MISO=20
-  # Single pin audio for now
-  SPK_PIN=4
+  # HDMI audio 
+  PICO_HDMI_AUDIO
 )
 
 set(zxspectrum_hdmi_libs
