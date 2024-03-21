@@ -1,6 +1,6 @@
 #include "PulseProcSymbol.h"
 
-int32_t PulseProcSymbol::advance(
+int32_t __not_in_flash_func(PulseProcSymbol::advance)(
   InputStream *is,
   bool *pstate,
   PulseProc **top

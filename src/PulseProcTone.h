@@ -29,7 +29,7 @@ public:
     _i = 0;
   }
   
-  virtual int32_t __not_in_flash_func(advance)(
+  virtual int32_t advance(
     InputStream *is,
     bool *pstate,
     PulseProc **top

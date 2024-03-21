@@ -43,6 +43,7 @@ add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
 set(zxspectrum_hdmi_defines
   # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -60,11 +61,11 @@ set(zxspectrum_hdmi_defines
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
-  SPK_PIN=20
-  EAR_PIN=11
-  
+#  SPK_PIN=20
+#  EAR_PIN=11
+  PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
-  USE_PS2_KBD
+#  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
@@ -169,6 +170,7 @@ pico_generate_pio_header(ZxSpectrumPicoDv
 target_compile_definitions(ZxSpectrumPicoDv PRIVATE
   # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -185,12 +187,13 @@ target_compile_definitions(ZxSpectrumPicoDv PRIVATE
   SDCARD_PIN_SPI0_MOSI=18
   SDCARD_PIN_SPI0_MISO=19
   # Configure the I2S audio 
-  PICO_AUDIO_I2S=1
+  #PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
   PICO_AUDIO_I2S_PIO=pio1
   PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
   PICO_AUDIO_I2S_DATA=26
-  PICO_AUDIO_I2S_BCLK=27  
+  PICO_AUDIO_I2S_BCLK=27
+  PICO_HDMI_AUDIO
 )
 
 set(zxspectrum_hdmi_libs
@@ -222,6 +225,7 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
@@ -237,8 +241,8 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   SDCARD_PIN_SPI0_SCK=18
   SDCARD_PIN_SPI0_MOSI=19
   SDCARD_PIN_SPI0_MISO=20
-  # Single pin audio for now
-  SPK_PIN=4
+  # HDMI audio 
+  PICO_HDMI_AUDIO
 )
 
 set(zxspectrum_hdmi_libs

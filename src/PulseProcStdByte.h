@@ -17,7 +17,7 @@ public:
   
   void init(PulseProc *next, uint32_t b);
   
-  void __not_in_flash_func(init)(
+  void init(
     PulseProc *nxt,
     uint32_t b,
     uint32_t n,
@@ -25,7 +25,7 @@ public:
     uint32_t ts1
   );
   
-  virtual int32_t __not_in_flash_func(advance)(
+  virtual int32_t advance(
     InputStream *is,
     bool *pstate,
     PulseProc **top
