@@ -26,6 +26,7 @@ pico_generate_pio_header(ZX-MURMULATOR_HDMI
 target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
   # Set up the DVI output to match the MURMULATOR board
   MURMULATOR
+  PICO_CORE1_STACK_SIZE=0x400
   DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
@@ -43,22 +44,23 @@ target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
   SDCARD_PIN_SPI0_MOSI=3
   SDCARD_PIN_SPI0_MISO=4
   # Speaker pin audio
-  SPK_PIN=28
+  #SPK_PIN=28
   # Buzzer audio out
   # BZR_PIN=28
   # STEREO AY audio
-  AY8912_ABC_STEREO
+  #AY8912_ABC_STEREO
   # Left chanel audio out
-  AY8912_A_PIN=27
+  #AY8912_A_PIN=27
   # Right chanel audio out
-  AY8912_C_PIN=26
+  #AY8912_C_PIN=26
   # Use the alternate volume map
-  AY8912_ALT_VOL_MAP  
+  #AY8912_ALT_VOL_MAP  
   # Tape audio in
-  EAR_PIN=22
+  #EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  
+  # Use HDMI Audio
+  PICO_HDMI_AUDIO
 )
 
 set(zxspectrum_hdmi_libs
