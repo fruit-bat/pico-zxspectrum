@@ -206,11 +206,11 @@ public:
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
     
-  void __not_in_flash_func(step)()
+  uint32_t __not_in_flash_func(step)()
   {
     const int32_t u32pas =  (1000000 << 5) / (44100 + 50);
-    uint32_t c, vA, vB, vC;
-    c = z80Step(32);
+    const uint32_t c = z80Step(32);
+    uint32_t vA, vB, vC;
     stepBuzzer();
     if (_moderate) {
       _ta32 += MUL32(c, _moderate);
@@ -232,6 +232,7 @@ public:
     _tu32 = tu32;     
     if (tud) _ay.step(tud);
     _pulseChain.advance(c, &_ear);
+    return c;
   }
 
 #if 0

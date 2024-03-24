@@ -167,7 +167,6 @@ unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
 // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-static volatile uint8_t LineBorderSync = 0;   // MADEIT for BorderSync
 static volatile uint8_t borderBuf[240];       //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_render)() {
@@ -270,11 +269,22 @@ void __not_in_flash_func(core1_main)() {
 #define CPU_STEP_LOOP 100
 #endif
 //-----------------------------------------------------------------------------
+// See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
+#define TOP_ROWS_UNDISPLAYED 36
+// clock cycles per horizontal display line:
+// 224 CPU cycles for 48k
+// 228 CPU cycles for 128k
+#define CPU_CYCLES_PER_LINE 228
+// Spectrum scan lines per frame:
+// 312 lines for 48k
+// 311 lines for 128k
+#define SCAN_LINES_PER_FRAME 311
+
 void __not_in_flash_func(main_loop)() {
   
 //  unsigned int lastInterruptFrame = _frames;
-  uint _INTcounter = 0;
   uint frames = 0;
+  uint32_t l = 0, c = 0;
   
   while (1) {
     tuh_task();
@@ -284,25 +294,7 @@ void __not_in_flash_func(main_loop)() {
 #endif
 
     if (!showMenu) {
-      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
-        //if (lastInterruptFrame != _frames) {
-        //  lastInterruptFrame = _frames;
-        //  zxSpectrum.interrupt();
-        //}
-        //-------------------------------------*/
-        // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-        if (_INTcounter++ >= 625) {
-          _INTcounter = 0;
-          LineBorderSync = 0;
-          zxSpectrum.interrupt();
-        }
-
-        if (_INTcounter >= 78) {
-          if (LineBorderSync<240) {
-            if (_INTcounter & 1) {borderBuf[LineBorderSync++] = zxSpectrum.borderColour();}
-          }
-        }
-        //-------------------------------------*/
+      for (int i = 0; i < CPU_STEP_LOOP; ++i) {
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
           zxSpectrum.step(zxSpectrumReadEar());
@@ -311,8 +303,20 @@ void __not_in_flash_func(main_loop)() {
           zxSpectrum.step();
         }
 #else
-        zxSpectrum.step();
-#endif 
+        c += zxSpectrum.step();
+#endif
+
+        while (c >= CPU_CYCLES_PER_LINE) {
+          c -= CPU_CYCLES_PER_LINE;
+          l++;
+          if (l >= SCAN_LINES_PER_FRAME) {
+            l = 0;
+            zxSpectrum.interrupt();
+          }
+          if (l >= TOP_ROWS_UNDISPLAYED && l < (TOP_ROWS_UNDISPLAYED + 240)) {
+            borderBuf[l - TOP_ROWS_UNDISPLAYED] = zxSpectrum.borderColour();
+          }
+        }
       }
     }
     else if (frames != _frames) {
