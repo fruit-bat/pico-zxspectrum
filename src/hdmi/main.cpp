@@ -192,7 +192,8 @@ void __not_in_flash_func(core1_render)() {
       }
     }
     else {
-      zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, zxSpectrum.borderColour(y));
+      y++;
     }
   #ifdef USE_KEY_MATRIX
     zx_keyscan_row();
@@ -218,9 +219,9 @@ void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
   sem_acquire_blocking(&dvi_start_sem);
   dvi_start(&dvi0);
+  
   core1_render();
-  // The text display is completely IRQ driven (takes up around 30% of cycles @
-  // VGA). We could do something useful, or we could just take a nice nap
+
   while (1) 
     __wfi();
   __builtin_unreachable();
@@ -253,7 +254,7 @@ void __not_in_flash_func(main_loop)() {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          zxSpectrum.vsync();
         }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
@@ -350,7 +351,7 @@ int main() {
   dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
   dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
   increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
-  
+
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
   hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);

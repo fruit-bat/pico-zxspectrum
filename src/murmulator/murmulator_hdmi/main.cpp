@@ -180,14 +180,13 @@ void __not_in_flash_func(core1_render)() {
       }
     }
     else {
-      //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
       zx_prepare_hdmi_scanline(
         &dvi0,
         y, 
         _frames, 
         screenPtr, 
         attrPtr,
-        borderBuf[y]  //Border Sync
+        zxSpectrum.borderColour(y)
       );
       y++;
     }
@@ -209,46 +208,7 @@ void __not_in_flash_func(core1_render)() {
     }
   }
 }
-#if 0
-void __not_in_flash_func(core1_scanline_callback)() {
-  static uint y = 1;
-  static uint ys = 0;
 
-  if (y == 24) _frames++;
-  if (showMenu) {
-    uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
-    if (0 == (y & 7)) {
-      ys += rs;
-    }
-  }
-  else {
-    //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
-    zx_prepare_hdmi_scanline(
-      &dvi0,
-      y, 
-      _frames, 
-      screenPtr, 
-      attrPtr,
-      borderBuf[y]  //Border Sync
-    );
-    y++;
-  }
-
-  if (y == FRAME_HEIGHT) {
-    y = 0;
-    ys = 0;
-    
-    // TODO Tidy this mechanism up
-    screenPtr = zxSpectrum.screenPtr();
-    attrPtr = screenPtr + (32 * 24 * 8);
-    
-    if (toggleMenu) {
-      showMenu = !showMenu;
-      toggleMenu = false;
-    }
-  }
-}
-#endif
 //=============================================================================
 void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
@@ -269,22 +229,11 @@ void __not_in_flash_func(core1_main)() {
 #define CPU_STEP_LOOP 100
 #endif
 //-----------------------------------------------------------------------------
-// See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
-#define TOP_ROWS_UNDISPLAYED 36
-// clock cycles per horizontal display line:
-// 224 CPU cycles for 48k
-// 228 CPU cycles for 128k
-#define CPU_CYCLES_PER_LINE 228
-// Spectrum scan lines per frame:
-// 312 lines for 48k
-// 311 lines for 128k
-#define SCAN_LINES_PER_FRAME 311
 
 void __not_in_flash_func(main_loop)() {
   
-//  unsigned int lastInterruptFrame = _frames;
+  unsigned int lastInterruptFrame = _frames;
   uint frames = 0;
-  uint32_t l = 0, c = 0;
   
   while (1) {
     tuh_task();
@@ -295,6 +244,10 @@ void __not_in_flash_func(main_loop)() {
 
     if (!showMenu) {
       for (int i = 0; i < CPU_STEP_LOOP; ++i) {
+        if (lastInterruptFrame != _frames) {
+          lastInterruptFrame = _frames;
+          zxSpectrum.vsync();
+        }
 #ifdef EAR_PIN
         if (zxSpectrum.moderate()) {
           zxSpectrum.step(zxSpectrumReadEar());
@@ -303,20 +256,8 @@ void __not_in_flash_func(main_loop)() {
           zxSpectrum.step();
         }
 #else
-        c += zxSpectrum.step();
+        zxSpectrum.step();
 #endif
-
-        while (c >= CPU_CYCLES_PER_LINE) {
-          c -= CPU_CYCLES_PER_LINE;
-          l++;
-          if (l >= SCAN_LINES_PER_FRAME) {
-            l = 0;
-            zxSpectrum.interrupt();
-          }
-          if (l >= TOP_ROWS_UNDISPLAYED && l < (TOP_ROWS_UNDISPLAYED + 240)) {
-            borderBuf[l - TOP_ROWS_UNDISPLAYED] = zxSpectrum.borderColour();
-          }
-        }
       }
     }
     else if (frames != _frames) {

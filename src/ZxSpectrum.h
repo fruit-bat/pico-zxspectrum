@@ -26,6 +26,11 @@ enum ZxSpectrumType {
   ZxSpectrum128k
 };
 
+enum ZxSpectrumIntSource {
+  SyncToDisplay = 0,
+  SyncToCpu     = 1
+};
+
 class ZxSpectrum {
 private:
   Z80 _Z80;
@@ -47,10 +52,15 @@ private:
   
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
+  ZxSpectrumIntSource _intSource;
   uint32_t _modMul;
   bool _mute;
   uint32_t _buzzer;
+  uint32_t _sl;
+  uint32_t _slc;
   
+  volatile uint8_t _borderBuf[240];       //Border Buffer 240 lines
+
   uint32_t tStatesPerMilliSecond();
   
   inline uint32_t z80Step(uint32_t tstates) {
@@ -194,8 +204,42 @@ inline void writeIO(uint16_t address, uint8_t value)
   
   inline uint32_t getBuzzer() {
     return ((_port254 >> 4) ^ _ear) & 1;
-  }  
-  
+  }
+
+  // See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
+  #define TOP_ROWS_UNDISPLAYED 36
+  // clock cycles per horizontal display line:
+  // 224 CPU cycles for 48k
+  // 228 CPU cycles for 128k
+  #define CPU_CYCLES_PER_LINE 228
+  // Spectrum scan lines per frame:
+  // 312 lines for 48k
+  // 311 lines for 128k
+  #define SCAN_LINES_PER_FRAME 311
+
+  void __not_in_flash_func(stepScanline)(const uint32_t c) {
+    _slc += c;
+    while (_slc >= CPU_CYCLES_PER_LINE)
+    {
+      _slc -= CPU_CYCLES_PER_LINE;
+      _sl++;
+      if (_sl >= SCAN_LINES_PER_FRAME)
+      {
+        _sl = 0;
+        if (_intSource == SyncToCpu) interrupt();
+      }
+      if (_sl >= TOP_ROWS_UNDISPLAYED && _sl < (TOP_ROWS_UNDISPLAYED + 240))
+      {
+        _borderBuf[_sl - TOP_ROWS_UNDISPLAYED] = borderColour();
+      }
+    }
+  }
+
+  inline void interrupt() {
+    z80_int(&_Z80, true);
+    _Z80.int_line = false;
+  }
+
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
@@ -205,15 +249,20 @@ public:
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
+  ZxSpectrumIntSource intSource() { return _intSource; }
+  void intSource(ZxSpectrumIntSource intSource) { _intSource = intSource; }
     
   uint32_t __not_in_flash_func(step)()
   {
-    const int32_t u32pas =  (1000000 << 5) / (44100 + 50);
+    // TODO fetch the frequence from elsewhere
+    const int32_t u32pas =  ((1000000 << 5) / 44100) - 1;
     const uint32_t c = z80Step(32);
     uint32_t vA, vB, vC;
     stepBuzzer();
     if (_moderate) {
-      _ta32 += MUL32(c, _moderate);
+      const uint32_t t32 = MUL32(c, _moderate);
+      _ay.step(t32);
+      _ta32 += t32;
       while(_ta32 > u32pas) {
         while(!zxSpectrumAudioReady());
         _ay.vol(vA, vB, vC);
@@ -226,11 +275,12 @@ public:
         _ay.vol(vA, vB, vC);
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
       }
+      const uint32_t tu32 = time_us_32() << 5;
+      const uint32_t tud = tu32 - _tu32;
+      _tu32 = tu32;     
+      if (tud) _ay.step(tud);
     }
-    const uint32_t tu32 = time_us_32() << 5;
-    const uint32_t tud = tu32 - _tu32;
-    _tu32 = tu32;     
-    if (tud) _ay.step(tud);
+    stepScanline(c);
     _pulseChain.advance(c, &_ear);
     return c;
   }
@@ -320,9 +370,8 @@ public:
       }
   }
 
-  void interrupt() {
-    z80_int(&_Z80, true);
-    _Z80.int_line = false;
+  inline void vsync() {
+    if (_intSource == SyncToDisplay) interrupt();
   }
 
   void moderate(uint32_t mul);
@@ -333,6 +382,7 @@ public:
   bool mute() { return _mute; }
 
   inline uint8_t borderColour() { return _borderColour; }
+  inline uint8_t borderColour(uint32_t y) { return _borderBuf[y]; }
 
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
@@ -360,5 +410,11 @@ public:
     );
   }
   void tzxOption(uint32_t option) { _pulseChain.option(option); }
-  
+
+  void toggleIntSource() { 
+    switch(_intSource) {
+      case SyncToCpu: _intSource = SyncToDisplay; break;
+      default: _intSource = SyncToCpu; break;
+    }
+   }
 };

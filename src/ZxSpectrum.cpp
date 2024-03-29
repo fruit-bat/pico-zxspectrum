@@ -20,7 +20,10 @@ ZxSpectrum::ZxSpectrum(
   _ear(false),
   _earInvert(0),
   _earDc(0),
-  _buzzer(0)
+  _intSource(SyncToCpu),
+  _buzzer(0),
+  _sl(0),
+  _slc(0)
 {
   z80Power(true);
   _Z80.context = this;
@@ -70,6 +73,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
   _tu32 = time_us_32() << 5;
+  _sl = 0; 
+  _slc = 0;
 }
 
 // 0 - Z80 unmoderated

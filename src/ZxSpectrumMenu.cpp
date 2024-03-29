@@ -97,7 +97,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'),
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'),
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
   _main(0, 0, _wizCols, 9, _menuRowsPerItem),
@@ -160,12 +160,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_snapOp.addQuickKey(&_k1));
   _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
   _main.addOption(_freqOp.addQuickKey(&_k3));
-  _main.addOption(_muteOp.addQuickKey(&_k4));
-  _main.addOption(_resetOp.addQuickKey(&_k5));
-  _main.addOption(_joystickOp.addQuickKey(&_k6));
-  _main.addOption(_settingsOp.addQuickKey(&_k7));
+  _main.addOption(_intSourceOp.addQuickKey(&_k4));
+  _main.addOption(_muteOp.addQuickKey(&_k5));
+  _main.addOption(_resetOp.addQuickKey(&_k6));
+  _main.addOption(_joystickOp.addQuickKey(&_k7));
+  _main.addOption(_settingsOp.addQuickKey(&_k8));
 #ifndef BZR_PIN  
-  _main.addOption(_volumeOp.addQuickKey(&_k8));
+  _main.addOption(_volumeOp.addQuickKey(&_k9));
 #endif
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -207,6 +208,20 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       default: m = "Unknown" ; break;
     }
     pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "CPU Speed", _wizCol2Width, m);
+  });
+  _intSourceOp.toggle([=]() {
+    _zxSpectrum->toggleIntSource();
+    _main.repaint();
+  });
+  _intSourceOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m;
+    switch(_zxSpectrum->intSource()) {
+      case SyncToCpu: m = "Count CPU cycles" ; break;
+      case SyncToDisplay: m = "Sync to display" ; break;
+      default: m = "Unknown" ; break;
+    }
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "CPU Interrupt", _wizCol2Width, m);
   });
   _muteOp.toggle([=]() {
     _zxSpectrum->toggleMute();
