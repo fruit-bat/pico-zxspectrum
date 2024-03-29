@@ -206,34 +206,7 @@ inline void writeIO(uint16_t address, uint8_t value)
     return ((_port254 >> 4) ^ _ear) & 1;
   }
 
-  // See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
-  #define TOP_ROWS_UNDISPLAYED 36
-  // clock cycles per horizontal display line:
-  // 224 CPU cycles for 48k
-  // 228 CPU cycles for 128k
-  #define CPU_CYCLES_PER_LINE 228
-  // Spectrum scan lines per frame:
-  // 312 lines for 48k
-  // 311 lines for 128k
-  #define SCAN_LINES_PER_FRAME 311
-
-  void __not_in_flash_func(stepScanline)(const uint32_t c) {
-    _slc += c;
-    while (_slc >= CPU_CYCLES_PER_LINE)
-    {
-      _slc -= CPU_CYCLES_PER_LINE;
-      _sl++;
-      if (_sl >= SCAN_LINES_PER_FRAME)
-      {
-        _sl = 0;
-        if (_intSource == SyncToCpu) interrupt();
-      }
-      if (_sl >= TOP_ROWS_UNDISPLAYED && _sl < (TOP_ROWS_UNDISPLAYED + 240))
-      {
-        _borderBuf[_sl - TOP_ROWS_UNDISPLAYED] = borderColour();
-      }
-    }
-  }
+  void stepScanline(const uint32_t c);
 
   inline void interrupt() {
     z80_int(&_Z80, true);
@@ -252,38 +225,7 @@ public:
   ZxSpectrumIntSource intSource() { return _intSource; }
   void intSource(ZxSpectrumIntSource intSource) { _intSource = intSource; }
     
-  uint32_t __not_in_flash_func(step)()
-  {
-    // TODO fetch the frequence from elsewhere
-    const int32_t u32pas =  ((1000000 << 5) / 44100) - 1;
-    const uint32_t c = z80Step(32);
-    uint32_t vA, vB, vC;
-    stepBuzzer();
-    if (_moderate) {
-      const uint32_t t32 = MUL32(c, _moderate);
-      _ay.step(t32);
-      _ta32 += t32;
-      while(_ta32 > u32pas) {
-        while(!zxSpectrumAudioReady());
-        _ay.vol(vA, vB, vC);
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
-        _ta32 -= u32pas;
-      }
-    }
-    else {
-      if (zxSpectrumAudioReady()) {
-        _ay.vol(vA, vB, vC);
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
-      }
-      const uint32_t tu32 = time_us_32() << 5;
-      const uint32_t tud = tu32 - _tu32;
-      _tu32 = tu32;     
-      if (tud) _ay.step(tud);
-    }
-    stepScanline(c);
-    _pulseChain.advance(c, &_ear);
-    return c;
-  }
+  uint32_t step();
 
 #if 0
   void __not_in_flash_func(step)()
