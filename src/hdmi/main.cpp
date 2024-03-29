@@ -256,16 +256,7 @@ void __not_in_flash_func(main_loop)() {
           lastInterruptFrame = _frames;
           zxSpectrum.vsync();
         }
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
         zxSpectrum.step();
-#endif 
       }
     }
     else if (frames != _frames) {

@@ -35,7 +35,8 @@ class ZxSpectrum {
 private:
   Z80 _Z80;
   uint32_t _tu32;
-  int32_t _ta32;
+  int32_t _ta32; // audio out timer
+  int32_t _te32; // audio in timer
   uint32_t _moderate;
   ZxSpectrumKeyboard *_keyboard1;
   ZxSpectrumKeyboard *_keyboard2;
@@ -47,6 +48,8 @@ private:
   bool _ear;
   uint32_t _earInvert;
   uint32_t _earDc;
+  uint32_t _eb; // 32 audio in samples
+  uint32_t _ebc; // index into the above
   
   PulseProcChain _pulseChain;
   

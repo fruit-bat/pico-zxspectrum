@@ -58,6 +58,9 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _type = type;
   z80Reset();
   _ta32 = 0;
+  _te32 = 0;
+  _eb = 0;
+  _ebc = 0;
   _earInvert = 0;
   _earDc = 0;
   moderate(9);
@@ -85,6 +88,9 @@ void ZxSpectrum::moderate(uint32_t mul) {
   if (mul) {
     _tu32 = time_us_32() << 5;
     _ta32 = 0;
+    _te32 = 0;
+    _ebc = 32;
+    _eb = 0;
   }
   _moderate = mul;
 }
@@ -768,21 +774,51 @@ void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
 
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
-  // TODO fetch the frequence from elsewhere
-  const int32_t u32pas =  ((1000000 << 5) / 44100) - 1;
-  const uint32_t c = z80Step(32);
+  // TODO fetch the frequencies from elsewhere
+  // Time for a single audio out sample in 32nds of a micro second
+  const int32_t u32pas = ((1000000 << 5) / 44100) - 1;
+  // Time for a single audio in sample in 32nds of a micro second
+  const int32_t u32pes = ((1000000 << 5) / 400000) - 1;
+aaaa
+  const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
   stepBuzzer();
   if (_moderate) {
     const uint32_t t32 = MUL32(c, _moderate);
     _ay.step(t32);
+    // Audio out
     _ta32 += t32;
-    while(_ta32 > u32pas) {
+    while(_ta32 >= u32pas) {
       while(!zxSpectrumAudioReady());
       _ay.vol(vA, vB, vC);
       zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
       _ta32 -= u32pas;
     }
+    // Audio in
+    if (_earInvert ? (_eb == 0) : (~_eb == 0)) {
+      if (_earDc++ > 16000) {
+          _earInvert ^= 1;
+      }
+    }
+    else {
+      _earDc = 0;
+    }    
+    _te32 += t32;
+    while(_te32 >= u32pes) {
+      _ebc++;
+      _te32 -= u32pes;
+    }
+    while(_ebc >= 32) {
+      if (zxSpectrumEarReady()) {
+        _eb = zxSpectrumReadEar();
+        _ebc -= 32;
+      }
+      else {
+        _ebc = 31;
+        _te32 = u32pes;
+      }
+    }
+    if (_pulseChain.end()) _ear = (_eb >> _ebc) & 1;
   }
   else {
     if (zxSpectrumAudioReady()) {
