@@ -8,9 +8,20 @@
 #endif
 static uint32_t _vol = INITIAL_VOL;
 
+
 #if defined(PICO_HDMI_AUDIO)
 extern struct dvi_inst dvi0;
 #endif
+
+static struct repeating_timer timer;
+bool repeating_timer_callback(struct repeating_timer *t) {
+
+    return true;
+}
+
+static void init_audio_output_timer() {
+ // add_repeating_timer_us(-(1000000/44100), repeating_timer_callback, NULL, &timer);
+}
 
 #ifdef PICO_AUDIO_I2S
 
@@ -78,7 +89,7 @@ static  uint ear_sm = 0;
 static void init_ear_in() {
   uint offset = pio_add_program(ear_pio, &zx_ear_in_program);
   ear_sm = pio_claim_unused_sm(ear_pio, true);
-  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 200000);
+  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 1000000);
 }
 #endif
 
@@ -99,6 +110,9 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 }
 
 void zxSpectrumAudioInit() {
+    init_audio_output_timer();
+
+
 #if defined(PICO_AUDIO_I2S)
   init_is2_audio();
 #else  

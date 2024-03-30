@@ -772,14 +772,16 @@ void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
   }
 }
 
+#if defined(PICO_AUDIO_I2S) || defined(PICO_HDMI_AUDIO)
 #ifdef EAR_PIN
+// HDMI and I2S audio with EAR input
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
   // TODO fetch the frequencies from elsewhere
   // Time for a single audio out sample in 32nds of a micro second
   const int32_t u32pas = ((1000000 << 5) / 44100) - 1;
   // Time for a single audio in sample in 32nds of a micro second
-  const int32_t u32pes = ((1000000 << 5) / 200000);
+  const int32_t u32pes = ((1000000 << 5) / 1000000);
   
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
@@ -835,6 +837,7 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   return c;
 }
 #else
+// HDMI and I2S audio output
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
   // TODO fetch the frequencies from elsewhere
@@ -871,3 +874,97 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   return c;
 }
 #endif
+// End of HDMI and I2S audio
+#else
+#ifdef EAR_PIN
+#define EAR_BITS_PER_STEP 32
+// PWM audio with EAR input
+uint32_t __not_in_flash_func(ZxSpectrum::step)()
+{
+    uint32_t vA, vB, vC;
+    while (!zxSpectrumEarReady());
+    uint32_t  eb = zxSpectrumReadEar();
+
+    const uint32_t tu32 = time_us_32() << 5;
+    int32_t tud = tu32 - _tu32;
+    if (tud) _ay.step(tud); 
+    _tu32 = tu32;
+    _ay.vol(vA, vB, vC);
+    
+    if (_earInvert ? (eb == 0) : (~eb == 0)) {
+      if (_earDc++ > 16000) {
+          _earInvert ^= 1;
+      }
+    }
+    else {
+      _earDc = 0;
+    }
+    
+    uint32_t c = 0;
+    for (uint32_t i = 0; i < EAR_BITS_PER_STEP; ++i) {
+      _ta32 += 32;
+      if (_pulseChain.end()) _ear = (eb >> i) & 1;
+
+      while (_ta32 > 0) {
+        uint32_t t = z80Step(8);
+        c += t;
+        if (!_mute) {
+          stepBuzzer();
+          zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+        }
+        if (t == 0) {
+          _ta32 = 0;
+          break;
+        }
+        _ta32 -= MUL32(t, _moderate);
+      }
+      if ((i&3)==3 && _pulseChain.playing()) {
+        _pulseChain.advance(c, &_ear);
+        c = 0;
+      }
+    }
+    stepScanline(c);
+    return c;
+}
+#else
+// PWM audio output
+  uint32_t __not_in_flash_func(ZxSpectrum::step)()
+  {
+      uint32_t c;
+      if (_mute) {
+        c = z80Step(32);
+      }
+      else {
+        uint32_t vA, vB, vC;
+        _ay.vol(vA, vB, vC);
+        c = z80Step(32);
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+        c += z80Step(32);
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+        c += z80Step(32);
+        stepBuzzer();
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);        
+      }
+      const uint32_t tu32 = time_us_32() << 5;
+      const uint32_t tud = tu32 - _tu32;
+      _tu32 = tu32;
+      if (_moderate) {
+        if (c == 0) {
+          _ta32 = 0;
+        }
+        else {
+          _ta32 += MUL32(c, _moderate) - tud; // +ve too fast, -ve too slow
+          if (_ta32 > 32) busy_wait_us_32(_ta32 >> 5);
+          // Try to catch up, but only for 500 or so instructions
+          if (_ta32 < -500 * 4 * 32)  _ta32 = -500 * 4 * 32;
+        }
+      }
+      if (tud) _ay.step(tud);
+      stepScanline(c);
+      _pulseChain.advance(c, &_ear);
+      return c;
+  }
+#endif
+#endif // End of PWM audio

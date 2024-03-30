@@ -62,10 +62,10 @@ set(zxspectrum_hdmi_defines
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
 #  SPK_PIN=20
-#  EAR_PIN=11
+  EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
-#  USE_PS2_KBD
+  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
