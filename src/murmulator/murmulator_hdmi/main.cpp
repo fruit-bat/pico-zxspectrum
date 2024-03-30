@@ -65,10 +65,6 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
-//Audio Related
-#define AUDIO_BUFFER_SIZE   256
-audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
-
 // ZX Spectrum emulator
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
@@ -241,23 +237,13 @@ void __not_in_flash_func(main_loop)() {
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
 #endif
-
     if (!showMenu) {
       for (int i = 0; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.vsync();
         }
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
         zxSpectrum.step();
-#endif
       }
     }
     else if (frames != _frames) {
@@ -318,9 +304,6 @@ int main() {
   );
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
-
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
  
   screenPtr = zxSpectrum.screenPtr();
   attrPtr = screenPtr + (32 * 24 * 8);
@@ -336,12 +319,8 @@ int main() {
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
-  // HDMI Audio related
-  dvi_get_blank_settings(&dvi0)->top    = 0;
-  dvi_get_blank_settings(&dvi0)->bottom = 0;
-  dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
-  dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
-  increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
+  // Configure the GPIO pins for audio
+  zxSpectrumAudioInit();
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);
