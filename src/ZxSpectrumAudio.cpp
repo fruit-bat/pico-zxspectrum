@@ -13,15 +13,147 @@ static uint32_t _vol = INITIAL_VOL;
 extern struct dvi_inst dvi0;
 #endif
 
-static struct repeating_timer timer;
-bool repeating_timer_callback(struct repeating_timer *t) {
+#if !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
+// PWM Audio stuff
+#define ZX_AUDIO_BUF_SIZE_BITS 7
+#define ZX_AUDIO_BUF_SIZE (1<<ZX_AUDIO_BUF_SIZE_BITS)
+#define ZX_AUDIO_BUF_MOD_MASK (ZX_AUDIO_BUF_SIZE-1)
 
-    return true;
+// Sample for delayed deliver to PWM output
+typedef struct {
+  uint16_t vA; 
+  uint16_t vB; 
+  uint16_t vC; 
+  uint16_t s; 
+  uint16_t b; 
+} zx_audio_sample_t;
+
+typedef struct {
+  zx_audio_sample_t sample[ZX_AUDIO_BUF_SIZE];
+  uint32_t ri;
+  uint32_t wi;
+} zx_audio_buf_t;
+
+void zx_audio_buf_init(zx_audio_buf_t *b) {
+  b->ri = 0;
+  b->wi = 0;
+}
+
+inline bool zx_audio_buf_ready_for_write(zx_audio_buf_t *b) {
+  return ((b->ri - b->wi) & ZX_AUDIO_BUF_MOD_MASK) != 1; 
+}
+
+inline bool zx_audio_buf_ready_for_read(zx_audio_buf_t *b) {
+  return b->ri != b->wi; 
+}
+
+inline void zx_audio_buf_read_next(zx_audio_buf_t *b) {
+  b->ri = (b->ri + 1) & ZX_AUDIO_BUF_MOD_MASK;  
+}
+
+inline void zx_audio_buf_write_next(zx_audio_buf_t *b) {
+  b->wi = (b->wi + 1) & ZX_AUDIO_BUF_MOD_MASK;  
+}
+
+inline zx_audio_sample_t *zx_audio_buf_read_ptr(zx_audio_buf_t *b) {
+  return &b->sample[b->ri];
+}
+
+inline zx_audio_sample_t *zx_audio_buf_write_ptr(zx_audio_buf_t *b) {
+  return &b->sample[b->wi];
+}
+
+static zx_audio_buf_t zx_audio_buf;
+static struct repeating_timer timer;
+bool repeating_timer_callback(struct repeating_timer *timer)
+{
+  static zx_audio_sample_t last;
+  uint32_t vA;
+  uint32_t vB;
+  uint32_t vC;
+  uint32_t s;
+  uint32_t buzzer;
+  
+  if (zx_audio_buf_ready_for_read(&zx_audio_buf))
+  {
+    zx_audio_sample_t *buf = zx_audio_buf_read_ptr(&zx_audio_buf);
+    last = *buf;
+    vA = buf->vA;
+    vB = buf->vB;
+    vC = buf->vC;
+    s = buf->s;
+    buzzer = buf->b;
+    zx_audio_buf_read_next(&zx_audio_buf);
+  }
+  else {
+    vA = last.vA;
+    vB = last.vB;
+    vC = last.vC;
+    s = last.s;
+    buzzer = last.b;
+
+  }
+#ifdef BZR_PIN
+    gpio_put(BZR_PIN, buzzer);
+#ifdef SPK_PIN
+    pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
+#else
+#ifdef AY8912_ABC_STERO
+    pwm_set_gpio_level(AY8912_A_PIN, vA + vB);
+    pwm_set_gpio_level(AY8912_C_PIN, vC + vB);
+#else
+    pwm_set_gpio_level(AY8912_A_PIN, vA);
+    pwm_set_gpio_level(AY8912_B_PIN, vB);
+    pwm_set_gpio_level(AY8912_C_PIN, vC);
+#endif
+#endif
+#else
+#ifdef AY8912_ABC_STEREO
+    uint32_t lt = __mul_instruction(_vol, vA + vB) >> 8;
+    uint32_t rt = __mul_instruction(_vol, vC + vB) >> 8;
+    uint32_t st = __mul_instruction(_vol, s) >> 8;
+    pwm_set_gpio_level(AY8912_A_PIN, lt);
+    pwm_set_gpio_level(AY8912_C_PIN, rt);
+    pwm_set_gpio_level(SPK_PIN, st);
+#else
+    uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
+    uint32_t ss = __mul_instruction(_vol, s) >> 8;
+    uint32_t t = ayt + ss;
+    pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
+#endif
+#endif
+  return true;
+}
+
+#ifdef BZR_PIN
+  #ifdef AY8912_A_PIN
+    #ifdef AY8912_ABC_STEREO
+      #define PWM_WRAP (255 + 255)
+    #else
+      #define PWM_WRAP (255)
+    #endif
+  #else
+    #define PWM_WRAP (255 + 255 + 255)
+  #endif
+#else
+  #define PWM_WRAP (255 + 255 + 255)
+#endif
+
+static void init_pwm_pin(uint32_t pin) { 
+  gpio_set_function(pin, GPIO_FUNC_PWM);
+  const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
+  pwm_config config = pwm_get_default_config();
+  pwm_config_set_clkdiv(&config, 1.0f); 
+  pwm_config_set_wrap(&config, PWM_WRAP);
+  pwm_init(audio_pin_slice, &config, true);
 }
 
 static void init_audio_output_timer() {
- // add_repeating_timer_us(-(1000000/44100), repeating_timer_callback, NULL, &timer);
+  zx_audio_buf_init(&zx_audio_buf);
+  add_repeating_timer_us(-(1000000/44100), repeating_timer_callback, NULL, &timer);
 }
+#endif
+// END PWM buffer stuff
 
 #ifdef PICO_AUDIO_I2S
 
@@ -53,30 +185,6 @@ inline bool is2_audio_ready() {
 
 inline void is2_audio_put(uint32_t x) {
   *(volatile uint32_t*)&PICO_AUDIO_I2S_PIO->txf[PICO_AUDIO_I2S_SM] = x;
-}
-
-#else
-  #ifdef BZR_PIN
-    #ifdef AY8912_A_PIN
-      #ifdef AY8912_ABC_STEREO
-        #define PWM_WRAP (255 + 255)
-      #else
-        #define PWM_WRAP (255)
-      #endif
-    #else
-      #define PWM_WRAP (255 + 255 + 255)
-    #endif
-  #else
-    #define PWM_WRAP (255 + 255 + 255)
-  #endif
-
-static void init_pwm_pin(uint32_t pin) { 
-  gpio_set_function(pin, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
 }
 #endif
 
@@ -110,12 +218,14 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 }
 
 void zxSpectrumAudioInit() {
-    init_audio_output_timer();
 
 
 #if defined(PICO_AUDIO_I2S)
   init_is2_audio();
+#elif defined(PICO_HDMI_AUDIO)
+  // TODO
 #else  
+  init_audio_output_timer();
   #ifdef BZR_PIN
     gpio_init(BZR_PIN);
     gpio_set_dir(BZR_PIN, GPIO_OUT);
@@ -133,6 +243,7 @@ void zxSpectrumAudioInit() {
     init_pwm_pin(AY8912_C_PIN);
   #endif
 #endif
+
 #ifdef EAR_PIN
   init_ear_in();
 #endif
@@ -164,35 +275,22 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
   is2_audio_put((ll << 16) | rr);
 #endif
 #else
-  #ifdef BZR_PIN
-    gpio_put(BZR_PIN, buzzer);
-    #ifdef SPK_PIN
-      pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
-    #else
-      #ifdef AY8912_ABC_STERO
-      pwm_set_gpio_level(AY8912_A_PIN, vA + vB);
-      pwm_set_gpio_level(AY8912_C_PIN, vC + vB);
-      #else
-      pwm_set_gpio_level(AY8912_A_PIN, vA);
-      pwm_set_gpio_level(AY8912_B_PIN, vB);
-      pwm_set_gpio_level(AY8912_C_PIN, vC);
-      #endif
-    #endif
-  #else
-    #ifdef AY8912_ABC_STEREO
-    uint32_t lt = __mul_instruction(_vol, vA + vB) >> 8;
-    uint32_t rt = __mul_instruction(_vol, vC + vB) >> 8;
-    uint32_t st  = __mul_instruction(_vol, s) >> 8;
-    pwm_set_gpio_level(AY8912_A_PIN, lt);
-    pwm_set_gpio_level(AY8912_C_PIN, rt);
-    pwm_set_gpio_level(SPK_PIN, st);
-    #else
-    uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
-    uint32_t ss  = __mul_instruction(_vol, s) >> 8;
-    uint32_t t   = ayt + ss;
-    pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
-    #endif
-  #endif
+  zx_audio_sample_t *buf = zx_audio_buf_write_ptr(&zx_audio_buf);
+  if (mute) {
+    buf->vA = 0;
+    buf->vB = 0;
+    buf->vC = 0;
+    buf->s = 0;
+    buf->b = 0;
+  }
+  else {
+    buf->vA = vA;
+    buf->vB = vB;
+    buf->vC = vC;
+    buf->s = s;
+    buf->b = buzzer;
+  }
+  zx_audio_buf_write_next(&zx_audio_buf);
 #endif
 }
 
@@ -206,6 +304,6 @@ bool __not_in_flash_func(zxSpectrumAudioReady)() {
 #elif defined(PICO_AUDIO_I2S)
   return is2_audio_ready();
 #else
-  return true;
+  return zx_audio_buf_ready_for_write(&zx_audio_buf);
 #endif
 }

@@ -72,9 +72,12 @@ struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
-//Audio Related
+// Audio Related
+// TODO move this somewhere more sensible
+#if defined(PICO_HDMI_AUDIO)
 #define AUDIO_BUFFER_SIZE   256
 audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
+#endif
 
 // ZX Spectrum emulator
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
