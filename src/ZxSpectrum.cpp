@@ -744,7 +744,7 @@ bool ZxSpectrum::tapePaused() {
 }
 
 // See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
-#define TOP_ROWS_UNDISPLAYED 36
+#define TOP_ROWS_UNDISPLAYED 29
 // clock cycles per horizontal display line:
 // 224 CPU cycles for 48k
 // 228 CPU cycles for 128k
@@ -772,14 +772,15 @@ void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
   }
 }
 
+#ifdef EAR_PIN
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
   // TODO fetch the frequencies from elsewhere
   // Time for a single audio out sample in 32nds of a micro second
   const int32_t u32pas = ((1000000 << 5) / 44100) - 1;
   // Time for a single audio in sample in 32nds of a micro second
-  const int32_t u32pes = ((1000000 << 5) / 400000) - 1;
-aaaa
+  const int32_t u32pes = ((1000000 << 5) / 200000);
+  
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
   stepBuzzer();
@@ -789,10 +790,14 @@ aaaa
     // Audio out
     _ta32 += t32;
     while(_ta32 >= u32pas) {
-      while(!zxSpectrumAudioReady());
-      _ay.vol(vA, vB, vC);
-      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
-      _ta32 -= u32pas;
+      if(zxSpectrumAudioReady()) {
+        _ay.vol(vA, vB, vC);
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+        _ta32 -= u32pas;
+      }
+      else {
+        _ta32 = u32pas - 1;
+      }
     }
     // Audio in
     if (_earInvert ? (_eb == 0) : (~_eb == 0)) {
@@ -809,14 +814,9 @@ aaaa
       _te32 -= u32pes;
     }
     while(_ebc >= 32) {
-      if (zxSpectrumEarReady()) {
-        _eb = zxSpectrumReadEar();
-        _ebc -= 32;
-      }
-      else {
-        _ebc = 31;
-        _te32 = u32pes;
-      }
+      while (!zxSpectrumEarReady());
+      _eb = zxSpectrumReadEar();
+      _ebc -= 32;
     }
     if (_pulseChain.end()) _ear = (_eb >> _ebc) & 1;
   }
@@ -834,3 +834,40 @@ aaaa
   _pulseChain.advance(c, &_ear);
   return c;
 }
+#else
+uint32_t __not_in_flash_func(ZxSpectrum::step)()
+{
+  // TODO fetch the frequencies from elsewhere
+  // Time for a single audio out sample in 32nds of a micro second
+  const int32_t u32pas = ((1000000 << 5) / 44100);
+  
+  const uint32_t c = z80Step(32);
+  uint32_t vA, vB, vC;
+  stepBuzzer();
+  if (_moderate) {
+    const uint32_t t32 = MUL32(c, _moderate);
+    _ay.step(t32);
+    // Audio out
+    _ta32 += t32;
+    while(_ta32 >= u32pas) {
+      while(!zxSpectrumAudioReady());
+      _ay.vol(vA, vB, vC);
+      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      _ta32 -= u32pas;
+    }
+  }
+  else {
+    if (zxSpectrumAudioReady()) {
+      _ay.vol(vA, vB, vC);
+      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+    }
+    const uint32_t tu32 = time_us_32() << 5;
+    const uint32_t tud = tu32 - _tu32;
+    _tu32 = tu32;     
+    if (tud) _ay.step(tud);
+  }
+  stepScanline(c);
+  _pulseChain.advance(c, &_ear);
+  return c;
+}
+#endif

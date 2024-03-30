@@ -78,7 +78,7 @@ static  uint ear_sm = 0;
 static void init_ear_in() {
   uint offset = pio_add_program(ear_pio, &zx_ear_in_program);
   ear_sm = pio_claim_unused_sm(ear_pio, true);
-  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 400000);
+  zx_ear_in_program_init(ear_pio, ear_sm, offset, EAR_PIN, 200000);
 }
 #endif
 
