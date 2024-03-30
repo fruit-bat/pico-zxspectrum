@@ -778,7 +778,7 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
   // TODO fetch the frequencies from elsewhere
   // Time for a single audio out sample in 32nds of a micro second
-  const int32_t u32pas = ((1000000 << 5) / 44100) - 2;
+  const int32_t u32pas = ((1000000 << 5) / 44100);
   // Time for a single audio in sample in 32nds of a micro second
   const int32_t u32pes = ((1000000 << 5) / 1000000);
   

@@ -8,11 +8,6 @@
 #endif
 static uint32_t _vol = INITIAL_VOL;
 
-
-#if defined(PICO_HDMI_AUDIO)
-extern struct dvi_inst dvi0;
-#endif
-
 #if !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
 // PWM Audio stuff
 #define ZX_AUDIO_BUF_SIZE_BITS 7
@@ -156,7 +151,6 @@ static void init_audio_output_timer() {
 // END PWM buffer stuff
 
 #ifdef PICO_AUDIO_I2S
-
 #include "audio_i2s.pio.h"
 #include "hardware/pio.h"
 #include "audio_i2s.pio.h"
@@ -185,6 +179,21 @@ inline bool is2_audio_ready() {
 
 inline void is2_audio_put(uint32_t x) {
   *(volatile uint32_t*)&PICO_AUDIO_I2S_PIO->txf[PICO_AUDIO_I2S_SM] = x;
+}
+#endif
+
+#ifdef PICO_HDMI_AUDIO
+extern struct dvi_inst dvi0;
+
+#define AUDIO_BUFFER_SIZE   256
+audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
+
+static void init_hdmi_audio() {
+  dvi_get_blank_settings(&dvi0)->top    = 0;
+  dvi_get_blank_settings(&dvi0)->bottom = 0;
+  dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
+  dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
+  increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
 }
 #endif
 
@@ -219,11 +228,10 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 
 void zxSpectrumAudioInit() {
 
-
 #if defined(PICO_AUDIO_I2S)
   init_is2_audio();
 #elif defined(PICO_HDMI_AUDIO)
-  // TODO
+  init_hdmi_audio();
 #else  
   init_audio_output_timer();
   #ifdef BZR_PIN
