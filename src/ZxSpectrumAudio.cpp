@@ -1,7 +1,6 @@
 #include "ZxSpectrumAudio.h"
 #include "hardware/gpio.h"
 #include "hardware/clocks.h"
-#include "dvi.h"
 
 #ifndef INITIAL_VOL
 #define INITIAL_VOL 0x100
@@ -9,6 +8,7 @@
 static uint32_t _vol = INITIAL_VOL;
 
 #if !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
+#include "pico/time.h"
 // PWM Audio stuff
 #define ZX_AUDIO_BUF_SIZE_BITS 7
 #define ZX_AUDIO_BUF_SIZE (1<<ZX_AUDIO_BUF_SIZE_BITS)
@@ -183,6 +183,8 @@ inline void is2_audio_put(uint32_t x) {
 #endif
 
 #ifdef PICO_HDMI_AUDIO
+#include "dvi.h"
+
 extern struct dvi_inst dvi0;
 
 #define AUDIO_BUFFER_SIZE   256
