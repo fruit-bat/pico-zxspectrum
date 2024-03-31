@@ -2,28 +2,13 @@
 # ZX-MURMULATOR
 ########################################################################
 
-set(zxspectrum_hdmi_src
+set(zxspectrum_murmulator_src
   main.cpp
   ${zxspectrum_dvi_src}
   ${murmulator_common_src}
 )
 
-add_executable(ZX-MURMULATOR_HDMI
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZX-MURMULATOR_HDMI
-  ${zxspectrum_ear_in_pio}
-)
-
-pico_generate_pio_header(ZX-MURMULATOR_HDMI
-  ${murmulator_ps2kbd_pio}
-)
-
-
-# ============================================================
-target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
+set(murmulator_common_defines
   # Set up the DVI output to match the MURMULATOR board
   MURMULATOR
   PICO_CORE1_STACK_SIZE=0x400
@@ -43,27 +28,62 @@ target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
   SDCARD_PIN_SPI0_MISO=4
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP  
+  # Tape audio in
+  EAR_PIN=22
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+)
+
+set(murmulator_pwm_audio_defines
   # Speaker pin audio
-  #SPK_PIN=28
+  SPK_PIN=28
   # Buzzer audio out
   # BZR_PIN=28
   # STEREO AY audio
-  #AY8912_ABC_STEREO
+  AY8912_ABC_STEREO
   # Left chanel audio out
-  #AY8912_A_PIN=27
+  AY8912_A_PIN=27
   # Right chanel audio out
-  #AY8912_C_PIN=26
-  # Use the alternate volume map
-  #AY8912_ALT_VOL_MAP  
-  # Tape audio in
-  #EAR_PIN=22
-  # Enable the PS/2 keyboard
-  USE_PS2_KBD
+  AY8912_C_PIN=26
+)
+
+set(murmulator_hdmi_audio_defines
   # Use HDMI Audio
   PICO_HDMI_AUDIO
 )
 
-set(zxspectrum_hdmi_libs
+add_executable(ZX-MURMULATOR_HDMI
+  ${zxspectrum_common_src}
+  ${zxspectrum_murmulator_src}
+)
+
+add_executable(ZX-MURMULATOR_HDMI_PWM_AUDIO
+  ${zxspectrum_common_src}
+  ${zxspectrum_murmulator_src}
+)
+
+pico_generate_pio_header(ZX-MURMULATOR_HDMI
+  ${zxspectrum_ear_in_pio}
+)
+
+pico_generate_pio_header(ZX-MURMULATOR_HDMI_PWM_AUDIO
+  ${murmulator_ps2kbd_pio}
+)
+
+# ============================================================
+target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_hdmi_audio_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_pwm_audio_defines}
+)
+
+set(zxspectrum_murmulator_libs
   libdvi
   tinyusb_host
   tinyusb_board
@@ -73,12 +93,14 @@ set(zxspectrum_hdmi_libs
 
 target_link_libraries(ZX-MURMULATOR_HDMI
   ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+  ${zxspectrum_murmulator_libs}
+)
+
+target_link_libraries(ZX-MURMULATOR_HDMI_PWM_AUDIO
+  ${zxspectrum_common_libs}
+  ${zxspectrum_murmulator_libs}
 )
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZX-MURMULATOR_HDMI)
-
-
-
-
+pico_add_extra_outputs(ZX-MURMULATOR_HDMI_PWM_AUDIO)
