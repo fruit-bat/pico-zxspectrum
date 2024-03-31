@@ -86,7 +86,6 @@ bool repeating_timer_callback(struct repeating_timer *timer)
     vC = last.vC;
     s = last.s;
     buzzer = last.b;
-
   }
 #ifdef BZR_PIN
     gpio_put(BZR_PIN, buzzer);
@@ -145,7 +144,7 @@ static void init_pwm_pin(uint32_t pin) {
 
 static void init_audio_output_timer() {
   zx_audio_buf_init(&zx_audio_buf);
-  add_repeating_timer_us(-(1000000/44100), repeating_timer_callback, NULL, &timer);
+  add_repeating_timer_us(-(1000000/PICO_PWM_AUDIO_FREQ), repeating_timer_callback, NULL, &timer);
 }
 #endif
 // END PWM buffer stuff
@@ -169,7 +168,7 @@ static void init_is2_audio() {
   gpio_set_function(PICO_AUDIO_I2S_BCLK + 1, PICO_AUDIO_I2S_PIO_FUNC);
   uint offset = pio_add_program(PICO_AUDIO_I2S_PIO, &audio_i2s_program);
   audio_i2s_program_init(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, offset, PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_BCLK);
-  update_pio_frequency(44100, PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
+  update_pio_frequency(PICO_I2S_AUDIO_FREQ, PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM);
   pio_sm_set_enabled(PICO_AUDIO_I2S_PIO, PICO_AUDIO_I2S_SM, true);
 }
 
@@ -194,7 +193,12 @@ static void init_hdmi_audio() {
   dvi_get_blank_settings(&dvi0)->top    = 0;
   dvi_get_blank_settings(&dvi0)->bottom = 0;
   dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
-  dvi_set_audio_freq(&dvi0, 44100, 28000, 6272);
+  dvi_set_audio_freq(
+    &dvi0, 
+    PICO_HDMI_AUDIO_FREQ, 
+    28000, // TODO I think this depends on PICO_HDMI_AUDIO_FREQ
+    6272   // TODO I think this depends on PICO_HDMI_AUDIO_FREQ
+  );
   increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
 }
 #endif
