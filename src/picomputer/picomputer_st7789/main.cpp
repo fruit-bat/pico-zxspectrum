@@ -183,7 +183,7 @@ void __not_in_flash_func(core1_main)() {
           linebuf->frame,
           screenPtr,
           attrPtr,
-          zxSpectrum.borderColour()
+          zxSpectrum.borderColour(y)
         );
       }
         
@@ -238,7 +238,7 @@ void __not_in_flash_func(core1_main)() {
           _frames,
           screenPtr,
           attrPtr,
-          zxSpectrum.borderColour()); 
+          zxSpectrum.borderColour(y)); 
       }
 
       pzx_keyscan_row();
@@ -288,7 +288,7 @@ void __not_in_flash_func(main_loop)() {
       for (int i = 1; i < 50; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          zxSpectrum.vsync();
         }
         zxSpectrum.step();
       }

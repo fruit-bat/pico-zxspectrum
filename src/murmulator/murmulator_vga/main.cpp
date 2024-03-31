@@ -174,12 +174,8 @@ void __not_in_flash_func(core1_main)() {
 }
 
 //=============================================================================
-#ifdef EAR_PIN
-#define CPU_STEP_LOOP 10
-#else
 #define CPU_STEP_LOOP 100
-#endif
-//-----------------------------------------------------------------------------
+
 void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;

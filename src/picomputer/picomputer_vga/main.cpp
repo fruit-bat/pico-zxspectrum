@@ -159,7 +159,7 @@ void __not_in_flash_func(core1_main)() {
         linebuf->frame,
         screenPtr,
         attrPtr,
-        zxSpectrum.borderColour()
+        zxSpectrum.borderColour(y)
       );
     }
       
@@ -203,7 +203,7 @@ void __not_in_flash_func(main_loop)(){
       for (int i = 1; i < 100; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          zxSpectrum.vsync();
         }
         zxSpectrum.step();
       }
