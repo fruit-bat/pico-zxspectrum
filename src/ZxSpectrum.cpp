@@ -793,11 +793,8 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
       if(zxSpectrumAudioReady()) {
         _ay.vol(vA, vB, vC);
         zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
-        _ta32 -= u32pas;
       }
-      else {
-        _ta32 = u32pas - 1;
-      }
+      _ta32 -= u32pas;
     }
     // Audio in
     if (_earInvert ? (_eb == 0) : (~_eb == 0)) {
