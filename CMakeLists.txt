@@ -25,11 +25,11 @@ set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
 get_filename_component(PICO_FOLDER ${CMAKE_CURRENT_LIST_DIR}/.. ABSOLUTE)
 
 include_directories(
-	${PICO_FOLDER}/PicoDVI_fruitbat/software/include
+	${PICO_FOLDER}/PicoDVI/software/include
 )
 
-add_subdirectory(${PICO_FOLDER}/PicoDVI_fruitbat/software/libdvi "${CMAKE_CURRENT_BINARY_DIR}/libdvi")
-add_subdirectory(${PICO_FOLDER}/PicoDVI_fruitbat/software/libsprite "${CMAKE_CURRENT_BINARY_DIR}/libsprite")
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libdvi "${CMAKE_CURRENT_BINARY_DIR}/libdvi")
+add_subdirectory(${PICO_FOLDER}/PicoDVI/software/libsprite "${CMAKE_CURRENT_BINARY_DIR}/libsprite")
 add_subdirectory(${PICO_FOLDER}/pico-vga-332/ "${CMAKE_CURRENT_BINARY_DIR}/pico-vga-332")
 add_subdirectory(${PICO_FOLDER}/pico-dvi-menu "${CMAKE_CURRENT_BINARY_DIR}/pico-dvi-menu")
 add_subdirectory(${PICO_FOLDER}/pico-emu-utils "${CMAKE_CURRENT_BINARY_DIR}/pico-emu-utils")
