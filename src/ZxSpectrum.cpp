@@ -20,7 +20,10 @@ ZxSpectrum::ZxSpectrum(
   _ear(false),
   _earInvert(0),
   _earDc(0),
-  _buzzer(0)
+  _intSource(SyncToCpu),
+  _buzzer(0),
+  _sl(0),
+  _slc(0)
 {
   z80Power(true);
   _Z80.context = this;
@@ -55,6 +58,9 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _type = type;
   z80Reset();
   _ta32 = 0;
+  _te32 = 0;
+  _eb = 0;
+  _ebc = 0;
   _earInvert = 0;
   _earDc = 0;
   moderate(9);
@@ -70,6 +76,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
   _tu32 = time_us_32() << 5;
+  _sl = 0; 
+  _slc = 0;
 }
 
 // 0 - Z80 unmoderated
@@ -80,6 +88,9 @@ void ZxSpectrum::moderate(uint32_t mul) {
   if (mul) {
     _tu32 = time_us_32() << 5;
     _ta32 = 0;
+    _te32 = 0;
+    _ebc = 32;
+    _eb = 0;
   }
   _moderate = mul;
 }
@@ -732,3 +743,128 @@ bool ZxSpectrum::tapePaused() {
   return !_pulseChain.playing();
 }
 
+// See https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
+#define TOP_ROWS_UNDISPLAYED 29
+// clock cycles per horizontal display line:
+// 224 CPU cycles for 48k
+// 228 CPU cycles for 128k
+#define CPU_CYCLES_PER_LINE 228
+// Spectrum scan lines per frame:
+// 312 lines for 48k
+// 311 lines for 128k
+#define SCAN_LINES_PER_FRAME 311
+
+void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
+  _slc += c;
+  while (_slc >= CPU_CYCLES_PER_LINE)
+  {
+    _slc -= CPU_CYCLES_PER_LINE;
+    _sl++;
+    if (_sl >= SCAN_LINES_PER_FRAME)
+    {
+      _sl = 0;
+      if (_intSource == SyncToCpu) interrupt();
+    }
+    if (_sl >= TOP_ROWS_UNDISPLAYED && _sl < (TOP_ROWS_UNDISPLAYED + 240))
+    {
+      _borderBuf[_sl - TOP_ROWS_UNDISPLAYED] = borderColour();
+    }
+  }
+}
+
+#ifdef EAR_PIN
+// audio in and out
+uint32_t __not_in_flash_func(ZxSpectrum::step)()
+{
+  // Time for a single audio out sample in 32nds of a micro second
+  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
+  // Time for a single audio in sample in 32nds of a micro second
+  const int32_t u32pes = ((1000000 << 5) / 1000000);
+  
+  const uint32_t c = z80Step(16);
+  uint32_t vA, vB, vC;
+  stepBuzzer();
+  if (_moderate) {
+    const uint32_t t32 = MUL32(c, _moderate);
+    _ay.step(t32);
+    // Audio out
+    _ta32 += t32;
+    while(_ta32 >= u32pas) {
+      if(zxSpectrumAudioReady()) {
+        _ay.vol(vA, vB, vC);
+        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      }
+      _ta32 -= u32pas;
+    }
+    // Audio in
+    if (_earInvert ? (_eb == 0) : (~_eb == 0)) {
+      if (_earDc++ > 16000) {
+          _earInvert ^= 1;
+      }
+    }
+    else {
+      _earDc = 0;
+    }    
+    _te32 += t32;
+    while(_te32 >= u32pes) {
+      _ebc++;
+      _te32 -= u32pes;
+    }
+    while(_ebc >= 32) {
+      while (!zxSpectrumEarReady());
+      _eb = zxSpectrumReadEar();
+      _ebc -= 32;
+    }
+    if (_pulseChain.end()) _ear = (_eb >> _ebc) & 1;
+  }
+  else {
+    if (zxSpectrumAudioReady()) {
+      _ay.vol(vA, vB, vC);
+      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+    }
+    const uint32_t tu32 = time_us_32() << 5;
+    const uint32_t tud = tu32 - _tu32;
+    _tu32 = tu32;     
+    if (tud) _ay.step(tud);
+  }
+  stepScanline(c);
+  _pulseChain.advance(c, &_ear);
+  return c;
+}
+#else
+// audio output
+uint32_t __not_in_flash_func(ZxSpectrum::step)()
+{
+  // Time for a single audio out sample in 32nds of a micro second
+  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
+  
+  const uint32_t c = z80Step(32);
+  uint32_t vA, vB, vC;
+  stepBuzzer();
+  if (_moderate) {
+    const uint32_t t32 = MUL32(c, _moderate);
+    _ay.step(t32);
+    // Audio out
+    _ta32 += t32;
+    while(_ta32 >= u32pas) {
+      while(!zxSpectrumAudioReady());
+      _ay.vol(vA, vB, vC);
+      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      _ta32 -= u32pas;
+    }
+  }
+  else {
+    if (zxSpectrumAudioReady()) {
+      _ay.vol(vA, vB, vC);
+      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+    }
+    const uint32_t tu32 = time_us_32() << 5;
+    const uint32_t tud = tu32 - _tu32;
+    _tu32 = tu32;     
+    if (tud) _ay.step(tud);
+  }
+  stepScanline(c);
+  _pulseChain.advance(c, &_ear);
+  return c;
+}
+#endif

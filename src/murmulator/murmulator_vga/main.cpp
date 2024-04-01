@@ -125,9 +125,6 @@ static Ps2Kbd_Mrmltr ps2kbd(
 unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
-// MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-static volatile uint8_t LineBorderSync = 0;   // MADEIT for BorderSync
-static volatile uint8_t borderBuf[240];       //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
@@ -156,8 +153,7 @@ void __not_in_flash_func(core1_main)() {
         linebuf->frame,
         screenPtr,
         attrPtr,
-        //zxSpectrum.borderColour()
-        borderBuf[y]
+        zxSpectrum.borderColour(y)
       );
     }
     //-----------------------------------------------------
@@ -178,16 +174,11 @@ void __not_in_flash_func(core1_main)() {
 }
 
 //=============================================================================
-#ifdef EAR_PIN
-#define CPU_STEP_LOOP 10
-#else
 #define CPU_STEP_LOOP 100
-#endif
-//-----------------------------------------------------------------------------
+
 void __not_in_flash_func(main_loop)(){
 
-//  unsigned int lastInterruptFrame = _frames;
-  uint _INTcounter = 0;
+  unsigned int lastInterruptFrame = _frames;
 
   //Main Loop 
   uint frames = 0;
@@ -202,35 +193,11 @@ void __not_in_flash_func(main_loop)(){
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         //---------------------------------------
-        /*// Z80 INT Interrupt = 60Hz
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();   
+          zxSpectrum.vsync();   
         }
-        //-------------------------------------*/
-        // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz (ZX128=625;Pent128=628)
-        if (_INTcounter++ >= 625) {
-          _INTcounter = 0;
-          LineBorderSync = 0;
-          zxSpectrum.interrupt();
-        }
-
-        if (_INTcounter >= 78) {
-          if (LineBorderSync<240) {
-            if (_INTcounter & 1) {borderBuf[LineBorderSync++] = zxSpectrum.borderColour();}
-          }
-        }
-        //-------------------------------------*/
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
-        zxSpectrum.step();
-#endif 
+        zxSpectrum.step(); 
       }
     }
     else if (frames != _frames) {

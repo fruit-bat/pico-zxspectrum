@@ -163,44 +163,44 @@ unsigned char* screenPtr;
 unsigned char* attrPtr;
 static volatile uint _frames = 0;
 // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-static volatile uint8_t LineBorderSync = 0;   // MADEIT for BorderSync
 static volatile uint8_t borderBuf[240];       //Border Buffer 240 lines
 //-----------------------------------------------------------------------------
-void __not_in_flash_func(core1_scanline_callback)() {
-  static uint y = 1;
+void __not_in_flash_func(core1_render)() {
+  static uint y = 0;
   static uint ys = 0;
-
-  if (y == 24) _frames++;
-  if (showMenu) {
-    uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
-    if (0 == (y & 7)) {
-      ys += rs;
+  while(true) {
+    if (showMenu) {
+      uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
+      if (0 == (y & 7)) {
+        ys += rs;
+      }
     }
-  }
-  else {
-    //zx_prepare_hdmi_scanline(&dvi0, y++, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
-    zx_prepare_hdmi_scanline(
-      &dvi0,
-      y, 
-      _frames, 
-      screenPtr, 
-      attrPtr,
-      borderBuf[y]  //Border Sync
-    );
-    y++;
-  }
-
-  if (y == FRAME_HEIGHT) {
-    y = 0;
-    ys = 0;
-    
-    // TODO Tidy this mechanism up
-    screenPtr = zxSpectrum.screenPtr();
-    attrPtr = screenPtr + (32 * 24 * 8);
-    
-    if (toggleMenu) {
-      showMenu = !showMenu;
-      toggleMenu = false;
+    else {
+      zx_prepare_hdmi_scanline(
+        &dvi0,
+        y, 
+        _frames, 
+        screenPtr, 
+        attrPtr,
+        zxSpectrum.borderColour(y)
+      );
+      y++;
+    }
+  #ifdef USE_KEY_MATRIX
+    zx_keyscan_row();
+  #endif
+    if (y == FRAME_HEIGHT) {
+      y = 0;
+      ys = 0;
+      _frames++;
+      // TODO Tidy this mechanism up
+      screenPtr = zxSpectrum.screenPtr();
+      attrPtr = screenPtr + (32 * 24 * 8);
+      
+      if (toggleMenu) {
+        showMenu = !showMenu;
+        toggleMenu = false;
+      }
     }
   }
 }
@@ -209,27 +209,21 @@ void __not_in_flash_func(core1_scanline_callback)() {
 void __not_in_flash_func(core1_main)() {
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
   sem_acquire_blocking(&dvi_start_sem);
-
   dvi_start(&dvi0);
 
-  // The text display is completely IRQ driven (takes up around 30% of cycles @
-  // VGA). We could do something useful, or we could just take a nice nap
+  core1_render();
+
   while (1) 
     __wfi();
   __builtin_unreachable();
 }
 
 //=============================================================================
-#ifdef EAR_PIN
-#define CPU_STEP_LOOP 10
-#else
 #define CPU_STEP_LOOP 100
-#endif
-//-----------------------------------------------------------------------------
+
 void __not_in_flash_func(main_loop)() {
   
-//  unsigned int lastInterruptFrame = _frames;
-  uint _INTcounter = 0;
+  unsigned int lastInterruptFrame = _frames;
   uint frames = 0;
   
   while (1) {
@@ -238,37 +232,13 @@ void __not_in_flash_func(main_loop)() {
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
 #endif
-
     if (!showMenu) {
-      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
-        //if (lastInterruptFrame != _frames) {
-        //  lastInterruptFrame = _frames;
-        //  zxSpectrum.interrupt();
-        //}
-        //-------------------------------------*/
-        // MADEIT for ZX-Spectrum Z80_INT_Interrupt = 50Hz
-        if (_INTcounter++ >= 625) {
-          _INTcounter = 0;
-          LineBorderSync = 0;
-          zxSpectrum.interrupt();
+      for (int i = 0; i < CPU_STEP_LOOP; ++i) {
+        if (lastInterruptFrame != _frames) {
+          lastInterruptFrame = _frames;
+          zxSpectrum.vsync();
         }
-
-        if (_INTcounter >= 78) {
-          if (LineBorderSync<240) {
-            if (_INTcounter & 1) {borderBuf[LineBorderSync++] = zxSpectrum.borderColour();}
-          }
-        }
-        //-------------------------------------*/
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
         zxSpectrum.step();
-#endif 
       }
     }
     else if (frames != _frames) {
@@ -329,9 +299,6 @@ int main() {
   );
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
-
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
  
   screenPtr = zxSpectrum.screenPtr();
   attrPtr = screenPtr + (32 * 24 * 8);
@@ -345,12 +312,10 @@ int main() {
   printf("Configuring DVI\n");
   dvi0.timing = &DVI_TIMING;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
-  dvi0.scanline_callback = core1_scanline_callback;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
 
-  printf("Prepare first scanline\n");
-
-  zx_prepare_hdmi_scanline(&dvi0, 0, _frames, screenPtr, attrPtr, zxSpectrum.borderColour());
+  // Configure the GPIO pins for audio
+  zxSpectrumAudioInit();
 
   printf("Core 1 start\n");
   sem_init(&dvi_start_sem, 0, 1);

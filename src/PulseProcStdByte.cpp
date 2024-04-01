@@ -5,7 +5,7 @@ PulseProcStdByte::PulseProcStdByte(PulseProcTone* t1) :
   _b(0x10000UL)
 {}
   
-void PulseProcStdByte::init(PulseProc *nxt, uint32_t b) {
+void __not_in_flash_func(PulseProcStdByte::init)(PulseProc *nxt, uint32_t b) {
   next(nxt);
   _b = b | 0x100UL;
   _ts[0] = 855;

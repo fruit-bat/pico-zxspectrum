@@ -10,6 +10,8 @@ set(picomputer_common_defines
   SDCARD_PIN_SPI0_SCK=10
   SDCARD_PIN_SPI0_MOSI=11
   SDCARD_PIN_SPI0_MISO=12
+
+  PICO_CORE1_STACK_SIZE=0x800
 )
 
 set(picomputer_common_src

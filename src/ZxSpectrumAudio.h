@@ -19,15 +19,31 @@
 //
 // See CMakeLists.txt files for configurations
 //
+#ifndef PICO_PWM_AUDIO_FREQ
+#define PICO_PWM_AUDIO_FREQ 28000
+#endif
+#ifndef PICO_HDMI_AUDIO_FREQ
+#define PICO_HDMI_AUDIO_FREQ 44100
+#endif
+#ifndef PICO_I2S_AUDIO_FREQ
+#define PICO_I2S_AUDIO_FREQ 44100
+#endif
+#if defined(PICO_HDMI_AUDIO)
+#define PICO_AUDIO_OUT_FREQ PICO_HDMI_AUDIO_FREQ
+#elif defined(PICO_AUDIO_I2S)
+#define PICO_AUDIO_OUT_FREQ PICO_I2S_AUDIO_FREQ
+#else
+#define PICO_AUDIO_OUT_FREQ PICO_PWM_AUDIO_FREQ
+#endif
+
 void zxSpectrumAudioInit();
 
-void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t buzzerSmoothed, uint32_t buzzer);
+void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t buzzerSmoothed, uint32_t buzzer, bool mute);
 
-#ifdef EAR_PIN
-uint32_t __not_in_flash_func(zxSpectrumReadEar)();
-#endif
+uint32_t zxSpectrumReadEar();
+bool zxSpectrumEarReady();
 
 uint32_t zxSpectrumAudioGetVolume();
 
 void zxSpectrumAudioSetVolume(uint32_t vol);
-
+bool zxSpectrumAudioReady();

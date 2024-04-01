@@ -164,7 +164,7 @@ void __not_in_flash_func(core1_main)() {
         frame_num,
         screenPtr,
         attrPtr,
-        zxSpectrum.borderColour()
+        zxSpectrum.borderColour(y)
       );
     }
 
@@ -190,11 +190,7 @@ void __not_in_flash_func(core1_main)() {
   __builtin_unreachable();
 }
 
-#ifdef EAR_PIN
-#define CPU_STEP_LOOP 10
-#else
 #define CPU_STEP_LOOP 100
-#endif
 
 void __not_in_flash_func(main_loop)(){
 
@@ -219,18 +215,9 @@ void __not_in_flash_func(main_loop)(){
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
-          zxSpectrum.interrupt();
+          zxSpectrum.vsync();
         }
-#ifdef EAR_PIN
-        if (zxSpectrum.moderate()) {
-          zxSpectrum.step(zxSpectrumReadEar());
-        }
-        else {
-          zxSpectrum.step();
-        }
-#else
         zxSpectrum.step();
-#endif 
       }
     }
     else if (frames != _frames) {

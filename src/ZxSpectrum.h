@@ -26,11 +26,17 @@ enum ZxSpectrumType {
   ZxSpectrum128k
 };
 
+enum ZxSpectrumIntSource {
+  SyncToDisplay = 0,
+  SyncToCpu     = 1
+};
+
 class ZxSpectrum {
 private:
   Z80 _Z80;
   uint32_t _tu32;
-  int32_t _ta32;
+  int32_t _ta32; // audio out timer
+  int32_t _te32; // audio in timer
   uint32_t _moderate;
   ZxSpectrumKeyboard *_keyboard1;
   ZxSpectrumKeyboard *_keyboard2;
@@ -42,15 +48,22 @@ private:
   bool _ear;
   uint32_t _earInvert;
   uint32_t _earDc;
+  uint32_t _eb; // 32 audio in samples
+  uint32_t _ebc; // index into the above
   
   PulseProcChain _pulseChain;
   
   ZxSpectrumAy _ay;
   ZxSpectrumType _type;
+  ZxSpectrumIntSource _intSource;
   uint32_t _modMul;
   bool _mute;
   uint32_t _buzzer;
+  uint32_t _sl;
+  uint32_t _slc;
   
+  volatile uint8_t _borderBuf[240];       //Border Buffer 240 lines
+
   uint32_t tStatesPerMilliSecond();
   
   inline uint32_t z80Step(uint32_t tstates) {
@@ -183,19 +196,26 @@ inline void writeIO(uint16_t address, uint8_t value)
   inline void stepBuzzer() {
     uint32_t d = (_port254 >> 4) & 1;
     if (d == 0 && _buzzer > 0) --_buzzer;
-    else if (d == 1 && _buzzer < 10) ++_buzzer;
+    else if (d == 1 && _buzzer < 5) ++_buzzer;
   }
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = __mul_instruction(_buzzer, 21);
+    const int32_t a1 = __mul_instruction(_buzzer, 42);
     const int32_t a2 = _ear ? 31 : 0;
     return a1 + a2;
   }
   
   inline uint32_t getBuzzer() {
     return ((_port254 >> 4) ^ _ear) & 1;
-  }  
-  
+  }
+
+  void stepScanline(const uint32_t c);
+
+  inline void interrupt() {
+    z80_int(&_Z80, true);
+    _Z80.int_line = false;
+  }
+
 public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
@@ -205,93 +225,13 @@ public:
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
+  ZxSpectrumIntSource intSource() { return _intSource; }
+  void intSource(ZxSpectrumIntSource intSource) { _intSource = intSource; }
     
-  void __not_in_flash_func(step)()
-  {
-      uint32_t c;
-      if (_mute) {
-        c = z80Step(32);
-      }
-      else {
-        uint32_t vA, vB, vC;
-        _ay.vol(vA, vB, vC);
-        c = z80Step(32);
-        stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
-        c += z80Step(32);
-        stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
-        c += z80Step(32);
-        stepBuzzer();
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());        
-      }
-      const uint32_t tu32 = time_us_32() << 5;
-      const uint32_t tud = tu32 - _tu32;
-      _tu32 = tu32;
-      if (_moderate) {
-        if (c == 0) {
-          _ta32 = 0;
-        }
-        else {
-          _ta32 += MUL32(c, _moderate) - tud; // +ve too fast, -ve too slow
-          if (_ta32 > 32) busy_wait_us_32(_ta32 >> 5);
-          // Try to catch up, but only for 500 or so instructions
-          if (_ta32 < -500 * 4 * 32)  _ta32 = -500 * 4 * 32;
-        }
-      }
-      if (tud) _ay.step(tud);
-      _pulseChain.advance(c, &_ear);
-  }
+  uint32_t step();
 
-#define EAR_BITS_PER_STEP 32
-
-  void __not_in_flash_func(step)(uint32_t eb)
-  {
-      uint32_t vA, vB, vC;
-
-      const uint32_t tu32 = time_us_32() << 5;
-      int32_t tud = tu32 - _tu32;
-      if (tud) _ay.step(tud); 
-      _tu32 = tu32;
-      _ay.vol(vA, vB, vC);
-      
-      if (_earInvert ? (eb == 0) : (~eb == 0)) {
-        if (_earDc++ > 16000) {
-           _earInvert ^= 1;
-        }
-      }
-      else {
-        _earDc = 0;
-      }
-      
-      uint32_t c = 0;
-      for (uint32_t i = 0; i < EAR_BITS_PER_STEP; ++i) {
-        _ta32 += 32;
-        if (_pulseChain.end()) _ear = (eb >> i) & 1;
-
-        while (_ta32 > 0) {
-          uint32_t t = z80Step(8);
-          c += t;
-          if (!_mute) {
-            stepBuzzer();
-            zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer());
-          }
-          if (t == 0) {
-            _ta32 = 0;
-            break;
-          }
-          _ta32 -= MUL32(t, _moderate);
-        }
-        if ((i&3)==3 && _pulseChain.playing()) {
-          _pulseChain.advance(c, &_ear);
-          c = 0;
-        }
-      }
-  }
-
-  void interrupt() {
-    z80_int(&_Z80, true);
-    _Z80.int_line = false;
+  inline void vsync() {
+    if (_intSource == SyncToDisplay) interrupt();
   }
 
   void moderate(uint32_t mul);
@@ -302,6 +242,7 @@ public:
   bool mute() { return _mute; }
 
   inline uint8_t borderColour() { return _borderColour; }
+  inline uint8_t borderColour(uint32_t y) { return _borderBuf[y]; }
 
   void setEar(bool ear) { _ear = ear; }
   bool getEar() { return _ear; }
@@ -329,5 +270,11 @@ public:
     );
   }
   void tzxOption(uint32_t option) { _pulseChain.option(option); }
-  
+
+  void toggleIntSource() { 
+    switch(_intSource) {
+      case SyncToCpu: _intSource = SyncToDisplay; break;
+      default: _intSource = SyncToCpu; break;
+    }
+   }
 };
