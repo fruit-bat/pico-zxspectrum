@@ -13,7 +13,7 @@ They support the following:
 * PS/2 keyboard
 * USB joysticks
 * HDMI video
-* PWM sound
+* HDMI/PWM audio
 * Audio input (load from tape)
 * SPI SD card
 * Serial port debug
@@ -25,6 +25,9 @@ All of these targets share the same pinout but make different use of the 4 audio
 ![image](ZxSpectrumBreadboardHdmi4PinAudio.png)
 
 #### Firmware
-[ZxSpectrumBreadboardHdmi1PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2)<br/>
-[ZxSpectrumBreadboardHdmi2PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2)<br/>
-[ZxSpectrumBreadboardHdmi4PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2)<br/>
+| Audio | Firmware |
+| - | - |
+| HDMI | [ZxSpectrumBreadboardHdmiAudio.uf2](/uf2/ZxSpectrumBreadboardHdmiAudio.uf2) |
+| 1 pin PWM | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
+| 2 pin PWM | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
+| 4 pin PWM | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |

@@ -3,8 +3,10 @@
 
 <a href="docs/1280px-ZXSpectrum48k.jpg"><img src="docs/640px-ZXSpectrum48k.png" height="200"/></a><a href="docs/1280px-ZX_Spectrum128K.jpg"><img src="docs/640px-ZX_Spectrum128K.png" height="200"/></a>
 
+This project is intended to be relatively easy to breadboard or prototype in some other way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+
 ## Features
-* DVI over HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
+* DVI/HDMI ([Wren's Amazing PicoDVI](https://github.com/Wren6991/PicoDVI))
 * LCD support (ST7789/ILI9341 320x240)
 * VGA video (RGB332, RGB222, RGBY1111)
 * USB keyboard & Joysticks
@@ -18,10 +20,19 @@
 * On screen menu system
 * Kempston and Sinclair joystick emulation
 
-## Supported Boards
-Click on the images below for mnore inforation about a particular board...
+## Updates
+01/04/24
+* New firmware with audio over HDMI
+* New interrupt mode based on CPU cycle count (now default)
+* New menu item to toggle interrupt between CPU cycle count and VSYNC
+* Improved PWM audio output (samples now buffered) 
 
-The idea of this project is for it to be relatively easy to breadboard or prototype in some way. It's just for fun and not a highly accurate emulation; hopefully it is good enough to be enjoyable.
+Thanks to [ikjordan](https://github.com/ikjordan) for his audio additions to [PicoDVI](https://github.com/ikjordan/PicoDVI).
+
+[more...](docs/updates.md)
+
+## Boards
+Click on the images below for more inforation ...
 
 <table>
   <tr>
@@ -41,9 +52,6 @@ The idea of this project is for it to be relatively easy to breadboard or protot
   </tr>
 </table>
 
-<br/>
-A variety of boards are also supported...
-
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
@@ -56,85 +64,23 @@ A variety of boards are also supported...
 <a href="docs/ZxSpectrumPiZero.md"><img src="docs/RP2040-PiZero-1.png" width="200px" />
 </a>
 
-## Updates
-18/02/24 
-* Added firmware for the Waveshare RP2040 - PiZero
-* Added option to save snapshots from the menu 
 
-11/02/24 
-* Start to separate out docs for each target
-* Initial support for ILI9341
-
-20/01/24 - Maintenance release of pre-built firmware: 
-* All .uf2 files rebuilt (see the uf2 folder)
-* Minor bug fixes
-* Updated libraries (Z80 etc)
-* Misc joystick fixes
-  
-I've moved to a new build machine, so let me know if there are any issues.
-At some point, I will try and organise the spralling README file.
-  
-01/01/24 - Added support for bobricius <a href="docs/pico_zx48_128">Pico ZX48/128</a>
-
-25/06/23 - Ability to persist volume control and joystick type (Sinclair/Kempston). The settings are persisted to .config file on the SD card and are loaded as the defaults on reset.
-To save setting goto ''settings->save'' on the menu. 
-I was hoping to save to flash memory but not got that to work as of yet.
-        
-04/06/23 - Add MURMULATOR platform, with thanks to [Javavi](https://github.com/javavi) 
-
-03/06/23 - Don't freeze on startup if no SD card is present. Release v0.33
-
-29/04/23 - Added new target for Bobricious PICOZX LCD + general release v0.32
-* PICOZX with LCD can now use either the LCD or VGA output
-* Volume control (for target where it makes sense)
-* Some changes to key mappings and menu navigation
-
-To boot into VGA mode hold down the 'fire' button during reset.
-
-The key mapping changes were intended to make navigating the menus with a joystick a bit easier.
-In particular, now left (usually) goes 'back' and right enters/activates an item. 
-Paging in the file-explorer is now achieved with the Page-Up and Page-Down keys.
-Not sure it will stay like this; mapping keys and directions in a way that works for the emulator and the menus can be tricky.
-
-19/01/23 - Added new target for [ArnoldUK](https://github.com/ArnoldUK).
-This target can read from a standard 48k Spectrum keyboard matrix.
-
-25/12/22 - Very basic support for sub-folders in the 'snapshots' and 'tapes' storage areas has been added.
-Files can be renamed, copied and deleted from the menu system.
-The quick-saves folder is now under the snapshots folder and behaves just like any other folder.
-The file 'explorer' has the following commands:
-* &lt;Enter&gt; - enter a folder/load a file
-* ESC   - Go up a folder
-* 1=DEL - Delete the file
-* 2=REN - Rename the file
-* 3=CPY - Copy the file
-* 4=PST - Paste the file
-* 5=REF - Reload the list of files in the current folder
-* 6=SAV - Save a snapshot to the current folder
-
-The function keys for playing tapes have been removed. 
-The idea is that in the future more useful controls will be added like 'play', 'stop' and 'eject'.
-
-5/12/22 - The emulator can now cope with more files in the snapshots and tapes folders without running out of memory.
-I've tested up to 400 but it may survive more that this.
-Directory entries are now written to a file .dcache which can be updated from the menus by 'rescanning' the folder.
-If you are adding files to the folders on a PC you can just delete the .dcache and it will get regenerated on next power-on.
-
-I've moved to the [Redcode Z80 emulator](https://github.com/redcode/Z80) as:
-* It comes with a test suite
-* It is much faster than the previous emulator
-
-TZX support added with some omissions:
-* No CSW support (raise an issue if this is important to you)
-* There are some compatiblity issues
-
-Builds with an RP_AUDIO_IN pin can now load from tape. 
-Preparing the audio signal will require a little extra circuitry and some examples will be added to this page.
-
-The move from [Carl's no-OS-FatFS-SD-SPI-RPi-Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico) to 
-[Pimoroni's FatFS](https://github.com/pimoroni/pimoroni-pico) was made as the SD card pins on the 
-[Pimoroni Pico DV Demo Base](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base) do not match up with the
-RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which gets around the problem.
+| Board | Notes |
+| ------ | -------- |
+| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | Some breadboard HDMI options |
+| [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | Some breadboard VGA options | 
+| [PICO ZX48/128](docs/pico_zx48_128.md) | ZX Spectrum 48K replacement board by Bobricius |
+| [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md) | ZX Spectrum with LCD and VGA by Bobricius |
+| [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | ZX Spectrum with VGA by Bobricius |
+| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | VGA micro-computer by Bobricius |
+| [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | LCD micro-computer by Bobricius |
+| [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | ZX Spectrum with LCD by Bobricius |
+| [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | Pimoroni's Pico DV board |
+| [Pimoroni Pico VGA](docs/ZxSpectrumPicoVga.md) | Pimoroni's Pico VGA board |
+| [HDMI + key matrix](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md) | Breadboard with key matrix support |
+| [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | Arnold UK's board |
+| [MURMULATOR](docs/MURMULATOR.md) | Micro with VGA/HDMI and more |
+| [RP2040-PiZero](docs/ZxSpectrumPiZero.md) | Waveshare RP2040-PiZero Development Board |
 
 ## Screen shots
 <img src="docs/screenshots/48k_boot_screen.png" height="200px"/> <img src="docs/screenshots/128k_boot_screen.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_1.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_2.png" height="200px"/> <img src="docs/screenshots/the_goblin_1.png" height="200px"/> <img src="docs/screenshots/the_goblin_2.png" height="200px"/> <img src="docs/screenshots/menu_main_vol.png" height="200px"/>
@@ -145,7 +91,7 @@ RP2040 SPI harware support. The Pimoroni library has a PIO SPI driver, which get
 
 ## Firmware targets
 Pre-built binary targets can be copied directly to a Pico Pi. 
-They can be downloaded from the links in the table below or found in the uf2 folder.
+They can be downloaded from the links on the page for the board below or found in the uf2 folder.
 
 Before attempting to update the firmware on your Pico make sure power supplies and any USB host devices have been disconnected (hub, keyboard, joysticks, etc.).
 
@@ -154,29 +100,6 @@ Push and hold the BOOTSEL button and plug your Pico into the USB port of your co
 <img src="docs/pico-bootsel.png" />
 
 On hardware with a faceplate the button is usually accessible through a small hole; the PICOZX Lcd board has the Pico facing inwards and you will need to reach a finger inside to press the bootsel button.
-
-| Board | Binary |
-| ------ | -------- |
-| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |
-| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi2PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi2PinAudio.uf2) |
-| [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | [ZxSpectrumBreadboardHdmi4PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmi4PinAudio.uf2) |
-| [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | [ZxSpectrum4PinAudioVga1111Ps2.uf2](uf2/ZxSpectrum4PinAudioVga1111Ps2.uf2) | 
-| [PICO ZX48/128](docs/pico_zx48_128.md) | [ZxSpectrumPicomputerVgaAukBob.uf2](uf2/ZxSpectrumPicomputerVgaAukBob.uf2) |
-| [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md)| [ZxSpectrumPicomputerZxLcd.uf2](uf2/ZxSpectrumPicomputerZxLcd.uf2) |
-| [PICOZX LCD with negative LCD](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxInverseLcd.uf2](uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
-| [PICO ZX LCD for ILI9341](docs/ZxSpectrumPicomputerZxLcd.md) | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
-| [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | [ZxSpectrumPicomputerVga222Zx.uf2](uf2/ZxSpectrumPicomputerVga222Zx.uf2) |
-| [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | [ZxSpectrumPicomputerVga.uf2](uf2/ZxSpectrumPicomputerVga.uf2) |
-| [PicomputerMax](docs/ZxSpectrumPicomputerMax.md) | [ZxSpectrumPicocomputerMax.uf2](uf2/ZxSpectrumPicocomputerMax.uf2) |
-| [PicomputerZX](docs/ZxSpectrumPicomputerZX.md) | [ZxSpectrumPicocomputerZX.uf2](uf2/ZxSpectrumPicocomputerZX.uf2) |
-| [Pimoroni Pico DV](docs/ZxSpectrumPicoDv.md) | [ZxSpectrumPicoDv.uf2](uf2/ZxSpectrumPicoDv.uf2) |
-| [Pimoroni Pico VGA](docs/ZxSpectrumPicoVga.md) | [ZxSpectrumPicoVga.uf2](uf2/ZxSpectrumPicoVga.uf2) |
-| [HDMI + key matrix](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md) |  [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |
-| [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | [ZxSpectrumPicomputerVgaAuk.uf2](uf2/ZxSpectrumPicomputerVgaAuk.uf2) |
-| [HDMI MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_HDMI.uf2](uf2/ZX-MURMULATOR_HDMI.uf2) |
-| [VGA MURMULATOR](docs/MURMULATOR.md) | [ZX-MURMULATOR_VGA.uf2](uf2/ZX-MURMULATOR_VGA.uf2) |
-| [RP2040-PiZero](docs/ZxSpectrumPiZero.md) | [ZxSpectrumPiZero.uf2](uf2/ZxSpectrumPiZero.uf2) |
-
 
 e.g. for the HDMI breadboard wiring show above use:
 ```sh
@@ -352,7 +275,7 @@ Clone the projects from github:
 Using *git* protocol:
 ```sh
 git clone git@github.com:raspberrypi/pico-extras.git
-git clone git@github.com:Wren6991/PicoDVI.git
+git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
@@ -364,7 +287,7 @@ git clone git@github.com:redcode/Zeta.git
 ...or using *https* protocol:
 ```sh
 git clone https://github.com/raspberrypi/pico-extras.git
-git clone https://github.com/Wren6991/PicoDVI.git
+git clone https://github.com/fruit-bat/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
@@ -381,7 +304,12 @@ and set FF_USE_FIND to 1
 ```
 #define FF_USE_FIND            1
 ```
-
+Switch to the audio branch of PicoDVI
+```sh
+cd PicoDVI
+git checkout audio
+cd -
+```
 
 Perform the build:
 ```sh
@@ -468,6 +396,7 @@ tio -m ODELBS /dev/ttyUSB0
 [badrianiulian](https://github.com/badrianiulian) for help testing and design work on the audio circuitry<br/>
 [redcode](https://github.com/redcode/Z80) for the [Z80 emulator](https://github.com/redcode/Z80)<br/>
 [Javavi](https://github.com/javavi) for adding support for the MURMULATOR platform <br/>
+[ikjordan](https://github.com/ikjordan) for his audio additions to [PicoDVI](https://github.com/ikjordan/PicoDVI)
 
 ## References
 [Z80 Test suite](https://github.com/raxoft/z80test)<br/>

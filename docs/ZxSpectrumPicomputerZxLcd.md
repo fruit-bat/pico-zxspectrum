@@ -29,14 +29,11 @@ The firmware produces RGB 222 for the VGA out:<br/>
 ![image](Pico%20VGA%20RGB222.png)
 
 #### Firmware
-This is for the LCD on the board by Bobricius<br/>
-[ZxSpectrumPicomputerZxLcd.uf2](/uf2/ZxSpectrumPicomputerZxLcd.uf2)
-
-This one has each colour channel inverted to the LCD<br/>
-[ZxSpectrumPicomputerZxInverseLcd.uf2](/uf2/ZxSpectrumPicomputerZxInverseLcd.uf2)
-
-This one works on an ILI9341 panel. It outputs RGB rather than BGR and has inverted colour channels.
-[ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2)
+| LCD | Colour Encoding | Colour Channel | Board | Firmware |
+| - | - | - | - | - | 
+| ST7789 | BGR | Normal | Bobricius | [ZxSpectrumPicomputerZxLcd.uf2](/uf2/ZxSpectrumPicomputerZxLcd.uf2) |
+| ST7789 | BGR | Inverted | | [ZxSpectrumPicomputerZxInverseLcd.uf2](/uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
+| ILI9341 | RGB | inverted | | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
 
 #### Build system notes
 The make system has some switches to adapt it to different LCD panels:

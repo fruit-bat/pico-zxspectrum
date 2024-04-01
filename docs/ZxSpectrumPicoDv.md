@@ -7,10 +7,8 @@ It supports the following:
 * USB keyboard
 * USB joysticks
 * HDMI video
-* I2S sound
+* HDMI/I2S audio
 * SPI SD card
-
-Please note that an SD card must be present for this version to start up (TODO - check this is still true).
 
 #### Circuit diagram
 
@@ -18,7 +16,10 @@ Please note that an SD card must be present for this version to start up (TODO -
 
 #### Firmware
 
-[ZxSpectrumPicoDv.uf2](/uf2/ZxSpectrumPicoDv.uf2)
+| Audio | Firmware |
+| - | - |
+| HDMI | [ZxSpectrumPicoDv_HdmiAudio.uf2](/uf2/ZxSpectrumPicoDv_HdmiAudio.uf2) |
+| I2S | [ZxSpectrumPicoDv_I2SAudio.uf2](/uf2/ZxSpectrumPicoDv_I2SAudio.uf2) |
 
 #### References
 
