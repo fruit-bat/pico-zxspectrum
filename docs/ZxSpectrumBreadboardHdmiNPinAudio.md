@@ -3,12 +3,7 @@ This is a series of targets based around my original breadboard prototype:
 
 <img src="pico_zxspectrum_prototype_1.jpg" height="200"/>
 
-The targets are: 
-* ZxSpectrumBreadboardHdmi4PinAudio
-* ZxSpectrumBreadboardHdmi2PinAudio
-* ZxSpectrumBreadboardHdmi1PinAudio
-
-They support the following:
+Support for the following:
 * USB keyboard
 * PS/2 keyboard
 * USB joysticks
