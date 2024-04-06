@@ -231,7 +231,11 @@ public:
   uint32_t step();
 
   inline void vsync() {
-    if (_intSource == SyncToDisplay) interrupt();
+    if (_intSource == SyncToDisplay) {
+      interrupt();
+      _sl = 0; 
+      _slc = 0;
+    }
   }
 
   void moderate(uint32_t mul);

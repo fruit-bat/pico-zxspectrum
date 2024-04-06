@@ -206,7 +206,7 @@ void __not_in_flash_func(core1_render)() {
     if (y == FRAME_HEIGHT) {
       y = 0;
       ys = 0;
-      for(int i = 0; i < 0; ++i) {
+      for(int i = 0; i < 30; ++i) {
         if (showMenu) {
           pcw_prepare_blankline_80(&dvi0, _frames);
         }
@@ -215,14 +215,6 @@ void __not_in_flash_func(core1_render)() {
         }
       }
       _frames++;
-      for(int i = 0; i < 30; ++i) {
-        if (showMenu) {
-          pcw_prepare_blankline_80(&dvi0, _frames);
-        }
-        else {
-          zx_prepare_hdmi_scanline(&dvi0, 0, _frames, screenPtr, attrPtr, 0);
-        }
-      }
       // TODO Tidy this mechanism up
       screenPtr = zxSpectrum.screenPtr();
       attrPtr = screenPtr + (32 * 24 * 8);
