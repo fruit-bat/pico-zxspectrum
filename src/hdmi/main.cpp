@@ -63,7 +63,8 @@ extern "C" {
 // DVDD 1.2V (1.1V seems ok too)
 #define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
-#define DVI_TIMING dvi_timing_640x480p_60hz
+#define DVI_TIMING dvi_timing_720x540p_50hz
+//dvi_timing_640x480p_60hz
 
 #define LED_PIN 25
 
@@ -180,6 +181,14 @@ static volatile uint _frames = 0;
 void __not_in_flash_func(core1_render)() {
   static uint y = 0;
   static uint ys = 0;
+    for(int i = 0; i < 15; ++i) {
+      if (showMenu) {
+        pcw_prepare_blankline_80(&dvi0, _frames);
+      }
+      else {
+        zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, 0);
+      }
+    }
   while(true) {
     if (showMenu) {
       uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
@@ -197,11 +206,27 @@ void __not_in_flash_func(core1_render)() {
     if (y == FRAME_HEIGHT) {
       y = 0;
       ys = 0;
+      for(int i = 0; i < 0; ++i) {
+        if (showMenu) {
+          pcw_prepare_blankline_80(&dvi0, _frames);
+        }
+        else {           
+          zx_prepare_hdmi_scanline(&dvi0, 239, _frames, screenPtr, attrPtr, 0);
+        }
+      }
       _frames++;
+      for(int i = 0; i < 30; ++i) {
+        if (showMenu) {
+          pcw_prepare_blankline_80(&dvi0, _frames);
+        }
+        else {
+          zx_prepare_hdmi_scanline(&dvi0, 0, _frames, screenPtr, attrPtr, 0);
+        }
+      }
       // TODO Tidy this mechanism up
       screenPtr = zxSpectrum.screenPtr();
       attrPtr = screenPtr + (32 * 24 * 8);
-      
+
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;

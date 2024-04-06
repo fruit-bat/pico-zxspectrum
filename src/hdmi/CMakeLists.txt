@@ -57,7 +57,7 @@ set(zxspectrum_hdmi_defines
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
   # Set the resolution of the menu screen
-  PCS_COLS=80
+  PCS_COLS=90
   PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1  
@@ -70,7 +70,7 @@ set(zxspectrum_hdmi_defines
 
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
   ${zxspectrum_hdmi_defines}
-  EAR_PIN=11
+#  EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
   USE_PS2_KBD

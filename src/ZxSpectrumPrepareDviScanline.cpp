@@ -33,17 +33,17 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   if (y < 24 || y >= (24+192)) {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
-        40,          // r0 is width in characters
+        40+5,          // r0 is width in characters
         plane,       // r1 is colour channel
         p,           // r2 is output TMDS buffer
         borderColor  // r3 is the colour attribute
-      );    
+      ); 
     }
   }
   else {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
-        4,           // r0 is width in characters
+        4+2,           // r0 is width in characters
         plane,       // r1 is colour channel
         p,           // r2 is output TMDS buffer
         borderColor  // r3 is the colour attribute
@@ -56,7 +56,7 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
         plane
       );  
       p = tmds_encode_border(
-        4,           // r0 is width in characters
+        4+3,           // r0 is width in characters
         plane,       // r1 is colour channel
         p,           // r2 is output TMDS buffer
         borderColor  // r3 is the colour attribute
