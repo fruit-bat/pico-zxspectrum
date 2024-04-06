@@ -189,6 +189,14 @@ extern struct dvi_inst dvi0;
 #define AUDIO_BUFFER_SIZE   256
 audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
 
+#if (PICO_HDMI_AUDIO_FREQ == 32000)
+#define HDMI_N     4096     // From HDMI standard for 32kHz
+#elif (PICO_HDMI_AUDIO_FREQ == 44100)
+#define HDMI_N     6272     // From HDMI standard for 44.1kHz
+#else
+#define HDMI_N     6144     // From HDMI standard for 48kHz
+#endif
+
 static void init_hdmi_audio() {
   dvi_get_blank_settings(&dvi0)->top    = 0;
   dvi_get_blank_settings(&dvi0)->bottom = 0;
@@ -196,8 +204,8 @@ static void init_hdmi_audio() {
   dvi_set_audio_freq(
     &dvi0, 
     PICO_HDMI_AUDIO_FREQ, 
-    28000, // TODO I think this depends on PICO_HDMI_AUDIO_FREQ
-    6272   // TODO I think this depends on PICO_HDMI_AUDIO_FREQ
+    dvi0.timing->bit_clk_khz*HDMI_N/(PICO_HDMI_AUDIO_FREQ/100)/128,
+    HDMI_N
   );
   increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
 }
