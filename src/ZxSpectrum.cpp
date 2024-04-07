@@ -6,6 +6,10 @@
 #include <pico/stdlib.h>
 #include "SizingOutputStream.h"
 
+#ifndef ZX_SPECTRUM_INT_SRC 
+#define ZX_SPECTRUM_INT_SRC SyncToCpu
+#endif
+
 ZxSpectrum::ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
@@ -20,7 +24,7 @@ ZxSpectrum::ZxSpectrum(
   _ear(false),
   _earInvert(0),
   _earDc(0),
-  _intSource(SyncToCpu),
+  _intSource(ZX_SPECTRUM_INT_SRC),
   _buzzer(0),
   _sl(0),
   _slc(0)

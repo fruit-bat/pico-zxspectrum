@@ -12,6 +12,11 @@ add_executable(ZxSpectrumBreadboardHdmiAudio
   ${zxspectrum_hdmi_src}
 )
 
+add_executable(ZxSpectrumBreadboardHdmiAudio720x540x50Hz
+  ${zxspectrum_common_src}
+  ${zxspectrum_hdmi_src}
+)
+
 pico_generate_pio_header(ZxSpectrumBreadboardHdmiAudio 
   ${zxspectrum_ear_in_pio}
 )
@@ -56,9 +61,6 @@ set(zxspectrum_hdmi_defines
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=90
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1  
   # Configure the SPI sd card to use SPI0
@@ -68,8 +70,44 @@ set(zxspectrum_hdmi_defines
   SDCARD_PIN_SPI0_MISO=4
 )
 
+set(zxspectrum_hdmi_640x480x60Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Set the DVI timing
+  DVI_TIMING=dvi_timing_640x480p_60hz
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=480
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToCpu
+)
+
+set(zxspectrum_hdmi_720x540x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  # Set the DVI timing
+  DVI_TIMING=dvi_timing_720x540p_50hz
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=540
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+)
+
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  EAR_PIN=11
+  PICO_HDMI_AUDIO 
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+)
+
+target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
+  ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_720x540x50Hz_defines}
 #  EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
@@ -78,6 +116,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   SPK_PIN=20
   EAR_PIN=11
   # Enable the PS/2 keyboard
@@ -86,6 +125,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   SPK_PIN=20
   EAR_PIN=11
   BZR_PIN=21
@@ -95,6 +135,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   BZR_PIN=21
   EAR_PIN=11
   AY8912_A_PIN=20
@@ -182,9 +223,6 @@ set (zxspectrum_pico_dv_defines
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
@@ -227,6 +265,7 @@ target_compile_definitions(ZxSpectrumPicoDv_I2SAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio PRIVATE
   ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   PICO_HDMI_AUDIO
 )
 
@@ -254,16 +293,14 @@ add_executable(ZxSpectrumPiZero
 )
 
 target_compile_definitions(ZxSpectrumPiZero PRIVATE
-  # Set up the DVI output to match the Waveshare RP2040 PiZero
+# Set up the DVI output to match the Waveshare RP2040 PiZero
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO

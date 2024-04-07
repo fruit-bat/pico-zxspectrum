@@ -54,7 +54,6 @@ extern "C" {
 #define UART_RX_PIN 1
 
 // DVDD 1.2V (1.1V seems ok too)
-#define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
 #define DVI_TIMING dvi_timing_640x480p_60hz
 
@@ -189,7 +188,7 @@ void __not_in_flash_func(core1_render)() {
   #ifdef USE_KEY_MATRIX
     zx_keyscan_row();
   #endif
-    if (y == FRAME_HEIGHT) {
+    if (y == 240) {
       y = 0;
       ys = 0;
       _frames++;

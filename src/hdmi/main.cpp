@@ -50,6 +50,7 @@ extern "C" {
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
+#include "ZxSpectrumDisplay.h"
 
 
 #define UART_ID uart0
@@ -61,10 +62,7 @@ extern "C" {
 #define UART_RX_PIN 1
 
 // DVDD 1.2V (1.1V seems ok too)
-#define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
-#define DVI_TIMING dvi_timing_720x540p_50hz
-//dvi_timing_640x480p_60hz
 
 #define LED_PIN 25
 
@@ -181,7 +179,7 @@ static volatile uint _frames = 0;
 void __not_in_flash_func(core1_render)() {
   static uint y = 0;
   static uint ys = 0;
-    for(int i = 0; i < 15; ++i) {
+    for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
       if (showMenu) {
         pcw_prepare_blankline_80(&dvi0, _frames);
       }
@@ -203,10 +201,10 @@ void __not_in_flash_func(core1_render)() {
   #ifdef USE_KEY_MATRIX
     zx_keyscan_row();
   #endif
-    if (y == FRAME_HEIGHT) {
+    if (y == 240) {
       y = 0;
       ys = 0;
-      for(int i = 0; i < 30; ++i) {
+      for(int i = 0; i < DISPLAY_BLANK_LINES; ++i) {
         if (showMenu) {
           pcw_prepare_blankline_80(&dvi0, _frames);
         }
