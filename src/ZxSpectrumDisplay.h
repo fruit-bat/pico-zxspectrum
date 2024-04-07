@@ -8,3 +8,11 @@
 #endif
 // The number of blank lines to add, taking into account line doubling
 #define DISPLAY_BLANK_LINES ((DISPLAY_HEIGHT_PIXELS/2) - 240)
+// The number of pixels to display in the border, taking into account pixel doubling
+#define DISPLAY_BORDER_PIXELS (DISPLAY_WIDTH_PIXELS/2)
+// The number of pixels to display in the left border, taking into account pixel doubling
+#define DISPLAY_BORDER_PIXELS_LEFT ((DISPLAY_BORDER_PIXELS - 240) >> 1)
+// The number of pixels to display in the left border, taking into account pixel doubling
+#define DISPLAY_BORDER_PIXELS_RIGHT (DISPLAY_BORDER_PIXELS - 240 - DISPLAY_BORDER_PIXELS_LEFT)
+
+

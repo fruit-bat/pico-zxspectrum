@@ -5,6 +5,7 @@ extern "C" {
 #include "common_dvi_pin_configs.h"
 #include "tmds_encode_zxspectrum.h"
 }
+#include "ZxSpectrumDisplay.h"
 
 // Screen handler
 //
@@ -33,20 +34,20 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   if (y < 24 || y >= (24+192)) {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
-        360,         // r0 is width in pixels
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
+        DISPLAY_BORDER_PIXELS,       // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        borderColor                  // r3 is the colour attribute
       ); 
     }
   }
   else {
     for (int plane = 0; plane < 3; ++plane) {
       p = tmds_encode_border(
-        52,          // r0 is width in pixels
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
+        DISPLAY_BORDER_PIXELS_LEFT,  // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        borderColor                  // r3 is the colour attribute
       );
       p = tmds_encode_screen(
         (const uint8_t*)s,
@@ -56,10 +57,10 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
         plane
       );  
       p = tmds_encode_border(
-        52,          // r0 is width in pixels
-        plane,       // r1 is colour channel
-        p,           // r2 is output TMDS buffer
-        borderColor  // r3 is the colour attribute
+        DISPLAY_BORDER_PIXELS_RIGHT, // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        borderColor                  // r3 is the colour attribute
       );
     }
   }
