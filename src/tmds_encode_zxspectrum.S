@@ -86,7 +86,7 @@ tmds_encode_screen:
 //
 // BORDER
 //
-// r0 is width in characters
+// r0 is width in pixels
 // r1 is colour channel
 // r2 is output TMDS buffer
 // r3 is the colour attribute
@@ -103,7 +103,7 @@ tmds_encode_border:
   mov r6, r10
   push {r4-r6}
 
-  lsls r0, #5         // Work out the number of words (chars * 8 * 2 * 2)
+  lsls r0, #2         // Work out the number of words (pixels * 2 * 2)
   add r0, r2
   mov ip, r0 
 
@@ -118,15 +118,28 @@ tmds_encode_border:
   ldr r7, =(8*3)
   adds r6, r1, r7     // move to the entry 1111
   ldmia r6, {r6, r7}  // Load the LUT entries into r6,r7
+  mov r4, ip          // Move the end address to r4  
   b 4f
 3:
-  stmia r2!, {r6-r7}  // Write out the LUT entries 
+  subs r0, r4, r2
+  cmp r0, #64
+  blt 4f
+  
+  stmia r2!, {r6-r7}  // Write out the LUT entries, 2 Pixels at a time
   stmia r2!, {r6-r7}  // ... 
   stmia r2!, {r6-r7}  // ... 
+  stmia r2!, {r6-r7}  // 1st Character block
+
+  stmia r2!, {r6-r7}  // ...
   stmia r2!, {r6-r7}  // ... 
+  stmia r2!, {r6-r7}  // ... 
+  stmia r2!, {r6-r7}  // 2nd Character blocks   
+
+  b 3b
 4:
-  cmp r2, ip
-  blo 3b
+  stmia r2!, {r6-r7}  // Write out the LUT entries, 2 Pixels at a time
+  cmp r2, r4
+  blo 4b
 
   pop {r4-r6}
   mov r8, r4
