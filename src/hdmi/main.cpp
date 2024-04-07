@@ -14,7 +14,9 @@
 #include "pico/sem.h"
 #include "hardware/pwm.h"
 
-#ifdef USE_PS2_KBD
+#ifdef USE_MRMLTR_PS2_KBD
+#include "ps2kbd_mrmltr.h"
+#elif defined(USE_PS2_KBD)
 #include "ps2kbd.h"
 #endif
 
@@ -63,6 +65,9 @@ extern "C" {
 
 // DVDD 1.2V (1.1V seems ok too)
 #define VREG_VSEL VREG_VOLTAGE_1_20
+#ifndef DVI_TIMING
+#define DVI_TIMING dvi_timing_640x480p_60hz
+#endif
 
 #define LED_PIN 25
 
@@ -162,9 +167,13 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   }
 }
 
-
-
-#ifdef USE_PS2_KBD
+#ifdef USE_MRMLTR_PS2_KBD
+static Ps2Kbd_Mrmltr ps2kbd(
+  pio1,
+  8,
+  process_kbd_report
+);
+#elif defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
   6,
@@ -179,14 +188,14 @@ static volatile uint _frames = 0;
 void __not_in_flash_func(core1_render)() {
   static uint y = 0;
   static uint ys = 0;
-    for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
-      if (showMenu) {
-        pcw_prepare_blankline_80(&dvi0, _frames);
-      }
-      else {
-        zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, 0);
-      }
+  for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
+    if (showMenu) {
+      pcw_prepare_blankline_80(&dvi0, _frames);
     }
+    else {
+      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, 0);
+    }
+  }
   while(true) {
     if (showMenu) {
       uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
@@ -195,7 +204,14 @@ void __not_in_flash_func(core1_render)() {
       }
     }
     else {
-      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, zxSpectrum.borderColour(y));
+      zx_prepare_hdmi_scanline(
+        &dvi0, 
+        y, 
+        _frames, 
+        screenPtr, 
+        attrPtr, 
+        zxSpectrum.borderColour(y)
+      );
       y++;
     }
   #ifdef USE_KEY_MATRIX
@@ -258,7 +274,7 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
-      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
+      for (int i = 0; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.vsync();

@@ -126,8 +126,7 @@ static Ps2Kbd_Mrmltr ps2kbd(
   8,
   process_kbd_report
 );
-#endif
-#ifdef USE_PS2_KBD
+#elif defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
   6,

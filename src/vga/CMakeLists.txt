@@ -129,6 +129,7 @@ target_compile_definitions(ZxSpectrumPicoMiteVGA PRIVATE
   BZR_PIN=6
   SPK_PIN=7
   # Enable the PS/2 keyboard
+  USE_PS2_KBD
   USE_MRMLTR_PS2_KBD    
 )
 
