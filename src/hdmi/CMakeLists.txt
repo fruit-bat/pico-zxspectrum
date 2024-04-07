@@ -21,6 +21,10 @@ pico_generate_pio_header(ZxSpectrumBreadboardHdmiAudio
   ${zxspectrum_ear_in_pio}
 )
 
+pico_generate_pio_header(ZxSpectrumBreadboardHdmiAudio720x540x50Hz 
+  ${zxspectrum_ear_in_pio}
+)
+
 add_executable(ZxSpectrumBreadboardHdmi1PinAudio
   ${zxspectrum_common_src}
   ${zxspectrum_hdmi_src}
@@ -87,6 +91,7 @@ set(zxspectrum_hdmi_720x540x50Hz_defines
   # Set the resolution of the menu screen
   PCS_COLS=90
   PCS_ROWS=30
+  SZ_FRAME_X=5
   # Set the DVI timing
   DVI_TIMING=dvi_timing_720x540p_50hz
   # The display resolution
@@ -108,7 +113,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_720x540x50Hz_defines}
-#  EAR_PIN=11
+  EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
   USE_PS2_KBD
@@ -182,6 +187,11 @@ target_link_libraries(ZxSpectrumBreadboardHdmiAudio
   ${zxspectrum_hdmi_libs}
 )
 
+target_link_libraries(ZxSpectrumBreadboardHdmiAudio720x540x50Hz
+  ${zxspectrum_common_libs}
+  ${zxspectrum_hdmi_libs}
+)
+
 target_link_libraries(ZxSpectrumBreadboardHdmi1PinAudio
   ${zxspectrum_common_libs}
   ${zxspectrum_hdmi_libs}
@@ -207,6 +217,7 @@ pico_enable_stdio_uart(ZxSpectrumBreadboardHdmiKbd1PinAudio 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(ZxSpectrumBreadboardHdmiAudio)
+pico_add_extra_outputs(ZxSpectrumBreadboardHdmiAudio720x540x50Hz)
 pico_add_extra_outputs(ZxSpectrumBreadboardHdmi1PinAudio)
 pico_add_extra_outputs(ZxSpectrumBreadboardHdmi2PinAudio)
 pico_add_extra_outputs(ZxSpectrumBreadboardHdmi4PinAudio)

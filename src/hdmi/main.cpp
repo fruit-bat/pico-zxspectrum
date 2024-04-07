@@ -201,7 +201,7 @@ void __not_in_flash_func(core1_render)() {
   #ifdef USE_KEY_MATRIX
     zx_keyscan_row();
   #endif
-    if (y == 240) {
+    if (y == ZX_SPECTRUM_SCREEN_HEIGHT) {
       y = 0;
       ys = 0;
       for(int i = 0; i < DISPLAY_BLANK_LINES; ++i) {
