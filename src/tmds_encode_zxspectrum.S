@@ -119,25 +119,22 @@ tmds_encode_border:
   adds r6, r1, r7     // move to the entry 1111
   ldmia r6, {r6, r7}  // Load the LUT entries into r6,r7
   mov r4, ip          // Move the end address to r4  
-  b 4f
 3:
   subs r0, r4, r2
   cmp r0, #64
-  blt 4f
-  
+  blt 5f
   stmia r2!, {r6-r7}  // Write out the LUT entries, 2 Pixels at a time
   stmia r2!, {r6-r7}  // ... 
   stmia r2!, {r6-r7}  // ... 
   stmia r2!, {r6-r7}  // 1st Character block
-
   stmia r2!, {r6-r7}  // ...
   stmia r2!, {r6-r7}  // ... 
   stmia r2!, {r6-r7}  // ... 
   stmia r2!, {r6-r7}  // 2nd Character blocks   
-
   b 3b
 4:
   stmia r2!, {r6-r7}  // Write out the LUT entries, 2 Pixels at a time
+5:  
   cmp r2, r4
   blo 4b
 
