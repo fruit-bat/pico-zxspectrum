@@ -82,6 +82,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _tu32 = time_us_32() << 5;
   _sl = 0; 
   _slc = 0;
+  _fc = 0;
+  _fcf = 0;
 }
 
 // 0 - Z80 unmoderated

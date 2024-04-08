@@ -197,6 +197,12 @@ void __not_in_flash_func(core1_render)() {
     }
   }
   while(true) {
+    const bool ringoMode = zxSpectrum.flipsPerFrame() > 40;
+    if (ringoMode) {
+      screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
+      attrPtr = screenPtr + (32 * 24 * 8);
+    }
+
     if (showMenu) {
       uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
       if (0 == (y & 7)) {
@@ -229,10 +235,10 @@ void __not_in_flash_func(core1_render)() {
         }
       }
       _frames++;
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-
+      if (!ringoMode) {
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
