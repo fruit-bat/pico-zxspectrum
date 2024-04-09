@@ -186,8 +186,8 @@ unsigned char* attrPtr;
 static volatile uint _frames = 0;
 
 void __not_in_flash_func(core1_render)() {
-  static uint y = 0;
-  static uint ys = 0;
+  uint y = 0;
+  uint ys = 0;
   for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
     if (showMenu) {
       pcw_prepare_blankline_80(&dvi0, _frames);
@@ -197,7 +197,8 @@ void __not_in_flash_func(core1_render)() {
     }
   }
   while(true) {
-    const bool ringoMode = zxSpectrum.flipsPerFrame() > 40;
+    const uint32_t fpf = zxSpectrum.flipsPerFrame();
+    const bool ringoMode = fpf > 46 && fpf < 52;
     if (ringoMode) {
       screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
       attrPtr = screenPtr + (32 * 24 * 8);
@@ -234,7 +235,7 @@ void __not_in_flash_func(core1_render)() {
           zx_prepare_hdmi_scanline(&dvi0, 239, _frames, screenPtr, attrPtr, 0);
         }
       }
-      _frames++;
+     _frames++;
       if (!ringoMode) {
         screenPtr = zxSpectrum.screenPtr();
         attrPtr = screenPtr + (32 * 24 * 8);

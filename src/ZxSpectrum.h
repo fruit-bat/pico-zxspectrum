@@ -219,6 +219,7 @@ inline void writeIO(uint16_t address, uint8_t value)
     z80_int(&_Z80, true);
     _Z80.int_line = false;
     _fcf = _fc;
+    _fc = 0;
   }
 
 public:
