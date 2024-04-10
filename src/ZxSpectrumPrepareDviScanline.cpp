@@ -33,18 +33,44 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
   
   if (y < 24 || y >= (24+192)) {
     for (int plane = 0; plane < 3; ++plane) {
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK      
       p = tmds_encode_border(
-        DISPLAY_BORDER_PIXELS,       // r0 is width in pixels
+        DISPLAY_BORDER_PIXELS_LEFT_BLANK, // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        0                            // r3 is the colour attribute
+      );
+#endif
+      p = tmds_encode_border(
+        DISPLAY_BORDER_PIXELS
+          - DISPLAY_BORDER_PIXELS_LEFT_BLANK
+          - DISPLAY_BORDER_PIXELS_RIGHT_BLANK, // r0 is width in pixels
         plane,                       // r1 is colour channel
         p,                           // r2 is output TMDS buffer
         borderColor                  // r3 is the colour attribute
+      );
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
+      p = tmds_encode_border(
+        DISPLAY_BORDER_PIXELS_RIGHT_BLANK, // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        0                            // r3 is the colour attribute
       ); 
+#endif
     }
   }
   else {
     for (int plane = 0; plane < 3; ++plane) {
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK      
       p = tmds_encode_border(
-        DISPLAY_BORDER_PIXELS_LEFT,  // r0 is width in pixels
+        DISPLAY_BORDER_PIXELS_LEFT_BLANK, // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        0                            // r3 is the colour attribute
+      );      
+#endif
+      p = tmds_encode_border(
+        DISPLAY_BORDER_PIXELS_LEFT_COLORED,  // r0 is width in pixels
         plane,                       // r1 is colour channel
         p,                           // r2 is output TMDS buffer
         borderColor                  // r3 is the colour attribute
@@ -57,11 +83,19 @@ void __not_in_flash_func(zx_prepare_hdmi_scanline)(
         plane
       );  
       p = tmds_encode_border(
-        DISPLAY_BORDER_PIXELS_RIGHT, // r0 is width in pixels
+        DISPLAY_BORDER_PIXELS_RIGHT_COLORED, // r0 is width in pixels
         plane,                       // r1 is colour channel
         p,                           // r2 is output TMDS buffer
         borderColor                  // r3 is the colour attribute
       );
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
+      p = tmds_encode_border(
+        DISPLAY_BORDER_PIXELS_RIGHT_BLANK, // r0 is width in pixels
+        plane,                       // r1 is colour channel
+        p,                           // r2 is output TMDS buffer
+        0                            // r3 is the colour attribute
+      );
+#endif
     }
   }
   queue_add_blocking(&dvi->q_tmds_valid, &tmdsbuf);
