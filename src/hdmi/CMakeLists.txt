@@ -221,26 +221,7 @@ set (zxspectrum_pico_dv_defines
   SDCARD_PIN_SPI0_MISO=19
 )
 
-add_executable(ZxSpectrumPicoDv_I2SAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-add_executable(ZxSpectrumPicoDv_HdmiAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicoDv_I2SAudio 
-  ${zxspectrum_audio_i2s_pio}
-)
-
-pico_generate_pio_header(ZxSpectrumPicoDv_HdmiAudio 
-  ${zxspectrum_audio_i2s_pio}
-)
-
-target_compile_definitions(ZxSpectrumPicoDv_I2SAudio PRIVATE
-  ${zxspectrum_pico_dv_defines}
+set (zxspectrum_pico_dv_i2saudio_defines
   # Configure the I2S audio 
   PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
@@ -250,25 +231,53 @@ target_compile_definitions(ZxSpectrumPicoDv_I2SAudio PRIVATE
   PICO_AUDIO_I2S_BCLK=27
 )
 
-target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio PRIVATE
+foreach(target
+  ZxSpectrumPicoDv_I2SAudio_640x480x60Hz
+  ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz
+  ZxSpectrumPicoDv_I2SAudio_720x576x50Hz
+  ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_audio_i2s_pio}
+  )
+
+  target_link_libraries(${target} 
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_640x480x60Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
+)
+
+target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
   PICO_HDMI_AUDIO
 )
 
-target_link_libraries(ZxSpectrumPicoDv_I2SAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_720x576x50Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
 )
 
-target_link_libraries(ZxSpectrumPicoDv_HdmiAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  PICO_HDMI_AUDIO
 )
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicoDv_I2SAudio)
-pico_add_extra_outputs(ZxSpectrumPicoDv_HdmiAudio)
 
 ########################################################################
 # Waveshare - RP2040 - PicoZero
