@@ -9,6 +9,7 @@ It supports the following:
 * HDMI video
 * HDMI/I2S audio
 * SPI SD card
+* Ringo mode
 
 #### Circuit diagram
 
