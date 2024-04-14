@@ -31,9 +31,35 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
+#include "ZxSpectrumDisplay.h"
 
 #define LED_PIN 25
 #define SPK_PIN 9
+
+// https://tomverbeure.github.io/video_timings_calculator
+// CEA-861
+const scanvideo_timing_t vga_timing_768x576_50 =
+{
+  .clock_freq = 27000000,
+
+  .h_active = 720,
+  .v_active = 576,
+
+  .h_front_porch = 12,
+  .h_pulse = 64,
+  .h_total = 864,
+  .h_sync_polarity = 1,
+
+  .v_front_porch = 5,
+  .v_pulse = 5,
+  .v_total = 625,
+  .v_sync_polarity = 1,
+
+  .enable_clock = 0,
+  .clock_polarity = 0,
+
+  .enable_den = 0
+};
 
 const scanvideo_mode_t vga_mode_640x240_60 =
 {
@@ -45,8 +71,19 @@ const scanvideo_mode_t vga_mode_640x240_60 =
   .yscale = 2,
 };
 
-#define VGA_MODE vga_mode_640x240_60       
-#define VREG_VSEL VREG_VOLTAGE_1_10
+const scanvideo_mode_t vga_mode_768x288_50 =
+{
+  .default_timing = &vga_timing_768x576_50,
+  .pio_program = &video_24mhz_composable,
+  .width = 720,
+  .height = 576,
+  .xscale = 1,
+  .yscale = 2,
+};
+
+//#define VGA_MODE vga_mode_640x240_60       
+#define VGA_MODE vga_mode_768x288_50       
+#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
 
@@ -151,7 +188,14 @@ void __not_in_flash_func(core1_main)() {
     uint32_t frame_num = scanvideo_frame_number(scanline_buffer->scanline_id);
     uint32_t y = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-    if (showMenu) {
+    const uint32_t fpf = zxSpectrum.flipsPerFrame();
+    const bool ringoMode = fpf > 46 && fpf < 52;
+    if (ringoMode) {
+      screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
+      attrPtr = screenPtr + (32 * 24 * 8);
+    }
+
+    if (false && showMenu) {
       pcw_prepare_scanvideo_scanline_80(
         scanline_buffer,
         y,
@@ -171,11 +215,12 @@ void __not_in_flash_func(core1_main)() {
     // Release the rendered buffer into the wild
     scanvideo_end_scanline_generation(scanline_buffer);
     
-    if (y == 239) { // TODO use a const / get from vmode
+    if (y == 239) {
       
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
+      if (!ringoMode) {
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
       
       if (toggleMenu) {
         showMenu = !showMenu;
@@ -231,7 +276,7 @@ int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
   // TODO init 16 bit VGA
-  set_sys_clock_khz(200000, true);
+  set_sys_clock_khz(VGA_MODE.default_timing->clock_freq / 100, true);
   sleep_ms(100);
 
   //Initialise I/O
