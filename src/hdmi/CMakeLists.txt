@@ -351,9 +351,6 @@ set(murmulator_common_defines
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
@@ -390,64 +387,56 @@ set(murmulator_hdmi_audio_defines
   PICO_HDMI_AUDIO
 )
 
-add_executable(ZX-MURMULATOR_HDMI
-  ${zxspectrum_common_src}
-  ${zxspectrum_murmulator_src}
+foreach(target 
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz
 )
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_murmulator_src}
+  )
 
-add_executable(ZX-MURMULATOR_HDMI_PWM_AUDIO
-  ${zxspectrum_common_src}
-  ${zxspectrum_murmulator_src}
-)
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
 
-pico_generate_pio_header(ZX-MURMULATOR_HDMI
-  ${zxspectrum_ear_in_pio}
-)
+  pico_generate_pio_header(${target}
+    ${zxspectrum_ear_in_pio}
+  )
 
-pico_generate_pio_header(ZX-MURMULATOR_HDMI_PWM_AUDIO
-  ${zxspectrum_ear_in_pio}
-)
+  pico_generate_pio_header(${target}
+    ${murmulator_ps2kbd_pio}
+  )
 
-pico_generate_pio_header(ZX-MURMULATOR_HDMI
-  ${murmulator_ps2kbd_pio}
-)
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})  
+endforeach()
 
-pico_generate_pio_header(ZX-MURMULATOR_HDMI_PWM_AUDIO
-  ${murmulator_ps2kbd_pio}
-)
-
-# ============================================================
-target_compile_definitions(ZX-MURMULATOR_HDMI PRIVATE
+target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_hdmi_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
-target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO PRIVATE
+target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_hdmi_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_pwm_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
-set(zxspectrum_murmulator_libs
-  libdvi
-  tinyusb_host
-  tinyusb_board
-  pico_emu_utils
-  pico_dvi_menu
+target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_pwm_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
-
-target_link_libraries(ZX-MURMULATOR_HDMI
-  ${zxspectrum_common_libs}
-  ${zxspectrum_murmulator_libs}
-)
-
-target_link_libraries(ZX-MURMULATOR_HDMI_PWM_AUDIO
-  ${zxspectrum_common_libs}
-  ${zxspectrum_murmulator_libs}
-)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZX-MURMULATOR_HDMI)
-pico_add_extra_outputs(ZX-MURMULATOR_HDMI_PWM_AUDIO)
-
 
 
