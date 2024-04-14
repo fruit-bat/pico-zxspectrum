@@ -61,6 +61,9 @@ private:
   uint32_t _buzzer;
   uint32_t _sl;
   uint32_t _slc;
+  uint32_t _fc;  // Screen flip count
+  uint32_t _fcf; // Screen flip count per frame
+  
   
   volatile uint8_t _borderBuf[240];       //Border Buffer 240 lines
 
@@ -140,6 +143,7 @@ inline void writeIO(uint16_t address, uint8_t value)
       if (!(address & 0x8002))
   		{
         if ((_portMem & 0x20) == 0) { 
+          _fc += ((_portMem ^ value) >> 3) & 1;
           _portMem = value;
           setPageaddr(3, (uint8_t*)&_RAM[value & 7]);
           setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
@@ -214,6 +218,8 @@ inline void writeIO(uint16_t address, uint8_t value)
   inline void interrupt() {
     z80_int(&_Z80, true);
     _Z80.int_line = false;
+    _fcf = _fc;
+    _fc = 0;
   }
 
 public:
@@ -223,6 +229,8 @@ public:
     ZxSpectrumJoystick *joystick
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
+  inline uint8_t* memPtr(uint32_t i) { return (unsigned char*)&_RAM[i]; }
+  inline uint32_t flipsPerFrame() { return _fcf; }
   void reset(ZxSpectrumType type);
   ZxSpectrumType type() { return _type; }
   ZxSpectrumIntSource intSource() { return _intSource; }
@@ -231,7 +239,11 @@ public:
   uint32_t step();
 
   inline void vsync() {
-    if (_intSource == SyncToDisplay) interrupt();
+    if (_intSource == SyncToDisplay) {
+      interrupt();
+      _sl = 0; 
+      _slc = 0;
+    }
   }
 
   void moderate(uint32_t mul);

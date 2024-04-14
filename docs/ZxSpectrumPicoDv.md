@@ -6,9 +6,10 @@ This target matches the [Pimoroni Pico DV](https://shop.pimoroni.com/products/pi
 It supports the following:
 * USB keyboard
 * USB joysticks
-* HDMI video
+* 50/60Hz HDMI video
 * HDMI/I2S audio
 * SPI SD card
+* Ringo's low resolution mode
 
 #### Circuit diagram
 
@@ -16,13 +17,15 @@ It supports the following:
 
 #### Firmware
 
-| Audio | Firmware |
-| - | - |
-| HDMI | [ZxSpectrumPicoDv_HdmiAudio.uf2](/uf2/ZxSpectrumPicoDv_HdmiAudio.uf2) |
-| I2S | [ZxSpectrumPicoDv_I2SAudio.uf2](/uf2/ZxSpectrumPicoDv_I2SAudio.uf2) |
-
+| Display | Audio | Firmware |
+| - | - | - |
+| 720x576x50Hz | HDMI | [ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz.uf2](/uf2/ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz.uf2) |
+| 720x576x50Hz | I2S | [ZxSpectrumPicoDv_I2SAudio_720x576x50Hz.uf2](/uf2/ZxSpectrumPicoDv_I2SAudio_720x576x50Hz.uf2) |
+| 640x480x60Hz | HDMI | [ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz.uf2](/uf2/ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz.uf2) |
+| 640x480x60Hz | I2S | [ZxSpectrumPicoDv_I2SAudio_640x480x60Hz.uf2](/uf2/ZxSpectrumPicoDv_I2SAudio_640x480x60Hz.uf2) |
 #### References
 
 #### Parts
 
 [Pimoroni Pico DV](https://shop.pimoroni.com/products/pimoroni-pico-dv-demo-base)
+

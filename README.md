@@ -21,6 +21,18 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+14/04/24
+
+Finally, some 50Hz display builds!
+
+* Updates to HDMI firmware and Pimoroni Pico Demo VGA board:
+  * Added support for Ringo's low res mode
+  * 720x576x50Hz display mode
+
+The patch to make Ringo looks to see if the display is flipping every 4 lines and if so it switches to doing so with precise timing. It's a hack, but Ringo is a nice game and I'm happy to see it working.
+
+I'll try to add 50Hz modes to the remaing VGA boards when I get time.
+
 01/04/24
 * New firmware with audio over HDMI
 * New interrupt mode based on CPU cycle count (now default)
@@ -107,13 +119,14 @@ cp ZxSpectrumBreadboardHdmi4PinAudio.uf2 /media/pi/RPI-RP2/
 ```
 
 
-## Audio pins
-There are two techniques for audio output. 
-The first is a mixture of digital sound and PWM output, which comes in three variants.
-The second is is using a DAC connected to the Pico using I2S.
+## Audio output
+There are three techniques for audio output. 
+* A mixture of digital sound and PWM output, which comes in three variants.
+* A DAC connected to the Pico using I2S.
+* Audio over HDMI to the display.
 
 ### PWM/Digital Audio
-PWM audio output comes in 3 variants 1, 2 and 4 pin:
+PWM audio output comes in 3 variants, using 1, 2 and 4 pin:
 
 | Label     | 1 Pin                  | 2 Pin               | 4 Pin                   |
 | ----      | ---------------------- | ------------------- | ----------------------- |
@@ -144,6 +157,9 @@ Designs that only have a single GPIO pin available can have the audio mixed digi
 The emulation can drive a PCM5100A DAC for line out audio over I2S.
 It uses the RP_DAC_DATA, RP_DAC_BCLK and RP_DAC_LRCLK pin on the Pico.
 Currently, only tested on the Pimoroni Pico DV board.
+
+### HDMI audio 
+HDMI builds can now output 44.1kHz audio to the display.
 
 ### Video output
 
@@ -232,12 +248,15 @@ Suggestions to improve this circuit are appreciated and please post them [here](
 ![image](docs/Pico-R3-SDK11-Pinout.svg "Pinout")
 
 
-## Issues
-The Z80 is interrupted at the end of each frame at 60hz. The original Spectrum wrote frames at 50hz, so some code runs more frequently than it used to; there is a 4Mhz CPU setting that kind of balances this up.
+### Display considerations
+Firstly, the emulation does not have a screen buffer, and there is not enough RAM left to add one. Whichever dsiplay you use, it will not have exactly the same timing as the old PAL monitors. This is particularly noticable on 60Hz displays with programs on the Spectrum that try to synchronize their output with the display, or use the frame rate to control the speed of music. I'm gradually adding 50Hz modes to firmware for various boards. 
 
-There is now preliminary support for Kempston & Sinclair joysticks.
+### Joysticks
+There is basic support for connecting USB joysticks and have them appear as Kempston or Sinclair joysticks to the Spectrum.
 
-A USB hub can be connected to the RP2040 allowing a keyboard and joysticks to be used with the Spectrum. The code is a bit new and I don't know how many different joysticks will be supported; if you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
+For joysticks to work they have to provide a HID report, which is usually the case for generic PC joypads. Some manufacturers make joysticks that don't report their behaviour and hence require custom drivers; these are not going to work.
+
+Basically, I don't know how many different joysticks will be usable. If you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
 
 To get this to work I have done some hacking and slashing in [TinyUSB](https://github.com/hathach/tinyusb) (sorry Ha Thach): 
 

@@ -126,8 +126,7 @@ static Ps2Kbd_Mrmltr ps2kbd(
   8,
   process_kbd_report
 );
-#endif
-#ifdef USE_PS2_KBD
+#elif defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
   6,
@@ -222,6 +221,7 @@ void __not_in_flash_func(main_loop)(){
       picoDisplay.refresh();
     }
   }
+  __builtin_unreachable();
 }
 
 int main(){
@@ -230,9 +230,11 @@ int main(){
   vmode = Video(DEV_VGA, RES_HVGA);
   sleep_ms(100);
 
+#ifdef USE_STDIO
   //Initialise I/O
   stdio_init_all(); 
-  
+#endif
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
   

@@ -3,6 +3,14 @@ Waveshare RP2040-PiZero Development Board
 
 <img src="./RP2040-PiZero-1.png" width="250px" />
 
+It supports the following:
+* USB keyboard
+* USB joysticks
+* 50/60Hz HDMI video
+* HDMI audio
+* SPI SD card
+* Ringo's low resolution mode
+
 #### Notes
 * An OTG adapter is need to connect a USB keyboard to the primary USB
 * Power can be provided by the secondary USB C port
@@ -10,7 +18,11 @@ Waveshare RP2040-PiZero Development Board
 * Audio output over HDMI
 
 #### Firmware
-[ZxSpectrumPiZero.uf2](/uf2/ZxSpectrumPiZero.uf2)
+| Display | Firmware |
+| - | - |
+| 720x576x50Hz | [ZxSpectrumPiZero_720x576x50Hz.uf2](/uf2/ZxSpectrumPiZero_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPiZero_640x480x60Hz](/uf2/ZxSpectrumPiZero_720x576x50Hz.uf2) |
+
 
 ### Parts
 [RP2040-PiZero](https://www.waveshare.com/rp2040-pizero.htm)
@@ -21,4 +33,4 @@ Waveshare RP2040-PiZero Development Board
 [OTG Adapter]( https://www.amazon.co.uk/OTG/dp/B09CTSHZR7)<br/>
 
 #### Thanks
-Thanks to [RattyDave](https://github.com/RattyDAVE) for help getting this board up and running.
+Thanks to [RattyDave](https://github.com/RattyDAVE) for hist help in getting this board up and running.

@@ -16,6 +16,10 @@ void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
   uint8_t borderColor
 );
 
+void __not_in_flash_func(zx_prepare_scanvideo_blankline)(
+  struct scanvideo_scanline_buffer *scanline_buffer
+);
+
 #ifdef __cplusplus
 }
 #endif

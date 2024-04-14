@@ -2,9 +2,24 @@
 
 <img src="pico-demo-base-9_1500x1500.png" width="300"/>
 
-#### Firmware
-[ZxSpectrumPicoVga.uf2](/uf2/ZxSpectrumPicoVga.uf2)
 
+
+It supports the following:
+* USB keyboard
+* USB joysticks
+* 50/60Hz  video
+* I2S audio
+* SPI SD card
+* Ringo's low resolution mode
+
+#### Firmware
+
+| Diplay | Firmware |
+| - | - |
+| 720x576x50Hz | [ZxSpectrumPicoVga_720x576x50Hz.uf2](/uf2/ZxSpectrumPicoVga_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPicoVga_640x480x60Hz.uf2](/uf2/ZxSpectrumPicoVga_640x480x60Hz.uf2) |
+
+#### Build
 Building firmware for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
 
 ```sh

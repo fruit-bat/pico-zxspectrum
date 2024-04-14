@@ -7,41 +7,23 @@ set(zxspectrum_hdmi_src
   ${zxspectrum_dvi_src}
 )
 
-add_executable(ZxSpectrumBreadboardHdmiAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
+foreach(target
+  ZxSpectrumBreadboardHdmiAudio
+  ZxSpectrumBreadboardHdmiAudio720x540x50Hz
+  ZxSpectrumBreadboardHdmiAudio720x576x50Hz
+  ZxSpectrumBreadboardHdmi1PinAudio
+  ZxSpectrumBreadboardHdmi2PinAudio
+  ZxSpectrumBreadboardHdmi4PinAudio
 )
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
 
-pico_generate_pio_header(ZxSpectrumBreadboardHdmiAudio 
-  ${zxspectrum_ear_in_pio}
-)
-
-add_executable(ZxSpectrumBreadboardHdmi1PinAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZxSpectrumBreadboardHdmi1PinAudio 
-  ${zxspectrum_ear_in_pio}
-)
-
-add_executable(ZxSpectrumBreadboardHdmi2PinAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZxSpectrumBreadboardHdmi2PinAudio 
-  ${zxspectrum_ear_in_pio}
-)
-
-add_executable(ZxSpectrumBreadboardHdmi4PinAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZxSpectrumBreadboardHdmi4PinAudio 
-  ${zxspectrum_ear_in_pio}
-)
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_ear_in_pio}
+  )
+endforeach()
 
 add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
   ${zxspectrum_common_src}
@@ -56,9 +38,6 @@ set(zxspectrum_hdmi_defines
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1  
   # Configure the SPI sd card to use SPI0
@@ -68,8 +47,68 @@ set(zxspectrum_hdmi_defines
   SDCARD_PIN_SPI0_MISO=4
 )
 
+set(zxspectrum_hdmi_640x480x60Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Set the DVI timing
+  DVI_TIMING=dvi_timing_640x480p_60hz
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=480
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToCpu
+)
+
+set(zxspectrum_hdmi_720x540x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the DVI timing
+  DVI_TIMING=dvi_timing_720x540p_50hz
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=540
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+)
+
+set(zxspectrum_hdmi_720x576x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the DVI timing
+  DVI_TIMING=dvi_timing_720x576p_50hz
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=576
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+)
+
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  EAR_PIN=11
+  PICO_HDMI_AUDIO 
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+)
+
+target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
+  ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_720x540x50Hz_defines}
+  EAR_PIN=11
+  PICO_HDMI_AUDIO 
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+)
+
+target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
+  ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
   EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
@@ -78,6 +117,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   SPK_PIN=20
   EAR_PIN=11
   # Enable the PS/2 keyboard
@@ -86,6 +126,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   SPK_PIN=20
   EAR_PIN=11
   BZR_PIN=21
@@ -95,6 +136,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   BZR_PIN=21
   EAR_PIN=11
   AY8912_A_PIN=20
@@ -136,40 +178,26 @@ set(zxspectrum_hdmi_libs
   pico_dvi_menu
 )
 
-target_link_libraries(ZxSpectrumBreadboardHdmiAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+foreach(target
+  ZxSpectrumBreadboardHdmiAudio
+  ZxSpectrumBreadboardHdmiAudio720x540x50Hz
+  ZxSpectrumBreadboardHdmiAudio720x576x50Hz
+  ZxSpectrumBreadboardHdmi1PinAudio
+  ZxSpectrumBreadboardHdmi2PinAudio
+  ZxSpectrumBreadboardHdmi4PinAudio
+  ZxSpectrumBreadboardHdmiKbd1PinAudio
 )
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
 
-target_link_libraries(ZxSpectrumBreadboardHdmi1PinAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
-)
-
-target_link_libraries(ZxSpectrumBreadboardHdmi2PinAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
-)
-
-target_link_libraries(ZxSpectrumBreadboardHdmi4PinAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
-)
-
-target_link_libraries(ZxSpectrumBreadboardHdmiKbd1PinAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
-)
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+endforeach()
 
 pico_enable_stdio_usb(ZxSpectrumBreadboardHdmiKbd1PinAudio 0)
 pico_enable_stdio_uart(ZxSpectrumBreadboardHdmiKbd1PinAudio 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumBreadboardHdmiAudio)
-pico_add_extra_outputs(ZxSpectrumBreadboardHdmi1PinAudio)
-pico_add_extra_outputs(ZxSpectrumBreadboardHdmi2PinAudio)
-pico_add_extra_outputs(ZxSpectrumBreadboardHdmi4PinAudio)
-pico_add_extra_outputs(ZxSpectrumBreadboardHdmiKbd1PinAudio)
 
 ########################################################################
 # Pico DV
@@ -182,9 +210,6 @@ set (zxspectrum_pico_dv_defines
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
@@ -196,26 +221,7 @@ set (zxspectrum_pico_dv_defines
   SDCARD_PIN_SPI0_MISO=19
 )
 
-add_executable(ZxSpectrumPicoDv_I2SAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-add_executable(ZxSpectrumPicoDv_HdmiAudio
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicoDv_I2SAudio 
-  ${zxspectrum_audio_i2s_pio}
-)
-
-pico_generate_pio_header(ZxSpectrumPicoDv_HdmiAudio 
-  ${zxspectrum_audio_i2s_pio}
-)
-
-target_compile_definitions(ZxSpectrumPicoDv_I2SAudio PRIVATE
-  ${zxspectrum_pico_dv_defines}
+set (zxspectrum_pico_dv_i2saudio_defines
   # Configure the I2S audio 
   PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
@@ -225,35 +231,78 @@ target_compile_definitions(ZxSpectrumPicoDv_I2SAudio PRIVATE
   PICO_AUDIO_I2S_BCLK=27
 )
 
-target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio PRIVATE
+foreach(target
+  ZxSpectrumPicoDv_I2SAudio_640x480x60Hz
+  ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz
+  ZxSpectrumPicoDv_I2SAudio_720x576x50Hz
+  ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_audio_i2s_pio}
+  )
+
+  target_link_libraries(${target} 
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
+)
+
+target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   PICO_HDMI_AUDIO
 )
 
-target_link_libraries(ZxSpectrumPicoDv_I2SAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_720x576x50Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
 )
 
-target_link_libraries(ZxSpectrumPicoDv_HdmiAudio
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
+  ${zxspectrum_pico_dv_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  PICO_HDMI_AUDIO
 )
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicoDv_I2SAudio)
-pico_add_extra_outputs(ZxSpectrumPicoDv_HdmiAudio)
 
 ########################################################################
 # Waveshare - RP2040 - PicoZero
 ########################################################################
 
-add_executable(ZxSpectrumPiZero
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
+foreach(target 
+  ZxSpectrumPiZero_640x480x60Hz
+  ZxSpectrumPiZero_720x576x50Hz
 )
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
 
-target_compile_definitions(ZxSpectrumPiZero PRIVATE
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+set (ZxSpectrumPiZero_defines
   # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
@@ -261,9 +310,6 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
   DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
@@ -277,22 +323,120 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   PICO_HDMI_AUDIO
 )
 
-set(zxspectrum_hdmi_libs
-  libdvi
-  tinyusb_host
-  tinyusb_board
-  pico_emu_utils
-  pico_dvi_menu
+target_compile_definitions(ZxSpectrumPiZero_640x480x60Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
-target_link_libraries(ZxSpectrumPiZero
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPiZero_720x576x50Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
 
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPiZero)
+########################################################################
+# ZX-MURMULATOR
+########################################################################
 
+set(zxspectrum_murmulator_src
+  main.cpp
+  ${zxspectrum_dvi_src}
+  ${murmulator_common_src}
+)
 
+set(murmulator_common_defines
+  # Set up the DVI output to match the MURMULATOR board
+  MURMULATOR
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=2
+  SDCARD_PIN_SPI0_MOSI=3
+  SDCARD_PIN_SPI0_MISO=4
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP  
+  # Tape audio in
+  EAR_PIN=22
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+  USE_MRMLTR_PS2_KBD
+)
+
+set(murmulator_pwm_audio_defines
+  # Speaker pin audio
+  SPK_PIN=28
+  # Buzzer audio out
+  # BZR_PIN=28
+  # STEREO AY audio
+  AY8912_ABC_STEREO
+  # Left chanel audio out
+  AY8912_A_PIN=27
+  # Right chanel audio out
+  AY8912_C_PIN=26
+)
+
+set(murmulator_hdmi_audio_defines
+  # Use HDMI Audio
+  PICO_HDMI_AUDIO
+)
+
+foreach(target 
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_murmulator_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  pico_generate_pio_header(${target}
+    ${zxspectrum_ear_in_pio}
+  )
+
+  pico_generate_pio_header(${target}
+    ${murmulator_ps2kbd_pio}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})  
+endforeach()
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_hdmi_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_hdmi_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_pwm_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator_common_defines}
+  ${murmulator_pwm_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
 
 

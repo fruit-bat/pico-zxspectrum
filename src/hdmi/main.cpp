@@ -14,7 +14,9 @@
 #include "pico/sem.h"
 #include "hardware/pwm.h"
 
-#ifdef USE_PS2_KBD
+#ifdef USE_MRMLTR_PS2_KBD
+#include "ps2kbd_mrmltr.h"
+#elif defined(USE_PS2_KBD)
 #include "ps2kbd.h"
 #endif
 
@@ -50,6 +52,7 @@ extern "C" {
 #include "ZxSpectrumMenu.h"
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
+#include "ZxSpectrumDisplay.h"
 
 
 #define UART_ID uart0
@@ -61,9 +64,10 @@ extern "C" {
 #define UART_RX_PIN 1
 
 // DVDD 1.2V (1.1V seems ok too)
-#define FRAME_HEIGHT 240
 #define VREG_VSEL VREG_VOLTAGE_1_20
+#ifndef DVI_TIMING
 #define DVI_TIMING dvi_timing_640x480p_60hz
+#endif
 
 #define LED_PIN 25
 
@@ -163,9 +167,13 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   }
 }
 
-
-
-#ifdef USE_PS2_KBD
+#ifdef USE_MRMLTR_PS2_KBD
+static Ps2Kbd_Mrmltr ps2kbd(
+  pio1,
+  8,
+  process_kbd_report
+);
+#elif defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
   6,
@@ -178,9 +186,24 @@ unsigned char* attrPtr;
 static volatile uint _frames = 0;
 
 void __not_in_flash_func(core1_render)() {
-  static uint y = 0;
-  static uint ys = 0;
+  uint y = 0;
+  uint ys = 0;
+  for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
+    if (showMenu) {
+      pcw_prepare_blankline_80(&dvi0, _frames);
+    }
+    else {
+      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, 0);
+    }
+  }
   while(true) {
+    const uint32_t fpf = zxSpectrum.flipsPerFrame();
+    const bool ringoMode = fpf > 46 && fpf < 52;
+    if (ringoMode) {
+      screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
+      attrPtr = screenPtr + (32 * 24 * 8);
+    }
+
     if (showMenu) {
       uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
       if (0 == (y & 7)) {
@@ -188,20 +211,35 @@ void __not_in_flash_func(core1_render)() {
       }
     }
     else {
-      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, zxSpectrum.borderColour(y));
+      zx_prepare_hdmi_scanline(
+        &dvi0, 
+        y, 
+        _frames, 
+        screenPtr, 
+        attrPtr, 
+        zxSpectrum.borderColour(y)
+      );
       y++;
     }
   #ifdef USE_KEY_MATRIX
     zx_keyscan_row();
   #endif
-    if (y == FRAME_HEIGHT) {
+    if (y == ZX_SPECTRUM_SCREEN_HEIGHT) {
       y = 0;
       ys = 0;
-      _frames++;
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-      
+      for(int i = 0; i < DISPLAY_BLANK_LINES; ++i) {
+        if (showMenu) {
+          pcw_prepare_blankline_80(&dvi0, _frames);
+        }
+        else {           
+          zx_prepare_hdmi_scanline(&dvi0, 239, _frames, screenPtr, attrPtr, 0);
+        }
+      }
+     _frames++;
+      if (!ringoMode) {
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
@@ -243,7 +281,7 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     if (!showMenu) {
-      for (int i = 1; i < CPU_STEP_LOOP; ++i) {
+      for (int i = 0; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
           lastInterruptFrame = _frames;
           zxSpectrum.vsync();
