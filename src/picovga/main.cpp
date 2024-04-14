@@ -195,8 +195,24 @@ void __not_in_flash_func(core1_main)() {
       screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
       attrPtr = screenPtr + (32 * 24 * 8);
     }
-
     const uint32_t blankTopLines = (DISPLAY_BLANK_LINES/2);
+
+    if (y == blankTopLines) {
+      
+      if (!ringoMode) {
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
+      
+      if (toggleMenu) {
+        showMenu = !showMenu;
+        toggleMenu = false;
+//        picomputerJoystick.enabled(!showMenu);
+      }
+      
+      _frames = frame_num;
+    }
+
     if (y < blankTopLines || y >= (blankTopLines + ZX_SPECTRUM_SCREEN_HEIGHT)) {
       zx_prepare_scanvideo_blankline(
         scanline_buffer
@@ -222,21 +238,6 @@ void __not_in_flash_func(core1_main)() {
     // Release the rendered buffer into the wild
     scanvideo_end_scanline_generation(scanline_buffer);
     
-    if (y == 239) {
-      
-      if (!ringoMode) {
-        screenPtr = zxSpectrum.screenPtr();
-        attrPtr = screenPtr + (32 * 24 * 8);
-      }
-      
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
-      }
-      
-      _frames = frame_num;
-    }
   }
 
   __builtin_unreachable();
