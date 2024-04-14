@@ -22,9 +22,16 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 14/04/24
-* Added support for Ringo's low res mode
-* 50Hz display mode for HDMI builds
-* 50Hz display mode for Pimoroni Pico Demo VGA board
+
+Finally, some 50Hz display builds!
+
+* Updates to HDMI firmware and Pimoroni Pico Demo VGA board:
+  * Added support for Ringo's low res mode
+  * 720x576x50Hz display mode
+
+The patch to make Ringo looks to see if the display is flipping every 4 lines and if so it switches to doing so with precise timing. It's a hack, but Ringo is a nice game and I'm happy to see it working.
+
+I'll try to add 50Hz modes to the remaing VGA boards when I get time.
 
 01/04/24
 * New firmware with audio over HDMI
@@ -242,7 +249,7 @@ Suggestions to improve this circuit are appreciated and please post them [here](
 
 
 ### Display considerations
-Firstly, the emulation does not have a screen buffer, and there if not enough RAM left to add one. Whichever dsiplay you use it will not have exactly the same timing as the old PAL monitors. This is particularly noticable on 60Hz displays with programs on the Spectrum that try to synchronize their output with the display, or use the frame rate to control the speed of music. I'm gradually adding 50Hz modes to firmware for various boards. 
+Firstly, the emulation does not have a screen buffer, and there is not enough RAM left to add one. Whichever dsiplay you use, it will not have exactly the same timing as the old PAL monitors. This is particularly noticable on 60Hz displays with programs on the Spectrum that try to synchronize their output with the display, or use the frame rate to control the speed of music. I'm gradually adding 50Hz modes to firmware for various boards. 
 
 ### Joysticks
 There is basic support for connecting USB joysticks and have them appear as Kempston or Sinclair joysticks to the Spectrum.
