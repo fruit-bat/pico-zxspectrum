@@ -81,8 +81,9 @@ const scanvideo_mode_t vga_mode_768x288_50 =
   .yscale = 2,
 };
 
-//#define VGA_MODE vga_mode_640x240_60       
-#define VGA_MODE vga_mode_768x288_50       
+#ifndef VGA_MODE
+#define VGA_MODE vga_mode_640x240_60
+#endif  
 #define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
