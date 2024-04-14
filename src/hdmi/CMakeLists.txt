@@ -283,14 +283,27 @@ target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
 # Waveshare - RP2040 - PicoZero
 ########################################################################
 
-add_executable(ZxSpectrumPiZero
-  ${zxspectrum_common_src}
-  ${zxspectrum_hdmi_src}
+foreach(target 
+  ZxSpectrumPiZero_640x480x60Hz
+  ZxSpectrumPiZero_720x576x50Hz
 )
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
 
-target_compile_definitions(ZxSpectrumPiZero PRIVATE
-# Set up the DVI output to match the Waveshare RP2040 PiZero
-  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+set (ZxSpectrumPiZero_defines
+  # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
   PICO_CORE1_STACK_SIZE=0x400
@@ -310,21 +323,15 @@ target_compile_definitions(ZxSpectrumPiZero PRIVATE
   PICO_HDMI_AUDIO
 )
 
-set(zxspectrum_hdmi_libs
-  libdvi
-  tinyusb_host
-  tinyusb_board
-  pico_emu_utils
-  pico_dvi_menu
+target_compile_definitions(ZxSpectrumPiZero_640x480x60Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
-target_link_libraries(ZxSpectrumPiZero
-  ${zxspectrum_common_libs}
-  ${zxspectrum_hdmi_libs}
+target_compile_definitions(ZxSpectrumPiZero_720x576x50Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPiZero)
 
 ########################################################################
 # ZX-MURMULATOR
