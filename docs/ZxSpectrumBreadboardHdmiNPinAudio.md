@@ -12,7 +12,7 @@ Support for the following:
 * Audio input (load from tape)
 * SPI SD card
 * Serial port debug
-* *Special* support for Ringo low res mode
+* Ringo's low resolution mode
 
 All of these targets share the same pinout but make different use of the 4 audio pins:
 
@@ -23,6 +23,7 @@ All of these targets share the same pinout but make different use of the 4 audio
 #### Firmware
 | Audio | Display mode | Firmware |
 | - | - | - |
+| HDMI | 720x576x50Hz | [ZxSpectrumBreadboardHdmiAudio720x576x50Hz.uf2](/uf2/ZxSpectrumBreadboardHdmiAudio720x576x50Hz.uf2) |
 | HDMI | 720x540x50Hz | [ZxSpectrumBreadboardHdmiAudio720x540x50Hz.uf2](/uf2/ZxSpectrumBreadboardHdmiAudio720x540x50Hz.uf2) |
 | HDMI | 640x480x60Hz | [ZxSpectrumBreadboardHdmiAudio.uf2](/uf2/ZxSpectrumBreadboardHdmiAudio.uf2) |
 | 1 pin PWM | 640x480x60Hz | [ZxSpectrumBreadboardHdmi1PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmi1PinAudio.uf2) |

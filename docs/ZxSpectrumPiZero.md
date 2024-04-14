@@ -9,7 +9,7 @@ It supports the following:
 * 50/60Hz HDMI video
 * HDMI audio
 * SPI SD card
-* Ringo mode
+* Ringo's low resolution mode
 
 #### Notes
 * An OTG adapter is need to connect a USB keyboard to the primary USB

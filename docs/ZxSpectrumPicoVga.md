@@ -10,7 +10,7 @@ It supports the following:
 * 50/60Hz  video
 * I2S audio
 * SPI SD card
-* Ringo mode
+* Ringo's low resolution mode
 
 #### Firmware
 
