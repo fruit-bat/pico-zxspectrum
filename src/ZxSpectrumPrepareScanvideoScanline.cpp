@@ -1,5 +1,6 @@
 #include "ZxSpectrumPrepareScanvideoScanline.h"
 #include "pico/scanvideo/composable_scanline.h"
+#include "ZxSpectrumDisplay.h"
 
 #define VGA_RGB_555(r,g,b) ((r##UL<<0)|(g##UL<<6)|(b##UL << 11))
 
@@ -54,14 +55,26 @@ void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
 ) {
   uint32_t* buf = scanline_buffer->data;
 
-  if (y < 24 || y >= (24+192)) {
-    // Screen is 640 bytes
-    // Each color word is 4 bytes, which represents 1 pixels
-    buf = single_color_run(buf, 640, borderColor);
-  }
+  if (y < (24) || y >= (24 + 192)) {
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK      
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_LEFT_BLANK << 1, 0);     
+#endif
+    buf = single_color_run(
+      buf, 
+      (DISPLAY_BORDER_PIXELS
+          - DISPLAY_BORDER_PIXELS_LEFT_BLANK
+          - DISPLAY_BORDER_PIXELS_RIGHT_BLANK ) << 1
+      , borderColor);
+
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK      
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_RIGHT_BLANK << 1, 0);     
+#endif   
+  } 
   else {
-    // 640 - (256 * 2) = 128
-    buf = single_color_run(buf, 64, borderColor);
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK      
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_LEFT_BLANK << 1, 0);     
+#endif
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_LEFT_COLORED << 1, borderColor);
     
     const uint v = y - 24;
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
@@ -90,7 +103,10 @@ void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
       *buf++ = cw[(p >> 0) & 1];
     }
     
-    buf = single_color_run(buf, 64, borderColor);
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_RIGHT_COLORED << 1, borderColor);
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK      
+    buf = single_color_run(buf, DISPLAY_BORDER_PIXELS_RIGHT_BLANK << 1, 0);     
+#endif    
   }
   buf = end_run(buf);
   
@@ -98,4 +114,12 @@ void __not_in_flash_func(zx_prepare_scanvideo_scanline)(
   scanline_buffer->status = SCANLINE_OK;  
 }
 
-
+void __not_in_flash_func(zx_prepare_scanvideo_blankline)(
+  struct scanvideo_scanline_buffer *scanline_buffer
+) {
+  uint32_t* buf = scanline_buffer->data;
+  buf = single_color_run(buf, DISPLAY_WIDTH_PIXELS, 0);
+  buf = end_run(buf);  
+  scanline_buffer->data_used = buf - scanline_buffer->data;
+  scanline_buffer->status = SCANLINE_OK;  
+}

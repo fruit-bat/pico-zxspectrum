@@ -1,4 +1,10 @@
 
+########################################################################
+# VGA on Pimoroni Pico VGA Demo Base
+# PICO_BOARD=vgaboard
+# cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
+########################################################################
+
 set(ZxSpectrumPicoVga_defines
   # Tell FATFS we want to find files
   FF_USE_FIND=1
@@ -10,11 +16,6 @@ set(ZxSpectrumPicoVga_defines
   SDCARD_PIN_SPI0_MOSI=18
   SDCARD_PIN_SPI0_MISO=19
 
-  # VGA on Pimoroni Pico VGA Demo Base
-  # PICO_BOARD=vgaboard
-  # cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
-
-
   # Configure the I2S audio 
   PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
@@ -22,7 +23,6 @@ set(ZxSpectrumPicoVga_defines
   PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
   PICO_AUDIO_I2S_DATA=26
   PICO_AUDIO_I2S_BCLK=27  
-  
 )
 
 set(zxspectrum_vga_640x480x60Hz_defines
@@ -53,7 +53,7 @@ set(zxspectrum_picovga_720x576x50Hz_defines
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
   # TODO work what this is
-  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=896 
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
 
 foreach(target 

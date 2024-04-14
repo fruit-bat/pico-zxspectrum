@@ -196,20 +196,26 @@ void __not_in_flash_func(core1_main)() {
       attrPtr = screenPtr + (32 * 24 * 8);
     }
 
-    if (false && showMenu) {
+    const uint32_t blankTopLines = (DISPLAY_BLANK_LINES/2);
+    if (y < blankTopLines || y >= (blankTopLines + ZX_SPECTRUM_SCREEN_HEIGHT)) {
+      zx_prepare_scanvideo_blankline(
+        scanline_buffer
+      );
+    }
+    else if (showMenu) {
       pcw_prepare_scanvideo_scanline_80(
         scanline_buffer,
-        y,
+        y - blankTopLines,
         frame_num);
     }
     else { 
       zx_prepare_scanvideo_scanline(
         scanline_buffer, 
-        y, 
+        y - blankTopLines, 
         frame_num,
         screenPtr,
         attrPtr,
-        zxSpectrum.borderColour(y)
+        zxSpectrum.borderColour(y - blankTopLines)
       );
     }
 
