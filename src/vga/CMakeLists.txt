@@ -1,7 +1,9 @@
 
+########################################################################
+# VGA 1111 on breadboard with PS/2 keyboard
+########################################################################
+
 set(picomputer_vga_defines
-  PCS_COLS=80 
-  PCS_ROWS=30
   # Configure the SPI sd card to use SPI0
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=2
@@ -11,14 +13,67 @@ set(picomputer_vga_defines
   USE_STDIO
 )
 
-add_executable(ZxSpectrum4PinAudioVga1111Ps2
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  main.cpp
+set(zxspectrum_vga_640x480x60Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Set the VGA timing
+  VGA_MODE=VideoVGA       
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=480
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToCpu
 )
 
-target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2 PRIVATE
-  ${picomputer_vga_defines}
+set(zxspectrum_vga_720x576x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the VGA timing
+  VGA_MODE=VideoDVD
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=576
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+)
+
+foreach(target 
+  ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz
+  ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_rgb_src}
+    main.cpp
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    pico_emu_utils
+    pico_vga_menu
+    pico_vga_332
+    tinyusb_host
+    tinyusb_board
+    hardware_pio
+    hardware_pwm
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_ear_in_pio}
+  )
+
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 1)
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+set(ZxSpectrum4PinAudioVga1111Ps2_defines
   # VGA 1111
   VGA_ENC_RGBY_1111
   VGA_GPIO_FIRST=12
@@ -31,30 +86,24 @@ target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2 PRIVATE
   AY8912_B_PIN=26
   AY8912_C_PIN=27
   # Enable the PS/2 keyboard
-  USE_PS2_KBD    
+  USE_PS2_KBD   
 )
 
-target_link_libraries(ZxSpectrum4PinAudioVga1111Ps2
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
+target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz PRIVATE
+  ${picomputer_vga_defines}
+  ${ZxSpectrum4PinAudioVga1111Ps2_defines}
+  ${zxspectrum_vga_720x576x50Hz_defines}
 )
 
-pico_generate_pio_header(ZxSpectrum4PinAudioVga1111Ps2 
-  ${zxspectrum_ear_in_pio}
+target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz PRIVATE
+  ${picomputer_vga_defines}
+  ${ZxSpectrum4PinAudioVga1111Ps2_defines}
+  ${zxspectrum_vga_640x480x60Hz_defines}
 )
 
-pico_enable_stdio_usb(ZxSpectrum4PinAudioVga1111Ps2 0)
-pico_enable_stdio_uart(ZxSpectrum4PinAudioVga1111Ps2 1)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrum4PinAudioVga1111Ps2)
-
+########################################################################
+# VGA 222 on breadboard with PS/2 keyboard
+########################################################################
 
 add_executable(ZxSpectrum4PinAudioVga222Ps2
   ${zxspectrum_common_src}
