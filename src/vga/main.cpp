@@ -42,7 +42,7 @@
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_10
+#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
 static sVmode vmode;
@@ -145,44 +145,59 @@ void __not_in_flash_func(core1_main)() {
 
   VgaInit(&vmode);
 
-  while (1) {
-
+  while (true) {
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
-    _frames = linebuf->frame;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      zx_prepare_rgb_scanline(
-        buf, 
-        y, 
-        linebuf->frame,
-        screenPtr,
-        attrPtr,
-        zxSpectrum.borderColour(y)
-      );
-    }
-      
-//    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-      
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
+
+    const uint32_t fpf = zxSpectrum.flipsPerFrame();
+    const bool ringoMode = fpf > 46 && fpf < 52;
+    if (ringoMode) {
+      screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
       attrPtr = screenPtr + (32 * 24 * 8);
+    }
+    const uint32_t blankTopLines = (DISPLAY_BLANK_LINES/2);
+
+    if (y == blankTopLines) {
+      
+      if (!ringoMode) {
+        screenPtr = zxSpectrum.screenPtr();
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
       
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
 //        picomputerJoystick.enabled(!showMenu);
-      }      
+      }
+      
+      _frames = linebuf->frame;
     }
+
+    if (y < blankTopLines || y >= (blankTopLines + ZX_SPECTRUM_SCREEN_HEIGHT)) {
+      zx_prepare_rgb_blankline(
+        buf
+      );
+    }
+    else if (showMenu) {
+      pcw_prepare_vga332_scanline_80(
+        buf,
+        y - blankTopLines,
+        linebuf->frame);
+    }
+    else { 
+      zx_prepare_rgb_scanline(
+        buf, 
+        y - blankTopLines, 
+        linebuf->frame,
+        screenPtr,
+        attrPtr,
+        zxSpectrum.borderColour(y - blankTopLines)
+      );
+
+    }  
   }
+
   __builtin_unreachable();
 }
 
