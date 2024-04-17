@@ -263,12 +263,12 @@ int main(){
   cfg.freq = 180000;                      // required minimal system frequency in kHz (real frequency can be higher)
   cfg.fmax = 280000;                      // maximal system frequency in kHz (limit resolution if needed)
   cfg.dbly = true;                        // double in Y direction
-  cfg.lockfreq = False;                   // lock required frequency, do not change it
+  cfg.lockfreq = false;                    // lock required frequency, do not change it
   VgaCfg(&cfg, &vmode);                   // calculate videomode setup
 
   // initialize system clock
   set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
-
+//set_sys_clock_khz(270000 / 100, true);
   //  vmode = Video(DEV_VGA, RES_HVGA);
   sleep_ms(100);
 

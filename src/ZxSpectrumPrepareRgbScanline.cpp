@@ -111,17 +111,20 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   
   if (y < 24 || y >= (24+192)) {
     // Each color word is 4 bytes, which represents 2 spectrum pixels
-#if DISPLAY_BORDER_PIXELS_LEFT_BLANK > 0
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
 #endif
     for (int i = 0; i < ((DISPLAY_BORDER_PIXELS
           - DISPLAY_BORDER_PIXELS_LEFT_BLANK
           - DISPLAY_BORDER_PIXELS_RIGHT_BLANK )/2); ++i) *buf++ = bw;     
-#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK > 0   
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
 #endif
   }
   else {
+#if DISPLAY_BORDER_PIXELS_LEFT_BLANK
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
+#endif
     // 640 - (256 * 2) = 128
     // Border edge is 64 bytes wide
     for (int i = 0; i < 16; ++i) *buf++ = bw;
@@ -155,6 +158,9 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
     }
     
     for (int i = 0; i < 16; ++i) *buf++ = bw;
+#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
+#endif
   }
 }
 
