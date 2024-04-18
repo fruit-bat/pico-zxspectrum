@@ -135,15 +135,22 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-unsigned char* screenPtr;
-unsigned char* attrPtr;
+
 static volatile uint _frames = 0;
+
+void __not_in_flash_func(setMenuState)(bool showMenu) {
+//  picomputerJoystick.enabled(!showMenu);  
+//  pzx_menu_mode(showMenu);
+}
 
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
   VgaInit(&vmode);
+
+  unsigned char* screenPtr = zxSpectrum.screenPtr();
+  unsigned char* attrPtr = screenPtr + (32 * 24 * 8);
 
   while (true) {
     VgaLineBuf *linebuf = get_vga_line();
@@ -168,7 +175,7 @@ void __not_in_flash_func(core1_main)() {
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
+        setMenuState(showMenu);
       }
       
       _frames = linebuf->frame;
@@ -242,19 +249,7 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-/*
-  sVgaCfg cfg;
-	cfg.width = 640;		// width in pixels
-	cfg.height = 240;		// height in lines
-	cfg.wfull = 0;			// width of full screen, corresponding to 'hfull' time (0=use 'width' parameter)
-	cfg.video = &VideoVGA;		// used video timings
-	cfg.freq = 180000;       // required minimal system frequency in kHz (real frequency can be higher)
-	cfg.fmax = 280000;		// maximal system frequency in kHz (limit resolution if needed)
-	cfg.dbly = true;		// double in Y direction
-	cfg.lockfreq = False;		// lock required frequency, do not change it
-	cfg.video = &VideoVGA; // video timings
-	VgaCfg(&cfg, &vmode); // calculate videomode setup
-*/
+
   sVgaCfg cfg;
   cfg.width = DISPLAY_WIDTH_PIXELS;       // width in pixels
   cfg.height = DISPLAY_HEIGHT_PIXELS / 2; // height in lines
@@ -263,13 +258,13 @@ int main(){
   cfg.freq = 180000;                      // required minimal system frequency in kHz (real frequency can be higher)
   cfg.fmax = 280000;                      // maximal system frequency in kHz (limit resolution if needed)
   cfg.dbly = true;                        // double in Y direction
-  cfg.lockfreq = false;                    // lock required frequency, do not change it
+  cfg.lockfreq = false;                   // lock required frequency, do not change it
   VgaCfg(&cfg, &vmode);                   // calculate videomode setup
 
   // initialize system clock
   set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
 //set_sys_clock_khz(270000 / 100, true);
-  //  vmode = Video(DEV_VGA, RES_HVGA);
+
   sleep_ms(100);
 
 #ifdef USE_STDIO
@@ -317,9 +312,6 @@ int main(){
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
-
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
