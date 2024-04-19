@@ -3,6 +3,7 @@ add_executable(ZxSpectrumPicomputerVga
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}  
   ${picomputer_common_src}
+  ${zxspectrum_rgb332_src} 
   main.cpp
 )
 
@@ -13,6 +14,7 @@ target_compile_definitions(ZxSpectrumPicomputerVga PRIVATE
   SPK_PIN=9
   VGA_ENC_RGB_332
   PICOMPUTER_VGA
+  VGA_MODE=VideoVGA
 )
 
 target_link_libraries(ZxSpectrumPicomputerVga
