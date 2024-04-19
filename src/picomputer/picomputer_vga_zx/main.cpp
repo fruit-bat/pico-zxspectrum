@@ -4,9 +4,6 @@
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 
-
-#include "vga.h"
-#include "ZxSpectrumPrepareRgbScanline.h"
 #include "pzx_keyscan.h"
 
 #include "PicoCharRendererVga.h"
@@ -35,16 +32,13 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
+#include "ZxRgb332RenderLoop.h"
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_10
+#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
-static const sVmode* vmode = NULL;
-
-uint8_t* screenPtr;
-uint8_t* attrPtr;
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -133,56 +127,27 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   }
 }
 
-void __not_in_flash_func(setMenuState)(bool showMenu) {
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
+    pzx_keyscan_row();
+}
+
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
   picomputerJoystick.enabled(!showMenu);  
   pzx_menu_mode(showMenu);
 }
 
-void __not_in_flash_func(core1_main)() {
+void core1_main() {
+
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  // TODO fetch the resolution from the mode ?
-  VgaInit(vmode,640,480);
+  ZxRgb332RenderLoop(
+    zxSpectrum,
+    _frames,
+    showMenu,
+    toggleMenu
+  );
 
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    _frames = linebuf->frame;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      zx_prepare_rgb_scanline(
-        buf, 
-        y, 
-        linebuf->frame,
-        screenPtr,
-        attrPtr,
-        zxSpectrum.borderColour(y)
-      );
-    }
-      
-    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-      
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-      
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-        setMenuState(showMenu);
-      }
-    }    
-  }
   __builtin_unreachable();
 }
 
@@ -221,8 +186,8 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  vmode = Video(DEV_VGA, RES_HVGA);
-  sleep_ms(100);
+
+  ZxRgb332RenderLoopInit();
 
   //Initialise I/O
   stdio_init_all(); 
@@ -234,7 +199,7 @@ int main(){
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
+      ZxRgb332RenderLoopCallbackMenu(showMenu);
     }
   );
   // TZX tape option handlers
@@ -249,7 +214,7 @@ int main(){
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
-      setMenuState(showMenu);
+      ZxRgb332RenderLoopCallbackMenu(showMenu);
     }
   );
   picoRootWin.tzxOption(
@@ -257,7 +222,7 @@ int main(){
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
+      ZxRgb332RenderLoopCallbackMenu(showMenu);
     }
   );
   snapFileLoop.set(&picoRootWin);
@@ -267,9 +232,6 @@ int main(){
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
-
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

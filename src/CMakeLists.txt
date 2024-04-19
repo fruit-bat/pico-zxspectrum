@@ -2,9 +2,9 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(zxspectrum_common_src
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumSettings
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings # Needed for flash settings (not currently working)
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumSettings.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings.cpp # Needed for flash settings (not currently working)
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
@@ -46,9 +46,12 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileLoop.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAy.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMenu.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiExists
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiExists.cpp
 )
 
+set(zxspectrum_rgb332_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxRgb332RenderLoop.cpp
+)
 set(zxspectrum_rgb_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
 )

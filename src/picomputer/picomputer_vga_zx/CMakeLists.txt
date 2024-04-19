@@ -3,12 +3,15 @@ set(picomputer_vgazx_defines
   ${picomputer_common_defines}
   PCS_COLS=80 
   PCS_ROWS=30
+  VGA_MODE=VideoVGA
+
 )
 
 add_executable(ZxSpectrumPicomputerVga1111Zx
   ${zxspectrum_common_src}
   ${zxspectrum_rgb_src}
   ${picomputer_common_src}
+  ${zxspectrum_rgb332_src} 
   main.cpp
 )
 

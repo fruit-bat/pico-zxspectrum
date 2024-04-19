@@ -47,7 +47,7 @@ foreach(target
   add_executable(${target}
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
-    ZxRgb332RenderLoop.cpp
+    ${zxspectrum_rgb332_src}
     main.cpp
   )
 

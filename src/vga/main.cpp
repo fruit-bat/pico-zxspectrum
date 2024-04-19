@@ -8,7 +8,7 @@
 #else
 #include "ps2kbd.h"
 #endif
-#include "ZxSpectrumPrepareRgbScanline.h"
+
 // #include "pzx_keyscan.h"
 
 #include "PicoCharRendererVga.h"
@@ -37,7 +37,6 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
-#include "ZxSpectrumDisplay.h"
 #include "ZxRgb332RenderLoop.h"
 
 #define LED_PIN 25
@@ -204,8 +203,6 @@ int main(){
   sleep_ms(10);
 
   ZxRgb332RenderLoopInit();
-
-  sleep_ms(100);
 
 #ifdef USE_STDIO
   //Initialise I/O

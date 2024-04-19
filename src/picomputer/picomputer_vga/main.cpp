@@ -262,9 +262,6 @@ int main(){
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
 
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
-
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
   

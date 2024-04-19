@@ -20,6 +20,8 @@ void ZxRgb332RenderLoopInit() {
 
   // initialize system clock
   set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
+
+  sleep_ms(100);
 }
 
 void __not_in_flash_func(ZxRgb332RenderLoop)(
