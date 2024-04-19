@@ -1,12 +1,13 @@
 #pragma once
 
 #include "ZxSpectrum.h"
+#include "ZxSpectrumDisplay.h"
 
 void ZxRgb332RenderLoopInit();
 
 void ZxRgb332RenderLoop(
     ZxSpectrum &zxSpectrum,
-    uint &frames,
+    volatile uint &frames,
     bool &showMenu,
     bool &toggleMenu);
 
