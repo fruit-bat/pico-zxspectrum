@@ -111,23 +111,15 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   
   if (y < 24 || y >= (24+192)) {
     // Each color word is 4 bytes, which represents 2 spectrum pixels
-#if DISPLAY_BORDER_PIXELS_LEFT_BLANK
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
-#endif
     for (int i = 0; i < ((DISPLAY_BORDER_PIXELS
           - DISPLAY_BORDER_PIXELS_LEFT_BLANK
           - DISPLAY_BORDER_PIXELS_RIGHT_BLANK )/2); ++i) *buf++ = bw;     
-#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
-#endif
   }
   else {
-#if DISPLAY_BORDER_PIXELS_LEFT_BLANK
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
-#endif
-    // 640 - (256 * 2) = 128
-    // Border edge is 64 bytes wide
-    for (int i = 0; i < 16; ++i) *buf++ = bw;
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_COLORED/2); ++i) *buf++ = bw;
     
     const uint v = y - 24;
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
@@ -157,10 +149,8 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
       *buf++ = (fgm & fcw) | (bgm & bcw);           
     }
     
-    for (int i = 0; i < 16; ++i) *buf++ = bw;
-#if DISPLAY_BORDER_PIXELS_RIGHT_BLANK
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_COLORED/2); ++i) *buf++ = bw;
     for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
-#endif
   }
 }
 

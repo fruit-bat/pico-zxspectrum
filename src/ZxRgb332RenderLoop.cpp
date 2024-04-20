@@ -6,16 +6,17 @@
 
 static sVmode vmode;
 
-void ZxRgb332RenderLoopInit() {
+void ZxRgb332RenderLoopInit()
+{
   sVgaCfg cfg;
   cfg.width = DISPLAY_WIDTH_PIXELS;       // width in pixels
   cfg.height = DISPLAY_HEIGHT_PIXELS / 2; // height in lines
   cfg.wfull = 0;                          // width of full screen, corresponding to 'hfull' time (0=use 'width' parameter)
   cfg.video = &VGA_MODE;                  // used video timings
-  cfg.freq = VGA_MODE.sys_clk_khz;        // required minimal system frequency in kHz (real frequency can be higher)
+  cfg.freq = 250000;                      // required minimal system frequency in kHz (real frequency can be higher)
   cfg.fmax = 280000;                      // maximal system frequency in kHz (limit resolution if needed)
   cfg.dbly = true;                        // double in Y direction
-  cfg.lockfreq = true;                    // lock required frequency, do not change it
+  cfg.lockfreq = false;                   // lock required frequency, do not change it
   VgaCfg(&cfg, &vmode);                   // calculate videomode setup
 
   // initialize system clock
