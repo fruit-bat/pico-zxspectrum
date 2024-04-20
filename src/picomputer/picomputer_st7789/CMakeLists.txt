@@ -4,6 +4,7 @@ include_directories(${picomputer_common_inc})
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_rgb332_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
@@ -103,6 +104,7 @@ set(picomputer_zx_lcd_src
   ${zxspectrum_common_src}
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
+  ${zxspectrum_rgb332_src} 
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
@@ -122,6 +124,7 @@ set(picomputer_zx_lcd_common_defines PRIVATE
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
   VGA_GPIO_OUTNUM=6
+  VGA_MODE=VideoVGA
 )
 
 set(zxspectrum_zx_lcd_common_libs
