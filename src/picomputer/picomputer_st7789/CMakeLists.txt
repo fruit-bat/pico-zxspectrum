@@ -169,6 +169,10 @@ set(zxspectrum_zx_lcd_common_libs
 foreach(target
   ZxSpectrumPicomputerZxLcd_640x480x60Hz
   ZxSpectrumPicomputerZxLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341LLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341LLcd_640x480x60Hz
 )
   add_executable(${target}
     ${picomputer_zx_lcd_src}
@@ -203,51 +207,30 @@ target_compile_definitions(ZxSpectrumPicomputerZxLcd_640x480x60Hz PRIVATE
   LCD_MIRROR_X
 )
 
-add_executable(ZxSpectrumPicomputerZxInverseLcd
-  ${picomputer_zx_lcd_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
-
-target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
+  LCD_MIRROR_X
+  LCD_INVERSE
+)
+  
+target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_640x480x60Hz_defines}
   LCD_MIRROR_X
   LCD_INVERSE
 )
 
-target_link_libraries(ZxSpectrumPicomputerZxInverseLcd
-  ${zxspectrum_zx_lcd_common_libs}
-)
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerZxInverseLcd 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerZxInverseLcd 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerZxInverseLcd)
-
-
-add_executable(ZxSpectrumPicomputerZxILI9341Lcd
-  ${picomputer_zx_lcd_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicomputerZxILI9341Lcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
-
-target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341LLcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
   LCD_INVERSE
   LCD_RGB
 )
-
-target_link_libraries(ZxSpectrumPicomputerZxILI9341Lcd
-  ${zxspectrum_zx_lcd_common_libs}
+  
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341LLcd_640x480x60Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_640x480x60Hz_defines}
+  LCD_INVERSE
+  LCD_RGB
 )
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerZxILI9341Lcd 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerZxILI9341Lcd 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerZxILI9341Lcd)
