@@ -186,7 +186,6 @@ foreach(target
     ${zxspectrum_zx_lcd_common_libs}
   )
 
-
   pico_enable_stdio_usb(${target} 0)
   pico_enable_stdio_uart(${target} 0)
   

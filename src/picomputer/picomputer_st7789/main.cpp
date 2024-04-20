@@ -195,6 +195,24 @@ void __not_in_flash_func(core1_main)() {
   while (1) {
 
     for (uint y = 0; y < 240; ++y) {
+
+      const uint32_t fpf = zxSpectrum.flipsPerFrame();
+      const bool ringoMode = fpf > 46 && fpf < 52;
+      if (ringoMode) {
+        screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
+
+      if (y == 0) {
+        
+        if (!ringoMode) {
+          screenPtr = zxSpectrum.screenPtr();
+          attrPtr = screenPtr + (32 * 24 * 8);
+        }
+        
+        _frames++;
+      }
+
       if (showMenu) {
         pcw_send_st7789_scanline(
           pio, 
@@ -215,12 +233,7 @@ void __not_in_flash_func(core1_main)() {
 
       pzx_keyscan_row();
     }
-    _frames++;
-
-    // TODO Tidy this mechanism up
-    screenPtr = zxSpectrum.screenPtr();
-    attrPtr = screenPtr + (32 * 24 * 8);
-    
+ 
     if (toggleMenu) {
       showMenu = !showMenu;
       toggleMenu = false;
