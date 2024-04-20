@@ -4,7 +4,6 @@ include_directories(${picomputer_common_inc})
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
   ${picomputer_common_src}
-  ${zxspectrum_rgb332_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
