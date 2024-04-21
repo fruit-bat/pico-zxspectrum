@@ -16,7 +16,11 @@ It supports the following:
 ![image](ZxSpectrumPicomputerVga.png)
 
 #### Firmware
-[ZxSpectrumPicocomputerVga.uf2](uf2/ZxSpectrumPicocomputerVga.uf2)
+
+| Display mode | Firmware |
+| - | - |
+| 720x576x50Hz | [ZxSpectrumPicoVga_720x576x50Hz.uf2](/uf2/ZxSpectrumPicoVga_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPicoVga_640x480x60Hz.uf2](/uf2/ZxSpectrumPicoVga_640x480x60Hz.uf2) |
 
 #### Keyboard mappings
 Trying to squeeze in all the key mappings is tricky but here is an attempt.
