@@ -1,4 +1,5 @@
 #include "ZxSpectrumPrepareRgbScanline.h"
+#include "ZxSpectrumDisplay.h"
 
 #define VGA_BGYR_1111(r,g,b,y) ((y##UL<<2)|(r##UL<<3)|(g##UL<<1)|b##UL)
 #define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
@@ -91,6 +92,12 @@ static uint32_t zx_invert_masks[] = {
   0xff
 };
 
+void __not_in_flash_func(zx_prepare_rgb_blankline)(
+  uint32_t* buf
+) {
+  for (int i = 0; i < (DISPLAY_WIDTH_PIXELS / 4); ++i) buf[i] = 0;
+}
+
 void __not_in_flash_func(zx_prepare_rgb_scanline)(
   uint32_t* buf, 
   uint32_t y, 
@@ -103,14 +110,16 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
   const uint32_t bw = zx_colour_words[borderColor];
   
   if (y < 24 || y >= (24+192)) {
-    // Screen is 640 bytes
-    // Each color word is 4 bytes, which represents 2 pixels
-    for (int i = 0; i < 160; ++i) buf[i] = bw;
+    // Each color word is 4 bytes, which represents 2 spectrum pixels
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
+    for (int i = 0; i < ((DISPLAY_BORDER_PIXELS
+          - DISPLAY_BORDER_PIXELS_LEFT_BLANK
+          - DISPLAY_BORDER_PIXELS_RIGHT_BLANK )/2); ++i) *buf++ = bw;     
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
   }
   else {
-    // 640 - (256 * 2) = 128
-    // Border edge is 64 bytes wide
-    for (int i = 0; i < 16; ++i) *buf++ = bw;
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_BLANK/2); ++i) *buf++ = 0;
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_LEFT_COLORED/2); ++i) *buf++ = bw;
     
     const uint v = y - 24;
     const uint8_t *s = screenPtr + ((v & 0x7) << 8) + ((v & 0x38) << 2) + ((v & 0xc0) << 5);
@@ -140,7 +149,8 @@ void __not_in_flash_func(zx_prepare_rgb_scanline)(
       *buf++ = (fgm & fcw) | (bgm & bcw);           
     }
     
-    for (int i = 0; i < 16; ++i) *buf++ = bw;
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_COLORED/2); ++i) *buf++ = bw;
+    for (int i = 0; i < (DISPLAY_BORDER_PIXELS_RIGHT_BLANK/2); ++i) *buf++ = 0;
   }
 }
 

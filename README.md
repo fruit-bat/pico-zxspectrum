@@ -21,6 +21,11 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+21/04/24
+
+* 20x576x50Hz option now available for VGA and HDMI builds
+* Ringo support on LCD, VGA and HMDI firmware
+
 14/04/24
 
 Finally, some 50Hz display builds!

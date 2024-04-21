@@ -8,8 +8,7 @@
 #else
 #include "ps2kbd.h"
 #endif
-#include "vga.h"
-#include "ZxSpectrumPrepareRgbScanline.h"
+
 // #include "pzx_keyscan.h"
 
 #include "PicoCharRendererVga.h"
@@ -38,13 +37,13 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
+#include "ZxRgb332RenderLoop.h"
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_10
+#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
-static const sVmode* vmode = NULL;
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -134,55 +133,30 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-unsigned char* screenPtr;
-unsigned char* attrPtr;
+
 static volatile uint _frames = 0;
 
-void __not_in_flash_func(core1_main)() {
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
+// Empty
+}
+
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
+//  picomputerJoystick.enabled(!showMenu);  
+//  pzx_menu_mode(showMenu);
+}
+
+void core1_main() {
+
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  // TODO fetch the resolution from the mode ?
-  VgaInit(vmode,640,480);
+  ZxRgb332RenderLoop(
+    zxSpectrum,
+    _frames,
+    showMenu,
+    toggleMenu
+  );
 
-  while (1) {
-
-    VgaLineBuf *linebuf = get_vga_line();
-    uint32_t* buf = (uint32_t*)&(linebuf->line);
-    uint32_t y = linebuf->row;
-    _frames = linebuf->frame;
-    if (showMenu) {
-      pcw_prepare_vga332_scanline_80(
-        buf,
-        y,
-        linebuf->frame);
-    }
-    else {
-      zx_prepare_rgb_scanline(
-        buf, 
-        y, 
-        linebuf->frame,
-        screenPtr,
-        attrPtr,
-        zxSpectrum.borderColour(y)
-      );
-    }
-      
-//    pzx_keyscan_row();
-    
-    if (y == 239) { // TODO use a const / get from vmode
-      
-      // TODO Tidy this mechanism up
-      screenPtr = zxSpectrum.screenPtr();
-      attrPtr = screenPtr + (32 * 24 * 8);
-      
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-//        picomputerJoystick.enabled(!showMenu);
-      }      
-    }
-  }
   __builtin_unreachable();
 }
 
@@ -227,8 +201,8 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  vmode = Video(DEV_VGA, RES_HVGA);
-  sleep_ms(100);
+
+  ZxRgb332RenderLoopInit();
 
 #ifdef USE_STDIO
   //Initialise I/O
@@ -275,9 +249,6 @@ int main(){
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
-
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);

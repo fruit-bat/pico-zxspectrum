@@ -11,8 +11,10 @@ The firmware produces RGB 222 for the VGA out:<br/>
 ![image](Pico%20VGA%20RGB222.png)
 
 #### Firmware
-[ZxSpectrumPicomputerVgaAukBob.uf2](/uf2/ZxSpectrumPicomputerVgaAukBob.uf2)
-
+| Display mode | Firmware |
+| - | - |
+| 720x576x50Hz | [ZxSpectrumPicomputerVgaAukBob_720x576x50Hz.uf2](/uf2/ZxSpectrumPicomputerVgaAukBob_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPicomputerVgaAukBob_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerVgaAukBob_640x480x60Hz.uf2) |
 #### References
 [ZXRenew for cases and keyboards](https://zxrenew.co.uk/)<br/>
 

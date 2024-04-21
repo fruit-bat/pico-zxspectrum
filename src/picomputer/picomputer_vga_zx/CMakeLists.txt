@@ -1,18 +1,75 @@
 
 set(picomputer_vgazx_defines
   ${picomputer_common_defines}
-  PCS_COLS=80 
+)
+
+set(ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
   PCS_ROWS=30
+  # Set the VGA timing
+  VGA_MODE=VideoVGA       
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=480
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToCpu
 )
 
-add_executable(ZxSpectrumPicomputerVga1111Zx
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
-  main.cpp
+set(ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the VGA timing
+  VGA_MODE=VideoDVD
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=576
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
 )
 
-target_compile_definitions(ZxSpectrumPicomputerVga1111Zx PRIVATE
+foreach(target
+  ZxSpectrumPicomputerVga1111Zx_640x480x60Hz
+  ZxSpectrumPicomputerVga222Zx_640x480x60Hz
+  ZxSpectrumPicomputerVgaAuk_640x480x60Hz
+  ZxSpectrumPicomputerVgaAukBob_640x480x60Hz
+  ZxSpectrumPicomputerVga1111Zx_720x576x50Hz
+  ZxSpectrumPicomputerVga222Zx_720x576x50Hz
+  ZxSpectrumPicomputerVgaAuk_720x576x50Hz
+  ZxSpectrumPicomputerVgaAukBob_720x576x50Hz
+)
+
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_rgb_src}
+    ${picomputer_common_src}
+    ${zxspectrum_rgb332_src} 
+    main.cpp
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    pico_emu_utils
+    pico_vga_menu
+    pico_vga_332
+    tinyusb_host
+    tinyusb_board
+    hardware_pio
+    hardware_pwm
+  )
+
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+  
+endforeach()
+
+set(ZxSpectrumPicomputerVga1111Zx_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGBY_1111
   VGA_GPIO_SYNC=4
@@ -21,32 +78,18 @@ target_compile_definitions(ZxSpectrumPicomputerVga1111Zx PRIVATE
   PICOMPUTER_VGA
 )
 
-target_link_libraries(ZxSpectrumPicomputerVga1111Zx
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
+target_compile_definitions(ZxSpectrumPicomputerVga1111Zx_640x480x60Hz PRIVATE
+  ${ZxSpectrumPicomputerVga1111Zx_defines}
+  ${ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines}
 )
 
-pico_enable_stdio_usb(ZxSpectrumPicomputerVga1111Zx 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVga1111Zx 0)
 
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVga1111Zx)
-
-
-add_executable(ZxSpectrumPicomputerVga222Zx
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
-  main.cpp
+target_compile_definitions(ZxSpectrumPicomputerVga1111Zx_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVga1111Zx_defines}
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
 )
 
-target_compile_definitions(ZxSpectrumPicomputerVga222Zx PRIVATE
+set(ZxSpectrumPicomputerVga222Zx_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
@@ -55,28 +98,14 @@ target_compile_definitions(ZxSpectrumPicomputerVga222Zx PRIVATE
   PICOMPUTER_PICOZX
 )
 
-target_link_libraries(ZxSpectrumPicomputerVga222Zx
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
+target_compile_definitions(ZxSpectrumPicomputerVga222Zx_640x480x60Hz PRIVATE
+  ${ZxSpectrumPicomputerVga222Zx_defines}
+  ${ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines}
 )
 
-pico_enable_stdio_usb(ZxSpectrumPicomputerVga222Zx 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVga222Zx 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVga222Zx)
-
-add_executable(ZxSpectrumPicomputerVgaAuk
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
-  main.cpp
+target_compile_definitions(ZxSpectrumPicomputerVga222Zx_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVga222Zx_defines}
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
 )
 
 #
@@ -104,7 +133,7 @@ add_executable(ZxSpectrumPicomputerVgaAuk
 # AUK digitalmexer: MFLURDAB  MFLURDAB
 # AUK bobrisius:    FLURDMPN  FLURDQCK
 #
-target_compile_definitions(ZxSpectrumPicomputerVgaAuk PRIVATE
+set(ZxSpectrumPicomputerVgaAuk_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
@@ -114,34 +143,20 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAuk PRIVATE
   REAL_ZXKEYBOARD
 )
 
-target_link_libraries(ZxSpectrumPicomputerVgaAuk
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
+target_compile_definitions(ZxSpectrumPicomputerVgaAuk_640x480x60Hz PRIVATE
+  ${ZxSpectrumPicomputerVgaAuk_defines}
+  ${ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines}
 )
 
-pico_enable_stdio_usb(ZxSpectrumPicomputerVgaAuk 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAuk 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVgaAuk)
+target_compile_definitions(ZxSpectrumPicomputerVgaAuk_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVgaAuk_defines}
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
+)
 
 #
 # Target for bobricius
 #
-add_executable(ZxSpectrumPicomputerVgaAukBob
-  ${zxspectrum_common_src}
-  ${zxspectrum_rgb_src}
-  ${picomputer_common_src}
-  main.cpp
-)
-
-target_compile_definitions(ZxSpectrumPicomputerVgaAukBob PRIVATE
+  set(ZxSpectrumPicomputerVgaAukBob_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   VGA_GPIO_SYNC=6
@@ -153,19 +168,12 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAukBob PRIVATE
   HID_KEY_MOD_SAVE=2
 )
 
-target_link_libraries(ZxSpectrumPicomputerVgaAukBob
-  ${zxspectrum_common_libs}
-  pico_emu_utils
-  pico_vga_menu
-  pico_vga_332
-  tinyusb_host
-  tinyusb_board
-  hardware_pio
-  hardware_pwm
+target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_640x480x60Hz PRIVATE
+  ${ZxSpectrumPicomputerVgaAukBob_defines}
+  ${ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines}
 )
 
-pico_enable_stdio_usb(ZxSpectrumPicomputerVgaAukBob 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerVgaAukBob 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerVgaAukBob)
+target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVgaAukBob_defines}  
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
+)

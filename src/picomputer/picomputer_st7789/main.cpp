@@ -11,9 +11,9 @@
 #include "st7789_lcd.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
-#include "vga.h"
 #include "ZxSpectrumPrepareRgbScanline.h"
 #include "ZxSpectrumFatSpiKiosk.h"
+#include "ZxRgb332RenderLoop.h"
 #endif
 #include "pzx_keyscan.h"
 
@@ -45,17 +45,13 @@
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_10
+#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
 
 #ifdef PICOMPUTER_PICOZX_LCD
-static const sVmode* vmode = NULL;
 static bool useVga = false;
 #endif
-
-uint8_t* screenPtr;
-uint8_t* attrPtr;
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -153,57 +149,27 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   pzx_menu_mode(showMenu);
 }
 
+#ifdef PICOMPUTER_PICOZX_LCD
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
+    pzx_keyscan_row();
+}
+void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
+}
+#endif
+
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
-
   printf("Core 1 running...\n");
 
 #ifdef PICOMPUTER_PICOZX_LCD
   if (useVga) {
-
-    // TODO fetch the resolution from the mode ?
-    VgaInit(vmode,640,480);
-
-    while (1) {
-
-      VgaLineBuf *linebuf = get_vga_line();
-      uint32_t* buf = (uint32_t*)&(linebuf->line);
-      uint32_t y = linebuf->row;
-      _frames = linebuf->frame;
-      if (showMenu) {
-        pcw_prepare_vga332_scanline_80(
-          buf,
-          y,
-          linebuf->frame);
-      }
-      else {
-        zx_prepare_rgb_scanline(
-          buf, 
-          y, 
-          linebuf->frame,
-          screenPtr,
-          attrPtr,
-          zxSpectrum.borderColour(y)
-        );
-      }
-        
-      pzx_keyscan_row();
-      
-      if (y == 239) { // TODO use a const / get from vmode
-        
-        // TODO Tidy this mechanism up
-        screenPtr = zxSpectrum.screenPtr();
-        attrPtr = screenPtr + (32 * 24 * 8);
-        
-        if (toggleMenu) {
-          showMenu = !showMenu;
-          toggleMenu = false;
-          setMenuState(showMenu);
-        }
-      }    
-    }
+    ZxRgb332RenderLoop(
+      zxSpectrum,
+      _frames,
+      showMenu,
+      toggleMenu
+    );
   }
-
   // Turn on the LCD backlight
   gpio_init(4);
   gpio_set_dir(4, GPIO_OUT);
@@ -220,9 +186,33 @@ void __not_in_flash_func(core1_main)() {
 
   uint32_t t1 = time_us_32();
 
+
+  uint8_t* screenPtr;
+  uint8_t* attrPtr;
+  screenPtr = zxSpectrum.screenPtr();
+  attrPtr = screenPtr + (32 * 24 * 8);
+
   while (1) {
 
     for (uint y = 0; y < 240; ++y) {
+
+      const uint32_t fpf = zxSpectrum.flipsPerFrame();
+      const bool ringoMode = fpf > 46 && fpf < 52;
+      if (ringoMode) {
+        screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
+        attrPtr = screenPtr + (32 * 24 * 8);
+      }
+
+      if (y == 0) {
+        
+        if (!ringoMode) {
+          screenPtr = zxSpectrum.screenPtr();
+          attrPtr = screenPtr + (32 * 24 * 8);
+        }
+        
+        _frames++;
+      }
+
       if (showMenu) {
         pcw_send_st7789_scanline(
           pio, 
@@ -243,12 +233,7 @@ void __not_in_flash_func(core1_main)() {
 
       pzx_keyscan_row();
     }
-    _frames++;
-
-    // TODO Tidy this mechanism up
-    screenPtr = zxSpectrum.screenPtr();
-    attrPtr = screenPtr + (32 * 24 * 8);
-    
+ 
     if (toggleMenu) {
       showMenu = !showMenu;
       toggleMenu = false;
@@ -304,8 +289,7 @@ int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 #ifdef PICOMPUTER_PICOZX_LCD  
-  vmode = Video(DEV_VGA, RES_HVGA);
-  sleep_ms(100);
+  ZxRgb332RenderLoopInit();
 #else
   set_sys_clock_khz(200000, true);
 #endif
@@ -353,9 +337,6 @@ int main() {
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
-
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

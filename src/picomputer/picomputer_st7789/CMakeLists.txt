@@ -103,10 +103,39 @@ set(picomputer_zx_lcd_src
   ${zxspectrum_common_src}
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
+  ${zxspectrum_rgb332_src} 
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
 )
+
+set(zxspectrum_zx_lcd_640x480x60Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  # Set the VGA timing
+  VGA_MODE=VideoVGA       
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=480
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToCpu
+)
+
+set(zxspectrum_zx_lcd_720x576x50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=90
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the VGA timing
+  VGA_MODE=VideoDVD
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=720
+  DISPLAY_HEIGHT_PIXELS=576
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+)
+
 
 set(picomputer_zx_lcd_common_defines PRIVATE
   ${picomputer_common_defines}
@@ -136,75 +165,70 @@ set(zxspectrum_zx_lcd_common_libs
   hardware_pwm
 )
 
-add_executable(ZxSpectrumPicomputerZxLcd
-  ${picomputer_zx_lcd_src}
+foreach(target
+  ZxSpectrumPicomputerZxLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz
 )
+  add_executable(${target}
+    ${picomputer_zx_lcd_src}
+  )
+  
+  pico_generate_pio_header(${target} 
+    ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+  )
 
-pico_generate_pio_header(ZxSpectrumPicomputerZxLcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
+  target_link_libraries(${target}
+    ${zxspectrum_zx_lcd_common_libs}
+  )
 
-target_compile_definitions(ZxSpectrumPicomputerZxLcd PRIVATE
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+  
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+target_compile_definitions(ZxSpectrumPicomputerZxLcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
+  LCD_MIRROR_X
+)
+  
+target_compile_definitions(ZxSpectrumPicomputerZxLcd_640x480x60Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_640x480x60Hz_defines}
   LCD_MIRROR_X
 )
 
-target_link_libraries(ZxSpectrumPicomputerZxLcd
-  ${zxspectrum_zx_lcd_common_libs}
-)
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerZxLcd 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerZxLcd 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerZxLcd)
-
-
-add_executable(ZxSpectrumPicomputerZxInverseLcd
-  ${picomputer_zx_lcd_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicomputerZxInverseLcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
-
-target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
+  LCD_MIRROR_X
+  LCD_INVERSE
+)
+  
+target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_640x480x60Hz_defines}
   LCD_MIRROR_X
   LCD_INVERSE
 )
 
-target_link_libraries(ZxSpectrumPicomputerZxInverseLcd
-  ${zxspectrum_zx_lcd_common_libs}
-)
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerZxInverseLcd 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerZxInverseLcd 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerZxInverseLcd)
-
-
-add_executable(ZxSpectrumPicomputerZxILI9341Lcd
-  ${picomputer_zx_lcd_src}
-)
-
-pico_generate_pio_header(ZxSpectrumPicomputerZxILI9341Lcd 
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
-
-target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
   LCD_INVERSE
   LCD_RGB
 )
-
-target_link_libraries(ZxSpectrumPicomputerZxILI9341Lcd
-  ${zxspectrum_zx_lcd_common_libs}
+  
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_640x480x60Hz_defines}
+  LCD_INVERSE
+  LCD_RGB
 )
-
-pico_enable_stdio_usb(ZxSpectrumPicomputerZxILI9341Lcd 0)
-pico_enable_stdio_uart(ZxSpectrumPicomputerZxILI9341Lcd 0)
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(ZxSpectrumPicomputerZxILI9341Lcd)
