@@ -170,8 +170,8 @@ foreach(target
   ZxSpectrumPicomputerZxLcd_720x576x50Hz
   ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz
   ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz
-  ZxSpectrumPicomputerZxILI9341LLcd_720x576x50Hz
-  ZxSpectrumPicomputerZxILI9341LLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz
 )
   add_executable(${target}
     ${picomputer_zx_lcd_src}
@@ -219,14 +219,14 @@ target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz PRIVATE
   LCD_INVERSE
 )
 
-target_compile_definitions(ZxSpectrumPicomputerZxILI9341LLcd_720x576x50Hz PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
   ${zxspectrum_zx_lcd_720x576x50Hz_defines}
   LCD_INVERSE
   LCD_RGB
 )
   
-target_compile_definitions(ZxSpectrumPicomputerZxILI9341LLcd_640x480x60Hz PRIVATE
+target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
   ${zxspectrum_zx_lcd_640x480x60Hz_defines}
   LCD_INVERSE
