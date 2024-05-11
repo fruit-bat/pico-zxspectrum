@@ -196,6 +196,10 @@ foreach(target
     ${zxspectrum_ear_in_pio}
   )
 
+  pico_generate_pio_header(${target} 
+    ${murmulator_ps2kbd_pio}
+  )
+
   pico_enable_stdio_usb(${target} 0)
 
   # create map/bin/hex file etc.

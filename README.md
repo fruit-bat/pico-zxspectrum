@@ -21,6 +21,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+11/05/24
+
+* Broader joystick/gamepad support (thanks to DPRCZ) 
+
 21/04/24
 
 * 720x576x50Hz option now available for VGA and HDMI builds

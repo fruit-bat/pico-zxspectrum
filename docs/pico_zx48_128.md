@@ -17,4 +17,6 @@ The firmware produces RGB 222 for the VGA out:<br/>
 | 640x480x60Hz | [ZxSpectrumPicomputerVgaAukBob_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerVgaAukBob_640x480x60Hz.uf2) |
 #### References
 [ZXRenew for cases and keyboards](https://zxrenew.co.uk/)<br/>
+[YouTube 1](https://www.youtube.com/watch?v=BvZBZUznZrY)<br/>
+[YouTube 2](https://www.youtube.com/watch?v=LgOR_wKjtFk)<br/>
 

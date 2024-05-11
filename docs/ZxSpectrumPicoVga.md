@@ -25,7 +25,7 @@ Building firmware for the *Pimoroni Pico VGA Demo Base* needs a different cmake 
 ```sh
 cd build
 cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
-make -j4 ZxSpectrumPicoVga
+make -j4 ZxSpectrumPicoVga_720x576x50Hz ZxSpectrumPicoVga_640x480x60Hz
 ```
 
 #### Parts
