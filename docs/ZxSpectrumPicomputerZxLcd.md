@@ -49,4 +49,5 @@ The make system has some switches to adapt it to different LCD panels:
 [raspberrypi.com](https://www.raspberrypi.com/news/build-your-own-handheld-zx-spectrum-with-raspberry-pi-pico/)<br/>
 [Bobricius on YouTube](https://www.youtube.com/watch?v=AbfBHwBqbpY)<br/>
 [Bobricius PCBWay](https://www.pcbway.com/project/shareproject/PICO_ZX_LCD_VGA_Spectrum_128k_094be579.html)<br/>
+[Pixel Fandango on YouTube](https://www.youtube.com/watch?v=y6s7uneGPm8)<br/>
 
