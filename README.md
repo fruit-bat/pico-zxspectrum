@@ -21,6 +21,11 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+13/05/24
+
+* CAPS-4 for page down and CAPS-9 for page up on rubber keyboard.
+* Simple first letter matching on Snapshot and Tape selectors.
+
 11/05/24
 
 * Broader joystick/gamepad support (thanks to DPRCZ) 
