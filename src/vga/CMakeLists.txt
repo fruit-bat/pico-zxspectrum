@@ -18,7 +18,7 @@ set(zxspectrum_vga_640x480x60Hz_defines
   PCS_COLS=80
   PCS_ROWS=30
   # Set the VGA timing
-  VGA_MODE=VideoVGA       
+  VGA_MODE=VideoVGA
   # The display resolution
   DISPLAY_WIDTH_PIXELS=640
   DISPLAY_HEIGHT_PIXELS=480
@@ -40,7 +40,7 @@ set(zxspectrum_vga_720x576x50Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
 )
 
-foreach(target 
+foreach(target
   ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz
   ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz
   ZxSpectrum4PinAudioVga222Ps2_640x480x60Hz
@@ -64,7 +64,7 @@ foreach(target
     hardware_pwm
   )
 
-  pico_generate_pio_header(${target} 
+  pico_generate_pio_header(${target}
     ${zxspectrum_ear_in_pio}
   )
 
@@ -84,12 +84,12 @@ set(ZxSpectrum4PinAudioVga1111Ps2_defines
   VGA_GPIO_OUTNUM=4
   # 4 pin audio
   BZR_PIN=21
-  EAR_PIN=11  
+  EAR_PIN=11
   AY8912_A_PIN=20
   AY8912_B_PIN=26
   AY8912_C_PIN=27
   # Enable the PS/2 keyboard
-  USE_PS2_KBD   
+  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz PRIVATE
@@ -120,7 +120,7 @@ set(ZxSpectrum4PinAudioVga222Ps2_defines
   AY8912_B_PIN=26
   AY8912_C_PIN=27
   # Enable the PS/2 keyboard
-  USE_PS2_KBD   
+  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrum4PinAudioVga222Ps2_720x576x50Hz PRIVATE
@@ -166,7 +166,7 @@ set(ZxSpectrumPicoMiteVGA_defines
   USE_STDIO
 )
 
-foreach(target 
+foreach(target
 
   ZxSpectrumPicoMiteVGA_640x480x60Hz
   ZxSpectrumPicoMiteVGA_720x576x50Hz
@@ -192,8 +192,12 @@ foreach(target
     hardware_pwm
   )
 
-  pico_generate_pio_header(${target} 
+  pico_generate_pio_header(${target}
     ${zxspectrum_ear_in_pio}
+  )
+
+  pico_generate_pio_header(${target}
+    ${murmulator_ps2kbd_pio}
   )
 
   pico_enable_stdio_usb(${target} 0)
@@ -203,7 +207,7 @@ foreach(target
 
 endforeach()
 
-foreach(target 
+foreach(target
   ZxSpectrumPicoMiteVGA_640x480x60Hz
   ZxSpectrumPicoMiteVGA_720x576x50Hz
 )
@@ -211,7 +215,7 @@ foreach(target
 
 endforeach()
 
-foreach(target 
+foreach(target
   ZX-MURMULATOR_VGA_640x480x60Hz
   ZX-MURMULATOR_VGA_720x576x50Hz
 )
@@ -230,7 +234,7 @@ target_compile_definitions(ZxSpectrumPicoMiteVGA_640x480x60Hz PRIVATE
 )
 
 #========================================================
-# ZX MURMULATOR 
+# ZX MURMULATOR
 #========================================================
 set(ZX-MURMULATOR_VGA_defines
   MURMULATOR
@@ -261,7 +265,7 @@ set(ZX-MURMULATOR_VGA_defines
   EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD 
+  USE_MRMLTR_PS2_KBD
 )
 
 target_compile_definitions(ZX-MURMULATOR_VGA_720x576x50Hz PRIVATE
