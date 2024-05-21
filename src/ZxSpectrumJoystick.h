@@ -12,16 +12,16 @@ class ZxSpectrumJoystick {
 private:
   ZxSpectrumJoystickMode _mode;
 public:
-  ZxSpectrumJoystick() : 
+  ZxSpectrumJoystick() :
     _mode(ZxSpectrumJoystickModeKempston)
   {}
 
-  virtual uint8_t kempston();
-  virtual uint8_t sinclairL();
-  virtual uint8_t sinclairR();
-  virtual bool isConnectedL();
-  virtual bool isConnectedR();
-  
+  virtual uint8_t kempston() = 0;
+  virtual uint8_t sinclairL() = 0;
+  virtual uint8_t sinclairR() = 0;
+  virtual bool isConnectedL() = 0;
+  virtual bool isConnectedR() = 0;
+
   virtual void mode(ZxSpectrumJoystickMode mode) { _mode = mode; }
 
   inline ZxSpectrumJoystickMode mode() { return _mode; }
