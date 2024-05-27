@@ -32,7 +32,6 @@ add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
 )
 
 set(zxspectrum_hdmi_defines
-  # Set up the DVI output to match the Pimoroni Pico DV board
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2

@@ -21,6 +21,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+27/05/24
+
+* Handle longer HID descriptors for USB joysticks
+
 13/05/24
 
 * CAPS-4 for page down and CAPS-9 for page up on rubber keyboard.
