@@ -170,7 +170,7 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
 #ifdef USE_MRMLTR_PS2_KBD
 static Ps2Kbd_Mrmltr ps2kbd(
   pio1,
-  8,
+  0,
   process_kbd_report
 );
 #elif defined(USE_PS2_KBD)
