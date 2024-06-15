@@ -167,12 +167,14 @@ set(ZxSpectrumPicoMiteVGA_defines
 )
 
 foreach(target
-
   ZxSpectrumPicoMiteVGA_640x480x60Hz
   ZxSpectrumPicoMiteVGA_720x576x50Hz
-  ZX-MURMULATOR_VGA_640x480x60Hz
-  ZX-MURMULATOR_VGA_720x576x50Hz
+  ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
 )
+
   add_executable(${target}
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
@@ -211,15 +213,8 @@ foreach(target
   ZxSpectrumPicoMiteVGA_640x480x60Hz
   ZxSpectrumPicoMiteVGA_720x576x50Hz
 )
+
   pico_enable_stdio_uart(${target} 1)
-
-endforeach()
-
-foreach(target
-  ZX-MURMULATOR_VGA_640x480x60Hz
-  ZX-MURMULATOR_VGA_720x576x50Hz
-)
-  pico_enable_stdio_uart(${target} 0)
 
 endforeach()
 
@@ -249,6 +244,16 @@ set(ZX-MURMULATOR_VGA_defines
   VGA_GPIO_OUTNUM=6
   VGA_GPIO_SYNC=12
   VGA_VSYNC=13
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP
+  # Tape audio in
+  EAR_PIN=22
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+  USE_MRMLTR_PS2_KBD
+)
+
+set(ZX-MURMULATOR_VGA_PWM_Audio_defines
   # Speaker pin audio
   SPK_PIN=28
   # Buzzer audio out
@@ -259,21 +264,62 @@ set(ZX-MURMULATOR_VGA_defines
   AY8912_A_PIN=27
   # Right chanel audio out
   AY8912_C_PIN=26
-  # Use the alternate volume map
-  AY8912_ALT_VOL_MAP
-  # Tape audio in
-  EAR_PIN=22
-  # Enable the PS/2 keyboard
-  USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD
 )
 
-target_compile_definitions(ZX-MURMULATOR_VGA_720x576x50Hz PRIVATE
+set (ZX-MURMULATOR_VGA_I2S_Audio_defines
+  # Configure the I2S audio 
+  PICO_AUDIO_I2S=1
+  PICO_AUDIO_I2S_SM=2
+  PICO_AUDIO_I2S_PIO=pio1
+  PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
+  PICO_AUDIO_I2S_DATA=26
+  PICO_AUDIO_I2S_BCLK=27
+)
+
+foreach(target
+  ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
+)
+
+  pico_enable_stdio_uart(${target} 0)
+
+endforeach()
+
+foreach(target
+  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
+)
+
+pico_generate_pio_header(${target} 
+${zxspectrum_audio_i2s_pio}
+)
+
+endforeach()
+
+
+
+target_compile_definitions(ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR_VGA_defines}
+  ${ZX-MURMULATOR_VGA_PWM_Audio_defines}
+  ${zxspectrum_vga_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_VGA_PWM_AUDIO_720x576x50Hz PRIVATE
+  ${ZX-MURMULATOR_VGA_defines}
+  ${ZX-MURMULATOR_VGA_PWM_Audio_defines}
   ${zxspectrum_vga_720x576x50Hz_defines}
 )
 
-target_compile_definitions(ZX-MURMULATOR_VGA_640x480x60Hz PRIVATE
+target_compile_definitions(ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR_VGA_defines}
+  ${ZX-MURMULATOR_VGA_I2S_Audio_defines}
   ${zxspectrum_vga_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz PRIVATE
+  ${ZX-MURMULATOR_VGA_defines}
+  ${ZX-MURMULATOR_VGA_I2S_Audio_defines}
+  ${zxspectrum_vga_720x576x50Hz_defines}
 )

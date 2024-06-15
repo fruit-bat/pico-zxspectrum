@@ -391,6 +391,8 @@ foreach(target
   ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz
   ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz
   ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_HDMI_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz
 )
   add_executable(${target}
     ${zxspectrum_common_src}
@@ -410,8 +412,13 @@ foreach(target
     ${murmulator_ps2kbd_pio}
   )
 
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_audio_i2s_pio}
+  )
+
   # create map/bin/hex file etc.
-  pico_add_extra_outputs(${target})  
+  pico_add_extra_outputs(${target}) 
+ 
 endforeach()
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
@@ -438,4 +445,14 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
   ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
 
+target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator_common_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}  
+)
 
+target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator_common_defines}
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
