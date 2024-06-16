@@ -29,11 +29,14 @@ The firmware produces RGB 222 for the VGA out:<br/>
 ![image](Pico%20VGA%20RGB222.png)
 
 #### Firmware
-| LCD | Colour Encoding | Colour Channel | Board | Firmware |
-| - | - | - | - | - | 
-| ST7789 | BGR | Normal | Bobricius | [ZxSpectrumPicomputerZxLcd.uf2](/uf2/ZxSpectrumPicomputerZxLcd.uf2) |
-| ST7789 | BGR | Inverted | | [ZxSpectrumPicomputerZxInverseLcd.uf2](/uf2/ZxSpectrumPicomputerZxInverseLcd.uf2) |
-| ILI9341 | RGB | inverted | | [ZxSpectrumPicomputerZxILI9341Lcd.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd.uf2) |
+| LCD | Colour Encoding | Colour Channel | VGA | Board | Firmware |
+| - | - | - | - | - | - |
+| ST7789 | BGR | Normal | 640x480x60Hz |Bobricius | [ZxSpectrumPicomputerZxLcd_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerZxLcd_640x480x60Hz.uf2) |
+| ST7789 | BGR | Normal | 720x576x50Hz |Bobricius | [ZxSpectrumPicomputerZxLcd_720x576x50Hz.uf2](/uf2/ZxSpectrumPicomputerZxLcd_720x576x50Hz.uf2) |
+| ST7789 | BGR | Inverted | 640x480x60Hz | | [ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz.uf2) |
+| ST7789 | BGR | Inverted | 720x576x50Hz | | [ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz.uf2](/uf2/xSpectrumPicomputerZxInverseLcd_720x576x50Hz.uf2) |
+| ILI9341 | RGB | inverted | 640x480x60Hz | | [ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz.uf2) |
+| ILI9341 | RGB | inverted | 720x576x50Hz | | [ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz.uf2](/uf2/ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz.uf2) |
 
 #### Build system notes
 The make system has some switches to adapt it to different LCD panels:
