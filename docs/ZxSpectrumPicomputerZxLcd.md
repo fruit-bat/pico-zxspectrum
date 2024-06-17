@@ -25,6 +25,8 @@ While on the menu...
 #### Circuit Diagrams
 ![image](ZxSpectrumPicomputerZxLcd.png)
 
+![image](ZxSpectrumPicomputerZxLcdSchematic.png)
+
 The firmware produces RGB 222 for the VGA out:<br/>
 ![image](Pico%20VGA%20RGB222.png)
 
