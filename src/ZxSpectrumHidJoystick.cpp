@@ -51,10 +51,13 @@ void ZxSpectrumHidJoystick::decode() {
           sinclairR &= ~(1<<1);
         }
         if (values->buttons & 7) {
-          kempston |= 1<<4;
+          //kempston |= 1<<4;
           sinclairR &= ~(1<<0);
         }
         _sinclairR = sinclairR;
+        // 4BK - 4 Buttons Kempston Joystick
+        kempston |= (values->buttons & 14)<<3;   // 4 Button Kempston | |X|A|B|.|DDDD|
+        kempston |= (values->buttons &  1)<<7;   // 4 Button Kempston |Y| | | |.|DDDD|
       }
       else {
         uint8_t sinclairL = 0xff;
@@ -75,10 +78,13 @@ void ZxSpectrumHidJoystick::decode() {
           sinclairL &= ~(1<<3);
         }
         if (values->buttons & 7) {
-          kempston |= 1<<4;
-          sinclairL &= ~(1<<4);
+          //kempston |= 1<<4;                     //Kempstone 1 Button Fire = (ABY)
+            sinclairL &= ~(1<<4);
         }
         _sinclairL = sinclairL;
+        // 4BK - 4 Buttons Kempston Joystick
+        kempston |= (values->buttons & 14)<<3;   // 4 Button Kempston | |X|A|B|.|DDDD|
+        kempston |= (values->buttons &  1)<<7;   // 4 Button Kempston |Y| | | |.|DDDD|
       }
       _kempston = kempston;
       _updated1 = joystick->updated;
