@@ -21,6 +21,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston and Sinclair joystick emulation
 
 ## Updates
+23/06/24
+
+* Improvements for Kempston Joystick emulation thanks to [@javavi](https://github.com/javavi)
+  
 27/05/24
 
 * Handle longer HID descriptors for USB joysticks
