@@ -12,7 +12,7 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * USB keyboard & Joysticks
 * PS/2 keyboard
 * Martix keyboard
-* PWM/I2S DAC audio for 48k buzzer and AY-3-8912
+* HDMI/PWM/I2S DAC audio for 48k buzzer and AY-3-8912
 * Audio input (load from tape)
 * 12 quick save slots
 * Load from .z80 snapshot files
