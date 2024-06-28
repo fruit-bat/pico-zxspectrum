@@ -19,6 +19,6 @@ public:
   inline void mount() { _mounted++; }
   inline void unmount() { _mounted--; }
   inline void xDelta(int32_t xd) { _xAcc += xd; }
-  inline void yDelta(int32_t yd) { _yAcc += yd; }
-  inline void setButtons(uint32_t b) { _buttons = b; }
+  inline void yDelta(int32_t yd) { _yAcc -= yd; }
+  void setButtons(uint32_t b);
 };

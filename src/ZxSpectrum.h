@@ -123,6 +123,20 @@ private:
        return _joystick ? _joystick->getKempston() : 0;
     }
 
+    // Kempston mouse
+    // 64479	FBDF	xxxx x011 xx0x xxxx	X axis	00-FF Roll over at 0 and $FF
+    // 65503	FFDF	xxxx x111 xx0x xxxx	Y Axis	00-FF Roll over at 0 and $FF
+    // 64223	FADF	xxxx x010 xx0x xxxx	Buttons	D0:Right D1:Left D2:Middle (Some compatables only)
+    if ((address | 0b1111100011011111) == 0xFBDF) {
+      return _mouse->xAxis();
+    }
+    if ((address | 0b1111100011011111) == 0xFFDF) {
+      return _mouse->yAxis();
+    }
+    if ((address | 0b1111100011011111) == 0xFADF) {
+      return _mouse->buttons();
+    }
+
     return 0xFF;
   }
 
