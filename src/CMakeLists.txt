@@ -2,6 +2,8 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(zxspectrum_common_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMouse.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidMouse.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumSettings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings.cpp # Needed for flash settings (not currently working)
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings.cpp
