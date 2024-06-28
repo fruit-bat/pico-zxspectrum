@@ -123,20 +123,20 @@ static bool toggleMenu = false;
 
 extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
 {
-  static hid_mouse_report_t prev_report = { 0 };
+  // static hid_mouse_report_t prev_report = { 0 };
 
-  //------------- button state  -------------//
-  uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
-  if ( button_changed_mask & report->buttons)
-  {
-    printf(" %c%c%c ",
-       report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
-       report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
-       report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
-  }
+  // //------------- button state  -------------//
+  // uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
+  // if ( button_changed_mask & report->buttons)
+  // {
+  //   printf(" %c%c%c ",
+  //      report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
+  //      report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
+  //      report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
+  // }
 
-  //------------- cursor movement -------------//
-  printf("(%d %d %d)\r\n", report->x, report->y, report->wheel);
+  // //------------- cursor movement -------------//
+  // printf("(%d %d %d)\r\n", report->x, report->y, report->wheel);
 
   mouse.xDelta(report->x);
   mouse.yDelta(report->y);
@@ -144,12 +144,12 @@ extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t con
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
-  printf("Mouse connected %d %d\n", dev_addr, instance);
+//  printf("Mouse connected %d %d\n", dev_addr, instance);
   mouse.mount();
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
-  printf("Mouse disonnected %d %d\n", dev_addr, instance);
+//  printf("Mouse disonnected %d %d\n", dev_addr, instance);
   mouse.unmount();
 }
 

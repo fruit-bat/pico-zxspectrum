@@ -23,7 +23,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
-// #include "ZxSpectrumPicomputerJoystick.h"
+#include "ZxSpectrumHidMouse.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -54,6 +54,7 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 );
 static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
+static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
@@ -63,7 +64,8 @@ static ZxSpectrumHidKeyboard keyboard1(
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
   0, 
-  &joystick
+  &joystick,
+  &mouse
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -84,6 +86,38 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 
 static bool showMenu = true;
 static bool toggleMenu = false;
+
+extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
+{
+  // static hid_mouse_report_t prev_report = { 0 };
+
+  // //------------- button state  -------------//
+  // uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
+  // if ( button_changed_mask & report->buttons)
+  // {
+  //   printf(" %c%c%c ",
+  //      report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
+  //      report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
+  //      report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
+  // }
+
+  // //------------- cursor movement -------------//
+  // printf("(%d %d %d)\r\n", report->x, report->y, report->wheel);
+
+  mouse.xDelta(report->x);
+  mouse.yDelta(report->y);
+  mouse.setButtons(report->buttons);
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
+//  printf("Mouse connected %d %d\n", dev_addr, instance);
+  mouse.mount();
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
+//  printf("Mouse disonnected %d %d\n", dev_addr, instance);
+  mouse.unmount();
+}
 
 void print(hid_keyboard_report_t const *report) {
   printf("HID key report modifiers %2.2X report ", report->modifier);
