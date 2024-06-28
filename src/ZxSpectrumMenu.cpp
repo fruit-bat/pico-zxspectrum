@@ -142,12 +142,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     bool k1 = _zxSpectrum->keyboard1() && _zxSpectrum->keyboard1()->isMounted();
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     bool m = _zxSpectrum->mouse() && _zxSpectrum->mouse()->isMounted();
-    pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s, Mouse: %s",
+    pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s, Mice: %s",
        (jl == jr ? "s" : ""),
        (jl ? "L" : ""), (!jl && !jr ? "0" : (jl & jr ? "&" : "")), (jr ? "R" : ""),
        (k1 == k2 ? "s" : ""),
        (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : ""),
-       (m ? "y" : "n")
+       (m ? "1" : "0")
        );
     _devices.repaint();
   });
