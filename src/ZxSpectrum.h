@@ -13,6 +13,7 @@
 #include "ZxSpectrumAy.h"
 #include "hardware/pwm.h"
 #include "ZxSpectrumAudio.h"
+#include "ZxSpectrumMouse.h"
 
 // #define DEBUG_SPEC
 #ifdef DEBUG_SPEC
@@ -41,6 +42,7 @@ private:
   ZxSpectrumKeyboard *_keyboard1;
   ZxSpectrumKeyboard *_keyboard2;
   ZxSpectrumJoystick *_joystick;
+  ZxSpectrumMouse *_mouse;
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
@@ -226,7 +228,8 @@ public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
-    ZxSpectrumJoystick *joystick
+    ZxSpectrumJoystick *joystick,
+    ZxSpectrumMouse *mouse
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   inline uint8_t* memPtr(uint32_t i) { return (unsigned char*)&_RAM[i]; }
@@ -269,6 +272,7 @@ public:
   ZxSpectrumJoystick *joystick() { return _joystick; }
   ZxSpectrumKeyboard *keyboard1() { return _keyboard1; }
   ZxSpectrumKeyboard *keyboard2() { return _keyboard2; }
+  ZxSpectrumMouse *mouse() { return _mouse; }
   
   void tzxOptionHandlers(
     std::function<void()> clearOptions,

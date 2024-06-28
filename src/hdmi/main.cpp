@@ -38,6 +38,7 @@ extern "C" {
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumHidJoystick.h"
+#include "ZxSpectrumHidMouse.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -53,7 +54,6 @@ extern "C" {
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
-
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -81,8 +81,9 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   &sdCard0,
   "zxspectrum"
 ); 
-static ZxSpectrumFileLoop snapFileLoop;
+static ZxSpectrumFileLoop snapFileLoop; 
 static QuickSave quickSave;
+static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
@@ -97,7 +98,8 @@ static ZxSpectrumHidKeyboard keyboard2(
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
   &keyboard2,  
-  &joystick
+  &joystick,
+  &mouse
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -119,42 +121,6 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 
-void __not_in_flash_func(cursor_movement)(int8_t x, int8_t y, int8_t wheel)
-{
-#if USE_ANSI_ESCAPE
-  // Move X using ansi escape
-  if ( x < 0)
-  {
-    printf(ANSI_CURSOR_BACKWARD(%d), (-x)); // move left
-  }else if ( x > 0)
-  {
-    printf(ANSI_CURSOR_FORWARD(%d), x); // move right
-  }
-
-  // Move Y using ansi escape
-  if ( y < 0)
-  {
-    printf(ANSI_CURSOR_UP(%d), (-y)); // move up
-  }else if ( y > 0)
-  {
-    printf(ANSI_CURSOR_DOWN(%d), y); // move down
-  }
-
-  // Scroll using ansi escape
-  if (wheel < 0)
-  {
-    printf(ANSI_SCROLL_UP(%d), (-wheel)); // scroll up
-  }else if (wheel > 0)
-  {
-    printf(ANSI_SCROLL_DOWN(%d), wheel); // scroll down
-  }
-
-  printf("\r\n");
-#else
-  printf("(%d %d %d)\r\n", x, y, wheel);
-#endif
-}
-
 extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
 {
   static hid_mouse_report_t prev_report = { 0 };
@@ -170,15 +136,21 @@ extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t con
   }
 
   //------------- cursor movement -------------//
-  cursor_movement(report->x, report->y, report->wheel);
+  printf("(%d %d %d)\r\n", report->x, report->y, report->wheel);
+
+  mouse.xDelta(report->x);
+  mouse.yDelta(report->y);
+  mouse.setButtons(report->buttons);
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
-  // TODO
+  printf("Mouse connected %d %d\n", dev_addr, instance);
+  mouse.mount();
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
-  // TODO
+  printf("Mouse disonnected %d %d\n", dev_addr, instance);
+  mouse.unmount();
 }
 
 void print(hid_keyboard_report_t const *report) {
