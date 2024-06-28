@@ -119,6 +119,68 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 
+void __not_in_flash_func(cursor_movement)(int8_t x, int8_t y, int8_t wheel)
+{
+#if USE_ANSI_ESCAPE
+  // Move X using ansi escape
+  if ( x < 0)
+  {
+    printf(ANSI_CURSOR_BACKWARD(%d), (-x)); // move left
+  }else if ( x > 0)
+  {
+    printf(ANSI_CURSOR_FORWARD(%d), x); // move right
+  }
+
+  // Move Y using ansi escape
+  if ( y < 0)
+  {
+    printf(ANSI_CURSOR_UP(%d), (-y)); // move up
+  }else if ( y > 0)
+  {
+    printf(ANSI_CURSOR_DOWN(%d), y); // move down
+  }
+
+  // Scroll using ansi escape
+  if (wheel < 0)
+  {
+    printf(ANSI_SCROLL_UP(%d), (-wheel)); // scroll up
+  }else if (wheel > 0)
+  {
+    printf(ANSI_SCROLL_DOWN(%d), wheel); // scroll down
+  }
+
+  printf("\r\n");
+#else
+  printf("(%d %d %d)\r\n", x, y, wheel);
+#endif
+}
+
+extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
+{
+  static hid_mouse_report_t prev_report = { 0 };
+
+  //------------- button state  -------------//
+  uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
+  if ( button_changed_mask & report->buttons)
+  {
+    printf(" %c%c%c ",
+       report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
+       report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
+       report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
+  }
+
+  //------------- cursor movement -------------//
+  cursor_movement(report->x, report->y, report->wheel);
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
+  // TODO
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
+  // TODO
+}
+
 void print(hid_keyboard_report_t const *report) {
 	printf("HID key report modifiers %2.2X report ", report->modifier);
 	for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
