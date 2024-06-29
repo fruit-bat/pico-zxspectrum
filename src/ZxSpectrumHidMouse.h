@@ -6,6 +6,7 @@ class ZxSpectrumHidMouse : public ZxSpectrumMouse {
 private:
   uint32_t _xAcc;
   uint32_t _yAcc;
+  uint8_t _wAcc;
   uint8_t _buttons;
   uint8_t _mounted;
 public:
@@ -20,5 +21,6 @@ public:
   inline void unmount() { _mounted--; }
   inline void xDelta(int32_t xd) { _xAcc += xd; }
   inline void yDelta(int32_t yd) { _yAcc -= yd; }
+  inline void wDelta(int32_t wd) { _wAcc += wd; }
   void setButtons(uint32_t b);
 };

@@ -4,7 +4,7 @@
 void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
 {
     // Buttons	D0:Right D1:Left D2:Middle
-    _buttons = ~(
+    _buttons = (
         (b & MOUSE_BUTTON_LEFT ? 2 : 0) | 
         (b & MOUSE_BUTTON_MIDDLE ? 4 : 0) |
         (b & MOUSE_BUTTON_RIGHT ? 1 : 0)
@@ -13,7 +13,7 @@ void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
 
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::buttons)()
 {
-    return _buttons;
+    return 0xff & ~(_wAcc << 4 | _buttons);
 }
 
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::xAxis)()

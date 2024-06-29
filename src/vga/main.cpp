@@ -106,6 +106,7 @@ extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t con
 
   mouse.xDelta(report->x);
   mouse.yDelta(report->y);
+  mouse.wDelta(report->wheel);
   mouse.setButtons(report->buttons);
 }
 
