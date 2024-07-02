@@ -13,23 +13,23 @@ ZxSpectrumHidJoystick::ZxSpectrumHidJoystick() :
 }
 
 bool ZxSpectrumHidJoystick::isConnectedL() {
-  tusb_hid_simple_joysick_t* simple_joysticks[2];
+  tusb_hid_simple_joystick_t* simple_joysticks[2];
   return tuh_hid_get_simple_joysticks(simple_joysticks, 2) > 0;
 }
 
 bool ZxSpectrumHidJoystick::isConnectedR() {
-  tusb_hid_simple_joysick_t* simple_joysticks[2];
+  tusb_hid_simple_joystick_t* simple_joysticks[2];
   return tuh_hid_get_simple_joysticks(simple_joysticks, 2) > 1;
 }
 
 void ZxSpectrumHidJoystick::decode() {
-  tusb_hid_simple_joysick_t* simple_joysticks[2];
+  tusb_hid_simple_joystick_t* simple_joysticks[2];
   uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
   if (n > 0) {
-    tusb_hid_simple_joysick_t* joystick = simple_joysticks[0];
+    tusb_hid_simple_joystick_t* joystick = simple_joysticks[0];
     if (_updated1 != joystick->updated) {
       uint8_t kempston = 0;
-      tusb_hid_simple_joysick_values_t* values = &joystick->values;
+      tusb_hid_simple_joystick_values_t* values = &joystick->values;
       // 000FUDLR
 
       if (mode() == ZxSpectrumJoystickModeSinclairRL) {
@@ -91,10 +91,10 @@ void ZxSpectrumHidJoystick::decode() {
     }
   }
   if (n > 1) {
-    tusb_hid_simple_joysick_t* joystick = simple_joysticks[1];
+    tusb_hid_simple_joystick_t* joystick = simple_joysticks[1];
     if (_updated2 != joystick->updated) {
 
-      tusb_hid_simple_joysick_values_t* values = &joystick->values;
+      tusb_hid_simple_joystick_values_t* values = &joystick->values;
       if (mode() == ZxSpectrumJoystickModeSinclairRL) {
         uint8_t sinclairL = 0xff;
         if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {

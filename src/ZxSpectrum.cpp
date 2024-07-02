@@ -13,12 +13,14 @@
 ZxSpectrum::ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
-    ZxSpectrumJoystick *joystick
+    ZxSpectrumJoystick *joystick,
+    ZxSpectrumMouse *mouse
 ) :
   _moderate(9),
   _keyboard1(keyboard1),
   _keyboard2(keyboard2),
   _joystick(joystick),
+  _mouse(mouse),
   _borderColour(7),
   _port254(0),
   _ear(false),

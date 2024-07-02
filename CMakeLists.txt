@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 add_compile_options(-Wall)
+add_definitions(-DHID_PROTOCOL_DEFAULT=HID_PROTOCOL_REPORT)
 
 set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
 	"Select a default pin configuration from common_dvi_pin_configs.h")
