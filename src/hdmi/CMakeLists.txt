@@ -279,6 +279,56 @@ target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
 )
 
 ########################################################################
+# Adafruit Feather DVI
+########################################################################
+
+# cmake -DPICO_COPY_TO_RAM=0   -DPICO_SDK_PATH=../../pico-sdk -DPICO_BOARD=adafruit_feather_rp2040 ..
+# make -j4 ZxSpectrumAdafruitFeatherHdmi 
+foreach(target
+  ZxSpectrumAdafruitFeatherHdmi
+)
+
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+endforeach()
+
+set(zx_spectrum_adafuit_feather_hdmi_defines
+  DVI_DEFAULT_SERIAL_CONFIG=adafruit_feather_dvi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1  
+  # Configure the SPI sd card to use SPI0
+  SDCARD_PIO=pio1
+  SDCARD_PIO_SM=1  
+  SDCARD_PIN_SPI0_CS=13
+  SDCARD_PIN_SPI0_SCK=10
+  SDCARD_PIN_SPI0_MOSI=11
+  SDCARD_PIN_SPI0_MISO=12
+  # Speaker pin audio
+  SPK_PIN=25
+)
+
+target_compile_definitions(ZxSpectrumAdafruitFeatherHdmi PRIVATE
+  ${zx_spectrum_adafuit_feather_hdmi_defines}
+  # ${zxspectrum_hdmi_720x576x50Hz_defines} - this seems to be very unstable
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  # PICO_HDMI_AUDIO - this results in a black screen
+)
+
+########################################################################
 # Waveshare - RP2040 - PicoZero
 ########################################################################
 
