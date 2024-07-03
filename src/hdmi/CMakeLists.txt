@@ -320,9 +320,10 @@ set(zx_spectrum_adafuit_feather_hdmi_defines
   # Speaker pin audio
   SPK_PIN=25
   # defines from the board type
-  PICO_BOOT_STAGE2_CHOOSE_GENERIC_03H=1
-  PICO_FLASH_SPI_CLKDIV=4
-  PICO_RP2040_B0_SUPPORTED=0
+#  PICO_BOOT_STAGE2_CHOOSE_GENERIC_03H=1
+
+#  PICO_FLASH_SPI_CLKDIV=4
+#  PICO_RP2040_B0_SUPPORTED=0
 )
 
 target_compile_definitions(ZxSpectrumAdafruitFeatherHdmi PRIVATE
