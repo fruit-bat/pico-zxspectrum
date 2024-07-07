@@ -19,6 +19,8 @@
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
 #include "ZxSpectrumPicomputerJoystick.h"
+#include "ZxSpectrumHidMouse.h"
+
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -46,6 +48,7 @@ static SdCardFatFsSpi sdCard0(0);
 // ZX Spectrum emulator
 static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
+static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick hidJoystick;
 static ZxSpectrumPicomputerJoystick picomputerJoystick;
 static ZxSpectrumDualJoystick dualJoystick(
@@ -69,7 +72,8 @@ static ZxSpectrumHidKeyboard keyboard2(
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
   &keyboard2, 
-  &dualJoystick
+  &dualJoystick,
+  &mouse
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -91,6 +95,39 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 static bool showMenu = true;
 static bool toggleMenu = false;
 static volatile uint _frames = 0;
+
+extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
+{
+  // static hid_mouse_report_t prev_report = { 0 };
+
+  // //------------- button state  -------------//
+  // uint8_t button_changed_mask = report->buttons ^ prev_report.buttons;
+  // if ( button_changed_mask & report->buttons)
+  // {
+  //   printf(" %c%c%c ",
+  //      report->buttons & MOUSE_BUTTON_LEFT   ? 'L' : '-',
+  //      report->buttons & MOUSE_BUTTON_MIDDLE ? 'M' : '-',
+  //      report->buttons & MOUSE_BUTTON_RIGHT  ? 'R' : '-');
+  // }
+
+  // //------------- cursor movement -------------//
+  // printf("(%d %d %d)\r\n", report->x, report->y, report->wheel);
+
+  mouse.xDelta(report->x);
+  mouse.yDelta(report->y);
+  mouse.wDelta(report->wheel);
+  mouse.setButtons(report->buttons);
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
+//  printf("Mouse connected %d %d\n", dev_addr, instance);
+  mouse.mount();
+}
+
+extern "C"  void __not_in_flash_func(process_mouse_unmount)(uint8_t dev_addr, uint8_t instance) {
+//  printf("Mouse disonnected %d %d\n", dev_addr, instance);
+  mouse.unmount();
+}
 
 extern "C"  void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
   keyboard1.mount();

@@ -13,6 +13,7 @@
 #include "ZxSpectrumAy.h"
 #include "hardware/pwm.h"
 #include "ZxSpectrumAudio.h"
+#include "ZxSpectrumMouse.h"
 
 // #define DEBUG_SPEC
 #ifdef DEBUG_SPEC
@@ -41,6 +42,7 @@ private:
   ZxSpectrumKeyboard *_keyboard1;
   ZxSpectrumKeyboard *_keyboard2;
   ZxSpectrumJoystick *_joystick;
+  ZxSpectrumMouse *_mouse;
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
@@ -119,6 +121,20 @@ private:
 
     if ((!(address==0x7FFD))&&(!(address&0x00E0))) {
        return _joystick ? _joystick->getKempston() : 0;
+    }
+
+    // Kempston mouse
+    // 64479	FBDF	xxxx x011 xx0x xxxx	X axis	00-FF Roll over at 0 and $FF
+    // 65503	FFDF	xxxx x111 xx0x xxxx	Y Axis	00-FF Roll over at 0 and $FF
+    // 64223	FADF	xxxx x010 xx0x xxxx	Buttons	D0:Right D1:Left D2:Middle (Some compatables only)
+    if ((address | 0b1111100011011111) == 0xFBDF) {
+      return _mouse->xAxis();
+    }
+    if ((address | 0b1111100011011111) == 0xFFDF) {
+      return _mouse->yAxis();
+    }
+    if ((address | 0b1111100011011111) == 0xFADF) {
+      return _mouse->buttons();
     }
 
     return 0xFF;
@@ -226,7 +242,8 @@ public:
   ZxSpectrum(
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
-    ZxSpectrumJoystick *joystick
+    ZxSpectrumJoystick *joystick,
+    ZxSpectrumMouse *mouse
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   inline uint8_t* memPtr(uint32_t i) { return (unsigned char*)&_RAM[i]; }
@@ -269,6 +286,7 @@ public:
   ZxSpectrumJoystick *joystick() { return _joystick; }
   ZxSpectrumKeyboard *keyboard1() { return _keyboard1; }
   ZxSpectrumKeyboard *keyboard2() { return _keyboard2; }
+  ZxSpectrumMouse *mouse() { return _mouse; }
   
   void tzxOptionHandlers(
     std::function<void()> clearOptions,
