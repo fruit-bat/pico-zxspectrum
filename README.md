@@ -19,8 +19,13 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Read from .tap & .tzx tape files
 * On screen menu system
 * Kempston and Sinclair joystick emulation
+* Kempston mouse emulation
 
 ## Updates
+08/07/24
+
+* Added support for Kempston Mouse thanks to [@javavi](https://github.com/javavi)
+
 23/06/24
 
 * Improvements for Kempston Joystick emulation thanks to [@javavi](https://github.com/javavi)
