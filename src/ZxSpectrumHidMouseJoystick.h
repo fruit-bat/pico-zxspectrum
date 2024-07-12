@@ -6,16 +6,17 @@
 class ZxSpectrumHidMouseJoystick : public ZxSpectrumJoystick {
 private:
   // Joystick stuff
-  uint32_t _updated1;
-  uint32_t _updated2;
   uint8_t _kempston;
   uint8_t _sinclairL;
   uint8_t _sinclairR;
+  bool _isLeft;
   // Mouse stuff
   int32_t _xAcc;
   int32_t _yAcc;
   int8_t _wAcc;
   uint8_t _mounted;
+  uint8_t _buttons;
+  uint32_t _us;
 
 public:
   ZxSpectrumHidMouseJoystick();
