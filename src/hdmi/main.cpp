@@ -37,6 +37,8 @@ extern "C" {
 #include "ZxSpectrumFatSpiKiosk.h"
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
+#include "ZxSpectrumDualJoystick.h"
+#include "ZxSpectrumHidJoystick.h"
 #include "ZxSpectrumHidMouseJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
@@ -84,7 +86,12 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static ZxSpectrumFileLoop snapFileLoop; 
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
-static ZxSpectrumHidMouseJoystick joystick;
+static ZxSpectrumHidJoystick hidJoystick;
+static ZxSpectrumHidMouseJoystick hidMouseJoystick;
+static ZxSpectrumDualJoystick joystick(
+  &hidJoystick,
+  &hidMouseJoystick
+);
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
@@ -143,10 +150,10 @@ extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t con
   mouse.wDelta(report->wheel);
   mouse.setButtons(report->buttons);
 
-  joystick.xDelta(report->x);
-  joystick.yDelta(report->y);
-  joystick.wDelta(report->wheel);
-  joystick.setButtons(report->buttons);  
+  hidMouseJoystick.xDelta(report->x);
+  hidMouseJoystick.yDelta(report->y);
+  hidMouseJoystick.wDelta(report->wheel);
+  hidMouseJoystick.setButtons(report->buttons);  
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {

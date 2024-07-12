@@ -12,10 +12,11 @@ private:
   uint8_t _sinclairL;
   uint8_t _sinclairR;
   // Mouse stuff
-  uint32_t _xAcc;
-  uint32_t _yAcc;
-  uint8_t _wAcc;
-  uint8_t _buttons;  
+  int32_t _xAcc;
+  int32_t _yAcc;
+  int8_t _wAcc;
+  uint8_t _mounted;
+
 public:
   ZxSpectrumHidMouseJoystick();
   void __not_in_flash_func(decode)();
@@ -28,4 +29,8 @@ public:
   inline void yDelta(int32_t yd) { _yAcc -= yd; }
   inline void wDelta(int32_t wd) { _wAcc += wd; }
   void setButtons(uint32_t b);  
+
+  bool isMounted() { return _mounted > 0; }
+  inline void mount() { _mounted++; }
+  inline void unmount() { _mounted--; }  
 };
