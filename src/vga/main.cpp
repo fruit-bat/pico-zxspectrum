@@ -23,6 +23,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
+#include "ZxSpectrumHidMouseJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
 #include "bsp/board.h"
@@ -55,7 +56,12 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
-static ZxSpectrumHidJoystick joystick;
+static ZxSpectrumHidJoystick hidJoystick;
+static ZxSpectrumHidMouseJoystick hidMouseJoystick;
+static ZxSpectrumDualJoystick joystick(
+  &hidJoystick,
+  &hidMouseJoystick
+);
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
@@ -108,6 +114,11 @@ extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t con
   mouse.yDelta(report->y);
   mouse.wDelta(report->wheel);
   mouse.setButtons(report->buttons);
+
+  hidMouseJoystick.xDelta(report->x);
+  hidMouseJoystick.yDelta(report->y);
+  hidMouseJoystick.wDelta(report->wheel);
+  hidMouseJoystick.setButtons(report->buttons);    
 }
 
 extern "C"  void __not_in_flash_func(process_mouse_mount)(uint8_t dev_addr, uint8_t instance) {
