@@ -13,10 +13,12 @@ private:
   // Mouse stuff
   int32_t _xAcc;
   int32_t _yAcc;
-  int8_t _wAcc;
+  int32_t _wAcc;
   uint8_t _mounted;
   uint8_t _buttons;
   uint32_t _us;
+  int32_t _xp;
+  int32_t _yp;
 
 public:
   ZxSpectrumHidMouseJoystick();
