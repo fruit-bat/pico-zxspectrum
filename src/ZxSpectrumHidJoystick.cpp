@@ -22,6 +22,11 @@ bool ZxSpectrumHidJoystick::isConnectedR() {
   return tuh_hid_get_simple_joysticks(simple_joysticks, 2) > 1;
 }
 
+#define HAT_BITS_U 0b10000011L
+#define HAT_BITS_D 0b00111000L
+#define HAT_BITS_L 0b11100000L
+#define HAT_BITS_R 0b00001110L
+
 void ZxSpectrumHidJoystick::decode() {
   tusb_hid_simple_joystick_t* simple_joysticks[2];
   uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
@@ -30,23 +35,35 @@ void ZxSpectrumHidJoystick::decode() {
     if (_updated1 != joystick->updated) {
       uint8_t kempston = 0;
       tusb_hid_simple_joystick_values_t* values = &joystick->values;
+
+      uint32_t hatm = 0;
+      if (joystick->hat.length > 0) {
+        uint32_t hat = (uint32_t)values->hat;
+        for(uint32_t i = joystick->hat.logical_max + 1; i > 8; i = i >> 1, hat >>= 1);
+        hatm = 1 << hat;
+      }
+      bool up = (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min || !!(hatm & HAT_BITS_U));
+      bool down = (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max || !!(hatm & HAT_BITS_D));
+      bool left = (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min || !!(hatm & HAT_BITS_L));
+      bool right = (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max || !!(hatm & HAT_BITS_R));
+
       // 000FUDLR
 
       if (mode() == ZxSpectrumJoystickModeSinclairRL) {
         uint8_t sinclairR = 0xff;
-        if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+        if (right) {
           kempston |= 1<<0;
           sinclairR &= ~(1<<3);
         }
-        if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+        if (left) {
           kempston |= 1<<1;
           sinclairR &= ~(1<<4);
         }	
-        if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+        if (down) {
           kempston |= 1<<2;
           sinclairR &= ~(1<<2);
         }
-        if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+        if (up) {
           kempston |= 1<<3;
           sinclairR &= ~(1<<1);
         }
@@ -61,19 +78,19 @@ void ZxSpectrumHidJoystick::decode() {
       }
       else {
         uint8_t sinclairL = 0xff;
-        if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+        if (right) {
           kempston |= 1<<0;
           sinclairL &= ~(1<<1);
         }
-        if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+        if (left) {
           kempston |= 1<<1;
           sinclairL &= ~(1<<0);
         }	
-        if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+        if (down) {
           kempston |= 1<<2;
           sinclairL &= ~(1<<2);
         }
-        if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+        if (up) {
           kempston |= 1<<3;
           sinclairL &= ~(1<<3);
         }
@@ -95,18 +112,30 @@ void ZxSpectrumHidJoystick::decode() {
     if (_updated2 != joystick->updated) {
 
       tusb_hid_simple_joystick_values_t* values = &joystick->values;
+
+      uint32_t hatm = 0;
+      if (joystick->hat.length > 0) {
+        uint32_t hat = (uint32_t)values->hat;
+        for(uint32_t i = joystick->hat.logical_max + 1; i > 8; i = i >> 1, hat >>= 1);
+        hatm = 1 << hat;
+      }
+      bool up = (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min || !!(hatm & HAT_BITS_U));
+      bool down = (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max || !!(hatm & HAT_BITS_D));
+      bool left = (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min || !!(hatm & HAT_BITS_L));
+      bool right = (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max || !!(hatm & HAT_BITS_R));
+
       if (mode() == ZxSpectrumJoystickModeSinclairRL) {
         uint8_t sinclairL = 0xff;
-        if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+        if (right) {
           sinclairL &= ~(1<<1);
         }
-        if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+        if (left) {
           sinclairL &= ~(1<<0);
         }	
-        if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+        if (down) {
           sinclairL &= ~(1<<2);
         }
-        if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+        if (up) {
           sinclairL &= ~(1<<3);
         }
         if (values->buttons & 7) {
@@ -116,16 +145,16 @@ void ZxSpectrumHidJoystick::decode() {
       }
       else {
         uint8_t sinclairR = 0xff;
-        if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+        if (right) {
           sinclairR &= ~(1<<3);
         }
-        if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+        if (left) {
           sinclairR &= ~(1<<4);
         }	
-        if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+        if (down) {
           sinclairR &= ~(1<<2);
         }
-        if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+        if (up) {
           sinclairR &= ~(1<<1);
         }
         if (values->buttons & 7) {
