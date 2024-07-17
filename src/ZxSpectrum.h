@@ -98,7 +98,7 @@ private:
   inline uint8_t fetchOpCode(uint16_t address) {
     if((address == 0x0556)||(address == 0x056C)){ // START LOAD
       printf("fast load trigger\n");
-			// FastTapeLoad();
+			fastTapeLoad();
       // return 0; // Do a nop
 		}
     return readByte(address);
@@ -250,6 +250,8 @@ inline void writeIO(uint16_t address, uint8_t value)
     _fcf = _fc;
     _fc = 0;
   }
+
+  void fastTapeLoad();
 
 public:
   ZxSpectrum(

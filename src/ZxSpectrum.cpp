@@ -877,6 +877,31 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
 }
 #endif
 
+void ZxSpectrum::fastTapeLoad() {
+  uint16_t af = Z80_AF(_Z80);
+  uint16_t af_ = Z80_AF_(_Z80);
+
+  if ((af & Z80_CF) == 0) return;
+
+  const int16_t blocktype = Z80_A(_Z80);
+  const uint16_t auxAddress = Z80_IX(_Z80);
+  const uint16_t auxLen = Z80_DE(_Z80);
+
+  printf("FastTapeLoad> id>%02X   start>%04x   len>%04x\n",blocktype,auxAddress,auxLen);
+
+  // if (FastLoadTAP(blocktype,auxAddress,auxLen)){
+  //   af_=getAF_();
+  //   setAF_(af_ | 64);
+  //   printf("Normal load\n");
+  //   cpu.pc=0x05E2;
+  // } else {
+  //   af_=getAF_();
+  //   setAF_(af_ & 190);
+  //   printf("Load Error\n");
+  //   cpu.pc=0x056B;
+  // }
+  // printf("FastTapeLoad return\n");
+}
 
 /* ---------Fast load tap emulation part----------- 
 
