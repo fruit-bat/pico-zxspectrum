@@ -36,7 +36,7 @@ ZxSpectrum::ZxSpectrum(
   _Z80.options = Z80_MODEL_ZILOG_NMOS;
   _Z80.read = readByte;
   _Z80.fetch = readByte;
-  _Z80.fetch_opcode = readByte;
+  _Z80.fetch_opcode = fetchOpCode;
   _Z80.write = writeByte;
   _Z80.in = readIO;
   _Z80.out = writeIO;
@@ -876,3 +876,259 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   return c;
 }
 #endif
+
+
+/* ---------Fast load tap emulation part----------- 
+
+
+	void z80_emulation_loop(){
+		if((cpu.pc==0x0556)||(cpu.pc==0x056C)){ // START LOAD
+			FastTapeLoad();
+		}
+	}
+
+	uint8_t getF() {
+		uint8_t val = 0;
+		val |= cpu.cf << 0;
+		val |= cpu.nf << 1;
+		val |= cpu.pf << 2;
+		val |= cpu.xf << 3;
+		val |= cpu.hf << 4;
+		val |= cpu.yf << 5;
+		val |= cpu.zf << 6;
+		val |= cpu.sf << 7;
+		return val;
+	}
+	
+	void setF(uint8_t val) {
+		cpu.cf = (val >> 0) & 1;
+		cpu.nf = (val >> 1) & 1;
+		cpu.pf = (val >> 2) & 1;
+		cpu.xf = (val >> 3) & 1;
+		cpu.hf = (val >> 4) & 1;
+		cpu.yf = (val >> 5) & 1;
+		cpu.zf = (val >> 6) & 1;
+		cpu.sf = (val >> 7) & 1;
+	}
+	
+	uint16_t getAF() {
+		uint16_t val = 0;
+		val = (cpu.a<<8) | getF();
+		return val;
+	}
+	
+	void setAF(uint16_t v) {
+		cpu.a = (v & 0xFF00) >> 8;
+		setF(v & 0xFF);
+	}
+	
+	uint16_t getAF_() {
+		uint16_t val = 0;
+		val = (cpu.a_<<8) | cpu.f_;
+		return val;
+	}
+	
+	void setAF_(uint16_t v) {
+		cpu.a_ = (v & 0xFF00) >> 8;
+		cpu.f_ = (v & 0xFF);
+	}	
+	void FastTapeLoad() {
+		uint16_t af = getAF();
+		uint16_t af_ = getAF_();
+	
+		if(cpu.cf!=1) return;
+	
+		uint16_t blocktype = cpu.a;
+		uint16_t auxAddress = cpu.ix;
+		uint16_t auxLen = (cpu.d<<8)|cpu.e;
+	
+		printf("FastTapeLoad> id>%02X   start>%04x   len>%04x\n",blocktype,auxAddress,auxLen);
+	
+		if (FastLoadTAP(blocktype,auxAddress,auxLen)){
+			af_=getAF_();
+			setAF_(af_ | 64);
+			printf("Normal load\n");
+			cpu.pc=0x05E2;
+		} else {
+			af_=getAF_();
+			setAF_(af_ & 190);
+			printf("Load Error\n");
+			cpu.pc=0x056B;
+		}
+		printf("FastTapeLoad return\n");
+	}
+
+
+bool FastSkipTAPBytes(uint16_t Length){
+	size_t bytesRead;
+	////printf("FSTB> Len>%04x\n",Length);
+	while (Length>0){
+		if (Length<=SD_BUFFER_SIZE) {
+			//memset(sd_buffer, 0, sizeof(sd_buffer));
+			tape_file_status = sd_read_file(&sd_file,sd_buffer,Length,&bytesRead);
+			if (tape_file_status != FR_OK){sd_close_file(&sd_file);return false;}
+			for (uint16_t i = 0; i < Length; i++){
+				blockChecksum=(blockChecksum^sd_buffer[i]);
+			}
+			break;
+		} else {
+			Length=Length-SD_BUFFER_SIZE;
+			memset(sd_buffer, 0, sizeof(sd_buffer));
+			tape_file_status = sd_read_file(&sd_file,sd_buffer,SD_BUFFER_SIZE,&bytesRead);
+			for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++){
+				blockChecksum=(blockChecksum^sd_buffer[i]);
+			}
+			continue;
+		}
+	}
+	return true;
+}
+
+uint8_t read_z80(uint16_t addr){
+	if (addr<16384) return zx_cpu_ram[0][addr];
+	if (addr<32768) return zx_cpu_ram[1][addr-16384];
+	if (addr<49152) return zx_cpu_ram[2][addr-32768];
+	return zx_cpu_ram[3][addr-49152];
+}
+
+void write_z80(uint16_t addr, uint8_t val){
+	if (addr<16384) return;//ROM write prohibit
+	if (addr<32768) {zx_cpu_ram[1][addr-16384]=val;return;};
+	if (addr<49152) {zx_cpu_ram[2][addr-32768]=val;return;};
+	zx_cpu_ram[3][addr-49152]=val;
+}
+
+
+bool FastReadTAPBlock(uint16_t tpStart, uint16_t tpLen) {
+	////printf("FRTB> Start>%08x  Len>%04x\n",tpStart,tpLen);
+	memset(sd_buffer, 0, sizeof(sd_buffer));
+	//uint16_t addr;
+	uint8_t byte;
+	for (uint16_t i = 0; i < tpLen; i++){
+		tape_file_status = sd_read_file(&sd_file,&byte,1,&bytesRead);
+		if (tape_file_status != FR_OK){sd_close_file(&sd_file);return false;}
+		write_z80(tpStart+i, byte);
+		blockChecksum=(blockChecksum^byte);
+		////printf("RP>%04x  ram>%02x  срu>%02x buff>%02x\n",tpStart+i,RAM[tpStart+i],read_z80(tpStart+i),sd_buffer[i]);
+	}
+	
+	return true;
+}
+
+bool FastOpenTAP(char *file_name){
+	//printf("  Tap FastLoad begin\n");
+	if (tape_file_status==FR_OK) {
+		sd_close_file(&sd_file);
+		tape_file_status=TAPE_FILE_FREE;//0xFF
+	}
+	//printf("  FastTap FN:%s\n",file_name);
+	tape_file_status = sd_open_file(&sd_file,file_name,FA_READ);
+	////printf("sd_open_file=%d\n",tape_file_status);
+	if (tape_file_status!=FR_OK){sd_close_file(&sd_file);return false;}
+   	tapeFileSize = sd_file_size(&sd_file);
+	//printf("  .TAP Filesize %lu bytes\n", tapeFileSize);
+	TapeStatus = TAPE_STOPPED;
+	return true;	
+}
+
+void FastCloseTAP() {
+	if (tape_file_status==FR_OK) {
+		sd_close_file(&sd_file);
+		tape_file_status=TAPE_FILE_FREE;//0xFF
+	}
+}
+
+typedef struct TapeBlock{
+	uint16_t Size;
+	uint8_t Flag;
+	uint8_t DataType;
+	char NAME[11];
+	uint32_t FPos;
+} __attribute__((packed)) TapeBlock;
+
+bool FastLoadTAP(uint16_t blockType,uint16_t ramAddress,uint16_t ramLen){
+	size_t bytesToRead;
+	size_t bytesRead;
+	
+	uint8_t s[2]={0,0};
+	uint16_t lBlockLen;
+	uint16_t lBlockID;
+	uint16_t lBlockChecksum;
+	uint16_t de;
+	
+	im_z80_stop = true;
+	bool res=false;
+	
+	if (tape_file_status==TAPE_FILE_FREE) {return res;}
+
+	tape_file_status = sd_read_file(&sd_file,tapeBHbuffer,3,&bytesRead);
+	TapeBlock* block = (TapeBlock*) &tapeBHbuffer;
+	lBlockLen = block->Size-2;
+	lBlockID = block->Flag;
+	blockChecksum=lBlockID;
+
+	//printf("Fast Tape Load Block>%02X - %04X:%04X\n",blockType,ramAddress,ramLen);
+
+	if (lBlockID == blockType) {
+		if (ramLen <= lBlockLen) {
+			if(FastReadTAPBlock(ramAddress,ramLen)){///+1
+				if (ramLen < lBlockLen) {
+					FastSkipTAPBytes(lBlockLen - ramLen);
+				}
+			} else {
+				res=false;
+			}
+			tape_file_status = sd_read_file(&sd_file,s,1,&bytesRead);
+			lBlockChecksum=s[0];
+			cpu.ix=(cpu.ix+ramLen)&(0xFFFF);
+			cpu.d=0;
+			cpu.e=0;
+			if (blockChecksum == lBlockChecksum) {
+				res=true;
+			} else {
+				printf("Fast Tape Load Checksum ERROR!!");
+				res=false;
+			};
+			
+		} else {
+			if(FastReadTAPBlock(ramAddress,lBlockLen)){
+				tape_file_status = sd_read_file(&sd_file,s,1,&bytesRead);
+				lBlockChecksum=s[0];
+				cpu.ix=(cpu.ix+ramLen)&(0xFFFF);
+				de=((cpu.d * 256) | cpu.e);
+				de=de-lBlockLen;
+				cpu.d = (de & 0xFF00) >> 8;
+				cpu.e = (de & 0xFF);
+				if (blockChecksum == lBlockChecksum) {
+					res=true;
+				} else {
+					printf("Fast Tape Load Checksum ERROR!!");
+					res=false;
+				};
+			}
+			//res=false;
+		} // (lLength <= lBlockLen)
+	} else {
+		FastSkipTAPBytes(lBlockLen);
+		tape_file_status = sd_read_file(&sd_file,s,1,&bytesRead);
+		lBlockChecksum=s[0];
+		res=false;
+	}  //(lBlockID = blockType)
+	if (sd_file_pos(&sd_file)>=sd_file_size(&sd_file)){
+		printf("Full Fast Load\n");
+		tap_loader_active = TAPE_OFF;
+		sd_close_file(&sd_file);
+		tapeFileSize = 0;
+		tapBlocksCount = 0;
+		tapebufByteCount = 0;
+		tapeBlockByteCount = 0;
+		tapeTotByteCount = 0;
+		tape_file_status = TAPE_FILE_FREE;		
+		//printf("Tape Full Load\n");
+	}
+	TapeStatus = TAPE_LOADED;
+	im_z80_stop=false;
+	return res;
+}
+
+*/

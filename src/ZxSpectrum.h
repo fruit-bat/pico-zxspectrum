@@ -90,11 +90,20 @@ private:
   inline uint8_t* memaddr(uint32_t address) {
     return address + _pageaddr[address >> 14];
   }
-  
+
   inline uint8_t readByte(uint16_t address) {
     return *memaddr(address);
   }
   
+  inline uint8_t fetchOpCode(uint16_t address) {
+    if((address == 0x0556)||(address == 0x056C)){ // START LOAD
+      printf("fast load trigger\n");
+			// FastTapeLoad();
+      // return 0; // Do a nop
+		}
+    return readByte(address);
+  }
+
   inline void writeByte(uint16_t address, uint8_t value) {
     if (address < 0x4000) return;    
     *(memaddr(address)) = value;
@@ -172,6 +181,10 @@ inline void writeIO(uint16_t address, uint8_t value)
         _port254 = value;
         _borderColour = value & 7;
       }
+  }
+
+  static uint8_t __not_in_flash_func(fetchOpCode)(void * context, uint16_t address) {
+    return ((ZxSpectrum*)context)->fetchOpCode(address);
   }
 
   static uint8_t __not_in_flash_func(readByte)(void * context, uint16_t address) {
