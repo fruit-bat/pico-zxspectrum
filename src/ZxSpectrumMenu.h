@@ -48,6 +48,7 @@ private:
   PicoQuickKeyAscii _k7;
   PicoQuickKeyAscii _k8;
   PicoQuickKeyAscii _k9;
+  PicoQuickKeyAscii _kV;
 
   PicoWiz _wiz;
   PicoWizUtils _wizUtils;
@@ -60,6 +61,7 @@ private:
   PicoOption _muteOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
+  PicoOption _mouseOp;
   PicoOption _settingsOp;
   PicoOption _volumeOp;
 
@@ -76,9 +78,13 @@ private:
   PicoOptionText _reset128kOp;
 
   PicoSelect _joystick;
-  PicoOptionText _joystickKemstonOp;
+  PicoOptionText _joystickKempstonOp;
   PicoOptionText _joystickSinclairLROp;
   PicoOptionText _joystickSinclairRLOp;
+
+  PicoSelect _mouse;
+  PicoOptionText _mouseKempstonOp;
+  PicoOptionText _mouseJoystickOp;
 
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;

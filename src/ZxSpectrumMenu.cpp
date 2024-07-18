@@ -42,7 +42,7 @@
 #define SZ_FRAME_Y 0
 #endif
 #ifndef SZ_MENU_SEP
-#define SZ_MENU_SEP 2
+#define SZ_MENU_SEP 1
 #endif
 #ifndef SZ_FILE_SEP
 #define SZ_FILE_SEP 1
@@ -71,6 +71,7 @@ void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) 
    _chooseSnap.move(0, 0, _wizCols, _chooseSnap.wh());
    _reset.move(0, 0, _wizCols, _reset.wh());
    _joystick.move(0, 0, _wizCols, _joystick.wh());
+   _mouse.move(0, 0, _wizCols, _mouse.wh());
    _devices.move(0, 3, _wizCols, _devices.wh());
    _tzxSelect.move(0, 0, _wizCols, _tzxSelect.wh());
    repaint();
@@ -97,10 +98,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'),
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), _kV('v'),
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
-  _main(0, 0, _wizCols, 9, _menuRowsPerItem),
+  _main(0, 0, _wizCols, 10, _menuRowsPerItem),
   
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
@@ -114,9 +115,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _reset128kOp("Reset 128K ZX Spectrum"),
   
   _joystick(0, 0, _wizCols, 6, _menuRowsPerItem),
-  _joystickKemstonOp("Kempston"),
+  _joystickKempstonOp("Kempston"),
   _joystickSinclairLROp("Sinclair L+R"),
   _joystickSinclairRLOp("Sinclair R+L"),
+
+  _mouse(0, 0, _wizCols, 6, _menuRowsPerItem),
+  _mouseKempstonOp("Kempston Mouse"),
+  _mouseJoystickOp("Joystick"),
 
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
@@ -166,9 +171,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_muteOp.addQuickKey(&_k5));
   _main.addOption(_resetOp.addQuickKey(&_k6));
   _main.addOption(_joystickOp.addQuickKey(&_k7));
-  _main.addOption(_settingsOp.addQuickKey(&_k8));
+  _main.addOption(_mouseOp.addQuickKey(&_k8));
+  _main.addOption(_settingsOp.addQuickKey(&_k9));
 #ifndef BZR_PIN  
-  _main.addOption(_volumeOp.addQuickKey(&_k9));
+  _main.addOption(_volumeOp.addQuickKey(&_kV));
 #endif
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -307,6 +313,26 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
   });
 
+  _mouseOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m = "N/A";
+    if (_zxSpectrum->mouse()) {
+      switch(_zxSpectrum->mouse()->mode()) {
+        case ZxSpectrumMouseModeKempstonMouse: m = "Kempston mouse" ; break;
+        case ZxSpectrumMouseModeJoystick: m = "Joystick" ; break;
+        default: m = "N/A" ; break;
+      }
+    }
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Mouse", _wizCol2Width, m);
+  });
+  _mouseOp.toggle([=]() {
+    _wiz.push(
+      &_mouse, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Mouse mode"); }, 
+      true);
+  });
+
+
   _chooseSnap.onToggle = [=](FILINFO *finfo, int32_t i, const char* path) {
     snapName(finfo->fname);
     FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, path);
@@ -333,12 +359,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.pop(true);
   });
 
-  _joystick.addOption(_joystickKemstonOp.addQuickKey(&_k1));
+  _joystick.addOption(_joystickKempstonOp.addQuickKey(&_k1));
   _joystick.addOption(_joystickSinclairLROp.addQuickKey(&_k2));
   _joystick.addOption(_joystickSinclairRLOp.addQuickKey(&_k3));
   _joystick.enableQuickKeys();
 
-  _joystickKemstonOp.toggle([=]() {
+  _joystickKempstonOp.toggle([=]() {
     if (_zxSpectrum->joystick()) {
       _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeKempston);
     }
@@ -353,6 +379,23 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _joystickSinclairRLOp.toggle([=]() {
     if (_zxSpectrum->joystick()) {
       _zxSpectrum->joystick()->mode(ZxSpectrumJoystickModeSinclairRL);
+    }
+    _wiz.pop(true);
+  });
+
+  _mouse.addOption(_mouseKempstonOp.addQuickKey(&_k1));
+  _mouse.addOption(_mouseJoystickOp.addQuickKey(&_k2));
+  _mouse.enableQuickKeys();
+
+  _mouseKempstonOp.toggle([=]() {
+    if (_zxSpectrum->mouse()) {
+      _zxSpectrum->mouse()->mode(ZxSpectrumMouseModeKempstonMouse);
+    }
+    _wiz.pop(true);
+  });
+  _mouseJoystickOp.toggle([=]() {
+    if (_zxSpectrum->mouse()) {
+      _zxSpectrum->mouse()->mode(ZxSpectrumMouseModeJoystick);
     }
     _wiz.pop(true);
   });
@@ -531,9 +574,11 @@ void ZxSpectrumMenu::saveSettings() {
   ZxSpectrumSettingValues settings;
   settings.volume = zxSpectrumAudioGetVolume();
   settings.joystickMode = _zxSpectrum->joystick()->mode();
+  settings.mouseMode = _zxSpectrum->mouse()->mode();
   _zxSpectrumSettings->save(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Saved joystick setting '%d'\n", settings.joystickMode);  
+  DBG_PRINTF("ZxSpectrumMenu: Saved mouse setting '%d'\n", settings.mouseMode);  
 }
 
 void ZxSpectrumMenu::loadSettings() {
@@ -541,6 +586,8 @@ void ZxSpectrumMenu::loadSettings() {
   _zxSpectrumSettings->load(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Loaded volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Loaded joystick setting '%d'\n", settings.joystickMode);
+  DBG_PRINTF("ZxSpectrumMenu: Loaded mouse setting '%d'\n", settings.mouseMode);
   zxSpectrumAudioSetVolume(settings.volume);
   _zxSpectrum->joystick()->mode(settings.joystickMode);
+  _zxSpectrum->mouse()->mode(settings.mouseMode);
 }
