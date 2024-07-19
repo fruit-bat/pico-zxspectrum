@@ -60,12 +60,14 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop, 
   &quickSave, 
-  &dualJoystick
+  &dualJoystick,
+  &mouse
 );
 static ZxSpectrumHidKeyboard keyboard2(
   &snapFileLoop, 
   &quickSave, 
-  &picomputerJoystick
+  &picomputerJoystick,
+  0
 );
 static ZxSpectrum zxSpectrum(
   &keyboard1, 
