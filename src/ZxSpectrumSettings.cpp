@@ -33,6 +33,17 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
         values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
         break;
     } 
+
+    // Mouse Joystick
+    switch(values->mouseJoystickMode) {
+      case ZxSpectrumJoystickModeKempston:
+      case ZxSpectrumJoystickModeSinclairLR:
+      case ZxSpectrumJoystickModeSinclairRL:
+        break;
+      default: 
+        values->mouseJoystickMode = ZxSpectrumJoystickModeKempston;
+        break;
+    }    
 }
 
 bool ZxSpectrumSettings::onSave(ZxSpectrumSettingValues *values)

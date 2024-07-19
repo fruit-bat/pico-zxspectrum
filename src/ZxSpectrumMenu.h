@@ -83,8 +83,10 @@ private:
   PicoOptionText _joystickSinclairRLOp;
 
   PicoSelect _mouse;
-  PicoOptionText _mouseKempstonOp;
-  PicoOptionText _mouseJoystickOp;
+  PicoOptionText _mouseKempstonMouseOp;
+  PicoOptionText _mouseKempstonJoystickOp;
+  PicoOptionText _mouseSinclairJoystickLOp;
+  PicoOptionText _mouseSinclairJoystickROp;
 
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;

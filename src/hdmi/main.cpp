@@ -89,11 +89,13 @@ static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
-  &joystick
+  &joystick,
+  &mouse
 );
 static ZxSpectrumHidKeyboard keyboard2(
   &snapFileLoop, 
   &quickSave, 
+  0,
   0
 );
 static ZxSpectrum zxSpectrum(

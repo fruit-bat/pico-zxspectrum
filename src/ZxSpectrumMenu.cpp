@@ -120,8 +120,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _joystickSinclairRLOp("Sinclair R+L"),
 
   _mouse(0, 0, _wizCols, 6, _menuRowsPerItem),
-  _mouseKempstonOp("Kempston Mouse"),
-  _mouseJoystickOp("Joystick"),
+  _mouseKempstonMouseOp("Kempston Mouse"),
+  _mouseKempstonJoystickOp("Kemptson Joystick"),
+  _mouseSinclairJoystickLOp("Sinclair Joystick L"),
+  _mouseSinclairJoystickROp("Sinclair Joystick R"),
 
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
@@ -318,8 +320,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     const char *m = "N/A";
     if (_zxSpectrum->mouse()) {
       switch(_zxSpectrum->mouse()->mouseMode()) {
-        case ZxSpectrumMouseModeKempstonMouse: m = "Kempston mouse" ; break;
-        case ZxSpectrumMouseModeJoystick: m = "Joystick" ; break;
+        case ZxSpectrumMouseModeKempstonMouse: m = "Kempston Mouse" ; break;
+        case ZxSpectrumMouseModeJoystick: {
+          switch(_zxSpectrum->mouse()->mode()) {
+            case ZxSpectrumJoystickModeKempston: m = "Kempston Joystick" ; break;
+            case ZxSpectrumJoystickModeSinclairLR: m = "Sinclair Joystick L" ; break;
+            case ZxSpectrumJoystickModeSinclairRL: m = "Sinclair Joystick R" ; break;
+            default: m = "N/A" ; break;
+          }
+          break;     
+        }
         default: m = "N/A" ; break;
       }
     }
@@ -383,19 +393,36 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.pop(true);
   });
 
-  _mouse.addOption(_mouseKempstonOp.addQuickKey(&_k1));
-  _mouse.addOption(_mouseJoystickOp.addQuickKey(&_k2));
+  _mouse.addOption(_mouseKempstonMouseOp.addQuickKey(&_k1));
+  _mouse.addOption(_mouseKempstonJoystickOp.addQuickKey(&_k2));
+  _mouse.addOption(_mouseSinclairJoystickLOp.addQuickKey(&_k3));
+  _mouse.addOption(_mouseSinclairJoystickROp.addQuickKey(&_k4));
   _mouse.enableQuickKeys();
 
-  _mouseKempstonOp.toggle([=]() {
+  _mouseKempstonMouseOp.toggle([=]() {
     if (_zxSpectrum->mouse()) {
       _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeKempstonMouse);
     }
     _wiz.pop(true);
   });
-  _mouseJoystickOp.toggle([=]() {
+  _mouseKempstonJoystickOp.toggle([=]() {
     if (_zxSpectrum->mouse()) {
       _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeJoystick);
+      _zxSpectrum->mouse()->mode(ZxSpectrumJoystickModeKempston);
+    }
+    _wiz.pop(true);
+  });
+  _mouseSinclairJoystickLOp.toggle([=]() {
+    if (_zxSpectrum->mouse()) {
+      _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeJoystick);
+      _zxSpectrum->mouse()->mode(ZxSpectrumJoystickModeSinclairLR);
+    }
+    _wiz.pop(true);
+  });
+  _mouseSinclairJoystickROp.toggle([=]() {
+    if (_zxSpectrum->mouse()) {
+      _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeJoystick);
+      _zxSpectrum->mouse()->mode(ZxSpectrumJoystickModeSinclairRL);
     }
     _wiz.pop(true);
   });
@@ -575,6 +602,7 @@ void ZxSpectrumMenu::saveSettings() {
   settings.volume = zxSpectrumAudioGetVolume();
   settings.joystickMode = _zxSpectrum->joystick()->mode();
   settings.mouseMode = _zxSpectrum->mouse()->mouseMode();
+  settings.mouseJoystickMode = _zxSpectrum->mouse()->mode();
   _zxSpectrumSettings->save(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Saved joystick setting '%d'\n", settings.joystickMode);  
@@ -590,4 +618,5 @@ void ZxSpectrumMenu::loadSettings() {
   zxSpectrumAudioSetVolume(settings.volume);
   _zxSpectrum->joystick()->mode(settings.joystickMode);
   _zxSpectrum->mouse()->mouseMode(settings.mouseMode);
+  _zxSpectrum->mouse()->mode(settings.mouseJoystickMode);
 }
