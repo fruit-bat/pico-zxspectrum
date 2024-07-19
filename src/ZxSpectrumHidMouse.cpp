@@ -23,7 +23,6 @@ uint8_t __not_in_flash_func(ZxSpectrumHidMouse::yAxis)()
     return mouseMode() == ZxSpectrumMouseModeKempstonMouse ? _yAcc >> 3 : 0;
 }
 
-
 bool ZxSpectrumHidMouse::isConnectedL() {
   return mouseMode() == ZxSpectrumMouseModeJoystick ? _mounted > 0 && mode() == ZxSpectrumJoystickModeSinclairLR : false;
 }
@@ -182,4 +181,19 @@ void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
 
 void ZxSpectrumHidMouse::mouseMode(ZxSpectrumMouseMode mode) {
     ZxSpectrumMouse::mouseMode(mode);
+    // Mouse stuff
+    _xAcc = 0;
+    _yAcc = 0;
+    _wAcc = 0;
+    _buttons = 0;
+    // Joystick stuff
+    _kempston = 0;
+    _sinclairL = 0;
+    _sinclairR = 0;
+   _xp = 0;
+   _yp = 0;
+   left = false;
+   right = false;
+   up = false;
+   down = false;    
 }
