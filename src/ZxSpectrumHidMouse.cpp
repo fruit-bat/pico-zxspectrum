@@ -40,18 +40,16 @@ void ZxSpectrumHidMouse::decode() {
     uint8_t sinclairL = 0xff;
     uint8_t sinclairR = 0xff;
 
-    //VAR.2---------------------------------------------
+    //VAR.3---------------------------------------------
     // X Axis Control -----------------------------------
-    if (_yAcc > _yp+AXIS_EDGE || _yAcc < _yp-AXIS_EDGE) {
+    if (_yAcc > _yp+AXIS_RELEASE || _yAcc < _yp-AXIS_RELEASE) {
         //RIGHT in the corner of the quadrant
         if (_xAcc > _xp+AXIS_THRESHOLD) {
-            if (_yAcc > _yp+AXIS_EDGE) {_yp++;} else {_yp--;}  //Bevel    
             _xp = _xAcc-AXIS_THRESHOLD;
             right = true;
-        } else if (_xAcc < _xp+AXIS_RELEASE) {right = false;}  //Bevel   
+        } else if (_xAcc < _xp+AXIS_RELEASE) {right = false;}    
         //LEFT in the corner of the quadrant
         if (_xAcc < _xp-AXIS_THRESHOLD) {
-            if (_yAcc > _yp+AXIS_EDGE) {_yp++;} else {_yp--;}
             _xp = _xAcc+AXIS_THRESHOLD;
             left = true;
         } else if (_xAcc > _xp-AXIS_RELEASE) {left = false;}
@@ -68,16 +66,14 @@ void ZxSpectrumHidMouse::decode() {
         } else if (_xAcc > _xp-AXIS_RELEASE) {left = false;}
     }
     // Y Axis Control -----------------------------------
-    if (_xAcc > _xp+AXIS_EDGE || _xAcc < _xp-AXIS_EDGE) {
+    if (_xAcc > _xp+AXIS_RELEASE || _xAcc < _xp-AXIS_RELEASE) {
         //UP in the corner of the quadrant
         if (_yAcc > _yp+AXIS_THRESHOLD) {
-            if (_xAcc > _xp+AXIS_EDGE) {_xp++;} else {_xp--;}  //Bevel
             _yp = _yAcc-AXIS_THRESHOLD;
             up = true;
         } else if (_yAcc < _yp+AXIS_RELEASE) {up = false;}
         //DOWN in the corner of the quadrant
         if (_yAcc < _yp-AXIS_THRESHOLD) {
-            if (_xAcc > _xp+AXIS_EDGE) {_xp++;} else {_xp--;}
             _yp = _yAcc+AXIS_THRESHOLD;
             down = true;
         } else if (_yAcc > _yp-AXIS_RELEASE) {down = false;}
