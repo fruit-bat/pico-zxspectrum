@@ -120,7 +120,7 @@ private:
     }
 
     if ((!(address==0x7FFD))&&(!(address&0x00E0))) {
-       return _joystick ? _joystick->getKempston() : 0;
+       return (_joystick ? _joystick->getKempston() : 0) | (_mouse ? _mouse->getKempston() : 0);
     }
 
     // Kempston mouse

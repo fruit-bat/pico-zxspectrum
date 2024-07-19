@@ -142,14 +142,14 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   
   addChild(&_devices, false);
   _devices.onPaint([=](PicoPen *pen){
-    bool jl = _zxSpectrum->joystick()->isConnectedL();
-    bool jr = _zxSpectrum->joystick()->isConnectedR();
+    int32_t jl = (_zxSpectrum->joystick()->isConnectedL() ? 1 : 0) + (_zxSpectrum->mouse()->isConnectedL() ? 1 : 0);
+    int32_t jr = (_zxSpectrum->joystick()->isConnectedR() ? 1 : 0) + (_zxSpectrum->mouse()->isConnectedR() ? 1 : 0);
     bool k1 = _zxSpectrum->keyboard1() && _zxSpectrum->keyboard1()->isMounted();
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     bool m = _zxSpectrum->mouse() && _zxSpectrum->mouse()->isMounted();
     pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s, Mice: %s",
-       (jl == jr ? "s" : ""),
-       (jl ? "L" : ""), (!jl && !jr ? "0" : (jl & jr ? "&" : "")), (jr ? "R" : ""),
+       (jl + jr ? "s" : ""),
+       (jl ? "L" : ""), (!jl && !jr ? "0" : (!!jl & !!jr ? "&" : "")), (jr ? "R" : ""),
        (k1 == k2 ? "s" : ""),
        (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : ""),
        (m ? "1" : "0")
@@ -317,7 +317,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     pen->clear();
     const char *m = "N/A";
     if (_zxSpectrum->mouse()) {
-      switch(_zxSpectrum->mouse()->mode()) {
+      switch(_zxSpectrum->mouse()->mouseMode()) {
         case ZxSpectrumMouseModeKempstonMouse: m = "Kempston mouse" ; break;
         case ZxSpectrumMouseModeJoystick: m = "Joystick" ; break;
         default: m = "N/A" ; break;
@@ -389,13 +389,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
   _mouseKempstonOp.toggle([=]() {
     if (_zxSpectrum->mouse()) {
-      _zxSpectrum->mouse()->mode(ZxSpectrumMouseModeKempstonMouse);
+      _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeKempstonMouse);
     }
     _wiz.pop(true);
   });
   _mouseJoystickOp.toggle([=]() {
     if (_zxSpectrum->mouse()) {
-      _zxSpectrum->mouse()->mode(ZxSpectrumMouseModeJoystick);
+      _zxSpectrum->mouse()->mouseMode(ZxSpectrumMouseModeJoystick);
     }
     _wiz.pop(true);
   });
@@ -574,7 +574,7 @@ void ZxSpectrumMenu::saveSettings() {
   ZxSpectrumSettingValues settings;
   settings.volume = zxSpectrumAudioGetVolume();
   settings.joystickMode = _zxSpectrum->joystick()->mode();
-  settings.mouseMode = _zxSpectrum->mouse()->mode();
+  settings.mouseMode = _zxSpectrum->mouse()->mouseMode();
   _zxSpectrumSettings->save(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Saved joystick setting '%d'\n", settings.joystickMode);  
@@ -589,5 +589,5 @@ void ZxSpectrumMenu::loadSettings() {
   DBG_PRINTF("ZxSpectrumMenu: Loaded mouse setting '%d'\n", settings.mouseMode);
   zxSpectrumAudioSetVolume(settings.volume);
   _zxSpectrum->joystick()->mode(settings.joystickMode);
-  _zxSpectrum->mouse()->mode(settings.mouseMode);
+  _zxSpectrum->mouse()->mouseMode(settings.mouseMode);
 }

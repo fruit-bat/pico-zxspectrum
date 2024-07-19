@@ -1,27 +1,185 @@
 #include "ZxSpectrumHidMouse.h"
 #include "hid_host_info.h"
 
-void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
-{
-    // Buttons	D0:Right D1:Left D2:Middle
-    _buttons = (
-        (b & MOUSE_BUTTON_LEFT ? 2 : 0) | 
-        (b & MOUSE_BUTTON_MIDDLE ? 4 : 0) |
-        (b & MOUSE_BUTTON_RIGHT ? 1 : 0)
-    );
-}
-
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::buttons)()
 {
-    return 0xff & ~(_wAcc << 4 | _buttons);
+    if (mouseMode() != ZxSpectrumMouseModeKempstonMouse) return 0xff;
+
+    const uint32_t buttons = 
+        (_buttons & MOUSE_BUTTON_LEFT ? 2 : 0) | 
+        (_buttons & MOUSE_BUTTON_MIDDLE ? 4 : 0) |
+        (_buttons & MOUSE_BUTTON_RIGHT ? 1 : 0);
+
+    return 0xff & ~(_wAcc << 4 | buttons);
 }
 
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::xAxis)()
 {
-    return _xAcc >> 3;
+    return mouseMode() == ZxSpectrumMouseModeKempstonMouse ? _xAcc >> 3 : 0;
 }
 
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::yAxis)()
 {
-    return _yAcc >> 3;
+    return mouseMode() == ZxSpectrumMouseModeKempstonMouse ? _yAcc >> 3 : 0;
+}
+
+
+bool ZxSpectrumHidMouse::isConnectedL() {
+  return mouseMode() == ZxSpectrumMouseModeJoystick ? _mounted > 0 && mode() == ZxSpectrumJoystickModeSinclairLR : false;
+}
+
+bool ZxSpectrumHidMouse::isConnectedR() {
+  return mouseMode() == ZxSpectrumMouseModeJoystick ? _mounted > 0 && mode() == ZxSpectrumJoystickModeSinclairRL : false;
+}
+
+#define AXIS_THRESHOLD  32      // 4/4
+#define AXIS_RELEASE    24      // 3/4
+#define AXIS_EDGE       16      // 2/4    
+//==================================================
+void ZxSpectrumHidMouse::decode() {
+    uint8_t kempston = 0;
+    uint8_t sinclairL = 0xff;
+    uint8_t sinclairR = 0xff;
+
+    //VAR.2---------------------------------------------
+    // X Axis Control -----------------------------------
+    if (_yAcc > _yp+AXIS_EDGE || _yAcc < _yp-AXIS_EDGE) {
+        //RIGHT in the corner of the quadrant
+        if (_xAcc > _xp+AXIS_THRESHOLD) {
+            if (_yAcc > _yp+AXIS_EDGE) {_yp++;} else {_yp--;}  //Bevel    
+            _xp = _xAcc-AXIS_THRESHOLD;
+            right = true;
+        } else if (_xAcc < _xp+AXIS_RELEASE) {right = false;}  //Bevel   
+        //LEFT in the corner of the quadrant
+        if (_xAcc < _xp-AXIS_THRESHOLD) {
+            if (_yAcc > _yp+AXIS_EDGE) {_yp++;} else {_yp--;}
+            _xp = _xAcc+AXIS_THRESHOLD;
+            left = true;
+        } else if (_xAcc > _xp-AXIS_RELEASE) {left = false;}
+    } else {
+        //RIGHT in the central strip
+        if (_xAcc > _xp+AXIS_THRESHOLD) {
+            _xp = _xAcc-AXIS_THRESHOLD;
+            right = true; up = false; down = false;
+        } else if (_xAcc < _xp+AXIS_RELEASE) {right = false;}
+        //LEFT in the central strip
+        if (_xAcc < _xp-AXIS_THRESHOLD) {
+            _xp = _xAcc+AXIS_THRESHOLD;
+            left = true; up = false; down = false;
+        } else if (_xAcc > _xp-AXIS_RELEASE) {left = false;}
+    }
+    // Y Axis Control -----------------------------------
+    if (_xAcc > _xp+AXIS_EDGE || _xAcc < _xp-AXIS_EDGE) {
+        //UP in the corner of the quadrant
+        if (_yAcc > _yp+AXIS_THRESHOLD) {
+            if (_xAcc > _xp+AXIS_EDGE) {_xp++;} else {_xp--;}  //Bevel
+            _yp = _yAcc-AXIS_THRESHOLD;
+            up = true;
+        } else if (_yAcc < _yp+AXIS_RELEASE) {up = false;}
+        //DOWN in the corner of the quadrant
+        if (_yAcc < _yp-AXIS_THRESHOLD) {
+            if (_xAcc > _xp+AXIS_EDGE) {_xp++;} else {_xp--;}
+            _yp = _yAcc+AXIS_THRESHOLD;
+            down = true;
+        } else if (_yAcc > _yp-AXIS_RELEASE) {down = false;}
+    } else {
+        //UP in the central strip
+        if (_yAcc > _yp+AXIS_THRESHOLD) {
+            _yp = _yAcc-AXIS_THRESHOLD;
+            up = true; right = false; left = false;
+        } else if (_yAcc < _yp+AXIS_RELEASE) {up = false;}
+        //DOWN in the central strip
+        if (_yAcc < _yp-AXIS_THRESHOLD) {
+            _yp = _yAcc+AXIS_THRESHOLD;
+            down = true; right = false; left = false;
+        } else if (_yAcc > _yp-AXIS_RELEASE) {down = false;}
+    }
+
+    //---------------------------------------------
+    //Buttons control
+    kempston |= _buttons << 4;      // 4BK 
+    //kempston |= _wAcc & 128;
+    const bool isLeft = mode() == ZxSpectrumJoystickModeSinclairLR;
+
+    if (_buttons & MOUSE_BUTTON_LEFT) {
+        //kempston |= 1 << 4;
+        if (isLeft) {
+            sinclairL &= ~(1<<4);
+        }
+        else { 
+            sinclairR &= ~(1<<0);
+        }
+    }
+
+    //---------------------------------------------
+
+    if (right) { // Right
+        kempston |= 1<<0;
+        if (isLeft) {
+            sinclairL &= ~(1<<1);
+        }
+        else {
+            sinclairR &= ~(1<<3);
+        }
+    }
+    if (left) { // Left
+        kempston |= 1<<1;
+        if (isLeft) {
+            sinclairL &= ~(1<<0);
+        }
+        else {
+            sinclairR &= ~(1<<4);
+        }
+    }
+    if (up) { // Up
+        kempston |= 1<<3;
+        if (isLeft) {
+            sinclairL &= ~(1<<3);
+        }
+        else {
+            sinclairR &= ~(1<<1);
+        }
+    }
+    if (down) { // Down
+        kempston |= 1<<2;
+        if (isLeft) {
+            sinclairL &= ~(1<<2);
+        }
+        else {
+            sinclairR &= ~(1<<2);
+        }
+    } 
+    _kempston = kempston;
+    _sinclairL = sinclairL;
+    _sinclairR = sinclairR;
+}
+
+uint8_t ZxSpectrumHidMouse::sinclairL()
+{
+    if (mouseMode() != ZxSpectrumMouseModeJoystick) return 0xff;
+    decode();
+    return _sinclairL;
+}
+
+uint8_t ZxSpectrumHidMouse::sinclairR()
+{
+    if (mouseMode() != ZxSpectrumMouseModeJoystick) return 0xff;
+    decode();
+    return _sinclairR;
+}
+
+uint8_t ZxSpectrumHidMouse::kempston()
+{
+    if (mouseMode() != ZxSpectrumMouseModeJoystick) return 0x00;
+    decode();
+    return _kempston;
+}
+
+void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
+{
+    _buttons = (uint8_t)b;
+}
+
+void ZxSpectrumHidMouse::mouseMode(ZxSpectrumMouseMode mode) {
+    ZxSpectrumMouse::mouseMode(mode);
 }

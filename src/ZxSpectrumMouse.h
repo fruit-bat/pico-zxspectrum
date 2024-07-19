@@ -1,23 +1,23 @@
 #pragma once
 #include <pico/stdlib.h>
-
+#include "ZxSpectrumJoystick.h"
 
 enum ZxSpectrumMouseMode {
   ZxSpectrumMouseModeKempstonMouse,
   ZxSpectrumMouseModeJoystick
 };
 
-class ZxSpectrumMouse {
+class ZxSpectrumMouse : public ZxSpectrumJoystick {
 private:
-  ZxSpectrumMouseMode _mode;
+  ZxSpectrumMouseMode _mouseMode;
 public:
   ZxSpectrumMouse() :
-    _mode(ZxSpectrumMouseModeKempstonMouse)
+    _mouseMode(ZxSpectrumMouseModeKempstonMouse)
   {}
 
-  inline void mode(ZxSpectrumMouseMode mode) { _mode = mode; }
-  inline ZxSpectrumMouseMode mode() { return _mode; }
+  inline ZxSpectrumMouseMode mouseMode() { return _mouseMode; }
 
+  virtual void mouseMode(ZxSpectrumMouseMode mode) { _mouseMode = mode; }
   virtual uint8_t buttons() = 0;
   virtual uint8_t xAxis() = 0;
   virtual uint8_t yAxis() = 0;
