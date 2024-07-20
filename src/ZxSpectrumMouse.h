@@ -22,4 +22,5 @@ public:
   virtual uint8_t xAxis() = 0;
   virtual uint8_t yAxis() = 0;
   virtual bool isMounted() = 0;
+  virtual void reset() = 0;
 };

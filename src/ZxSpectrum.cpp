@@ -81,6 +81,7 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _ay.reset();
   if (_keyboard1) _keyboard1->reset();
   if (_keyboard2) _keyboard2->reset();
+  if (_mouse) _mouse->reset();
   _tu32 = time_us_32() << 5;
   _sl = 0; 
   _slc = 0;

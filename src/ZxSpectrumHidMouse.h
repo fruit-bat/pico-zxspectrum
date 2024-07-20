@@ -22,8 +22,9 @@ private:
   bool up;
   bool down;
 
+  void _reset();
 public:
-  ZxSpectrumHidMouse() : _mounted(0) {}
+  ZxSpectrumHidMouse();
 
   uint8_t buttons();
   uint8_t xAxis();
@@ -37,6 +38,8 @@ public:
   inline void wDelta(int32_t wd) { _wAcc += wd; }
   void setButtons(uint32_t b);
   virtual void mouseMode(ZxSpectrumMouseMode mode);
+  virtual void reset();
+
   inline ZxSpectrumMouseMode mouseMode() { return ZxSpectrumMouse::mouseMode(); }
 
   void __not_in_flash_func(decode)();

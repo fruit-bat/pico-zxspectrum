@@ -1,6 +1,10 @@
 #include "ZxSpectrumHidMouse.h"
 #include "hid_host_info.h"
 
+ZxSpectrumHidMouse::ZxSpectrumHidMouse() : _mounted(0) {
+    _reset();
+}
+
 uint8_t __not_in_flash_func(ZxSpectrumHidMouse::buttons)()
 {
     if (mouseMode() != ZxSpectrumMouseModeKempstonMouse) return 0xff;
@@ -175,8 +179,8 @@ void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
     _buttons = (uint8_t)b;
 }
 
-void ZxSpectrumHidMouse::mouseMode(ZxSpectrumMouseMode mode) {
-    ZxSpectrumMouse::mouseMode(mode);
+// non-virtual version of reset so it can be called from constructor
+void ZxSpectrumHidMouse::_reset() {
     // Mouse stuff
     _xAcc = 0;
     _yAcc = 0;
@@ -192,4 +196,13 @@ void ZxSpectrumHidMouse::mouseMode(ZxSpectrumMouseMode mode) {
    right = false;
    up = false;
    down = false;    
+}
+
+void ZxSpectrumHidMouse::reset() {
+    _reset();
+}
+
+void ZxSpectrumHidMouse::mouseMode(ZxSpectrumMouseMode mode) {
+    ZxSpectrumMouse::mouseMode(mode);
+    reset();
 }
