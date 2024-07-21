@@ -35,9 +35,9 @@ bool ZxSpectrumHidMouse::isConnectedR() {
   return mouseMode() == ZxSpectrumMouseModeJoystick ? _mounted > 0 && mode() == ZxSpectrumJoystickModeSinclairRL : false;
 }
 
-#define AXIS_THRESHOLD  32      // 4/4
-#define AXIS_RELEASE    24      // 3/4
-#define AXIS_EDGE       16      // 2/4    
+#define AXIS_THRESHOLD  32      // Response threshold
+#define AXIS_RELEASE    28      // Release threshold
+#define AXIS_BAND       28      // Axis Band threshold    
 //==================================================
 void ZxSpectrumHidMouse::decode() {
     uint8_t kempston = 0;
@@ -46,7 +46,7 @@ void ZxSpectrumHidMouse::decode() {
 
     //VAR.3---------------------------------------------
     // X Axis Control -----------------------------------
-    if (_yAcc > _yp+AXIS_RELEASE || _yAcc < _yp-AXIS_RELEASE) {
+    if (_yAcc > _yp+AXIS_BAND || _yAcc < _yp-AXIS_BAND) {
         //RIGHT in the corner of the quadrant
         if (_xAcc > _xp+AXIS_THRESHOLD) {
             _xp = _xAcc-AXIS_THRESHOLD;
@@ -70,7 +70,7 @@ void ZxSpectrumHidMouse::decode() {
         } else if (_xAcc > _xp-AXIS_RELEASE) {left = false;}
     }
     // Y Axis Control -----------------------------------
-    if (_xAcc > _xp+AXIS_RELEASE || _xAcc < _xp-AXIS_RELEASE) {
+    if (_xAcc > _xp+AXIS_BAND || _xAcc < _xp-AXIS_BAND) {
         //UP in the corner of the quadrant
         if (_yAcc > _yp+AXIS_THRESHOLD) {
             _yp = _yAcc-AXIS_THRESHOLD;
