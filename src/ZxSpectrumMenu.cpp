@@ -595,6 +595,9 @@ void ZxSpectrumMenu::initialise() {
   
   _pathQuickSaves.createFolders(_sdCard);
   _pathTapes.createFolders(_sdCard);
+
+  _chooseTape.load();
+  _chooseSnap.load();
 }
 
 void ZxSpectrumMenu::saveSettings() {
