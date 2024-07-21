@@ -24,11 +24,13 @@ public:
   ZxSpectrumHidKeyboard(
     ZxSpectrumFileLoop* zxSpectrumSnapList,
     QuickSave* quickSave, 
-    ZxSpectrumJoystick * zxSpectrumJoystick
+    ZxSpectrumJoystick * zxSpectrumJoystick,
+    ZxSpectrumMouse * zxSpectrumMouse
   );
   ZxSpectrumHidKeyboard(
     QuickSave* quickSave, 
-    ZxSpectrumJoystick * zxSpectrumJoystick
+    ZxSpectrumJoystick * zxSpectrumJoystick,
+    ZxSpectrumMouse * zxSpectrumMouse
   );
   int __not_in_flash_func(processHidReport)(
     hid_keyboard_report_t const *report, 

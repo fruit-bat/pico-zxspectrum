@@ -23,6 +23,27 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
         values->joystickMode = ZxSpectrumJoystickModeKempston;
         break;
     }
+
+    // Mouse
+    switch(values->mouseMode) {
+      case ZxSpectrumMouseModeKempstonMouse:
+      case ZxSpectrumMouseModeJoystick:
+        break;
+      default: 
+        values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
+        break;
+    } 
+
+    // Mouse Joystick
+    switch(values->mouseJoystickMode) {
+      case ZxSpectrumJoystickModeKempston:
+      case ZxSpectrumJoystickModeSinclairLR:
+      case ZxSpectrumJoystickModeSinclairRL:
+        break;
+      default: 
+        values->mouseJoystickMode = ZxSpectrumJoystickModeKempston;
+        break;
+    }    
 }
 
 bool ZxSpectrumSettings::onSave(ZxSpectrumSettingValues *values)
@@ -52,4 +73,5 @@ bool ZxSpectrumSettings::load(ZxSpectrumSettingValues *values)
 void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->volume = 0x100;
   values->joystickMode = ZxSpectrumJoystickModeKempston;
+  values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
 }

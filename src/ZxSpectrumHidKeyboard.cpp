@@ -121,9 +121,10 @@ static bool isInReport(hid_keyboard_report_t const *report, const unsigned char 
 ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   ZxSpectrumFileLoop *zxSpectrumSnapList,
   QuickSave* quickSave, 
-  ZxSpectrumJoystick * zxSpectrumJoystick
+  ZxSpectrumJoystick * zxSpectrumJoystick,
+  ZxSpectrumMouse * zxSpectrumMouse  
 ) :
-  ZxSpectrumKeyboard(zxSpectrumJoystick),
+  ZxSpectrumKeyboard(zxSpectrumJoystick, zxSpectrumMouse),
   _zxSpectrumSnapList(zxSpectrumSnapList),
   _quickSave(quickSave),
   _kiosk(false)
@@ -133,9 +134,10 @@ ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
 
 ZxSpectrumHidKeyboard::ZxSpectrumHidKeyboard(
   QuickSave* quickSave, 
-  ZxSpectrumJoystick * zxSpectrumJoystick
+  ZxSpectrumJoystick * zxSpectrumJoystick,
+    ZxSpectrumMouse * zxSpectrumMouse
 ) :
-  ZxSpectrumKeyboard(zxSpectrumJoystick),
+  ZxSpectrumKeyboard(zxSpectrumJoystick, zxSpectrumMouse),
   _zxSpectrumSnapList(0),
   _quickSave(quickSave),
   _kiosk(false)

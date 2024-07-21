@@ -37,6 +37,7 @@ extern "C" {
 #include "ZxSpectrumFatSpiKiosk.h"
 #include "ZxSpectrum.h"
 #include "ZxSpectrumHidKeyboard.h"
+#include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
@@ -88,11 +89,13 @@ static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
-  &joystick
+  &joystick,
+  &mouse
 );
 static ZxSpectrumHidKeyboard keyboard2(
   &snapFileLoop, 
   &quickSave, 
+  0,
   0
 );
 static ZxSpectrum zxSpectrum(

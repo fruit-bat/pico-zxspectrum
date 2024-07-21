@@ -56,10 +56,12 @@ static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick joystick;
+
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
-  &joystick
+  &joystick,
+  &mouse
 );
 static ZxSpectrum zxSpectrum(
   &keyboard1, 

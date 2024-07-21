@@ -2,10 +2,13 @@
 
 #include <stdlib.h>
 #include "ZxSpectrumJoystick.h"
+#include "ZxSpectrumMouse.h"
 
 typedef struct {
   uint32_t volume;
   ZxSpectrumJoystickMode joystickMode;
+  ZxSpectrumMouseMode mouseMode;
+  ZxSpectrumJoystickMode mouseJoystickMode;
 } ZxSpectrumSettingValues;
 
 class ZxSpectrumSettings {
