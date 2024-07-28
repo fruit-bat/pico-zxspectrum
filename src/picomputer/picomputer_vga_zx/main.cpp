@@ -151,9 +151,17 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   }
 }
 
+static uint8_t old_joystick_value=0;
+
 void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
   int r;
   if (showMenu) {
+    uint8_t joystick_value;
+
+    joystick_value=hidJoystick.getKempston();
+    picoWinHidKeyboard.processJoystick(joystick_value, old_joystick_value);
+    old_joystick_value=joystick_value;
+    
     r = picoWinHidKeyboard.processHidReport(report, prev_report);
   }
   else {
