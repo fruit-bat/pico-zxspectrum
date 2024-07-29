@@ -6,6 +6,7 @@
 ZxSpectrumHidJoystick::ZxSpectrumHidJoystick() :
   _updated1(0),
   _updated2(0),
+  _joy1_old(0),
   _joy1(0),
   _joy2(0),
   _kempston(0),
@@ -106,7 +107,7 @@ void ZxSpectrumHidJoystick::decode() {
   if (n > 0) {
     tusb_hid_simple_joystick_t* joystick = simple_joysticks[0];
     if (_updated1 != joystick->updated) {
-
+      _joy1_old=_joy1;
       _joy1=getjoystate(joystick);
       uint8_t sinclair=joy2sinclair(_joy1);
 
@@ -151,7 +152,7 @@ uint8_t ZxSpectrumHidJoystick::joy1() {
   return _joy1;
 }
 
-uint8_t ZxSpectrumHidJoystick::joy2() {
+int ZxSpectrumHidJoystick::testbt4press() {
   decode();
-  return _joy2;
+  return ((_joy1 & JOY_BT3)&&(!(_joy1 & JOY_BT3)));
 }
