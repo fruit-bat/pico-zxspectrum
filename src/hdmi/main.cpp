@@ -211,7 +211,7 @@ void __not_in_flash_func(process_joystick)() {
     r = picoWinHidKeyboard.processJoystick(joystick.joy1());
   }
   else {
-    r = joystick.tstjoy1bt3();
+    r = picoWinHidKeyboard.processJoystickMenuEnter(joystick.joy1());
   }
   if (r) {
     toggleMenu = true;
