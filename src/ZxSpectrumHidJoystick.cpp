@@ -6,7 +6,6 @@
 ZxSpectrumHidJoystick::ZxSpectrumHidJoystick() :
   _updated1(0),
   _updated2(0),
-  _joy1_old(0),
   _joy1(0),
   _joy2(0),
   _kempston(0),
@@ -126,6 +125,7 @@ void ZxSpectrumHidJoystick::decode() {
 
       if (mode() == ZxSpectrumJoystickModeSinclairRL) _sinclairL = sinclair;
         else _sinclairR = sinclair;
+        
       _updated2 = joystick->updated;
     }
   }
@@ -149,12 +149,4 @@ uint8_t ZxSpectrumHidJoystick::kempston() {
 uint8_t ZxSpectrumHidJoystick::joy1() {
   decode();
   return _joy1;
-}
-
-int ZxSpectrumHidJoystick::tstjoy1bt3() {
-  decode();
-  const int r = _joy1 & JOY_BT3;
-  const int q = _joy1_old;
-  _joy1_old = r;
-  return r & ~q;
 }
