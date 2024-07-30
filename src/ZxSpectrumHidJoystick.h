@@ -22,7 +22,7 @@ public:
   virtual uint8_t __not_in_flash_func(sinclairL)();
   virtual uint8_t __not_in_flash_func(sinclairR)();
   uint8_t __not_in_flash_func(joy1)();
-  int __not_in_flash_func(testbt4press)();
+  int __not_in_flash_func(tstjoy1bt3)();
   virtual bool __not_in_flash_func(isConnectedL)();
   virtual bool __not_in_flash_func(isConnectedR)();
 };
