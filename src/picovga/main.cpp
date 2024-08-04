@@ -199,6 +199,20 @@ extern "C"  void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t c
   }
 }
 
+void __not_in_flash_func(process_joystick)() {
+  int r;
+  if (showMenu) {
+      r = picoWinHidKeyboard.processJoystick(joystick.joy1());
+  }
+  else {
+      r = picoWinHidKeyboard.processJoystickMenuEnter(joystick.joy1());
+  }
+  if (r)  {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
+}
+
 #ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
   pio1,
@@ -300,6 +314,7 @@ void __not_in_flash_func(main_loop)(){
 //    hid_keyboard_report_t const *prev;
 //    pzx_keyscan_get_hid_reports(&curr, &prev);
 //    process_picomputer_kbd_report(curr, prev);
+    process_joystick();
     
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {

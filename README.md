@@ -22,6 +22,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+04/08/24
+
+* USB joystick can now be used for menu navigation thanks to [@DPRCZ](https://github.com/DPRCZ)
+
 22/07/24
 
 * Added support for USB mouse to act as joystick, with settings in the menu. Thanks to [@javavi](https://github.com/javavi)

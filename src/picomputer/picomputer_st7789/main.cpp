@@ -178,6 +178,19 @@ void __not_in_flash_func(process_picomputer_kbd_report)(hid_keyboard_report_t co
   }
 }
 
+void __not_in_flash_func(process_joystick)() {
+  int r;
+  if (showMenu) {
+      r = picoWinHidKeyboard.processJoystick(hidJoystick.joy1());
+  }
+  else {
+      r = picoWinHidKeyboard.processJoystickMenuEnter(hidJoystick.joy1());
+  }
+  if (r)  {
+    toggleMenu = true;
+    picoRootWin.repaint();
+  }
+}
 
 static  PIO pio = pio0;
 static  uint sm = 0;
@@ -300,6 +313,7 @@ void __not_in_flash_func(main_loop)() {
     
     if (c++ & 1) {
       tuh_task();
+      process_joystick();
     }
     else {
       hid_keyboard_report_t const *curr;
