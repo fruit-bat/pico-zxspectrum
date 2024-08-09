@@ -98,10 +98,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), _kV('v'),
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), _kV('v'),_kK('k'),
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
-  _main(0, 0, _wizCols, 10, _menuRowsPerItem),
+  _main(0, 0, _wizCols, 11, _menuRowsPerItem),
   
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
@@ -130,6 +130,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _settingsLoadOp("Load"),
 
   _volume(0, 0, 16, 16),
+  _keyboard(((SZ_FRAME_COLS-54)/2)-2 , 0, 52, 30),
 
   _devices(0, 3, _wizCols, 1),
  
@@ -178,6 +179,9 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 #ifndef BZR_PIN  
   _main.addOption(_volumeOp.addQuickKey(&_kV));
 #endif
+  _main.addOption(_keyboardOp.addQuickKey(&_kK));
+
+
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -294,6 +298,22 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       [](PicoPen *pen){ pen->printAt(0, 0, false, "Volume control"); }, 
       true);
   });
+
+  _keyboard.config(
+      [this](uint8_t line, uint8_t key) { _zxSpectrum->keyboard1()->virtuallpress(line,key); }
+    );
+ 
+  _keyboardOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"(OSK) Keyboard");
+  });
+  _keyboardOp.toggle([=]() {
+    _wiz.push(
+      &_keyboard, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "On Screen Keyboard"); }, 
+      true);
+  });
+
 
   _joystickOp.onPaint([=](PicoPen *pen){
     pen->clear();
