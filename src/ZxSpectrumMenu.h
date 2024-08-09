@@ -16,6 +16,7 @@
 #include "PicoWizUtils.h"
 #include "PicoWizExplorer.h"
 #include "PicoSlider.h"
+#include "PicoOnScreenKeyboard.h"
 #include "ZxSpectrumSettings.h"
 
 class ZxSpectrum;
@@ -49,6 +50,7 @@ private:
   PicoQuickKeyAscii _k8;
   PicoQuickKeyAscii _k9;
   PicoQuickKeyAscii _kV;
+  PicoQuickKeyAscii _kK;
 
   PicoWiz _wiz;
   PicoWizUtils _wizUtils;
@@ -64,6 +66,7 @@ private:
   PicoOption _mouseOp;
   PicoOption _settingsOp;
   PicoOption _volumeOp;
+  PicoOption _keyboardOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -93,6 +96,7 @@ private:
   PicoOptionText _settingsLoadOp;
 
   PicoSlider _volume;
+  PicoOnScreenKeyboard _keyboard;
 
   std::string _tapeName;
   std::string _snapName;
@@ -124,7 +128,7 @@ public:
   void initialise();
   void saveSettings();
   void loadSettings();
-
+  
   ZxSpectrumMenu(
     SdCardFatFsSpi* sdCard,
     ZxSpectrum *zxSpectrum,
