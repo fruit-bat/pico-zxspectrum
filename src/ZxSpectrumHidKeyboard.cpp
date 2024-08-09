@@ -2,10 +2,15 @@
 #include "stdlib.h"
 #include <pico/printf.h>
 
+#define BIT0  0x01
+#define BIT1  0x02
+#define BIT2  0x04
+#define BIT3  0x08
+#define BIT4  0x10
 
 typedef struct  {
-  unsigned char line;
-  unsigned char key;
+  uint8_t line;
+  uint8_t key;
 } ZxSpectrumKeyContact;
 
 typedef struct {
@@ -14,72 +19,71 @@ typedef struct {
   ZxSpectrumKeyContact contact[2];
 } ZxSpectrumHidKey;
 
-
 ZxSpectrumHidKey KEYS[] = {
-  { HID_KEY_SHIFT_LEFT,  1, { {0, 0} }},
-  { HID_KEY_SHIFT_RIGHT, 1, { {0, 0} }},
-  { HID_KEY_Z,           1, { {0, 1} }},
-  { HID_KEY_X,           1, { {0, 2} }},
-  { HID_KEY_C,           1, { {0, 3} }},
-  { HID_KEY_V,           1, { {0, 4} }},
+  { HID_KEY_A,           1, { {0, BIT0} }},
+  { HID_KEY_S,           1, { {0, BIT1} }},
+  { HID_KEY_D,           1, { {0, BIT2} }},
+  { HID_KEY_F,           1, { {0, BIT3} }},
+  { HID_KEY_G,           1, { {0, BIT4} }},
 
-  { HID_KEY_A,           1, { {1, 0} }},
-  { HID_KEY_S,           1, { {1, 1} }},
-  { HID_KEY_D,           1, { {1, 2} }},
-  { HID_KEY_F,           1, { {1, 3} }},
-  { HID_KEY_G,           1, { {1, 4} }},
+  { HID_KEY_Q,           1, { {1, BIT0} }},
+  { HID_KEY_W,           1, { {1, BIT1} }},
+  { HID_KEY_E,           1, { {1, BIT2} }},
+  { HID_KEY_R,           1, { {1, BIT3} }},
+  { HID_KEY_T,           1, { {1, BIT4} }},
 
-  { HID_KEY_Q,           1, { {2, 0} }},
-  { HID_KEY_W,           1, { {2, 1} }},
-  { HID_KEY_E,           1, { {2, 2} }},
-  { HID_KEY_R,           1, { {2, 3} }},
-  { HID_KEY_T,           1, { {2, 4} }},
+  { HID_KEY_SHIFT_LEFT,  1, { {2, BIT0} }},
+  { HID_KEY_SHIFT_RIGHT, 1, { {2, BIT0} }},
+  { HID_KEY_Z,           1, { {2, BIT1} }},
+  { HID_KEY_X,           1, { {2, BIT2} }},
+  { HID_KEY_C,           1, { {2, BIT3} }},
+  { HID_KEY_V,           1, { {2, BIT4} }},
+
+  { HID_KEY_1,           1, { {3, BIT0} }},
+  { HID_KEY_2,           1, { {3, BIT1} }},
+  { HID_KEY_3,           1, { {3, BIT2} }},
+  { HID_KEY_4,           1, { {3, BIT3} }},
+  { HID_KEY_5,           1, { {3, BIT4} }},
+
+  { HID_KEY_0,           1, { {4, BIT0} }},
+  { HID_KEY_9,           1, { {4, BIT1} }},
+  { HID_KEY_8,           1, { {4, BIT2} }},
+  { HID_KEY_7,           1, { {4, BIT3} }},
+  { HID_KEY_6,           1, { {4, BIT4} }},
+
+  { HID_KEY_P,           1, { {5, BIT0} }},
+  { HID_KEY_O,           1, { {5, BIT1} }},
+  { HID_KEY_I,           1, { {5, BIT2} }},
+  { HID_KEY_U,           1, { {5, BIT3} }},
+  { HID_KEY_Y,           1, { {5, BIT4} }},
+
+  { HID_KEY_ENTER,       1, { {6, BIT0} }},
+  { HID_KEY_L,           1, { {6, BIT1} }},
+  { HID_KEY_K,           1, { {6, BIT2} }},
+  { HID_KEY_J,           1, { {6, BIT3} }},
+  { HID_KEY_H,           1, { {6, BIT4} }},
+
+  { HID_KEY_SPACE,       1, { {7, BIT0} }},
+  { HID_KEY_ALT_RIGHT,   1, { {7, BIT1} }},
+  { HID_KEY_M,           1, { {7, BIT2} }},
+  { HID_KEY_N,           1, { {7, BIT3} }},
+  { HID_KEY_B,           1, { {7, BIT4} }},
   
-  { HID_KEY_1,           1, { {3, 0} }},
-  { HID_KEY_2,           1, { {3, 1} }},
-  { HID_KEY_3,           1, { {3, 2} }},
-  { HID_KEY_4,           1, { {3, 3} }},
-  { HID_KEY_5,           1, { {3, 4} }},
+  { HID_KEY_BACKSPACE,   2, { {2, BIT0}, {4, BIT0} }},
+  { HID_KEY_PAUSE,       2, { {2, BIT0}, {7, BIT0} }},
+  { HID_KEY_COMMA,       2, { {7, BIT1}, {7, BIT3} }},
+  { HID_KEY_PERIOD,      2, { {7, BIT1}, {7, BIT2} }},
+  { HID_KEY_SLASH,       2, { {7, BIT1}, {0, BIT4} }},
+  { HID_KEY_SEMICOLON,   2, { {7, BIT1}, {5, BIT1} }},
+  { HID_KEY_APOSTROPHE,  2, { {7, BIT1}, {4, BIT3} }},
+  { HID_KEY_MINUS,       2, { {7, BIT1}, {6, BIT3} }},
+  { HID_KEY_EQUAL,       2, { {7, BIT1}, {6, BIT1} }},
+  { HID_KEY_EUROPE_1,    2, { {7, BIT1}, {3, BIT2} }},
 
-  { HID_KEY_0,           1, { {4, 0} }},
-  { HID_KEY_9,           1, { {4, 1} }},
-  { HID_KEY_8,           1, { {4, 2} }},
-  { HID_KEY_7,           1, { {4, 3} }},
-  { HID_KEY_6,           1, { {4, 4} }},
-
-  { HID_KEY_P,           1, { {5, 0} }},
-  { HID_KEY_O,           1, { {5, 1} }},
-  { HID_KEY_I,           1, { {5, 2} }},
-  { HID_KEY_U,           1, { {5, 3} }},
-  { HID_KEY_Y,           1, { {5, 4} }},
-
-  { HID_KEY_ENTER,       1, { {6, 0} }},
-  { HID_KEY_L,           1, { {6, 1} }},
-  { HID_KEY_K,           1, { {6, 2} }},
-  { HID_KEY_J,           1, { {6, 3} }},
-  { HID_KEY_H,           1, { {6, 4} }},
-
-  { HID_KEY_SPACE,       1, { {7, 0} }},
-  { HID_KEY_ALT_RIGHT,   1, { {7, 1} }},
-  { HID_KEY_M,           1, { {7, 2} }},
-  { HID_KEY_N,           1, { {7, 3} }},
-  { HID_KEY_B,           1, { {7, 4} }},
-  
-  { HID_KEY_BACKSPACE,   2, { {0, 0}, {4, 0} }},
-  { HID_KEY_PAUSE,       2, { {0, 0}, {7, 0} }},
-  { HID_KEY_COMMA,       2, { {7, 1}, {7, 3} }},
-  { HID_KEY_PERIOD,      2, { {7, 1}, {7, 2} }},
-  { HID_KEY_SLASH,       2, { {7, 1}, {0, 4} }},
-  { HID_KEY_SEMICOLON,   2, { {7, 1}, {5, 1} }},
-  { HID_KEY_APOSTROPHE,  2, { {7, 1}, {4, 3} }},
-  { HID_KEY_MINUS,       2, { {7, 1}, {6, 3} }},
-  { HID_KEY_EQUAL,       2, { {7, 1}, {6, 1} }},
-  { HID_KEY_EUROPE_1,    2, { {7, 1}, {3, 2} }},
-
-  { HID_KEY_ARROW_LEFT,  2, { {0, 0}, {3, 4} }},
-  { HID_KEY_ARROW_DOWN,  2, { {0, 0}, {4, 4} }},
-  { HID_KEY_ARROW_UP,    2, { {0, 0}, {4, 3} }},
-  { HID_KEY_ARROW_RIGHT, 2, { {0, 0}, {4, 2} }}
+  { HID_KEY_ARROW_LEFT,  2, { {2, BIT0}, {3, BIT4} }},
+  { HID_KEY_ARROW_DOWN,  2, { {2, BIT0}, {4, BIT4} }},
+  { HID_KEY_ARROW_UP,    2, { {2, BIT0}, {4, BIT3} }},
+  { HID_KEY_ARROW_RIGHT, 2, { {2, BIT0}, {4, BIT2} }}
 };
 
 static bool KEYS_SORTED  = false;
@@ -170,8 +174,8 @@ int ZxSpectrumHidKeyboard::processHidReport(hid_keyboard_report_t const *report,
   const unsigned char m = report->modifier;
   // printf("hid:%02X %02X%02X%02X%02X%02X%02X\n", m, report->keycode[0], report->keycode[1], report->keycode[2], report->keycode[3], report->keycode[4], report->keycode[5]);
 
-  if (m & 0x22) press(0, 0); // Shift
-  if (m & 0x40) press(7, 1); // AtlGr -> Symbol
+  if (m & 0x22) press(2, BIT0); // Shift
+  if (m & 0x40) press(7, BIT1); // AtlGr -> Symbol
 
   uint32_t fkd = 0;
   uint32_t fkp = 0;
