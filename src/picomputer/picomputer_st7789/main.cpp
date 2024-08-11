@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
+#include "hardware/clocks.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 #include "ZxSpectrumPrepareRgbScanline.h"

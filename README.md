@@ -22,6 +22,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+11/08/24
+
+* In menu Spectrum keyboard to aid joystick use thanks to [@DPRCZ](https://github.com/DPRCZ)
+
 04/08/24
 
 * USB joystick can now be used for menu navigation thanks to [@DPRCZ](https://github.com/DPRCZ)
@@ -51,31 +55,6 @@ This project is intended to be relatively easy to breadboard or prototype in som
 11/05/24
 
 * Broader joystick/gamepad support (thanks to DPRCZ) 
-
-21/04/24
-
-* 720x576x50Hz option now available for VGA and HDMI builds
-* Ringo support on LCD, VGA and HMDI firmware
-
-14/04/24
-
-Finally, some 50Hz display builds!
-
-* Updates to HDMI firmware and Pimoroni Pico Demo VGA board:
-  * Added support for Ringo's low res mode
-  * 720x576x50Hz display mode
-
-The patch to make Ringo looks to see if the display is flipping every 4 lines and if so it switches to doing so with precise timing. It's a hack, but Ringo is a nice game and I'm happy to see it working.
-
-I'll try to add 50Hz modes to the remaing VGA boards when I get time.
-
-01/04/24
-* New firmware with audio over HDMI
-* New interrupt mode based on CPU cycle count (now default)
-* New menu item to toggle interrupt between CPU cycle count and VSYNC
-* Improved PWM audio output (samples now buffered) 
-
-Thanks to [ikjordan](https://github.com/ikjordan) for his audio additions to [PicoDVI](https://github.com/ikjordan/PicoDVI).
 
 [more...](docs/updates.md)
 

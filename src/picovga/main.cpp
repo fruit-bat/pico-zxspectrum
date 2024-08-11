@@ -3,6 +3,8 @@
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
+#include "hardware/clocks.h"
+
 #ifdef USE_PS2_KBD
 #include "ps2kbd.h"
 #endif
