@@ -337,7 +337,7 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-  // TODO init 16 bit VGA
+  // Init 16 bit VGA
   set_sys_clock_khz(VGA_MODE.default_timing->clock_freq / 100, true);
   sleep_ms(100);
 
