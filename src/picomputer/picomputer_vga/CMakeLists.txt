@@ -1,4 +1,4 @@
-ZxScanlineVgaRenderforeach(target
+foreach(target
   ZxSpectrumPicomputerVga_640x480x60Hz
   ZxSpectrumPicomputerVga_720x576x50Hz
 )
