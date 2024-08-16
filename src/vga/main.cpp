@@ -187,11 +187,7 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-
-unsigned char* screenPtr;
-unsigned char* attrPtr;
 static volatile uint _frames = 0;
-
 
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
 }
@@ -303,9 +299,6 @@ int main(){
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();
-
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
