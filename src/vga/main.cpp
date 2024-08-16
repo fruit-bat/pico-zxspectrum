@@ -43,6 +43,12 @@
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
 
+#ifdef VGA_VSYNC
+#define VGA_H_SYNC_POLARITY 1
+#else
+#define VGA_H_SYNC_POLARITY 5
+#endif
+
 const scanvideo_timing_t vga_timing_640x480_60 =
 {
     .clock_freq = 25000000,
@@ -52,7 +58,7 @@ const scanvideo_timing_t vga_timing_640x480_60 =
     .h_front_porch = 16,
     .h_pulse = 96,
     .h_total = 800,
-    .h_sync_polarity = 5, // 1 normally , 5 for CSYNC
+    .h_sync_polarity = VGA_H_SYNC_POLARITY, // 1=HSYNC & VSYNC, 5=CSYNC
     .v_front_porch = 10,
     .v_pulse = 2,
     .v_total = 525,
@@ -76,7 +82,7 @@ const scanvideo_timing_t vga_timing_720x576_50 =
   .h_front_porch = 12,
   .h_pulse = 64,
   .h_total = 864,
-  .h_sync_polarity = 5,  // 1 normally , 5 for CSYNC
+  .h_sync_polarity = VGA_H_SYNC_POLARITY, // 1=HSYNC & VSYNC, 5=CSYNC
 
   .v_front_porch = 5,
   .v_pulse = 5,
