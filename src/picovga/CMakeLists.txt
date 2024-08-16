@@ -46,7 +46,7 @@ set(zxspectrum_picovga_720x576x50Hz_defines
   PCS_ROWS=30
   SZ_FRAME_X=5
   # Set the VGA timing
-  VGA_MODE=vga_mode_768x288_50  
+  VGA_MODE=vga_mode_720x288_50  
   # The display resolution
   DISPLAY_WIDTH_PIXELS=720
   DISPLAY_HEIGHT_PIXELS=576

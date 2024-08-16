@@ -41,7 +41,7 @@
 
 // https://tomverbeure.github.io/video_timings_calculator
 // CEA-861
-const scanvideo_timing_t vga_timing_768x576_50 =
+const scanvideo_timing_t vga_timing_720x576_50 =
 {
   .clock_freq = 27000000,
 
@@ -74,9 +74,9 @@ const scanvideo_mode_t vga_mode_640x240_60 =
   .yscale = 2,
 };
 
-const scanvideo_mode_t vga_mode_768x288_50 =
+const scanvideo_mode_t vga_mode_720x288_50 =
 {
-  .default_timing = &vga_timing_768x576_50,
+  .default_timing = &vga_timing_720x576_50,
   .pio_program = &video_24mhz_composable,
   .width = 720,
   .height = 576,
