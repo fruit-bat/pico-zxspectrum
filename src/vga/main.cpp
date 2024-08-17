@@ -67,8 +67,8 @@ static ZxSpectrumHidKeyboard keyboard1(
   &mouse
 );
 static ZxSpectrum zxSpectrum(
-  &keyboard1, 
-  0, 
+  &keyboard1,
+  0,
   &joystick,
   &mouse
 );
@@ -215,11 +215,11 @@ void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;
 
-  //Main Loop 
+  //Main Loop
   uint frames = 0;
-  
+
   while(1){
-    
+
     tuh_task();
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
@@ -230,7 +230,7 @@ void __not_in_flash_func(main_loop)(){
 //    pzx_keyscan_get_hid_reports(&curr, &prev);
 //    process_picomputer_kbd_report(curr, prev);
     process_joystick();
-    
+
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
@@ -251,7 +251,7 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-    
+
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 
@@ -259,7 +259,7 @@ int main(){
 
 #ifdef USE_STDIO
   //Initialise I/O
-  stdio_init_all(); 
+  stdio_init_all();
 #endif
 
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
@@ -291,7 +291,7 @@ int main(){
   );
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
-  
+
   tusb_init();
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
@@ -302,36 +302,36 @@ int main(){
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
-  
+
   // Initialise the menu renderer
   pcw_init_renderer();
-  
+
   // Initialise the keyboard scan
 //  pzx_keyscan_init();
-  
+
   sleep_ms(10);
-  
+
   sem_init(&dvi_start_sem, 0, 1);
-  
+
   multicore_launch_core1(core1_main);
 
   picoRootWin.showMessage([=](PicoPen *pen) {
     pen->printAtF(3, 1, false, "Reading from SD card...");
   });
-          
+
   picoDisplay.refresh();
-  
+
   sem_release(&dvi_start_sem);
- 
+
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing
     picoRootWin.initialise();
-    
+
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
-  
-    // See if the board is in kiosk mode    
+
+    // See if the board is in kiosk mode
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
 //    keyboard2.setKiosk(isKiosk);
@@ -339,6 +339,6 @@ int main(){
 
   showMenu = false;
   picoRootWin.removeMessage();
-  
+
   main_loop();
 }

@@ -167,9 +167,14 @@ set(ZxSpectrumPicoMiteVGA_defines
   SDCARD_PIN_SPI0_MISO=13
   # VGA 1111
   VGA_ENC_BGYR_1111
-  VGA_GPIO_FIRST=18
-  VGA_GPIO_SYNC=16
-  VGA_GPIO_OUTNUM=4
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=18u
   # 4 pin audio
   BZR_PIN=6
   SPK_PIN=7
@@ -193,15 +198,15 @@ foreach(target
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
     ${murmulator_common_src}
-    ${zxspectrum_rgb332_src}
+    ${zxspectrum_scanvideo_src}
     main.cpp
   )
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     pico_emu_utils
-    pico_vga_menu
-    pico_vga_332
+    pico_scanvideo_dpi
+    pico_scanvideo_menu
     tinyusb_host
     tinyusb_board
     hardware_pio
