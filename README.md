@@ -64,7 +64,7 @@ Note that pico-extras needs to be the version from my site (https://github.com/f
 [more...](docs/updates.md)
 
 ## Boards
-Click on the images below for more inforation ...
+Click on the images below for more information ...
 
 <table>
   <tr>
