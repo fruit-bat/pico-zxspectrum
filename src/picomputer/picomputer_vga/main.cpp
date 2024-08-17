@@ -34,7 +34,7 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
-#include "ZxRgb332RenderLoop.h"
+#include "ZxScanlineVgaRenderLoop.h"
 
 #define LED_PIN 25
 #define SPK_PIN 9
@@ -181,11 +181,11 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
 
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
 }
 
 void core1_main() {
@@ -193,7 +193,7 @@ void core1_main() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  ZxRgb332RenderLoop(
+  ZxScanlineVgaRenderLoop(
     zxSpectrum,
     _frames,
     showMenu,
@@ -240,7 +240,7 @@ int main(){
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 
-  ZxRgb332RenderLoopInit();
+  ZxScanlineVgaRenderLoopInit();
 
   //Initialise I/O
   stdio_init_all(); 
@@ -288,7 +288,6 @@ int main(){
   
   // Initialise the menu renderer
   pcw_init_renderer();
-  pcw_init_vga332_renderer();
 
   // Initialise the keyboard scan
   pzx_keyscan_init();

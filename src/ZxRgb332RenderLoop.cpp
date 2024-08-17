@@ -26,12 +26,12 @@ void ZxRgb332RenderLoopInit()
 }
 
 void __not_in_flash_func(ZxRgb332RenderLoop)(
-  ZxSpectrum &zxSpectrum, 
+  ZxSpectrum &zxSpectrum,
   volatile uint &frames,
   bool &showMenu,
   bool &toggleMenu
 ) {
- 
+
   VgaInit(&vmode);
 
   unsigned char* screenPtr = zxSpectrum.screenPtr();
@@ -51,18 +51,18 @@ void __not_in_flash_func(ZxRgb332RenderLoop)(
     const uint32_t blankTopLines = (DISPLAY_BLANK_LINES/2);
 
     if (y == blankTopLines) {
-      
+
       if (!ringoMode) {
         screenPtr = zxSpectrum.screenPtr();
         attrPtr = screenPtr + (32 * 24 * 8);
       }
-      
+
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
         ZxRgb332RenderLoopCallbackMenu(showMenu);
       }
-      
+
       frames = linebuf->frame;
     }
 
@@ -77,17 +77,17 @@ void __not_in_flash_func(ZxRgb332RenderLoop)(
         y - blankTopLines,
         linebuf->frame);
     }
-    else { 
+    else {
       zx_prepare_rgb_scanline(
-        buf, 
-        y - blankTopLines, 
+        buf,
+        y - blankTopLines,
         linebuf->frame,
         screenPtr,
         attrPtr,
         zxSpectrum.borderColour(y - blankTopLines)
       );
 
-    }  
+    }
 
     ZxRgb332RenderLoopCallbackLine(y);
   }

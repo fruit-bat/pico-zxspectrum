@@ -22,6 +22,11 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+17/08/24
+
+* Move to new VGA renderer (SDK update seems to have broken the old one)
+Note that pico-extras needs to be the version from my site (https://github.com/fruit-bat/pico-extras)
+
 11/08/24
 
 * In menu Spectrum keyboard to aid joystick use thanks to [@DPRCZ](https://github.com/DPRCZ)
@@ -308,9 +313,8 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
-git clone git@github.com:raspberrypi/pico-extras.git
+git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
-git clone git@github.com:fruit-bat/pico-vga-332.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
 git clone git@github.com:fruit-bat/pico-dvi-menu
@@ -320,9 +324,8 @@ git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
-git clone https://github.com/raspberrypi/pico-extras.git
+git clone https://github.com/fruit-bat/pico-extras.git
 git clone https://github.com/fruit-bat/PicoDVI.git
-git clone https://github.com/fruit-bat/pico-vga-332.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
 git clone https://github.com/pimoroni/pimoroni-pico.git
 git clone https://github.com/fruit-bat/pico-dvi-menu

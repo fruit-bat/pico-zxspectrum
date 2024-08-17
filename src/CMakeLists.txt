@@ -54,12 +54,14 @@ set(zxspectrum_common_src
 set(zxspectrum_rgb332_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxRgb332RenderLoop.cpp
 )
+
 set(zxspectrum_rgb_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareRgbScanline.cpp
 )
 
 set(zxspectrum_scanvideo_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareScanvideoScanline.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxScanlineVgaRenderLoop.cpp
 )
 
 set(zxspectrum_dvi_src

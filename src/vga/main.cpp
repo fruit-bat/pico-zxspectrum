@@ -3,6 +3,7 @@
 #include "pico/multicore.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
+
 #ifdef USE_MRMLTR_PS2_KBD
 #include "ps2kbd_mrmltr.h"
 #else
@@ -10,6 +11,7 @@
 #endif
 
 // #include "pzx_keyscan.h"
+
 
 #include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
@@ -37,11 +39,12 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
-#include "ZxRgb332RenderLoop.h"
-
-#define LED_PIN 25
+#include "ZxSpectrumDisplay.h"
+#include "ZxScanlineVgaRenderLoop.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_20
+
+#define LED_PIN 25
 
 struct semaphore dvi_start_sem;
 
@@ -64,8 +67,8 @@ static ZxSpectrumHidKeyboard keyboard1(
   &mouse
 );
 static ZxSpectrum zxSpectrum(
-  &keyboard1, 
-  0, 
+  &keyboard1,
+  0,
   &joystick,
   &mouse
 );
@@ -184,24 +187,19 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-
 static volatile uint _frames = 0;
 
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
-// Empty
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
 }
 
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
-//  picomputerJoystick.enabled(!showMenu);  
-//  pzx_menu_mode(showMenu);
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
 }
 
-void core1_main() {
-
+void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
-  ZxRgb332RenderLoop(
+  ZxScanlineVgaRenderLoop(
     zxSpectrum,
     _frames,
     showMenu,
@@ -217,11 +215,11 @@ void __not_in_flash_func(main_loop)(){
 
   unsigned int lastInterruptFrame = _frames;
 
-  //Main Loop 
+  //Main Loop
   uint frames = 0;
-  
+
   while(1){
-    
+
     tuh_task();
 #ifdef USE_PS2_KBD
     ps2kbd.tick();
@@ -232,7 +230,7 @@ void __not_in_flash_func(main_loop)(){
 //    pzx_keyscan_get_hid_reports(&curr, &prev);
 //    process_picomputer_kbd_report(curr, prev);
     process_joystick();
-    
+
     if (!showMenu) {
       for (int i = 1; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
@@ -251,19 +249,19 @@ void __not_in_flash_func(main_loop)(){
 }
 
 int main(){
+  gpio_init(LED_PIN);
+  gpio_set_dir(LED_PIN, GPIO_OUT);
+
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
 
-  ZxRgb332RenderLoopInit();
+  ZxScanlineVgaRenderLoopInit();
 
 #ifdef USE_STDIO
   //Initialise I/O
-  stdio_init_all(); 
+  stdio_init_all();
 #endif
 
-  gpio_init(LED_PIN);
-  gpio_set_dir(LED_PIN, GPIO_OUT);
-  
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
@@ -293,7 +291,7 @@ int main(){
   );
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
-  
+
   tusb_init();
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
@@ -304,37 +302,36 @@ int main(){
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
-  
+
   // Initialise the menu renderer
   pcw_init_renderer();
-  pcw_init_vga332_renderer();
-  
+
   // Initialise the keyboard scan
 //  pzx_keyscan_init();
-  
+
   sleep_ms(10);
-  
+
   sem_init(&dvi_start_sem, 0, 1);
-  
+
   multicore_launch_core1(core1_main);
 
   picoRootWin.showMessage([=](PicoPen *pen) {
     pen->printAtF(3, 1, false, "Reading from SD card...");
   });
-          
+
   picoDisplay.refresh();
-  
+
   sem_release(&dvi_start_sem);
- 
+
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing
     picoRootWin.initialise();
-    
+
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
-  
-    // See if the board is in kiosk mode    
+
+    // See if the board is in kiosk mode
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
 //    keyboard2.setKiosk(isKiosk);
@@ -342,6 +339,6 @@ int main(){
 
   showMenu = false;
   picoRootWin.removeMessage();
-  
+
   main_loop();
 }
