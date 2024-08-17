@@ -20,37 +20,27 @@ void ZxRgb332RenderLoopInit()
   VgaCfg(&cfg, &vmode);                   // calculate videomode setup
 
   // initialize system clock
-  //set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
-  set_sys_clock_khz(270000, true);
-
+  set_sys_clock_pll(vmode.vco * 1000, vmode.pd1, vmode.pd2);
 
   sleep_ms(100);
 }
 
 void __not_in_flash_func(ZxRgb332RenderLoop)(
-  ZxSpectrum &zxSpectrum, 
+  ZxSpectrum &zxSpectrum,
   volatile uint &frames,
   bool &showMenu,
   bool &toggleMenu
 ) {
- 
-//  printf("ZxRgb332RenderLoop: VgaInit start\n");
+
   VgaInit(&vmode);
-//  printf("ZxRgb332RenderLoop: VgaInit done1\n");
-//  printf("ZxRgb332RenderLoop: VgaInit done again\n");
 
   unsigned char* screenPtr = zxSpectrum.screenPtr();
   unsigned char* attrPtr = screenPtr + (32 * 24 * 8);
-  //printf("ZxRgb332RenderLoop: fetched pointers\n");
 
   while (true) {
-//    printf("waiting for VGA line\n");
-  gpio_put(25, 1);
     VgaLineBuf *linebuf = get_vga_line();
     uint32_t* buf = (uint32_t*)&(linebuf->line);
     uint32_t y = linebuf->row;
-//    printf("got VGA line %ld\n", y);
-  gpio_put(25, y&1);
 
     const uint32_t fpf = zxSpectrum.flipsPerFrame();
     const bool ringoMode = fpf > 46 && fpf < 52;
@@ -61,19 +51,18 @@ void __not_in_flash_func(ZxRgb332RenderLoop)(
     const uint32_t blankTopLines = (DISPLAY_BLANK_LINES/2);
 
     if (y == blankTopLines) {
-      
+
       if (!ringoMode) {
         screenPtr = zxSpectrum.screenPtr();
         attrPtr = screenPtr + (32 * 24 * 8);
       }
-      
+
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
         ZxRgb332RenderLoopCallbackMenu(showMenu);
       }
-      
-//      printf(".");
+
       frames = linebuf->frame;
     }
 
@@ -88,17 +77,17 @@ void __not_in_flash_func(ZxRgb332RenderLoop)(
         y - blankTopLines,
         linebuf->frame);
     }
-    else { 
+    else {
       zx_prepare_rgb_scanline(
-        buf, 
-        y - blankTopLines, 
+        buf,
+        y - blankTopLines,
         linebuf->frame,
         screenPtr,
         attrPtr,
         zxSpectrum.borderColour(y - blankTopLines)
       );
 
-    }  
+    }
 
     ZxRgb332RenderLoopCallbackLine(y);
   }
