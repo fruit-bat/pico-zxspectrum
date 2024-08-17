@@ -9,7 +9,7 @@ set(picomputer_vga_defines
   FF_USE_FIND=1
   # Configure the SPI sd card to use SPI0
   #SDCARD_PIO=pio1
-  #SDCARD_PIO_SM=1 
+  #SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
@@ -30,7 +30,7 @@ set(zxspectrum_vga_640x480x60Hz_defines
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToCpu
   # TODO work what this is
-  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700  
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
 )
 
 set(zxspectrum_vga_720x576x50Hz_defines
@@ -46,7 +46,7 @@ set(zxspectrum_vga_720x576x50Hz_defines
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
   # TODO work what this is
-  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800  
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
 
 foreach(target
@@ -286,7 +286,7 @@ set(ZX-MURMULATOR_VGA_PWM_Audio_defines
 )
 
 set (ZX-MURMULATOR_VGA_I2S_Audio_defines
-  # Configure the I2S audio 
+  # Configure the I2S audio
   PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
   PICO_AUDIO_I2S_PIO=pio1
@@ -311,7 +311,7 @@ foreach(target
   ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
 )
 
-pico_generate_pio_header(${target} 
+pico_generate_pio_header(${target}
 ${zxspectrum_audio_i2s_pio}
 )
 

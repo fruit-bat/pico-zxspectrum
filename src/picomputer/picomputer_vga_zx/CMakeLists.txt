@@ -43,6 +43,7 @@ foreach(target
   ZxSpectrumPicomputerVga222Zx_720x576x50Hz
   ZxSpectrumPicomputerVgaAuk_720x576x50Hz
   ZxSpectrumPicomputerVgaAukBob_720x576x50Hz
+  ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz
 )
 
   add_executable(${target}
@@ -178,7 +179,7 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAuk_720x576x50Hz PRIVATE
 #
 # Target for bobricius
 #
-  set(ZxSpectrumPicomputerVgaAukBob_defines
+set(ZxSpectrumPicomputerVgaAukBob_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
   PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
@@ -203,5 +204,31 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_640x480x60Hz PRIVATE
 
 target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_720x576x50Hz PRIVATE
   ${ZxSpectrumPicomputerVgaAukBob_defines}
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
+)
+
+#
+# Target for emilen72
+#
+set(ZxSpectrumPicomputerVga1111AukBob_defines
+  ${picomputer_vgazx_defines}
+  VGA_ENC_RGBY_1111
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  SPK_PIN=7
+  PICOMPUTER_PICOZX
+  REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_BOB
+  HID_KEY_MOD_SAVE=2
+)
+
+target_compile_definitions(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVga1111AukBob_defines}
   ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
 )
