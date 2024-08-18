@@ -110,7 +110,7 @@ private:
     if (address == 0xFFFD) {
       return _ay.readData();
     }else
-    if (address == 0x7FFD) {
+    if (address == 0x7FFD && _type != ZxSpectrum48k) {
       // reading #7FFD port is the same as writing #FF into it.
       uint8_t value = 0xFF;
       _portMem = value;
@@ -156,7 +156,7 @@ inline void writeIO(uint16_t address, uint8_t value)
   			return;
 	  	} //BFFD
 		
-      if (!(address & 0x8002))
+      if (!(address & 0x8002) && _type != ZxSpectrum48k)
   		{
         if ((_portMem & 0x20) == 0) { 
           _fc += ((_portMem ^ value) >> 3) & 1;

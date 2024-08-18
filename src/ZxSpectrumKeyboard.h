@@ -19,11 +19,12 @@ public:
     _zxSpectrumJoystick(zxSpectrumJoystick),
     _zxSpectrumMouse(zxSpectrumMouse)
   {
+    for(int i = 0; i < 8; ++i) _vline[i] = 0xff;
     reset();
   }
 
   inline void reset() {
-    for(int i = 0; i < 8; ++i) _vline[i] = _line[i] = 0xff;
+    for(int i = 0; i < 8; ++i) _line[i] = 0xff;
   }
 
   inline void press(uint8_t line, uint8_t keymask) {
@@ -63,7 +64,10 @@ $7ffe 	32766 	 %0111 1111 1111 1110 	A15 	Spc 	Sym shft 	M 	N 	B
     }
 
     for (int i = 0; i < 8; ++i) {
-      if (rs & (1 << i)) a &= _line[i];
+      if (rs & (1 << i)) { 
+        a &= _line[i] & _vline[i];
+        _vline[i] = 0xff;
+      }
     }
     //if (a != 0xff) printf("input %04X %02X\n", address, a);
     return a;
