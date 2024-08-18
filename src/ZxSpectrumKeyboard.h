@@ -34,7 +34,7 @@ public:
     _line[line] |= keymask;
   }
 
-    inline void virtuallpress(uint8_t line, uint8_t keymask) {
+  inline void virtuallpress(uint8_t line, uint8_t keymask) {
     _vline[line] &= ~keymask; 
   }
 
@@ -49,7 +49,6 @@ $dffe 	57342 	 %1101 1111 1111 1110 	A13 	P 	O 	I 	U 	Y
 $bffe 	49150 	 %1011 1111 1111 1110 	A14 	Ent 	L 	K 	J 	H
 $7ffe 	32766 	 %0111 1111 1111 1110 	A15 	Spc 	Sym shft 	M 	N 	B 
 */
-#if 0
   unsigned char __not_in_flash_func(read)(int address) {
     int rs = ~(address >> 8);
     unsigned int a = 0xff;    
@@ -69,7 +68,8 @@ $7ffe 	32766 	 %0111 1111 1111 1110 	A15 	Spc 	Sym shft 	M 	N 	B
     //if (a != 0xff) printf("input %04X %02X\n", address, a);
     return a;
   }
-#endif
+
+#if 0
 
   unsigned char __not_in_flash_func(read)(int address) {
     uint8_t data = 0xff;    
@@ -115,6 +115,7 @@ $7ffe 	32766 	 %0111 1111 1111 1110 	A15 	Spc 	Sym shft 	M 	N 	B
     //if (data != 0xff) printf("input %04X %02X\n", address, data);
     return data;
 }
+#endif    
 
   virtual bool isMounted() { return false; }
 };
