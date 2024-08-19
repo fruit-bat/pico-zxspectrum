@@ -809,6 +809,7 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
     if (_earInvert ? (_eb == 0) : (~_eb == 0)) {
       if (_earDc++ > 16000) {
           _earInvert ^= 1;
+          _earDc = 0;
       }
     }
     else {

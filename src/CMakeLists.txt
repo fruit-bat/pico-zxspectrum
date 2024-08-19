@@ -49,6 +49,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAy.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiExists.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PicoOnScreenKeyboard.cpp
 )
 
 set(zxspectrum_rgb332_src
