@@ -22,6 +22,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+18/08/24
+
+* Fixed an issue with keyboard input in some programs.
+
 17/08/24
 
 * Move to new VGA renderer (SDK update seems to have broken the old one)
