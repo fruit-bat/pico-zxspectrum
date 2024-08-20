@@ -8,12 +8,14 @@ set(ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines
   PCS_COLS=80
   PCS_ROWS=30
   # Set the VGA timing
-  VGA_MODE=VideoVGA       
+  VGA_MODE=vga_mode_640x240_60
   # The display resolution
   DISPLAY_WIDTH_PIXELS=640
   DISPLAY_HEIGHT_PIXELS=480
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToCpu
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
 )
 
 set(ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines
@@ -22,12 +24,14 @@ set(ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines
   PCS_ROWS=30
   SZ_FRAME_X=5
   # Set the VGA timing
-  VGA_MODE=VideoDVD
+  VGA_MODE=vga_mode_720x288_50
   # The display resolution
   DISPLAY_WIDTH_PIXELS=720
   DISPLAY_HEIGHT_PIXELS=576
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
 
 foreach(target
@@ -39,21 +43,22 @@ foreach(target
   ZxSpectrumPicomputerVga222Zx_720x576x50Hz
   ZxSpectrumPicomputerVgaAuk_720x576x50Hz
   ZxSpectrumPicomputerVgaAukBob_720x576x50Hz
+  ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz
 )
 
   add_executable(${target}
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
     ${picomputer_common_src}
-    ${zxspectrum_rgb332_src} 
+    ${zxspectrum_scanvideo_src}
     main.cpp
   )
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     pico_emu_utils
-    pico_vga_menu
-    pico_vga_332
+    pico_scanvideo_dpi
+    pico_scanvideo_menu
     tinyusb_host
     tinyusb_board
     hardware_pio
@@ -66,14 +71,20 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
-  
+
 endforeach()
 
 set(ZxSpectrumPicomputerVga1111Zx_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGBY_1111
-  VGA_GPIO_SYNC=4
-  VGA_GPIO_OUTNUM=4
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
   SPK_PIN=9
   PICOMPUTER_VGA
 )
@@ -92,8 +103,14 @@ target_compile_definitions(ZxSpectrumPicomputerVga1111Zx_720x576x50Hz PRIVATE
 set(ZxSpectrumPicomputerVga222Zx_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
-  VGA_GPIO_SYNC=6
-  VGA_GPIO_OUTNUM=6
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=3u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
   SPK_PIN=7
   PICOMPUTER_PICOZX
 )
@@ -113,7 +130,7 @@ target_compile_definitions(ZxSpectrumPicomputerVga222Zx_720x576x50Hz PRIVATE
 # ----------------------------------------------
 #
 # AUK extra keyboard key assignments:
-# 
+#
 # F = Fire
 # U = Up
 # D = Down
@@ -136,8 +153,14 @@ target_compile_definitions(ZxSpectrumPicomputerVga222Zx_720x576x50Hz PRIVATE
 set(ZxSpectrumPicomputerVgaAuk_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
-  VGA_GPIO_SYNC=6
-  VGA_GPIO_OUTNUM=6
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=3u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
@@ -156,11 +179,17 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAuk_720x576x50Hz PRIVATE
 #
 # Target for bobricius
 #
-  set(ZxSpectrumPicomputerVgaAukBob_defines
+set(ZxSpectrumPicomputerVgaAukBob_defines
   ${picomputer_vgazx_defines}
   VGA_ENC_RGB_222
-  VGA_GPIO_SYNC=6
-  VGA_GPIO_OUTNUM=6
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=3u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
@@ -174,6 +203,32 @@ target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_640x480x60Hz PRIVATE
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVgaAukBob_720x576x50Hz PRIVATE
-  ${ZxSpectrumPicomputerVgaAukBob_defines}  
+  ${ZxSpectrumPicomputerVgaAukBob_defines}
+  ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
+)
+
+#
+# Target for emilen72
+#
+set(ZxSpectrumPicomputerVga1111AukBob_defines
+  ${picomputer_vgazx_defines}
+  VGA_ENC_RGBY_1111
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  SPK_PIN=7
+  PICOMPUTER_PICOZX
+  REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_BOB
+  HID_KEY_MOD_SAVE=2
+)
+
+target_compile_definitions(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz PRIVATE
+  ${ZxSpectrumPicomputerVga1111AukBob_defines}
   ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
 )

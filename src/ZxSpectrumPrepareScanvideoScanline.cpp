@@ -3,10 +3,83 @@
 #include "ZxSpectrumDisplay.h"
 
 #define VGA_RGB_555(r,g,b) ((r##UL<<0)|(g##UL<<6)|(b##UL << 11))
+#define VGA_BGYR_1111(r,g,b,y) ((y##UL<<2)|(r##UL<<3)|(g##UL<<1)|b##UL)
+#define VGA_RGBY_1111(r,g,b,y) ((y##UL<<3)|(r##UL<<2)|(g##UL<<1)|b##UL)
+#define VGA_RGB_332(r,g,b) ((r##UL<<5)|(g##UL<<2)|b##UL)
+#define VGA_RGB_222(r,g,b) ((r##UL<<4)|(g##UL<<2)|b##UL)
 
-#define X2(a) (a | (a << 16))
+#define X2(a) ((a) | (a << 16))
 
 static uint32_t zxd_colour_words[16] = {
+#if defined(VGA_ENC_BGYR_1111)
+  X2(VGA_BGYR_1111(0,0,0,0)), // Black
+  X2(VGA_BGYR_1111(0,0,1,0)), // Blue
+  X2(VGA_BGYR_1111(1,0,0,0)), // Red
+  X2(VGA_BGYR_1111(1,0,1,0)), // Magenta
+  X2(VGA_BGYR_1111(0,1,0,0)), // Green
+  X2(VGA_BGYR_1111(0,1,1,0)), // Cyan
+  X2(VGA_BGYR_1111(1,1,0,0)), // Yellow
+  X2(VGA_BGYR_1111(1,1,1,0)), // White
+  X2(VGA_BGYR_1111(0,0,0,0)), // Bright Black
+  X2(VGA_BGYR_1111(0,0,1,1)), // Bright Blue
+  X2(VGA_BGYR_1111(1,0,0,1)), // Bright Red
+  X2(VGA_BGYR_1111(1,0,1,1)), // Bright Magenta
+  X2(VGA_BGYR_1111(0,1,0,1)), // Bright Green
+  X2(VGA_BGYR_1111(0,1,1,1)), // Bright Cyan
+  X2(VGA_BGYR_1111(1,1,0,1)), // Bright Yellow
+  X2(VGA_BGYR_1111(1,1,1,1))  // Bright White
+#elif defined(VGA_ENC_RGBY_1111)
+  X2(VGA_RGBY_1111(0,0,0,0)), // Black
+  X2(VGA_RGBY_1111(0,0,1,0)), // Blue
+  X2(VGA_RGBY_1111(1,0,0,0)), // Red
+  X2(VGA_RGBY_1111(1,0,1,0)), // Magenta
+  X2(VGA_RGBY_1111(0,1,0,0)), // Green
+  X2(VGA_RGBY_1111(0,1,1,0)), // Cyan
+  X2(VGA_RGBY_1111(1,1,0,0)), // Yellow
+  X2(VGA_RGBY_1111(1,1,1,0)), // White
+  X2(VGA_RGBY_1111(0,0,0,0)), // Bright Black
+  X2(VGA_RGBY_1111(0,0,1,1)), // Bright Blue
+  X2(VGA_RGBY_1111(1,0,0,1)), // Bright Red
+  X2(VGA_RGBY_1111(1,0,1,1)), // Bright Magenta
+  X2(VGA_RGBY_1111(0,1,0,1)), // Bright Green
+  X2(VGA_RGBY_1111(0,1,1,1)), // Bright Cyan
+  X2(VGA_RGBY_1111(1,1,0,1)), // Bright Yellow
+  X2(VGA_RGBY_1111(1,1,1,1))  // Bright White
+#elif defined(VGA_ENC_RGB_222)
+  X2(VGA_RGB_222(0,0,0)), // Black
+  X2(VGA_RGB_222(0,0,2)), // Blue
+  X2(VGA_RGB_222(2,0,0)), // Red
+  X2(VGA_RGB_222(2,0,2)), // Magenta
+  X2(VGA_RGB_222(0,2,0)), // Green
+  X2(VGA_RGB_222(0,2,2)), // Cyan
+  X2(VGA_RGB_222(2,2,0)), // Yellow
+  X2(VGA_RGB_222(2,2,2)), // White
+  X2(VGA_RGB_222(0,0,0)), // Bright Black
+  X2(VGA_RGB_222(0,0,3)), // Bright Blue
+  X2(VGA_RGB_222(3,0,0)), // Bright Red
+  X2(VGA_RGB_222(3,0,3)), // Bright Magenta
+  X2(VGA_RGB_222(0,3,0)), // Bright Green
+  X2(VGA_RGB_222(0,3,3)), // Bright Cyan
+  X2(VGA_RGB_222(3,3,0)), // Bright Yellow
+  X2(VGA_RGB_222(3,3,3))  // Bright White
+#elif defined(VGA_ENC_RGB_332)
+  X2(VGA_RGB_332(0,0,0)), // Black
+  X2(VGA_RGB_332(0,0,2)), // Blue
+  X2(VGA_RGB_332(5,0,0)), // Red
+  X2(VGA_RGB_332(5,0,2)), // Magenta
+  X2(VGA_RGB_332(0,5,0)), // Green
+  X2(VGA_RGB_332(0,5,2)), // Cyan
+  X2(VGA_RGB_332(5,5,0)), // Yellow
+  X2(VGA_RGB_332(5,5,2)), // White
+  X2(VGA_RGB_332(0,0,0)), // Bright Black
+  X2(VGA_RGB_332(0,0,3)), // Bright Blue
+  X2(VGA_RGB_332(7,0,0)), // Bright Red
+  X2(VGA_RGB_332(7,0,3)), // Bright Magenta
+  X2(VGA_RGB_332(0,7,0)), // Bright Green
+  X2(VGA_RGB_332(0,7,3)), // Bright Cyan
+  X2(VGA_RGB_332(7,7,0)), // Bright Yellow
+  X2(VGA_RGB_332(7,7,3))  // Bright White  
+#else    
   X2(VGA_RGB_555(0, 0, 0 )), // Black
   X2(VGA_RGB_555(0, 0, 20)), // Blue
   X2(VGA_RGB_555(20,0, 0 )), // Red
@@ -23,6 +96,7 @@ static uint32_t zxd_colour_words[16] = {
   X2(VGA_RGB_555(0, 31,31)), // Bright Cyan
   X2(VGA_RGB_555(31,31,0 )), // Bright Yellow
   X2(VGA_RGB_555(31,31,31))  // Bright White
+#endif
 };
 
 static uint32_t zx_invert_masks[] = {

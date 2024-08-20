@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
+#include "hardware/clocks.h"
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 #include "ZxSpectrumPrepareRgbScanline.h"
@@ -13,7 +14,7 @@
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumPrepareRgbScanline.h"
 #include "ZxSpectrumFatSpiKiosk.h"
-#include "ZxRgb332RenderLoop.h"
+#include "ZxScanlineVgaRenderLoop.h"
 #endif
 #include "pzx_keyscan.h"
 
@@ -63,7 +64,7 @@ static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick hidJoystick;
 static ZxSpectrumPicomputerJoystick picomputerJoystick;
 static ZxSpectrumDualJoystick dualJoystick(
-  &hidJoystick, 
+  &hidJoystick,
   &picomputerJoystick
 );
 static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
@@ -71,20 +72,20 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
   "zxspectrum"
 );
 static ZxSpectrumHidKeyboard keyboard1(
-  &snapFileLoop, 
-  &quickSave, 
+  &snapFileLoop,
+  &quickSave,
   &dualJoystick,
   &mouse
 );
 static ZxSpectrumHidKeyboard keyboard2(
-  &snapFileLoop, 
-  &quickSave, 
+  &snapFileLoop,
+  &quickSave,
   &picomputerJoystick,
   0
 );
 static ZxSpectrum zxSpectrum(
-  &keyboard1, 
-  &keyboard2, 
+  &keyboard1,
+  &keyboard2,
   &dualJoystick,
   &mouse
 );
@@ -98,7 +99,7 @@ static ZxSpectrumMenu picoRootWin(
   &zxSpectrumSettings
 );
 static PicoDisplay picoDisplay(
-  pcw_screen(), 
+  pcw_screen(),
   &picoRootWin
 );
 static PicoWinHidKeyboard picoWinHidKeyboard(
@@ -196,15 +197,15 @@ static  PIO pio = pio0;
 static  uint sm = 0;
 
 void __not_in_flash_func(setMenuState)(bool showMenu) {
-  picomputerJoystick.enabled(!showMenu);  
+  picomputerJoystick.enabled(!showMenu);
   pzx_menu_mode(showMenu);
 }
 
 #ifdef PICOMPUTER_PICOZX_LCD
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
-void __not_in_flash_func(ZxRgb332RenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
 }
 #endif
 
@@ -214,7 +215,7 @@ void __not_in_flash_func(core1_main)() {
 
 #ifdef PICOMPUTER_PICOZX_LCD
   if (useVga) {
-    ZxRgb332RenderLoop(
+    ZxScanlineVgaRenderLoop(
       zxSpectrum,
       _frames,
       showMenu,
@@ -232,7 +233,7 @@ void __not_in_flash_func(core1_main)() {
 
   // Start up the LCD
   st7789_init(pio, sm);
-  
+
   sleep_ms(10);
 
   uint32_t t1 = time_us_32();
@@ -255,47 +256,47 @@ void __not_in_flash_func(core1_main)() {
       }
 
       if (y == 0) {
-        
+
         if (!ringoMode) {
           screenPtr = zxSpectrum.screenPtr();
           attrPtr = screenPtr + (32 * 24 * 8);
         }
-        
+
         _frames++;
       }
 
       if (showMenu) {
         pcw_send_st7789_scanline(
-          pio, 
+          pio,
           sm,
           y,
           _frames);
       }
-      else {  
+      else {
         pzx_send_rgb444_scanline(
-          pio, 
+          pio,
           sm,
           y,
           _frames,
           screenPtr,
           attrPtr,
-          zxSpectrum.borderColour(y)); 
+          zxSpectrum.borderColour(y));
       }
 
       pzx_keyscan_row();
     }
- 
+
     if (toggleMenu) {
       showMenu = !showMenu;
       toggleMenu = false;
       setMenuState(showMenu);
     }
-   
+
     while((time_us_32() - t1) < 20000) {
       sleep_us(100);
       pzx_keyscan_row();
     }
-    
+
     t1 += 20000;
   }
   __builtin_unreachable();
@@ -304,13 +305,13 @@ void __not_in_flash_func(core1_main)() {
 void __not_in_flash_func(main_loop)() {
 
   unsigned int lastInterruptFrame = _frames;
-    
-  //Main Loop 
+
+  //Main Loop
   uint frames = 0;
   uint c = 0;
-  
+
   while(1){
-    
+
     if (c++ & 1) {
       tuh_task();
       process_joystick();
@@ -340,18 +341,18 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-#ifdef PICOMPUTER_PICOZX_LCD  
-  ZxRgb332RenderLoopInit();
+#ifdef PICOMPUTER_PICOZX_LCD
+  ZxScanlineVgaRenderLoopInit();
 #else
   set_sys_clock_khz(200000, true);
 #endif
 
   //Initialise I/O
-  stdio_init_all(); 
-  
+  stdio_init_all();
+
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-  
+
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
@@ -400,40 +401,39 @@ int main() {
   pzx_keyscan_init();
 
 #ifdef PICOMPUTER_PICOZX_LCD
-  pcw_init_vga332_renderer();
   useVga = pzx_fire_raw();
   ZxSpectrumFatSpiExists vgaoption(&sdCard0, "zxspectrum", "vga.txt");
-  useVga |= vgaoption.exists();  
+  useVga |= vgaoption.exists();
 #endif
 
   sem_init(&dvi_start_sem, 0, 1);
-  
+
   multicore_launch_core1(core1_main);
-  
+
   picoRootWin.showMessage([=](PicoPen *pen) {
     pen->printAtF(3, 1, false, "Reading from SD card...");
   });
-          
+
   picoDisplay.refresh();
-  
+
   sem_release(&dvi_start_sem);
 
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing
     picoRootWin.initialise();
-        
+
     // Load quick save slot 1 if present
     quickSave.load(&zxSpectrum, 0);
-  
-    // See if the board is in kiosk mode    
+
+    // See if the board is in kiosk mode
     bool isKiosk = zxSpectrumKisok.isKiosk();
     keyboard1.setKiosk(isKiosk);
     keyboard2.setKiosk(isKiosk);
   }
-  
+
   showMenu = false;
   picoRootWin.removeMessage();
-  
+
   main_loop();
 }

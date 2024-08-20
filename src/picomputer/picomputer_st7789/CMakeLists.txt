@@ -9,14 +9,14 @@ add_executable(ZxSpectrumPicomputerMax
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerMax 
+pico_generate_pio_header(ZxSpectrumPicomputerMax
   ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
 )
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   ${picomputer_common_defines}
   # Set the resolution of the menu screen
-  PCS_COLS=40 
+  PCS_COLS=40
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
@@ -58,14 +58,14 @@ add_executable(ZxSpectrumPicomputerZX
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerZX 
+pico_generate_pio_header(ZxSpectrumPicomputerZX
   ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
 )
 
 target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   ${picomputer_common_defines}
   # Set the resolution of the menu screen
-  PCS_COLS=40 
+  PCS_COLS=40
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
@@ -103,7 +103,7 @@ set(picomputer_zx_lcd_src
   ${zxspectrum_common_src}
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
-  ${zxspectrum_rgb332_src} 
+  ${zxspectrum_scanvideo_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
@@ -114,12 +114,14 @@ set(zxspectrum_zx_lcd_640x480x60Hz_defines
   PCS_COLS=80
   PCS_ROWS=30
   # Set the VGA timing
-  VGA_MODE=VideoVGA       
+  VGA_MODE=vga_mode_640x240_60
   # The display resolution
   DISPLAY_WIDTH_PIXELS=640
   DISPLAY_HEIGHT_PIXELS=480
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToCpu
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
 )
 
 set(zxspectrum_zx_lcd_720x576x50Hz_defines
@@ -128,14 +130,15 @@ set(zxspectrum_zx_lcd_720x576x50Hz_defines
   PCS_ROWS=30
   SZ_FRAME_X=5
   # Set the VGA timing
-  VGA_MODE=VideoDVD
+  VGA_MODE=vga_mode_720x288_50
   # The display resolution
   DISPLAY_WIDTH_PIXELS=720
   DISPLAY_HEIGHT_PIXELS=576
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
-
 
 set(picomputer_zx_lcd_common_defines PRIVATE
   ${picomputer_common_defines}
@@ -149,16 +152,22 @@ set(picomputer_zx_lcd_common_defines PRIVATE
   LCD_PIN_CS=5
   LCD_PIN_DIN=3
   VGA_ENC_RGB_222
-  VGA_GPIO_SYNC=6
-  VGA_GPIO_OUTNUM=6
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=3u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=0u
 )
 
 set(zxspectrum_zx_lcd_common_libs
   ${zxspectrum_common_libs}
   pico_emu_utils
   pico_st7789_menu
-  pico_vga_menu
-  pico_vga_332
+  pico_scanvideo_dpi
+  pico_scanvideo_menu
   tinyusb_host
   tinyusb_board
   hardware_pio
@@ -176,8 +185,8 @@ foreach(target
   add_executable(${target}
     ${picomputer_zx_lcd_src}
   )
-  
-  pico_generate_pio_header(${target} 
+
+  pico_generate_pio_header(${target}
     ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
   )
 
@@ -187,7 +196,7 @@ foreach(target
 
   pico_enable_stdio_usb(${target} 0)
   pico_enable_stdio_uart(${target} 0)
-  
+
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
@@ -198,7 +207,7 @@ target_compile_definitions(ZxSpectrumPicomputerZxLcd_720x576x50Hz PRIVATE
   ${zxspectrum_zx_lcd_720x576x50Hz_defines}
   LCD_MIRROR_X
 )
-  
+
 target_compile_definitions(ZxSpectrumPicomputerZxLcd_640x480x60Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
   ${zxspectrum_zx_lcd_640x480x60Hz_defines}
@@ -211,7 +220,7 @@ target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz PRIVATE
   LCD_MIRROR_X
   LCD_INVERSE
 )
-  
+
 target_compile_definitions(ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
   ${zxspectrum_zx_lcd_640x480x60Hz_defines}
@@ -225,7 +234,7 @@ target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz PRIVATE
   LCD_INVERSE
   LCD_RGB
 )
-  
+
 target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz PRIVATE
   ${picomputer_zx_lcd_common_defines}
   ${zxspectrum_zx_lcd_640x480x60Hz_defines}

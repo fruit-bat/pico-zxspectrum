@@ -4,7 +4,12 @@
 ########################################################################
 
 set(picomputer_vga_defines
+  #PICO_CORE1_STACK_SIZE=0x800
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
   # Configure the SPI sd card to use SPI0
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=2
   SDCARD_PIN_SPI0_MOSI=3
@@ -18,12 +23,14 @@ set(zxspectrum_vga_640x480x60Hz_defines
   PCS_COLS=80
   PCS_ROWS=30
   # Set the VGA timing
-  VGA_MODE=VideoVGA
+  VGA_MODE=vga_mode_640x240_60
   # The display resolution
   DISPLAY_WIDTH_PIXELS=640
   DISPLAY_HEIGHT_PIXELS=480
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToCpu
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
 )
 
 set(zxspectrum_vga_720x576x50Hz_defines
@@ -32,12 +39,14 @@ set(zxspectrum_vga_720x576x50Hz_defines
   PCS_ROWS=30
   SZ_FRAME_X=5
   # Set the VGA timing
-  VGA_MODE=VideoDVD
+  VGA_MODE=vga_mode_720x288_50
   # The display resolution
   DISPLAY_WIDTH_PIXELS=720
   DISPLAY_HEIGHT_PIXELS=576
   # The default interrupt source
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
 
 foreach(target
@@ -48,20 +57,19 @@ foreach(target
 )
   add_executable(${target}
     ${zxspectrum_common_src}
-    ${zxspectrum_rgb_src}
-    ${zxspectrum_rgb332_src}
+    ${zxspectrum_scanvideo_src}
     main.cpp
   )
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     pico_emu_utils
-    pico_vga_menu
-    pico_vga_332
+    pico_scanvideo_dpi
     tinyusb_host
     tinyusb_board
     hardware_pio
     hardware_pwm
+    pico_scanvideo_menu
   )
 
   pico_generate_pio_header(${target}
@@ -79,9 +87,15 @@ endforeach()
 set(ZxSpectrum4PinAudioVga1111Ps2_defines
   # VGA 1111
   VGA_ENC_RGBY_1111
-  VGA_GPIO_FIRST=12
-  VGA_GPIO_SYNC=16
-  VGA_GPIO_OUTNUM=4
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=12u
+
   # 4 pin audio
   BZR_PIN=21
   EAR_PIN=11
@@ -153,9 +167,14 @@ set(ZxSpectrumPicoMiteVGA_defines
   SDCARD_PIN_SPI0_MISO=13
   # VGA 1111
   VGA_ENC_BGYR_1111
-  VGA_GPIO_FIRST=18
-  VGA_GPIO_SYNC=16
-  VGA_GPIO_OUTNUM=4
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=18u
   # 4 pin audio
   BZR_PIN=6
   SPK_PIN=7
@@ -179,15 +198,15 @@ foreach(target
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
     ${murmulator_common_src}
-    ${zxspectrum_rgb332_src}
+    ${zxspectrum_scanvideo_src}
     main.cpp
   )
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     pico_emu_utils
-    pico_vga_menu
-    pico_vga_332
+    pico_scanvideo_dpi
+    pico_scanvideo_menu
     tinyusb_host
     tinyusb_board
     hardware_pio
@@ -267,7 +286,7 @@ set(ZX-MURMULATOR_VGA_PWM_Audio_defines
 )
 
 set (ZX-MURMULATOR_VGA_I2S_Audio_defines
-  # Configure the I2S audio 
+  # Configure the I2S audio
   PICO_AUDIO_I2S=1
   PICO_AUDIO_I2S_SM=2
   PICO_AUDIO_I2S_PIO=pio1
@@ -292,7 +311,7 @@ foreach(target
   ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
 )
 
-pico_generate_pio_header(${target} 
+pico_generate_pio_header(${target}
 ${zxspectrum_audio_i2s_pio}
 )
 
