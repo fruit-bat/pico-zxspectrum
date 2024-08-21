@@ -46,18 +46,18 @@ uint8_t ZxSpectrumHidJoystick::getjoystate(void * ptr) {
    tusb_hid_simple_joystick_values_t* values = &joystick->values;
 
    //Test direction on ASIX 1
-   if (values->y1 == joystick->axis_y1.logical_min)  joy|=JOY_UP;       
-     else if (values->y1 == joystick->axis_y1.logical_max) joy|=JOY_DOWN;
+   if (values->y1 <= joystick->axis_y1.logical_min)  joy|=JOY_UP;       
+     else if (values->y1 >= joystick->axis_y1.logical_max) joy|=JOY_DOWN;
 
-   if (values->x1 == joystick->axis_x1.logical_min)  joy|=JOY_LEFT;       
-     else if (values->x1 == joystick->axis_x1.logical_max) joy|=JOY_RIGHT;
+   if (values->x1 <= joystick->axis_x1.logical_min)  joy|=JOY_LEFT;       
+     else if (values->x1 >= joystick->axis_x1.logical_max) joy|=JOY_RIGHT;
 
    if (joy==0) { //Test direction on ASIX 2
-      if (values->y2 == joystick->axis_y2.logical_min)  joy|=JOY_UP;       
-        else if (values->y2 == joystick->axis_y2.logical_max) joy|=JOY_DOWN;
+      if (values->y2 <= joystick->axis_y2.logical_min)  joy|=JOY_UP;       
+        else if (values->y2 >= joystick->axis_y2.logical_max) joy|=JOY_DOWN;
 
-      if (values->x2 == joystick->axis_x2.logical_min)  joy|=JOY_LEFT;       
-        else if (values->x2 == joystick->axis_x2.logical_max) joy|=JOY_RIGHT;
+      if (values->x2 <= joystick->axis_x2.logical_min)  joy|=JOY_LEFT;       
+        else if (values->x2 >= joystick->axis_x2.logical_max) joy|=JOY_RIGHT;
    }
 
    if (joy==0) { //Test direction on hats
