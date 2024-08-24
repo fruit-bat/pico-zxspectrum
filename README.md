@@ -22,11 +22,13 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+
 24/08/24
 
 * Fixed USB joystick issue
 * New support for Xinput joysticks thanks to [@DPRCZ](https://github.com/DPRCZ)
 * Minor improvements to menu navigation
+* Joystick buttons 2 & 4 together to access/exit menu
 
 18/08/24
 
