@@ -22,6 +22,12 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+24/08/24
+
+* Fixed USB joystick issue
+* New support for Xinput joysticks thanks to [@DPRCZ](https://github.com/DPRCZ)
+* Minor improvements to menu navigation
+
 18/08/24
 
 * Fixed an issue with keyboard input in some programs.
@@ -44,26 +50,6 @@ Note that pico-extras needs to be the version from my site (https://github.com/f
 * Added support for USB mouse to act as joystick, with settings in the menu. Thanks to [@javavi](https://github.com/javavi)
 * Fixed an issue at with SD card access on startup; startup should be quicker and more reliable. Thanks to [@LiCaNtRoPo-PCB](https://github.com/LiCaNtRoPo-PCB)
 
-08/07/24
-
-* Added support for Kempston Mouse thanks to [@javavi](https://github.com/javavi)
-
-23/06/24
-
-* Improvements for Kempston Joystick emulation thanks to [@javavi](https://github.com/javavi)
-  
-27/05/24
-
-* Handle longer HID descriptors for USB joysticks
-
-13/05/24
-
-* CAPS-4 for page down and CAPS-9 for page up on rubber keyboard.
-* Simple first letter matching on Snapshot and Tape selectors.
-
-11/05/24
-
-* Broader joystick/gamepad support (thanks to DPRCZ) 
 
 [more...](docs/updates.md)
 

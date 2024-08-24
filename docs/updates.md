@@ -1,5 +1,27 @@
 
 ## Updates
+
+08/07/24
+
+* Added support for Kempston Mouse thanks to [@javavi](https://github.com/javavi)
+
+23/06/24
+
+* Improvements for Kempston Joystick emulation thanks to [@javavi](https://github.com/javavi)
+  
+27/05/24
+
+* Handle longer HID descriptors for USB joysticks
+
+13/05/24
+
+* CAPS-4 for page down and CAPS-9 for page up on rubber keyboard.
+* Simple first letter matching on Snapshot and Tape selectors.
+
+11/05/24
+
+* Broader joystick/gamepad support (thanks to DPRCZ) 
+
 21/04/24
 
 * 720x576x50Hz option now available for VGA and HDMI builds
