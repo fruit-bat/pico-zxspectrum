@@ -334,6 +334,7 @@ void __not_in_flash_func(main_loop)() {
     process_picomputer_kbd_report(curr, prev);
 #endif
     process_joystick();
+
     if (!showMenu) {
       for (int i = 0; i < CPU_STEP_LOOP; ++i) {
         if (lastInterruptFrame != _frames) {
@@ -343,9 +344,12 @@ void __not_in_flash_func(main_loop)() {
         zxSpectrum.step();
       }
     }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
+    else {
+      picoWinHidKeyboard.processKeyRepeat();
+      if (frames != _frames) {
+        frames = _frames;
+        picoDisplay.refresh();
+      }
     }
   }
 }

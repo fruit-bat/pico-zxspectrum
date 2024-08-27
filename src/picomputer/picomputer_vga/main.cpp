@@ -229,9 +229,12 @@ void __not_in_flash_func(main_loop)(){
         zxSpectrum.step();
       }
     }
-    else if (frames != _frames) {
-      frames = _frames;
-      picoDisplay.refresh();
+    else {
+      picoWinHidKeyboard.processKeyRepeat();
+      if (frames != _frames) {
+        frames = _frames;
+        picoDisplay.refresh();
+      }
     }
   }
 }
