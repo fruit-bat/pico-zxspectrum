@@ -303,7 +303,7 @@ void __not_in_flash_func(core1_render)() {
 void __not_in_flash_func(core1_main)() {
   
   dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
-  sem_acquire_blocking(&dvi_start_sem);
+//  sem_acquire_blocking(&dvi_start_sem);
   dvi_start(&dvi0);
   
   core1_render();
@@ -361,6 +361,7 @@ int main() {
 #else
   // Run system at TMDS bit clock
   set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
+  sleep_ms(10);
 #endif
 
   setup_default_uart();
@@ -425,8 +426,8 @@ int main() {
   zxSpectrumAudioInit();
 
   printf("Core 1 start\n");
-  sem_init(&dvi_start_sem, 0, 1);
-  hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
+//  sem_init(&dvi_start_sem, 0, 1);
+//  hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
   
   multicore_launch_core1(core1_main);
   
@@ -436,8 +437,9 @@ int main() {
           
   picoDisplay.refresh();
   
-  sem_release(&dvi_start_sem);
-  
+//  sem_release(&dvi_start_sem);
+  printf("SD mount\n");
+
   if (sdCard0.mount()) {
 
     // Create folders on the SD card if they are missing etc.
@@ -454,6 +456,7 @@ int main() {
   showMenu = false;
   picoRootWin.removeMessage();
 
+  printf("Main loop\n");
   main_loop();
   
   __builtin_unreachable();
