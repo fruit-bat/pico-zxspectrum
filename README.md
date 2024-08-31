@@ -345,7 +345,17 @@ Perform the build:
 cd pico-zxspectrum
 mkdir build
 cd build
-cmake -DPICO_COPY_TO_RAM=0 ..
+```
+If you have an RP2040
+```
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 ..
+```
+or if you have an RP2350
+```
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 ..
+```
+then
+```
 make clean
 make -j4
 ```

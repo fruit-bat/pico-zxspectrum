@@ -1,5 +1,20 @@
 cmake_minimum_required(VERSION 3.12)
 
+# Determine the MCU type and configure accordingly
+set(PICO_MCU "rp2040" CACHE STRING "Specify Pico MCU type")
+
+if ((${PICO_MCU} STREQUAL "rp2350"))
+    set(PICO_PLATFORM "rp2350-arm-s")
+else()
+    set(PICO_PLATFORM "rp2040")
+endif()
+
+# Look for board file in local board directory
+set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/boards)
+# if (NOT PICO_BOARD)
+#     set(PICO_BOARD "vgaboard")
+# endif()
+
 # Pico SDC on Raspberry Pi 4
 cmake_policy(VERSION 3.12)
 
@@ -15,6 +30,11 @@ include(pico_extras_import.cmake)
 project(picodvi C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
+
+if (PICO_SDK_VERSION_STRING VERSION_LESS "2.0.0")
+    message(FATAL_ERROR "Raspberry Pi Pico SDK version 2.0.0 (or later) required. Current version is ${PICO_SDK_VERSION_STRING}")
+endif()
+
 pico_sdk_init()
 
 add_compile_options(-Wall)
