@@ -51,6 +51,7 @@ private:
   PicoQuickKeyAscii _k9;
   PicoQuickKeyAscii _kV;
   PicoQuickKeyAscii _kK;
+  PicoQuickKeyAscii _kS;
 
   PicoWiz _wiz;
   PicoWizUtils _wizUtils;
@@ -67,6 +68,7 @@ private:
   PicoOption _settingsOp;
   PicoOption _volumeOp;
   PicoOption _keyboardOp;
+  PicoOption _systemOp;
 
   PicoSelect _tapePlayer;
   PicoOptionText _chooseTapeOp;
@@ -94,6 +96,9 @@ private:
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;
   PicoOptionText _settingsLoadOp;
+
+  PicoSelect _system;
+  PicoOptionText _systemBootSelOp;
 
   PicoSlider _volume;
   PicoOnScreenKeyboard _keyboard;
