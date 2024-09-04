@@ -303,7 +303,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _systemBootSelOp.toggle([=]() {
     _wizUtils.confirm(
       [=](PicoPen *pen){
-        pen->printAtF(0, 0, false, "Restart Pico into boot loader");
+        pen->printAtF(0, 0, false, "Restart Pico into boot loader?");
       },
       [=]() {
         reset_usb_boot(0,0);
