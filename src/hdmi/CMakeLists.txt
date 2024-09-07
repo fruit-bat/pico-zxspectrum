@@ -511,3 +511,71 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
   ${zxspectrum_pico_dv_i2saudio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
+
+
+########################################################################
+# Olimex RP2040-PICO-PC
+########################################################################
+
+set(zxspectrum_olimex_pc_src
+  main.cpp
+  ${zxspectrum_dvi_src}
+)
+
+set(olimex_pc_common_defines
+  # Set up the DVI output to match the olimex_pc board
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_DEFAULT_SERIAL_CONFIG=Olimex_RP2040_PICO_PC_cfg
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=22
+  SDCARD_PIN_SPI0_SCK=6
+  SDCARD_PIN_SPI0_MOSI=7
+  SDCARD_PIN_SPI0_MISO=4
+)
+
+set(olimex_pc_hdmi_audio_defines
+  # Use HDMI Audio
+  PICO_HDMI_AUDIO
+)
+
+foreach(target 
+  ZxSpectrumOlimexPcHdmiAudio640x480x60Hz
+  ZxSpectrumOlimexPcHdmiAudio720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_olimex_pc_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target}) 
+ 
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 1)
+
+endforeach()
+
+target_compile_definitions(ZxSpectrumOlimexPcHdmiAudio640x480x60Hz PRIVATE
+  ${olimex_pc_common_defines}
+  ${olimex_pc_hdmi_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxSpectrumOlimexPcHdmiAudio720x576x50Hz PRIVATE
+  ${olimex_pc_common_defines}
+  ${olimex_pc_hdmi_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
