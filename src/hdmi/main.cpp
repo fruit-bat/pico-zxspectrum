@@ -39,6 +39,7 @@ extern "C" {
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
 #include "ZxSpectrumHidMouse.h"
+#include "ZxSpectrumNespadJoystick.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
@@ -84,6 +85,7 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static ZxSpectrumFileLoop snapFileLoop; 
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
+static ZxSpectrumNespadJoystick joystickNespad;
 static ZxSpectrumHidJoystick joystick;
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
@@ -375,7 +377,8 @@ int main() {
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
-  
+  joystickNespad.init();
+
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;

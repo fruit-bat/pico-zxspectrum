@@ -8,8 +8,10 @@ ZxSpectrumNespadJoystick::ZxSpectrumNespadJoystick() :
   _sinclairL(0xff),
   _sinclairR(0xff)
 {
-    // TODO static
-    nespad_default_init();
+}
+
+void ZxSpectrumNespadJoystick::init() {
+   nespad_default_init();
 }
 
 bool ZxSpectrumNespadJoystick::isConnectedL() {

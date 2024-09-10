@@ -18,4 +18,5 @@ public:
   uint8_t __not_in_flash_func(joy1)();
   virtual bool __not_in_flash_func(isConnectedL)();
   virtual bool __not_in_flash_func(isConnectedR)();
+  void init();
 };
