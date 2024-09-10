@@ -15,6 +15,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumJoystick.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidJoystick.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumDualJoystick.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumNespadJoystick.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrum.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuickSave.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PulseProc.cpp
@@ -80,6 +81,7 @@ set(zxspectrum_common_libs
   pico_multicore
   pico_util
   pico_emu_utils
+  pico_nespad
   sdcard
   fatfs
   hardware_dma
