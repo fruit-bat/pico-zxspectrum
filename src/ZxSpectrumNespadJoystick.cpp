@@ -3,6 +3,7 @@
 #include "nespad.h"
 
 ZxSpectrumNespadJoystick::ZxSpectrumNespadJoystick() :
+  _state(0),
   _kempston(0),
   _sinclairL(0xff),
   _sinclairR(0xff)
@@ -21,6 +22,12 @@ bool ZxSpectrumNespadJoystick::isConnectedR() {
 
 void ZxSpectrumNespadJoystick::decode() {
     const uint32_t state = nespad_state();
+    if (_state != state) {
+      _sinclairL = nespad_to_sinclair_left(state, 0);
+      _sinclairR = nespad_to_sinclair_right(state, 1);
+      _kempston = nespad_to_kempston(state, 0);
+      _state = state;
+    }
 }
 
 uint8_t ZxSpectrumNespadJoystick::sinclairL() {

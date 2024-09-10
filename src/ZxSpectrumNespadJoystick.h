@@ -5,7 +5,7 @@
 
 class ZxSpectrumNespadJoystick : public ZxSpectrumJoystick {
 private:
-  uint8_t _nespad_state; 
+  uint8_t _state; 
   uint8_t _kempston;
   uint8_t _sinclairL;
   uint8_t _sinclairR;
