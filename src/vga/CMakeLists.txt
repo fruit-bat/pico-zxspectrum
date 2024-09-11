@@ -207,6 +207,7 @@ foreach(target
     pico_emu_utils
     pico_scanvideo_dpi
     pico_scanvideo_menu
+    pico_nespad
     tinyusb_host
     tinyusb_board
     hardware_pio
@@ -275,6 +276,12 @@ set(ZX-MURMULATOR_VGA_defines
   # Enable the PS/2 keyboard
   USE_PS2_KBD
   USE_MRMLTR_PS2_KBD
+  # Pins for dual NES joypads, pio1 SM ?
+  NESPAD_DATA_PIN_BASE=16
+  NESPAD_CLK_PIN_BASE=12
+  NESPAD_PIO=pio1
+  NESPAD_IRQ=PIO1_IRQ_0
+  NESPAD_ENABLE
 )
 
 set(ZX-MURMULATOR_VGA_PWM_Audio_defines
@@ -291,9 +298,8 @@ set(ZX-MURMULATOR_VGA_PWM_Audio_defines
 )
 
 set (ZX-MURMULATOR_VGA_I2S_Audio_defines
-  # Configure the I2S audio
+  # Configure the I2S audio, pio1 SM ?
   PICO_AUDIO_I2S=1
-  PICO_AUDIO_I2S_SM=2
   PICO_AUDIO_I2S_PIO=pio1
   PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
   PICO_AUDIO_I2S_DATA=26

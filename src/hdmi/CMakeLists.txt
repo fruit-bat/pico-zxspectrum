@@ -87,9 +87,19 @@ set(zxspectrum_hdmi_720x576x50Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
 )
 
+set(zxspectrum_hdmi_nespad_defines
+  # Pins for dual NES joypads
+  NESPAD_DATA_PIN_BASE=20
+  NESPAD_CLK_PIN_BASE=26
+  NESPAD_PIO=pio1
+  NESPAD_IRQ=PIO1_IRQ_0
+  NESPAD_ENABLE
+)
+
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_hdmi_nespad_defines}
   EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
@@ -99,6 +109,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_720x540x50Hz_defines}
+  ${zxspectrum_hdmi_nespad_defines}
   EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
@@ -108,18 +119,11 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_hdmi_nespad_defines}
   EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-
-  # Pins for dual NES joypads
-  NESPAD_DATA_PIN_BASE=20
-  NESPAD_CLK_PIN_BASE=26
-  NESPAD_PIO=pio1
-  NESPAD_IRQ=PIO1_IRQ_0
-  NESPAD_SM=3
-  NESPAD_ENABLE
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE

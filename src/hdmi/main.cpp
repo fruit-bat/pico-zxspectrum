@@ -366,13 +366,10 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   vreg_set_voltage(VREG_VSEL);
   sleep_ms(10);
-#ifdef RUN_FROM_CRYSTAL
-  set_sys_clock_khz(12000, true);
-#else
+
   // Run system at TMDS bit clock
   set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
   sleep_ms(10);
-#endif
 
   setup_default_uart();
   tusb_init();
@@ -382,8 +379,9 @@ int main() {
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
+#ifdef NESPAD_ENABLE  
   joystickNespad.init();
-
+#endif
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
