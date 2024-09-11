@@ -19,3 +19,7 @@ uint8_t ZxSpectrumPicomputerJoystick::sinclairR() {
 uint8_t ZxSpectrumPicomputerJoystick::kempston() {
   return _enabled ? pzx_kempston() : 0;
 }
+
+uint8_t ZxSpectrumPicomputerJoystick::joy1(){ 
+  return 0; 
+};
