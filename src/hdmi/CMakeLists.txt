@@ -119,7 +119,6 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
   NESPAD_PIO=pio1
   NESPAD_IRQ=PIO1_IRQ_0
   NESPAD_SM=3
-  DEBUG_NESPAD
   NESPAD_ENABLE
 )
 

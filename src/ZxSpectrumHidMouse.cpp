@@ -174,6 +174,13 @@ uint8_t ZxSpectrumHidMouse::kempston()
     return _kempston;
 }
 
+uint8_t ZxSpectrumHidMouse::joy1()
+{
+    if (mouseMode() != ZxSpectrumMouseModeJoystick) return 0x00;
+    decode();
+    return _kempston;
+}
+
 void __not_in_flash_func(ZxSpectrumHidMouse::setButtons)(uint32_t b)
 {
     _buttons = (uint8_t)b;

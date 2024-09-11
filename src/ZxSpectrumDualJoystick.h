@@ -18,4 +18,6 @@ public:
   virtual uint8_t __not_in_flash_func(sinclairR)();
   virtual bool __not_in_flash_func(isConnectedL)() { return _joystick1->isConnectedL(); };
   virtual bool __not_in_flash_func(isConnectedR)() { return _joystick1->isConnectedR(); };
+  virtual uint8_t __not_in_flash_func(joy1)(){ return _joystick1->joy1() | _joystick2->joy1(); };
+
 };

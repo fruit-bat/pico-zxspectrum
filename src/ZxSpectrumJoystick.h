@@ -21,6 +21,7 @@ public:
   virtual uint8_t sinclairR() = 0;
   virtual bool isConnectedL() = 0;
   virtual bool isConnectedR() = 0;
+  virtual uint8_t joy1() = 0;
 
   virtual void mode(ZxSpectrumJoystickMode mode) { _mode = mode; }
 
@@ -28,4 +29,5 @@ public:
   uint8_t __not_in_flash_func(getKempston)();
   uint8_t __not_in_flash_func(getSinclairL)();
   uint8_t __not_in_flash_func(getSinclairR)();
+
 };

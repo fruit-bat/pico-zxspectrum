@@ -86,7 +86,12 @@ static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
 static ZxSpectrumNespadJoystick joystickNespad;
+#ifdef NESPAD_ENABLE
+static ZxSpectrumHidJoystick joystickHid;
+static ZxSpectrumDualJoystick joystick(&joystickHid, &joystickNespad);
+#else
 static ZxSpectrumHidJoystick joystick;
+#endif
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
