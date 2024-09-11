@@ -409,6 +409,15 @@ set(zxspectrum_murmulator_src
   ${murmulator_common_src}
 )
 
+set(zxspectrum_murmulator_hdmi_nespad_defines
+  # Pins for dual NES joypads
+  NESPAD_DATA_PIN_BASE=20
+  NESPAD_CLK_PIN_BASE=26
+  NESPAD_PIO=pio1
+  NESPAD_IRQ=PIO1_IRQ_0
+  NESPAD_ENABLE
+)
+
 set(murmulator_common_defines
   # Set up the DVI output to match the MURMULATOR board
   MURMULATOR
@@ -492,36 +501,43 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_hdmi_audio_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_hdmi_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
+
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_pwm_audio_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
   ${murmulator_common_defines}
   ${murmulator_pwm_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
   ${murmulator_common_defines}
   ${zxspectrum_pico_dv_i2saudio_defines}
-  ${zxspectrum_hdmi_640x480x60Hz_defines}  
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
   ${murmulator_common_defines}
   ${zxspectrum_pico_dv_i2saudio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
 
