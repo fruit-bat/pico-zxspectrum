@@ -10,8 +10,8 @@ The LED on the Pico PI indicates the mode:
 
 | LED | mode |
 | - | - |
-| off | joystick mode |
-| on | cursor mode |
+| OFF | Joystick mode |
+| ON | Cursor mode |
 
 To switch mode make sure you are viewing the ZX Spectrum display (not the menus),
 then press CAPS SHIFT and one of  <<< or >>> at the same time:
