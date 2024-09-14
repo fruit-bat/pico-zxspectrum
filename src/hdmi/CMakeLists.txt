@@ -411,8 +411,8 @@ set(zxspectrum_murmulator_src
 
 set(zxspectrum_murmulator_hdmi_nespad_defines
   # Pins for dual NES joypads
-  NESPAD_DATA_PIN_BASE=20
-  NESPAD_CLK_PIN_BASE=26
+  NESPAD_DATA_PIN_BASE=16
+  NESPAD_CLK_PIN_BASE=14
   NESPAD_PIO=pio1
   NESPAD_IRQ=PIO1_IRQ_0
   NESPAD_ENABLE
