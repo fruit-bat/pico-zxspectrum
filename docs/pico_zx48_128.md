@@ -21,9 +21,9 @@ then press CAPS SHIFT and one of  <<< or >>> at the same time:
 | CAPS SHIFT <<< | Cursor |
 | CAPS SHIFT >>> | Joystick |
 
-When the machine boots, the buttons are configure to act as a joystick.
+When the machine boots, the buttons are configured to act as a joystick.
 
-When in joystick mode the buttons act as a Kemptson joystick.
+When in joystick mode, the buttons act as a Kemptson joystick.
 
 #### Manu key mappings
 These are Spectrum keyboard actions that can navigate the settings menu:
