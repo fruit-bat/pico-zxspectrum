@@ -4,7 +4,28 @@ It matches the original layout of the ZX Spectrum keyboard allowing it to be use
 
 <img src="pico_zx48_128_1.png" width="400"/>
 
-#### Maneu key mappings
+#### Joystick buttons & modes
+The PCB has some buttons which can act as a joystick or the ZX Spectrum cursor.
+The LED on the Pico PI indicates the mode:
+
+| LED | mode |
+| - | - |
+| off | joystick mode |
+| on | cursor mode |
+
+To switch mode make sure you are viewing the ZX Spectrum display (not the menus),
+then press CAPS SHIFT and one of  <<< or >>> at the same time:
+
+| Keys | Mode |
+| - | - |
+| CAPS SHIFT <<< | Cursor |
+| CAPS SHIFT >>> | Joystick |
+
+When the machine boots they are configure to act as a joystick.
+
+When in joystick mode the buttons act as a Kemptson joystick.
+
+#### Manu key mappings
 These are Spectrum keyboard actions that can navigate the settings menu:
 
 | keys conbination | Action |
