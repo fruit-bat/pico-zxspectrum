@@ -43,6 +43,8 @@ public:
   inline ZxSpectrumMouseMode mouseMode() { return ZxSpectrumMouse::mouseMode(); }
 
   void __not_in_flash_func(decode)();
+  
+  virtual uint8_t __not_in_flash_func(joy1)();
   virtual uint8_t __not_in_flash_func(kempston)();
   virtual uint8_t __not_in_flash_func(sinclairL)();
   virtual uint8_t __not_in_flash_func(sinclairR)();

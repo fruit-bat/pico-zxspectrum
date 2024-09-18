@@ -20,7 +20,7 @@ public:
   virtual uint8_t __not_in_flash_func(kempston)();
   virtual uint8_t __not_in_flash_func(sinclairL)();
   virtual uint8_t __not_in_flash_func(sinclairR)();
-  uint8_t __not_in_flash_func(joy1)();
+  virtual uint8_t __not_in_flash_func(joy1)();
   virtual bool __not_in_flash_func(isConnectedL)();
   virtual bool __not_in_flash_func(isConnectedR)();
 };

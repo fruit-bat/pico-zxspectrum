@@ -41,6 +41,7 @@
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
 #include "ZxScanlineVgaRenderLoop.h"
+#include "ZxSpectrumNespadJoystick.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_20
 
@@ -58,7 +59,13 @@ static ZxSpectrumFatSpiKiosk zxSpectrumKisok(
 static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
+static ZxSpectrumNespadJoystick joystickNespad;
+#ifdef NESPAD_ENABLE
+static ZxSpectrumHidJoystick joystickHid;
+static ZxSpectrumDualJoystick joystick(&joystickHid, &joystickNespad);
+#else
 static ZxSpectrumHidJoystick joystick;
+#endif
 
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
@@ -298,12 +305,15 @@ int main(){
   quickSave.set(&picoRootWin);
 
   tusb_init();
+#ifdef NESPAD_ENABLE
+  joystickNespad.init(); // pio1, SM ?
+#endif
 #ifdef USE_PS2_KBD
-  ps2kbd.init_gpio();
+  ps2kbd.init_gpio(); // pio1, SM ?
 #endif
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrumAudioInit();  // pio1, ear SM ?, I2S SM ?
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);

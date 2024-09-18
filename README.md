@@ -22,6 +22,9 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+18/09/24
+
+* Added support for NES/SNES joypads on MURMULATOR firmware
 
 24/08/24
 
@@ -305,6 +308,7 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
+git clone git@github.com:fruit-bat/pico-nespad.git
 git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
@@ -316,6 +320,7 @@ git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
+git clone https://github.com/fruit-bat/pico-nespad.git
 git clone https://github.com/fruit-bat/pico-extras.git
 git clone https://github.com/fruit-bat/PicoDVI.git
 git clone https://github.com/fruit-bat/pico-zxspectrum.git
