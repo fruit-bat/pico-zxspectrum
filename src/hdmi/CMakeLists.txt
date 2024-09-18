@@ -235,7 +235,6 @@ set (zxspectrum_pico_dv_defines
 set (zxspectrum_pico_dv_i2saudio_defines
   # Configure the I2S audio 
   PICO_AUDIO_I2S=1
-  PICO_AUDIO_I2S_SM=2
   PICO_AUDIO_I2S_PIO=pio1
   PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
   PICO_AUDIO_I2S_DATA=26
