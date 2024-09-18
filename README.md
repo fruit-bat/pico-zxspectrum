@@ -25,6 +25,7 @@ This project is intended to be relatively easy to breadboard or prototype in som
 18/09/24
 
 * Added support for NES/SNES joypads on MURMULATOR firmware
+* New library to support reading NES/SNES joypads. See https://github.com/fruit-bat/pico-nespad
 
 24/08/24
 
