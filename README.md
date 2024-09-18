@@ -22,6 +22,9 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+18/09/24
+
+* Added support for NES/SNES joypads on MURMULATOR firmware
 
 24/08/24
 
