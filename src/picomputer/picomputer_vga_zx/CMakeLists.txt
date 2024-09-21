@@ -229,6 +229,10 @@ set(ZxSpectrumPicomputerVga1111AukBob_defines
   HID_KEY_MOD_SAVE=2
 )
 
+pico_generate_pio_header(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz 
+  ${zxspectrum_ear_in_pio}
+)
+
 target_compile_definitions(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz PRIVATE
   ${ZxSpectrumPicomputerVga1111AukBob_defines}
   ${ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines}
