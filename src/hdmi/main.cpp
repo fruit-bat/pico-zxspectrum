@@ -12,6 +12,7 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
+#include "hid_app.h"
 
 #ifdef USE_MRMLTR_PS2_KBD
 #include "ps2kbd_mrmltr.h"
@@ -373,18 +374,7 @@ int main() {
 
   setup_default_uart();
 
-  board_init();
-
-  printf("TinyUSB Host HID joystick/mouse/keyboard Example\r\n");
-
-  tuh_hid_set_default_protocol(HID_PROTOCOL_REPORT);
-
-  // init host stack on configured roothub port
-  tuh_init(BOARD_TUH_RHPORT);
-
-  if (board_init_after_tusb) {
-    board_init_after_tusb();
-  }
+  tuh_hid_app_startup();
 
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
