@@ -81,6 +81,7 @@ set(zxspectrum_common_libs
   pico_multicore
   pico_util
   pico_emu_utils
+  pico_hid_host
   pico_nespad
   sdcard
   fatfs

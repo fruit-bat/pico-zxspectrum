@@ -372,7 +372,20 @@ int main() {
   sleep_ms(10);
 
   setup_default_uart();
-  tusb_init();
+
+  board_init();
+
+  printf("TinyUSB Host HID joystick/mouse/keyboard Example\r\n");
+
+  tuh_hid_set_default_protocol(HID_PROTOCOL_REPORT);
+
+  // init host stack on configured roothub port
+  tuh_init(BOARD_TUH_RHPORT);
+
+  if (board_init_after_tusb) {
+    board_init_after_tusb();
+  }
+
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif
