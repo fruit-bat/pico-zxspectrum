@@ -36,6 +36,7 @@
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
 #include "ZxScanlineVgaRenderLoop.h"
+#include "hid_app.h"
 
 #define LED_PIN 25
 #define SPK_PIN 9
@@ -283,7 +284,8 @@ int main(){
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
 
-  tusb_init();
+  tuh_hid_app_startup();
+
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif

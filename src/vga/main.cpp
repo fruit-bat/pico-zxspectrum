@@ -42,6 +42,7 @@
 #include "ZxSpectrumDisplay.h"
 #include "ZxScanlineVgaRenderLoop.h"
 #include "ZxSpectrumNespadJoystick.h"
+#include "hid_app.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_20
 
@@ -304,7 +305,8 @@ int main(){
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
 
-  tusb_init();
+  tuh_hid_app_startup();
+
 #ifdef NESPAD_ENABLE
   joystickNespad.init(); // pio1, SM ?
 #endif
