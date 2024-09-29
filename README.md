@@ -22,6 +22,12 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+29/09/24
+
+* Removed dependency on modified TinyUSB library
+* Unmodified pico-sdk can be now used
+* New library for USB joystick/mouse/keyboard. See https://github.com/fruit-bat/pico-hid-host
+
 18/09/24
 
 * Added support for NES/SNES joypads on MURMULATOR firmware
