@@ -81,6 +81,7 @@ set(zxspectrum_common_libs
   pico_multicore
   pico_util
   pico_emu_utils
+  pico_hid_host
   pico_nespad
   sdcard
   fatfs
@@ -112,3 +113,17 @@ add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
 add_subdirectory(picovga)
+
+add_custom_target (ZX-MURMULATOR)
+add_dependencies (ZX-MURMULATOR
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_HDMI_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
+)

@@ -22,6 +22,12 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+29/09/24
+
+* Removed dependency on modified TinyUSB library
+* Unmodified pico-sdk can be now used
+* New library for USB joystick/mouse/keyboard. See https://github.com/fruit-bat/pico-hid-host
+
 18/09/24
 
 * Added support for NES/SNES joypads on MURMULATOR firmware
@@ -265,7 +271,7 @@ Suggestions to improve this circuit are appreciated and please post them [here](
 
 
 ### Display considerations
-Firstly, the emulation does not have a screen buffer, and there is not enough RAM left to add one. Whichever dsiplay you use, it will not have exactly the same timing as the old PAL monitors. This is particularly noticable on 60Hz displays with programs on the Spectrum that try to synchronize their output with the display, or use the frame rate to control the speed of music. I'm gradually adding 50Hz modes to firmware for various boards. 
+Firstly, the emulation does not have a screen buffer, and there is not enough RAM left to add one. Whichever dsiplay you use, it will not have exactly the same timing as the old PAL monitors. This is particularly noticable on 60Hz displays with programs on the Spectrum that try to synchronize their output with the display, or use the frame rate to control the speed of music. I'm gradually adding 50Hz modes to firmware for various boards.
 
 ### Joysticks
 There is basic support for connecting USB joysticks and have them appear as Kempston or Sinclair joysticks to the Spectrum.
@@ -274,30 +280,11 @@ For joysticks to work they have to provide a HID report, which is usually the ca
 
 Basically, I don't know how many different joysticks will be usable. If you are having trouble raise an issue and attach a HID report descriptor from your device and I will have a look at it.
 
-To get this to work I have done some hacking and slashing in [TinyUSB](https://github.com/hathach/tinyusb) (sorry Ha Thach): 
+To get this to work I have created a library which works alongside TinyUSB
 
-https://github.com/fruit-bat/tinyusb/tree/hid_micro_parser
+https://github.com/fruit-bat/pico-hid-host
 
 ## Build
-The version of [TinyUSB](https://github.com/hathach/tinyusb) in the [Pico SDK](https://github.com/raspberrypi/pico-sdk)
-will need to be replaced with a version containing a HID report parser and USB hub support.
-
-Using *git* protocol:
-```sh
-cd $PICO_SDK_PATH/lib/
-mv tinyusb tinyusb.orig
-git clone git@github.com:fruit-bat/tinyusb.git
-cd tinyusb
-git checkout hid_micro_parser
-```
-...or using *https* protocol:
-```sh
-cd $PICO_SDK_PATH/lib/
-mv tinyusb tinyusb.orig
-git clone https://github.com/fruit-bat/tinyusb.git
-cd tinyusb
-git checkout hid_micro_parser
-```
 
 Make a folder in which to clone the required projects e.g.
 ```sh
@@ -309,6 +296,7 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
+git clone git@github.com:fruit-bat/pico-hid-host
 git clone git@github.com:fruit-bat/pico-nespad.git
 git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
@@ -321,6 +309,7 @@ git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
+git clone https://github.com/fruit-bat/pico-hid-host
 git clone https://github.com/fruit-bat/pico-nespad.git
 git clone https://github.com/fruit-bat/pico-extras.git
 git clone https://github.com/fruit-bat/PicoDVI.git

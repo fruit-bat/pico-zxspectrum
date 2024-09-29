@@ -12,6 +12,7 @@
 #include "hardware/uart.h"
 #include "pico/sem.h"
 #include "hardware/pwm.h"
+#include "hid_app.h"
 
 #ifdef USE_MRMLTR_PS2_KBD
 #include "ps2kbd_mrmltr.h"
@@ -372,7 +373,9 @@ int main() {
   sleep_ms(10);
 
   setup_default_uart();
-  tusb_init();
+
+  tuh_hid_app_startup();
+
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif

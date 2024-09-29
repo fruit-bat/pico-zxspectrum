@@ -44,6 +44,7 @@
 #include "ZxSpectrumAudio.h"
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
+#include "hid_app.h"
 
 #define LED_PIN 25
 
@@ -392,7 +393,7 @@ int main() {
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
 
-  tusb_init();
+  tuh_hid_app_startup();
 
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();

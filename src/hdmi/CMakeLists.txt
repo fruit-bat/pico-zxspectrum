@@ -119,7 +119,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
-  ${zxspectrum_hdmi_nespad_defines}
+  # ${zxspectrum_hdmi_nespad_defines}
   EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard

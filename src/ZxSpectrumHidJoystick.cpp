@@ -42,25 +42,25 @@ bool ZxSpectrumHidJoystick::isConnectedR() {
 uint8_t ZxSpectrumHidJoystick::getjoystate(void * ptr) {
    tusb_hid_simple_joystick_t* joystick=(tusb_hid_simple_joystick_t*)ptr;
    uint8_t joy=0; //joystick state in 8bits
-   
+
    tusb_hid_simple_joystick_values_t* values = &joystick->values;
 
-   //Test direction on ASIX 1
-   if (values->y1 <= joystick->axis_y1.logical_min)  joy|=JOY_UP;       
-     else if (values->y1 >= joystick->axis_y1.logical_max) joy|=JOY_DOWN;
+   // Test direction on AXIS 1
+   if (values->y1 <= joystick->axis_y1.threshold_min)  joy|=JOY_UP;
+     else if (values->y1 >= joystick->axis_y1.threshold_max) joy|=JOY_DOWN;
 
-   if (values->x1 <= joystick->axis_x1.logical_min)  joy|=JOY_LEFT;       
-     else if (values->x1 >= joystick->axis_x1.logical_max) joy|=JOY_RIGHT;
+   if (values->x1 <= joystick->axis_x1.threshold_min)  joy|=JOY_LEFT;
+     else if (values->x1 >= joystick->axis_x1.threshold_max) joy|=JOY_RIGHT;
 
-   if (joy==0) { //Test direction on ASIX 2
-      if (values->y2 <= joystick->axis_y2.logical_min)  joy|=JOY_UP;       
-        else if (values->y2 >= joystick->axis_y2.logical_max) joy|=JOY_DOWN;
+   if (joy==0) { // Test direction on AXIS 2
+      if (values->y2 <= joystick->axis_y2.threshold_min)  joy|=JOY_UP;
+        else if (values->y2 >= joystick->axis_y2.threshold_max) joy|=JOY_DOWN;
 
-      if (values->x2 <= joystick->axis_x2.logical_min)  joy|=JOY_LEFT;       
-        else if (values->x2 >= joystick->axis_x2.logical_max) joy|=JOY_RIGHT;
+      if (values->x2 <= joystick->axis_x2.threshold_min)  joy|=JOY_LEFT;
+        else if (values->x2 >= joystick->axis_x2.threshold_max) joy|=JOY_RIGHT;
    }
 
-   if (joy==0) { //Test direction on hats
+   if (joy==0) { // Test direction on hats
     uint32_t hatm = 0;
     if (joystick->hat.length > 0) {
         uint32_t hat = (uint32_t)values->hat;
@@ -91,7 +91,7 @@ uint8_t ZxSpectrumHidJoystick::joy2sinclair(uint8_t joy) {
 
   if (joy & JOY_RIGHT) sinclair &= SINCLAIR_RIGHT;
       else if (joy & JOY_LEFT)  sinclair &= SINCLAIR_LEFT;
-      
+
   if (joy & JOY_DOWN) sinclair &= SINCLAIR_DOWN;
      else  if  (joy & JOY_UP) sinclair &= SINCLAIR_UP;
 
@@ -111,7 +111,7 @@ void ZxSpectrumHidJoystick::decode() {
 
       if (mode() == ZxSpectrumJoystickModeSinclairRL) _sinclairR = sinclair;
         else  _sinclairL = sinclair;
-      
+
       _kempston = _joy1;
       _updated1 = joystick->updated;
     }
@@ -125,7 +125,7 @@ void ZxSpectrumHidJoystick::decode() {
 
       if (mode() == ZxSpectrumJoystickModeSinclairRL) _sinclairL = sinclair;
         else _sinclairR = sinclair;
-        
+
       _updated2 = joystick->updated;
     }
   }
