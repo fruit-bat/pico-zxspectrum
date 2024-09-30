@@ -5,8 +5,10 @@ set(PICO_MCU "rp2040" CACHE STRING "Specify Pico MCU type")
 
 if ((${PICO_MCU} STREQUAL "rp2350"))
     set(PICO_PLATFORM "rp2350-arm-s")
+    add_compile_definitions(PICO_MCU="RP2350")
 else()
     set(PICO_PLATFORM "rp2040")
+    add_compile_definitions(PICO_MCU="RP2040")
 endif()
 
 # Look for board file in local board directory
