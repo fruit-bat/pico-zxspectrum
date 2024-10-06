@@ -1,6 +1,35 @@
 
 ## Updates
 
+24/08/24
+
+* Fixed USB joystick issue
+* New support for Xinput joysticks thanks to [@DPRCZ](https://github.com/DPRCZ)
+* Minor improvements to menu navigation
+* Joystick buttons 2 & 4 together to access/exit menu
+
+18/08/24
+
+* Fixed an issue with keyboard input in some programs.
+
+17/08/24
+
+* Move to new VGA renderer (SDK update seems to have broken the old one)
+Note that pico-extras needs to be the version from my site (https://github.com/fruit-bat/pico-extras)
+
+11/08/24
+
+* In menu Spectrum keyboard to aid joystick use thanks to [@DPRCZ](https://github.com/DPRCZ)
+
+04/08/24
+
+* USB joystick can now be used for menu navigation thanks to [@DPRCZ](https://github.com/DPRCZ)
+
+22/07/24
+
+* Added support for USB mouse to act as joystick, with settings in the menu. Thanks to [@javavi](https://github.com/javavi)
+* Fixed an issue at with SD card access on startup; startup should be quicker and more reliable. Thanks to [@LiCaNtRoPo-PCB](https://github.com/LiCaNtRoPo-PCB)
+
 08/07/24
 
 * Added support for Kempston Mouse thanks to [@javavi](https://github.com/javavi)
