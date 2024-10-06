@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Determine the MCU type and configure accordingly
-set(PICO_MCU "rp2040" CACHE STRING "Specify Pico MCU type")
+# set(PICO_MCU "rp2040" CACHE STRING "Specify Pico MCU type")
 
-if ((${PICO_MCU} STREQUAL "rp2350"))
-    set(PICO_PLATFORM "rp2350-arm-s")
-    add_compile_definitions(PICO_MCU="RP2350")
-else()
-    set(PICO_PLATFORM "rp2040")
-    add_compile_definitions(PICO_MCU="RP2040")
-endif()
+# if ((${PICO_MCU} STREQUAL "rp2350"))
+#     set(PICO_PLATFORM "rp2350-arm-s")
+#     add_compile_definitions(PICO_MCU="RP2350")
+# else()
+#     set(PICO_PLATFORM "rp2040")
+#     add_compile_definitions(PICO_MCU="RP2040")
+# endif()
 
 # Look for board file in local board directory
 set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/boards)
-# if (NOT PICO_BOARD)
-#     set(PICO_BOARD "vgaboard")
-# endif()
+if (NOT PICO_BOARD)
+    set(PICO_BOARD "pico")
+endif()
 
 # Pico SDC on Raspberry Pi 4
 cmake_policy(VERSION 3.12)
@@ -38,6 +38,8 @@ if (PICO_SDK_VERSION_STRING VERSION_LESS "2.0.0")
 endif()
 
 pico_sdk_init()
+
+add_compile_definitions(PICO_MCU="${PICO_PLATFORM}")
 
 add_compile_options(-Wall)
 add_definitions(-DHID_PROTOCOL_DEFAULT=HID_PROTOCOL_REPORT)

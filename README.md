@@ -307,6 +307,44 @@ cd -
 
 Perform the build:
 ```sh
+mkdir build
+cd build
+
+mkdir pico1
+cd pico1
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 ../..
+make -j4 relvant
+cd -
+
+mkdir pico2
+cd pico2
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 ../..
+make -j4 relvant
+cd -
+
+mkdir pico1-vgaboard
+cd pico1-vgaboard
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 -DPICO_BOARD=vgaboard ../..
+make -j4 relvant
+
+mkdir pico2-vgaboard
+cd pico2-vgaboard
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 -DPICO_BOARD=vgaboard ../..
+make -j4 relvant
+
+mkdir adafruit-feather-2040
+cd adafruit-feather-2040
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 -DPICO_BOARD=adafruit_feather_rp2040 ../..
+make -j4 relvant
+```
+
+
+
+
+
+
+
+```sh
 cd pico-zxspectrum
 mkdir build
 cd build
