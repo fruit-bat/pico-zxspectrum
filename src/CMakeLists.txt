@@ -195,6 +195,10 @@ add_dependencies (ZxSpectrumPiZero
   ZxSpectrumPiZero_640x480x60Hz
   ZxSpectrumPiZero_720x576x50Hz
 )
+if (${PICO_BOARD} STREQUAL "pico")
+  message("Relevant target: ZxSpectrumPiZero")
+  add_dependencies(relevant ZxSpectrumPiZero)
+endif()
 
 ########################################################################
 # Olimex RP2040-PICO-PC (RP2040 or RP2350)

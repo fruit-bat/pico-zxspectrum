@@ -310,65 +310,39 @@ Perform the build:
 mkdir build
 cd build
 
-mkdir pico1
-cd pico1
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 ../..
-make -j4 relvant
+# Various Pi Pico boards
+mkdir pico
+cd pico
+cmake -DPICO_COPY_TO_RAM=0 ../..
+make -j4 relevant
 cd -
 
+# Various Pi Pico 2 boards
 mkdir pico2
 cd pico2
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 ../..
-make -j4 relvant
+cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=pico2 ../..
+make -j4 relevant
 cd -
 
-mkdir pico1-vgaboard
-cd pico1-vgaboard
+# Pimoroni Pico VGA Demo Base
+mkdir vgaboard-rp2040
+cd vgaboard-rp2040
 cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 -DPICO_BOARD=vgaboard ../..
-make -j4 relvant
+make -j4 relevant
+cd -
 
-mkdir pico2-vgaboard
-cd pico2-vgaboard
+# Pimoroni Pico VGA Demo Base
+mkdir vgaboard-rp2350
+cd vgaboard-rp2350
 cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 -DPICO_BOARD=vgaboard ../..
-make -j4 relvant
+make -j4 relevant
+cd -
 
+# Adafruit feather
 mkdir adafruit-feather-2040
 cd adafruit-feather-2040
 cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 -DPICO_BOARD=adafruit_feather_rp2040 ../..
-make -j4 relvant
-```
-
-
-
-
-
-
-
-```sh
-cd pico-zxspectrum
-mkdir build
-cd build
-```
-If you have an RP2040
-```
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 ..
-```
-or if you have an RP2350
-```
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 ..
-```
-then
-```
-make clean
-make -j4
-```
-
-Building for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
-
-```sh
-cd build
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
-make -j4 ZxSpectrumPicoVga
+make -j4 relevant
 ```
 
 Copy the relevant version to your board, which can be located with:
