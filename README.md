@@ -310,45 +310,27 @@ Perform the build:
 mkdir build
 cd build
 
-# Various Pi Pico boards
-mkdir pico
-cd pico
-cmake -DPICO_COPY_TO_RAM=0 ../..
-make -j4 relevant
-find . -name '*.uf2' -exec cp '{}' ../../uf2 \;
-cd -
+# $1 board
+# $2 platform
+build_group() {
+  mkdir -p "$1_$2"
+  pushd "$1_$2"
+  cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=$2 -DPICO_BOARD=$1 ../..
+  make -j4 relevant
+  find . -name '*.uf2' -exec cp '{}' "../../uf2-$2" \;
+  popd
+}
 
-# Various Pi Pico 2 boards
-mkdir pico2
-cd pico2
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=pico2 ../..
-make -j4 relevant
-find . -name '*.uf2' -exec cp '{}' ../../uf2_rp2350 \;
-cd -
-
-# Pimoroni Pico VGA Demo Base
-mkdir vgaboard-rp2040
-cd vgaboard-rp2040
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=rp2040 -DPICO_BOARD=vgaboard ../..
-make -j4 relevant
-find . -name '*.uf2' -exec cp '{}' ../../uf2 \;
-cd -
-
-# Pimoroni Pico VGA Demo Base
-mkdir vgaboard-rp2350
-cd vgaboard-rp2350
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=rp2350-arm-s -DPICO_BOARD=vgaboard ../..
-make -j4 relevant
-find . -name '*.uf2' -exec cp '{}' ../../uf2_rp2350 \;
-cd -
-
-# Adafruit feather
-mkdir adafruit-feather-2040
-cd adafruit-feather-2040
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=rp2040 -DPICO_BOARD=adafruit_feather_rp2040 ../..
-make -j4 relevant
-find . -name '*.uf2' -exec cp '{}' ../../uf2 \;
-cd -
+# Pimoroni Pico VGA Demo Base with a Pico RP2040
+build_group vgaboard rp2040
+# Pimoroni Pico VGA Demo Base with a Pico2 RP2350 (Untested)
+build_group vgaboard rp2350-arm-s
+# Adafruit feather with built in RP2040
+build_group adafruit_feather_rp2040 rp2040
+# Various Pi Pico RP2040 boards
+build_group pico rp2040
+# Various Pi Pico2 RP2350 boards
+build_group pico2 rp2350-arm-s
 ```
 
 Copy the relevant version to your board, which can be located with:
