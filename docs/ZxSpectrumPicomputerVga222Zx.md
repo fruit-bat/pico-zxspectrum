@@ -26,8 +26,8 @@ The firmware produces RGB 222 for the VGA out:
 
 | Display mode | Firmware |
 | - | - |
-| 720x576x50Hz | [ZxSpectrumPicomputerVga222Zx_720x576x50Hz.uf2](/uf2/ZxSpectrumPicomputerVga222Zx_720x576x50Hz.uf2) |
-| 640x480x60Hz | [ZxSpectrumPicomputerVga222Zx_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerVga222Zx_640x480x60Hz.uf2) |
+| 720x576x50Hz | [ZxSpectrumPicomputerVga222Zx_720x576x50Hz.uf2](/uf2-rp2040/ZxSpectrumPicomputerVga222Zx_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPicomputerVga222Zx_640x480x60Hz.uf2](/uf2-rp2040/ZxSpectrumPicomputerVga222Zx_640x480x60Hz.uf2) |
 
 #### References
 [Hackaday](https://hackaday.io/project/186039-pico-zx-spectrum-128k)<br/>

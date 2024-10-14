@@ -19,8 +19,8 @@ It supports the following:
 
 | Display mode | Firmware |
 | - | - |
-| 720x576x50Hz | [ZxSpectrumPicomputerVga_720x576x50Hz.uf2](/uf2/ZxSpectrumPicomputerVga_720x576x50Hz.uf2) |
-| 640x480x60Hz | [ZxSpectrumPicomputerVga_640x480x60Hz.uf2](/uf2/ZxSpectrumPicomputerVga_640x480x60Hz.uf2) |
+| 720x576x50Hz | [ZxSpectrumPicomputerVga_720x576x50Hz.uf2](/uf2-rp2040/ZxSpectrumPicomputerVga_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPicomputerVga_640x480x60Hz.uf2](/uf2-rp2040/ZxSpectrumPicomputerVga_640x480x60Hz.uf2) |
 
 #### Keyboard mappings
 Trying to squeeze in all the key mappings is tricky but here is an attempt.

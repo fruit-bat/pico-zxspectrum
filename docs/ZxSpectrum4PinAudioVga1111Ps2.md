@@ -22,7 +22,7 @@ The firmware produces RGBY 1111 for the VGA out:
 
 #### Firmware
 
-| Display mode | Firmware |
-| - | - |
-| 720x576x50Hz | [ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2](/uf2/ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2) |
-| 640x480x60Hz | [ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2](/uf2/ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2) |
+| Display mode | Firmware Pico | Firmware Pico 2 |
+| - | - | - |
+| 720x576x50Hz | [ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2](/uf2-rp2040/ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2) | [ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2](/uf2-rp2040/ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2) | [ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz.uf2) |
