@@ -20,4 +20,7 @@ It supports the following:
 I don't know how the original keyboard pins were numbered but mine go from left to right with the keyboard oriented as you would type on it.
 
 #### Firmware
- [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](/uf2/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2)
+
+| Firmware Pico | Firmware pico 2 |
+| - | - |
+| [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](/uf2-rp2040/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) | [ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2](/uf2-rp2350/ZxSpectrumBreadboardHdmiKbd1PinAudio.uf2) |

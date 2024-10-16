@@ -22,6 +22,14 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+16/10/24
+
+* Published a selection of RP2350 builds
+* There are now two firmware folders uf2-rp2040 and uf2-rp2350-arm-s
+
+If you have a board for which you would like a RP2350 build please raise an issue and I 
+will try to add it.
+
 29/09/24
 
 * Removed dependency on modified TinyUSB library
@@ -32,36 +40,6 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 * Added support for NES/SNES joypads on MURMULATOR firmware
 * New library to support reading NES/SNES joypads. See https://github.com/fruit-bat/pico-nespad
-
-24/08/24
-
-* Fixed USB joystick issue
-* New support for Xinput joysticks thanks to [@DPRCZ](https://github.com/DPRCZ)
-* Minor improvements to menu navigation
-* Joystick buttons 2 & 4 together to access/exit menu
-
-18/08/24
-
-* Fixed an issue with keyboard input in some programs.
-
-17/08/24
-
-* Move to new VGA renderer (SDK update seems to have broken the old one)
-Note that pico-extras needs to be the version from my site (https://github.com/fruit-bat/pico-extras)
-
-11/08/24
-
-* In menu Spectrum keyboard to aid joystick use thanks to [@DPRCZ](https://github.com/DPRCZ)
-
-04/08/24
-
-* USB joystick can now be used for menu navigation thanks to [@DPRCZ](https://github.com/DPRCZ)
-
-22/07/24
-
-* Added support for USB mouse to act as joystick, with settings in the menu. Thanks to [@javavi](https://github.com/javavi)
-* Fixed an issue at with SD card access on startup; startup should be quicker and more reliable. Thanks to [@LiCaNtRoPo-PCB](https://github.com/LiCaNtRoPo-PCB)
-
 
 [more...](docs/updates.md)
 
@@ -337,30 +315,30 @@ cd -
 
 Perform the build:
 ```sh
-cd pico-zxspectrum
 mkdir build
 cd build
-```
-If you have an RP2040
-```
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2040 ..
-```
-or if you have an RP2350
-```
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_MCU=rp2350 ..
-```
-then
-```
-make clean
-make -j4
-```
 
-Building for the *Pimoroni Pico VGA Demo Base* needs a different cmake command:
+# $1 board
+# $2 platform
+build_group() {
+  mkdir -p "$1_$2"
+  pushd "$1_$2"
+  cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=$2 -DPICO_BOARD=$1 ../..
+  make -j4 relevant
+  find . -name '*.uf2' -exec cp '{}' "../../uf2-$2" \;
+  popd
+}
 
-```sh
-cd build
-cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=vgaboard ..
-make -j4 ZxSpectrumPicoVga
+# Pimoroni Pico VGA Demo Base with a Pico RP2040
+build_group vgaboard rp2040
+# Pimoroni Pico VGA Demo Base with a Pico2 RP2350 (Untested)
+build_group vgaboard rp2350-arm-s
+# Adafruit feather with built in RP2040
+build_group adafruit_feather_rp2040 rp2040
+# Various Pi Pico RP2040 boards
+build_group pico rp2040
+# Various Pi Pico2 RP2350 boards
+build_group pico2 rp2350-arm-s
 ```
 
 Copy the relevant version to your board, which can be located with:

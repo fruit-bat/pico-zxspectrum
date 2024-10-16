@@ -17,7 +17,7 @@ It supports the following:
 
 #### Firmware
 
-[ZxSpectrumPicocomputerZX.uf2](/uf2/ZxSpectrumPicocomputerZX.uf2)
+[ZxSpectrumPicomputerZX.uf2](/uf2-rp2040/ZxSpectrumPicomputerZX.uf2)
 
 #### Keyboard mappings
 Trying to squeeze in all the key mappings is tricky but here is an attempt.

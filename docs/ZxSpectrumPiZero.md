@@ -20,8 +20,8 @@ It supports the following:
 #### Firmware
 | Display | Firmware |
 | - | - |
-| 720x576x50Hz | [ZxSpectrumPiZero_720x576x50Hz.uf2](/uf2/ZxSpectrumPiZero_720x576x50Hz.uf2) |
-| 640x480x60Hz | [ZxSpectrumPiZero_640x480x60Hz](/uf2/ZxSpectrumPiZero_640x480x60Hz.uf2) |
+| 720x576x50Hz | [ZxSpectrumPiZero_720x576x50Hz.uf2](/uf2-rp2040/ZxSpectrumPiZero_720x576x50Hz.uf2) |
+| 640x480x60Hz | [ZxSpectrumPiZero_640x480x60Hz](/uf2-rp2040/ZxSpectrumPiZero_640x480x60Hz.uf2) |
 
 
 ### Parts

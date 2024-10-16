@@ -114,8 +114,13 @@ add_subdirectory(picomputer)
 add_subdirectory(vga)
 add_subdirectory(picovga)
 
-add_custom_target (ZX-MURMULATOR)
-add_dependencies (ZX-MURMULATOR
+add_custom_target (relevant)
+
+########################################################################
+# MURMULATOR (RP2040 or RP2350)
+########################################################################
+add_custom_target(ZX-MURMULATOR)
+add_dependencies(ZX-MURMULATOR
   ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz
   ZX-MURMULATOR_HDMI_PWM_AUDIO_720x576x50Hz
   ZX-MURMULATOR_HDMI_HDMI_AUDIO_640x480x60Hz
@@ -127,3 +132,143 @@ add_dependencies (ZX-MURMULATOR
   ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
   ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
 )
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZX-MURMULATOR")
+  add_dependencies(relevant ZX-MURMULATOR)
+endif()
+
+########################################################################
+# Breadboard (RP2040 or RP2350)
+########################################################################
+add_custom_target (ZxSpectrumBreadboard)
+add_dependencies (ZxSpectrumBreadboard
+  ZxSpectrumBreadboardHdmiAudio
+  ZxSpectrumBreadboardHdmiAudio720x540x50Hz
+  ZxSpectrumBreadboardHdmiAudio720x576x50Hz
+  ZxSpectrumBreadboardHdmi1PinAudio
+  ZxSpectrumBreadboardHdmi2PinAudio
+  ZxSpectrumBreadboardHdmi4PinAudio
+  ZxSpectrumBreadboardHdmiKbd1PinAudio
+  ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz
+  ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz
+  ZxSpectrum4PinAudioVga222Ps2_640x480x60Hz
+  ZxSpectrum4PinAudioVga222Ps2_720x576x50Hz  
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZxSpectrumBreadboard")
+  add_dependencies(relevant ZxSpectrumBreadboard)
+endif()
+
+########################################################################
+# Pimoroni pico dv (RP2040 or RP2350)
+########################################################################
+add_custom_target (ZxSpectrumPicoDv)
+add_dependencies (ZxSpectrumPicoDv
+  ZxSpectrumPicoDv_I2SAudio_640x480x60Hz
+  ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz
+  ZxSpectrumPicoDv_I2SAudio_720x576x50Hz
+  ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZxSpectrumPicoDv")
+  add_dependencies(relevant ZxSpectrumPicoDv)
+endif()
+
+########################################################################
+# Adafruit feather (RP2040 only)
+# cmake -DPICO_COPY_TO_RAM=0 -DPICO_BOARD=adafruit_feather_rp2040 ..
+########################################################################
+add_custom_target (ZxSpectrumAdafruitFeather)
+add_dependencies (ZxSpectrumAdafruitFeather
+  ZxSpectrumAdafruitFeatherHdmi
+)
+if ((${PICO_PLATFORM} STREQUAL "rp2040") AND (${PICO_BOARD} STREQUAL "adafruit_feather_rp2040"))
+  message("Relevant target: ZxSpectrumAdafruitFeather")
+  add_dependencies(relevant ZxSpectrumAdafruitFeather)
+endif()
+
+########################################################################
+# Waveshare - RP2040 - PicoZero (RP2040 only)
+########################################################################
+add_custom_target (ZxSpectrumPiZero)
+add_dependencies (ZxSpectrumPiZero
+  ZxSpectrumPiZero_640x480x60Hz
+  ZxSpectrumPiZero_720x576x50Hz
+)
+if (${PICO_BOARD} STREQUAL "pico")
+  message("Relevant target: ZxSpectrumPiZero")
+  add_dependencies(relevant ZxSpectrumPiZero)
+endif()
+
+########################################################################
+# Olimex RP2040-PICO-PC (RP2040 or RP2350)
+########################################################################
+add_custom_target (ZxSpectrumOlimexPc)
+add_dependencies (ZxSpectrumOlimexPc
+  ZxSpectrumOlimexPcHdmiAudio640x480x60Hz
+  ZxSpectrumOlimexPcHdmiAudio720x576x50Hz
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZxSpectrumOlimexPc")
+  add_dependencies(relevant ZxSpectrumOlimexPc)
+endif()
+
+########################################################################
+# Pimoroni Pico VGA Demo Base (RP2040 or RP2350)
+# cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=rp2040 -DPICO_BOARD=vgaboard ../..
+# cmake -DPICO_COPY_TO_RAM=0 -DPICO_PLATFORM=rp2350 -DPICO_BOARD=vgaboard ../..
+########################################################################
+add_custom_target (ZxSpectrumPicoVga)
+add_dependencies (ZxSpectrumPicoVga
+  ZxSpectrumPicoVga_640x480x60Hz
+  ZxSpectrumPicoVga_720x576x50Hz
+)
+if (${PICO_BOARD} STREQUAL "vgaboard")
+  message("Relevant target: ZxSpectrumPicoVga")
+  add_dependencies(relevant ZxSpectrumPicoVga)
+endif()
+
+########################################################################
+# Pico Mite VGA (RP2040 or RP2350)
+########################################################################
+add_custom_target (ZxSpectrumPicoMite)
+add_dependencies (ZxSpectrumPicoMite
+  ZxSpectrumPicoMiteVGA_640x480x60Hz
+  ZxSpectrumPicoMiteVGA_720x576x50Hz
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZxSpectrumPicoMite")
+  add_dependencies(relevant ZxSpectrumPicoMite)
+endif()
+
+########################################################################
+# Picomputer (RP2040 Only)
+########################################################################
+add_custom_target (ZxSpectrumPicomputer)
+add_dependencies (ZxSpectrumPicomputer
+  ZxSpectrumPicomputerZxLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxInverseLcd_640x480x60Hz
+  ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz
+  ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz
+  ZxSpectrumPicomputerVga_640x480x60Hz
+  ZxSpectrumPicomputerVga_720x576x50Hz
+  ZxSpectrumPicomputerVga1111Zx_640x480x60Hz
+  ZxSpectrumPicomputerVga222Zx_640x480x60Hz
+  ZxSpectrumPicomputerVgaAuk_640x480x60Hz
+  ZxSpectrumPicomputerVgaAukBob_640x480x60Hz
+  ZxSpectrumPicomputerVga1111Zx_720x576x50Hz
+  ZxSpectrumPicomputerVga222Zx_720x576x50Hz
+  ZxSpectrumPicomputerVgaAuk_720x576x50Hz
+  ZxSpectrumPicomputerVgaAukBob_720x576x50Hz
+  ZxSpectrumPicomputerMax
+  ZxSpectrumPicomputerZX
+  # this one is not like the others... made for emilen72 
+  ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz  
+)
+if (${PICO_BOARD} STREQUAL "pico")
+  message("Relevant target: ZxSpectrumPicomputer")
+  add_dependencies(relevant ZxSpectrumPicomputer)
+endif()
+
