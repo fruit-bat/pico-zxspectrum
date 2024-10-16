@@ -22,6 +22,14 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+16/10/24
+
+* Published a selection of RP2350 builds
+* There are now two firmware folders uf2-rp2040 and uf2-rp2350-arm-s
+
+If you have a board for which you would like a RP2350 build please raise an issue and I 
+will try to add it.
+
 29/09/24
 
 * Removed dependency on modified TinyUSB library
