@@ -52,6 +52,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiExists.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PicoOnScreenKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPort.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PicoMitePort.cpp
 )
 
 set(zxspectrum_rgb332_src
