@@ -76,7 +76,8 @@ static ZxSpectrum zxSpectrum(
   &keyboard1, 
   &keyboard2, 
   &dualJoystick,
-  &mouse
+  &mouse,
+  0
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
