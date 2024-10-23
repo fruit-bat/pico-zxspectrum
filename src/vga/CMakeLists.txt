@@ -183,6 +183,8 @@ set(ZxSpectrumPicoMiteVGA_defines
   USE_MRMLTR_PS2_KBD
   # Use stdio
   USE_STDIO
+  # Add some real IO
+  PICO_MITE_PORT
 )
 
 foreach(target

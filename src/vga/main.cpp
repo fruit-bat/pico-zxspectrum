@@ -43,7 +43,9 @@
 #include "ZxScanlineVgaRenderLoop.h"
 #include "ZxSpectrumNespadJoystick.h"
 #include "hid_app.h"
-
+#ifdef PICO_MITE_PORT
+#include "PicoMitePort.h"
+#endif
 #define VREG_VSEL VREG_VOLTAGE_1_20
 
 #define LED_PIN 25
@@ -67,7 +69,9 @@ static ZxSpectrumDualJoystick joystick(&joystickHid, &joystickNespad);
 #else
 static ZxSpectrumHidJoystick joystick;
 #endif
-
+#ifdef PICO_MITE_PORT
+static PicoMitePort picoMitePort;
+#endif
 static ZxSpectrumHidKeyboard keyboard1(
   &snapFileLoop,
   &quickSave,
@@ -79,7 +83,11 @@ static ZxSpectrum zxSpectrum(
   0,
   &joystick,
   &mouse,
+#ifdef PICO_MITE_PORT
+  &picoMitePort
+#else
   0
+#endif
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -314,7 +322,9 @@ int main(){
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio(); // pio1, SM ?
 #endif
-
+#ifdef PICO_MITE_PORT
+  picoMitePort.init();
+#endif
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();  // pio1, ear SM ?, I2S SM ?
 
