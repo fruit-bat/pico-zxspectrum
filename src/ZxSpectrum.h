@@ -139,7 +139,7 @@ private:
       return _mouse->buttons();
     }
 
-    if (address == 0x0FFD && _parallelPort) {
+    if (address == 0x0FFF && _parallelPort) {
       return _parallelPort->read();
     }
 
@@ -162,7 +162,7 @@ inline void writeIO(uint16_t address, uint8_t value)
   			return;
 	  	} //BFFD
 		
-      if (!(address & 0x8002) && _type != ZxSpectrum48k)
+      if (!(address & 0x8002) && (_type != ZxSpectrum48k))
   		{
         if ((_portMem & 0x20) == 0) { 
           _fc += ((_portMem ^ value) >> 3) & 1;
@@ -171,9 +171,9 @@ inline void writeIO(uint16_t address, uint8_t value)
           setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
         }
 			  return;
-		  }; 
+		  };
 
-      if (address == 0x0FFD && _parallelPort) {
+      if (address == 0x0FFF && _parallelPort) {
         _parallelPort->write(value);
       }
   	}
