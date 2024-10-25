@@ -214,6 +214,7 @@ foreach(target
     tinyusb_board
     hardware_pio
     hardware_pwm
+    hardware_adc
   )
 
   pico_generate_pio_header(${target}
