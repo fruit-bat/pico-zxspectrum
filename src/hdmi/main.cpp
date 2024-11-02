@@ -56,6 +56,7 @@ extern "C" {
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
+#include "RealPort.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -110,7 +111,7 @@ static ZxSpectrum zxSpectrum(
   &keyboard2,  
   &joystick,
   &mouse,
-  0
+  ZX_SPECTRUM_REAL_PORT
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -380,6 +381,7 @@ int main() {
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio();
 #endif
+  ZX_SPECTRUM_REAL_PORT_INIT
 
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);

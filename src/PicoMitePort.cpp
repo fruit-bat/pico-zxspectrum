@@ -10,7 +10,7 @@ void PicoMitePort::init() {
     // Make sure GPIO is high-impedance, no pullups etc
     adc_gpio_init(26);
 
-    // Select ADC input 2 (GPIO28)
+    // Select ADC input 2 (GP28)
     adc_select_input(2);
 
     for(size_t i = 0; i < sizeof(POUT_PINS); ++i) {

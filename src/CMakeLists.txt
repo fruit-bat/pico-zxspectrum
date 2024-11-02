@@ -53,6 +53,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/PicoOnScreenKeyboard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPort.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PicoMitePort.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/WavesharePiZeroPort.cpp
 )
 
 set(zxspectrum_rgb332_src
@@ -90,6 +91,7 @@ set(zxspectrum_common_libs
   hardware_dma
   hardware_flash # Needed for flash settings (not currently working)
   hardware_sync  # Needed for flash settings (not currently working)
+  hardware_adc
   Zeta
   Z80
 )
