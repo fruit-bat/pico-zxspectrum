@@ -21,9 +21,9 @@ void WavesharePiZeroPort::init() {
 }
 
 uint8_t __not_in_flash_func(WavesharePiZeroPort::read)() {
-    uint32_t data;
-    for(size_t i = sizeof(PIN_PINS) - 1; i >= 0; --i) {
-        data |= gpio_get(PIN_PINS[i]) ? 1 : 0;
+    uint32_t data = 0;
+    for(size_t i = 0; i < sizeof(PIN_PINS); ++i) {
+        data |= gpio_get(PIN_PINS[sizeof(PIN_PINS) - i - 1]) ? 1 : 0;
         data <<= 1;
     }
     return (uint8_t)data;
