@@ -795,7 +795,6 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
-  stepBuzzer();
   if (_moderate) {
     const uint32_t t32 = MUL32(c, _moderate);
     _ay.step(t32);
@@ -853,7 +852,6 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   
   const uint32_t c = z80Step(32);
   uint32_t vA, vB, vC;
-  stepBuzzer();
   if (_moderate) {
     const uint32_t t32 = MUL32(c, _moderate);
     _ay.step(t32);
