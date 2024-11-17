@@ -60,19 +60,31 @@ private:
   ZxSpectrumIntSource _intSource;
   uint32_t _modMul;
   bool _mute;
-  uint32_t _buzzer;
+  int32_t _buzzer;
+  int32_t _bzf;
   uint32_t _sl;
   uint32_t _slc;
   uint32_t _fc;  // Screen flip count
   uint32_t _fcf; // Screen flip count per frame
   
-  
   volatile uint8_t _borderBuf[240];       //Border Buffer 240 lines
 
   uint32_t tStatesPerMilliSecond();
   
-  inline uint32_t z80Step(uint32_t tstates) {
-    return z80_run(&_Z80, tstates);
+  inline uint32_t z80Step(uint32_t tstates) {  
+    u_int32_t t = 0;
+    while(true) {
+      const u_int32_t k = z80_run(&_Z80, 8);
+      _bzf += k;
+      t += k;
+      const int32_t j = MUL32(((int32_t)(_port254 >> 3) & 2) - 1, 400);
+      while(_bzf > 4) {
+        _buzzer += j;
+        _buzzer -= _buzzer >> 7;
+        _bzf -= 4;
+      }
+      if (t >= tstates ) return t;
+    }
   }
   
   inline void z80Power(bool state) {
@@ -214,15 +226,13 @@ inline void writeIO(uint16_t address, uint8_t value)
   int32_t z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
 
   inline void stepBuzzer() {
-    uint32_t d = (_port254 >> 4) & 1;
-    if (d == 0 && _buzzer > 0) --_buzzer;
-    else if (d == 1 && _buzzer < 5) ++_buzzer;
   }
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = __mul_instruction(_buzzer, 42);
-    const int32_t a2 = _ear ? 31 : 0;
-    return a1 + a2;
+    const int32_t a1 = _buzzer >> 8;
+    const int32_t a2 = _ear ? -16 : 16;
+    const int32_t a3 = a1 + a2 + 128;
+    return a3 < 0 ? 0 : a3 > 255 ? 255 : a3;
   }
   
   inline uint32_t getBuzzer() {

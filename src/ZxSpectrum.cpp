@@ -28,6 +28,7 @@ ZxSpectrum::ZxSpectrum(
   _earDc(0),
   _intSource(ZX_SPECTRUM_INT_SRC),
   _buzzer(0),
+  _bzf(0),
   _sl(0),
   _slc(0)
 {
@@ -87,6 +88,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _slc = 0;
   _fc = 0;
   _fcf = 0;
+  _bzf = 0;
+  _buzzer = 0;
 }
 
 // 0 - Z80 unmoderated
