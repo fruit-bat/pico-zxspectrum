@@ -22,6 +22,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+18/11/24
+
+* Better beeper sound quality (Should improve most builds)
+
 16/10/24
 
 * Published a selection of RP2350 builds
