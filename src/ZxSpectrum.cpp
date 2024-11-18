@@ -28,6 +28,7 @@ ZxSpectrum::ZxSpectrum(
   _earDc(0),
   _intSource(ZX_SPECTRUM_INT_SRC),
   _buzzer(0),
+  _bzf(0),
   _sl(0),
   _slc(0)
 {
@@ -87,6 +88,8 @@ void ZxSpectrum::reset(ZxSpectrumType type)
   _slc = 0;
   _fc = 0;
   _fcf = 0;
+  _bzf = 0;
+  _buzzer = 0;
 }
 
 // 0 - Z80 unmoderated
@@ -792,7 +795,6 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
-  stepBuzzer();
   if (_moderate) {
     const uint32_t t32 = MUL32(c, _moderate);
     _ay.step(t32);
@@ -850,7 +852,6 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
   
   const uint32_t c = z80Step(32);
   uint32_t vA, vB, vC;
-  stepBuzzer();
   if (_moderate) {
     const uint32_t t32 = MUL32(c, _moderate);
     _ay.step(t32);
