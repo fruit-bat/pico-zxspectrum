@@ -28,6 +28,7 @@ ZxSpectrum::ZxSpectrum(
   _earDc(0),
   _intSource(ZX_SPECTRUM_INT_SRC),
   _buzzer(0),
+  _buzzerl(0),
   _bzf(0),
   _sl(0),
   _slc(0)

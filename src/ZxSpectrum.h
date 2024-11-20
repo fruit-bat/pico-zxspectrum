@@ -61,6 +61,7 @@ private:
   uint32_t _modMul;
   bool _mute;
   int32_t _buzzer;
+  int32_t _buzzerl;
   int32_t _bzf;
   uint32_t _sl;
   uint32_t _slc;
@@ -74,13 +75,15 @@ private:
   inline uint32_t z80Step(uint32_t tstates) {  
     u_int32_t t = 0;
     while(true) {
-      const u_int32_t k = z80_run(&_Z80, 8);
+      const u_int32_t k = z80_run(&_Z80, 6);
       _bzf += k;
       t += k;
-      const int32_t j = MUL32(((int32_t)(_port254 >> 3) & 2) - 1, 360);
-      while(_bzf > 4) {
-        _buzzer += j;
-        _buzzer -= _buzzer >> 7;
+      const int32_t j = (int32_t)((_port254 >> 3) & 2) - 1;
+       while(_bzf > 4) {
+        _buzzer -= _buzzer >> 6;
+        _buzzerl -= _buzzerl >> 10;
+        _buzzer += MUL32(j, 95);
+        _buzzerl += MUL32(j, 1024);
         _bzf -= 4;
       }
       if (t >= tstates ) return t;
@@ -226,10 +229,10 @@ inline void writeIO(uint16_t address, uint8_t value)
   int32_t z80BlockToPage(const uint8_t b, const ZxSpectrumType type);
   
   inline int32_t getBuzzerSmoothed() {
-    const int32_t a1 = _buzzer >> 8;
-    const int32_t a2 = _ear ? -16 : 16;
-    const int32_t a3 = a1 + a2 + 128;
-    return a3 < 0 ? 0 : a3 > 255 ? 255 : a3;
+    const int32_t a1 = (_buzzer >> 4) - (_buzzerl >> 12) ;
+    const int32_t a2 = a1 < -112 ? -112 : a1 > 111 ? 112 : a1;
+    const int32_t a3 = _ear ? -16 : 16;
+    return a2 + a3 + 128;
   }
   
   inline uint32_t getBuzzer() {
