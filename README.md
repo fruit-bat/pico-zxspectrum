@@ -22,6 +22,11 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+
+23/11/24
+
+* Better beeper sound quality (Mark II)
+
 18/11/24
 
 * Better beeper sound quality (Should improve most builds)
