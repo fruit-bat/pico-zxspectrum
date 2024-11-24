@@ -32,7 +32,7 @@ add_executable(ZxSpectrumBreadboardHdmiKbd1PinAudio
 )
 
 set(zxspectrum_hdmi_defines
-  DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
+  DVI_DEFAULT_SERIAL_CONFIG=pico_sock_cfg
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
@@ -508,7 +508,6 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
   ${murmulator_hdmi_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
   ${zxspectrum_murmulator_hdmi_nespad_defines}
-
 )
 
 target_compile_definitions(ZX-MURMULATOR_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
@@ -539,6 +538,154 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
   ${zxspectrum_murmulator_hdmi_nespad_defines}
 )
 
+########################################################################
+# ZX-MURMULATOR2
+########################################################################
+
+set(zxspectrum_murmulator2_src
+  main.cpp
+  ${zxspectrum_dvi_src}
+  ${murmulator_common_src}
+)
+
+set(zxspectrum_murmulator2_hdmi_nespad_defines
+  # Pins for dual NES joypads
+  NESPAD_DATA_PIN_BASE=26
+  NESPAD_CLK_PIN_BASE=20
+  NESPAD_PIO=pio1
+  NESPAD_IRQ=PIO1_IRQ_0
+  NESPAD_ENABLE
+)
+
+set(murmulator2_common_defines
+  # Set up the DVI output to match the MURMULATOR board
+  MURMULATOR
+  DVI_DEFAULT_SERIAL_CONFIG=pico_sock_cfg
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=6
+  SDCARD_PIN_SPI0_MOSI=7
+  SDCARD_PIN_SPI0_MISO=4
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP  
+  # Tape audio in
+  EAR_PIN=22
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+  USE_MRMLTR_PS2_KBD
+)
+
+set(murmulator2_pwm_audio_defines
+  # Speaker pin audio
+  SPK_PIN=10
+  # Buzzer audio out
+  # BZR_PIN=10
+  # STEREO AY audio
+  AY8912_ABC_STEREO
+  # Left chanel audio out
+  AY8912_A_PIN=9
+  # Right chanel audio out
+  AY8912_C_PIN=11
+)
+
+set (zxspectrum_murmulator2_i2saudio_defines
+  # Configure the I2S audio 
+  PICO_AUDIO_I2S=1
+  PICO_AUDIO_I2S_PIO=pio1
+  PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
+  PICO_AUDIO_I2S_DATA=9
+  PICO_AUDIO_I2S_BCLK=10
+)
+
+set(murmulator2_hdmi_audio_defines
+  # Use HDMI Audio
+  PICO_HDMI_AUDIO
+)
+
+foreach(target 
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_murmulator2_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  pico_generate_pio_header(${target}
+    ${zxspectrum_ear_in_pio}
+  )
+
+  pico_generate_pio_header(${target}
+    ${murmulator_ps2kbd_pio}
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_audio_i2s_pio}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target}) 
+ 
+endforeach()
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${murmulator2_hdmi_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${murmulator2_hdmi_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${murmulator2_pwm_audio_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${murmulator2_pwm_audio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${zxspectrum_murmulator2_i2saudio_defines}
+  ${zxspectrum_hdmi2_640x480x60Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
+  ${murmulator2_common_defines}
+  ${zxspectrum_murmulator2_i2saudio_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+)
 
 ########################################################################
 # Olimex RP2040-PICO-PC

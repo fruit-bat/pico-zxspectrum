@@ -138,6 +138,27 @@ if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
 endif()
 
 ########################################################################
+# MURMULATOR2 (RP2040 or RP2350)
+########################################################################
+add_custom_target(ZX-MURMULATOR2)
+add_dependencies(ZX-MURMULATOR2
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_720x576x50Hz
+#  ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz
+#  ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz
+#  ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz
+#  ZX-MURMULATOR2_VGA_I2S_AUDIO_720x576x50Hz
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZX-MURMULATOR2")
+  add_dependencies(relevant ZX-MURMULATOR2)
+endif()
+
+########################################################################
 # Breadboard (RP2040 or RP2350)
 ########################################################################
 add_custom_target (ZxSpectrumBreadboard)
