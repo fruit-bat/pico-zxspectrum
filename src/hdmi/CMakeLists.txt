@@ -560,7 +560,8 @@ set(zxspectrum_murmulator2_hdmi_nespad_defines
 set(murmulator2_common_defines
   # Set up the DVI output to match the MURMULATOR board
   MURMULATOR
-  DVI_DEFAULT_SERIAL_CONFIG=pico_sock_cfg
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=murmulator2_hdmi_cfg
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
@@ -581,6 +582,7 @@ set(murmulator2_common_defines
   # Enable the PS/2 keyboard
   USE_PS2_KBD
   USE_MRMLTR_PS2_KBD
+  PS2KBD_MRMLTR_GPIO=2
 )
 
 set(murmulator2_pwm_audio_defines

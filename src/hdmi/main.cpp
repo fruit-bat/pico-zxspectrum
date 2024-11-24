@@ -233,7 +233,7 @@ void __not_in_flash_func(process_joystick)() {
 #ifdef USE_MRMLTR_PS2_KBD
 static Ps2Kbd_Mrmltr ps2kbd(
   pio1,
-  0,
+  PS2KBD_MRMLTR_GPIO,
   process_kbd_report
 );
 #elif defined(USE_PS2_KBD)

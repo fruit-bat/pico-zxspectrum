@@ -11,6 +11,10 @@
 #include "hardware/gpio.h"
 #include <functional>
 
+#ifndef PS2KBD_MRMLTR_GPIO
+#define PS2KBD_MRMLTR_GPIO 0
+#endif
+
 typedef struct {
   uint8_t code;
   bool release;

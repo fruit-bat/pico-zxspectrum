@@ -26,4 +26,12 @@ static const struct dvi_serialiser_cfg waveshare_rp2040_pizero_hdmi_cfg = {
 	.invert_diffpairs = false
 };
 
+static const struct dvi_serialiser_cfg murmulator2_hdmi_cfg = {
+	.pio = pio0,
+	.sm_tmds = {0, 1, 2},
+	.pins_tmds = {14, 16, 18},
+	.pins_clk = 12,
+	.invert_diffpairs = true
+};
+
 #endif
