@@ -180,7 +180,7 @@ set(ZxSpectrumPicoMiteVGA_defines
   SPK_PIN=7
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD
+  PS2KBD_CLK0_DAT
   # Use stdio
   USE_STDIO
 )
@@ -270,7 +270,7 @@ set(ZX-MURMULATOR_VGA_defines
   EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD
+  PS2KBD_CLK0_DAT
   # Pins for dual NES joypads, pio1 SM ?
   NESPAD_DATA_PIN_BASE=16
   NESPAD_CLK_PIN_BASE=14

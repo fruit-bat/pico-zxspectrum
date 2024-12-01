@@ -440,7 +440,7 @@ set(murmulator_common_defines
   EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD
+  PS2KBD_CLK0_DAT
 )
 
 set(murmulator_pwm_audio_defines

@@ -174,7 +174,7 @@ void __not_in_flash_func(process_joystick)() {
 #ifdef USE_PS2_KBD
 static Ps2Kbd ps2kbd(
   pio1,
-  6,
+  PS2KBD_GPIO,
   process_kbd_report
 );
 #endif

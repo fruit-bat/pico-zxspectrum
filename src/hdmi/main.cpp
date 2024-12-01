@@ -14,9 +14,7 @@
 #include "hardware/pwm.h"
 #include "hid_app.h"
 
-#ifdef USE_MRMLTR_PS2_KBD
-#include "ps2kbd_mrmltr.h"
-#elif defined(USE_PS2_KBD)
+#if defined(USE_PS2_KBD)
 #include "ps2kbd.h"
 #endif
 
@@ -230,13 +228,7 @@ void __not_in_flash_func(process_joystick)() {
 }
 
 
-#ifdef USE_MRMLTR_PS2_KBD
-static Ps2Kbd_Mrmltr ps2kbd(
-  pio1,
-  PS2KBD_MRMLTR_GPIO,
-  process_kbd_report
-);
-#elif defined(USE_PS2_KBD)
+#if defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
   PS2KBD_GPIO, // Was 6
