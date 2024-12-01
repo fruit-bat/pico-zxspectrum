@@ -239,7 +239,7 @@ static Ps2Kbd_Mrmltr ps2kbd(
 #elif defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
-  6,
+  PS2KBD_GPIO, // Was 6
   process_kbd_report
 );
 #endif

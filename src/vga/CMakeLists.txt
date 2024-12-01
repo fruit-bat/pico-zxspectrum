@@ -197,7 +197,6 @@ foreach(target
   add_executable(${target}
     ${zxspectrum_common_src}
     ${zxspectrum_rgb_src}
-    ${murmulator_common_src}
     ${zxspectrum_scanvideo_src}
     main.cpp
   )
@@ -216,10 +215,6 @@ foreach(target
 
   pico_generate_pio_header(${target}
     ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${murmulator_ps2kbd_pio}
   )
 
   pico_enable_stdio_usb(${target} 0)

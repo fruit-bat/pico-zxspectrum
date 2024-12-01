@@ -27,7 +27,7 @@ static const struct dvi_serialiser_cfg waveshare_rp2040_pizero_hdmi_cfg = {
 };
 
 static const struct dvi_serialiser_cfg murmulator2_hdmi_cfg = {
-	.pio = pio0,
+	.pio = DVI_DEFAULT_PIO_INST,
 	.sm_tmds = {0, 1, 2},
 	.pins_tmds = {14, 16, 18},
 	.pins_clk = 12,

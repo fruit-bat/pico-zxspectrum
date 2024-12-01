@@ -119,11 +119,12 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x540x50Hz PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
-  ${zxspectrum_hdmi_nespad_defines}
-  EAR_PIN=11
+#  ${zxspectrum_hdmi_nespad_defines}
+#  EAR_PIN=11
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
   USE_PS2_KBD
+  PS2KBD_CLK6_DAT
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
@@ -405,7 +406,6 @@ target_compile_definitions(ZxSpectrumPiZero_720x576x50Hz PRIVATE
 set(zxspectrum_murmulator_src
   main.cpp
   ${zxspectrum_dvi_src}
-  ${murmulator_common_src}
 )
 
 set(zxspectrum_murmulator_hdmi_nespad_defines
@@ -483,10 +483,6 @@ foreach(target
     ${zxspectrum_ear_in_pio}
   )
 
-  pico_generate_pio_header(${target}
-    ${murmulator_ps2kbd_pio}
-  )
-
   pico_generate_pio_header(${target} 
     ${zxspectrum_audio_i2s_pio}
   )
@@ -545,7 +541,6 @@ target_compile_definitions(ZX-MURMULATOR_HDMI_I2S_AUDIO_720x576x50Hz PRIVATE
 set(zxspectrum_murmulator2_src
   main.cpp
   ${zxspectrum_dvi_src}
-  ${murmulator_common_src}
 )
 
 set(zxspectrum_murmulator2_hdmi_nespad_defines
@@ -581,8 +576,7 @@ set(murmulator2_common_defines
   EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  USE_MRMLTR_PS2_KBD
-  PS2KBD_MRMLTR_GPIO=2
+  PS2KBD_CLK2_DAT
 )
 
 set(murmulator2_pwm_audio_defines
@@ -634,10 +628,6 @@ foreach(target
     ${zxspectrum_ear_in_pio}
   )
 
-  pico_generate_pio_header(${target}
-    ${murmulator_ps2kbd_pio}
-  )
-
   pico_generate_pio_header(${target} 
     ${zxspectrum_audio_i2s_pio}
   )
@@ -645,6 +635,9 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target}) 
  
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 1)
+
 endforeach()
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_HDMI_AUDIO_640x480x60Hz PRIVATE
