@@ -14,6 +14,7 @@
 #include "hardware/pwm.h"
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumMouse.h"
+#include "ZxSpectrumPort.h"
 
 // #define DEBUG_SPEC
 #ifdef DEBUG_SPEC
@@ -43,6 +44,7 @@ private:
   ZxSpectrumKeyboard *_keyboard2;
   ZxSpectrumJoystick *_joystick;
   ZxSpectrumMouse *_mouse;
+  ZxSpectrumPort *_parallelPort;
   uint8_t _borderColour;
   uint8_t _port254;
   uint8_t _portMem;
@@ -152,6 +154,10 @@ private:
       return _mouse->buttons();
     }
 
+    if (address == 0x0FFF && _parallelPort) {
+      return _parallelPort->read();
+    }
+
     return 0xFF;
   }
 
@@ -171,7 +177,7 @@ inline void writeIO(uint16_t address, uint8_t value)
   			return;
 	  	} //BFFD
 		
-      if (!(address & 0x8002) && _type != ZxSpectrum48k)
+      if (!(address & 0x8002) && (_type != ZxSpectrum48k))
   		{
         if ((_portMem & 0x20) == 0) { 
           _fc += ((_portMem ^ value) >> 3) & 1;
@@ -180,7 +186,11 @@ inline void writeIO(uint16_t address, uint8_t value)
           setPageaddr(0, (uint8_t*)((value & 0x10) ? zx_128k_rom_2 : zx_128k_rom_1));
         }
 			  return;
-		  }; 
+		  };
+
+      if (address == 0x0FFF && _parallelPort) {
+        _parallelPort->write(value);
+      }
   	}
     else
 	    {
@@ -253,7 +263,8 @@ public:
     ZxSpectrumKeyboard *keyboard1,
     ZxSpectrumKeyboard *keyboard2,
     ZxSpectrumJoystick *joystick,
-    ZxSpectrumMouse *mouse
+    ZxSpectrumMouse *mouse,
+    ZxSpectrumPort *parallelPort
   );
   inline uint8_t* screenPtr() { return (unsigned char*)&_RAM[(_portMem & 8) ? 7 : 5]; }
   inline uint8_t* memPtr(uint32_t i) { return (unsigned char*)&_RAM[i]; }

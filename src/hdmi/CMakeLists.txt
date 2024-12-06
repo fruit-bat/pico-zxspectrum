@@ -355,6 +355,7 @@ foreach(target
   add_executable(${target}
     ${zxspectrum_common_src}
     ${zxspectrum_hdmi_src}
+    main.cpp
   )
 
   target_link_libraries(${target}
@@ -386,6 +387,8 @@ set (ZxSpectrumPiZero_defines
   SDCARD_PIN_SPI0_MISO=20
   # HDMI audio 
   PICO_HDMI_AUDIO
+  # Add a real IO port
+  WAVESHARE_PI_ZERO_PORT
 )
 
 target_compile_definitions(ZxSpectrumPiZero_640x480x60Hz PRIVATE

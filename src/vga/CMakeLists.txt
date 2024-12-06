@@ -183,6 +183,8 @@ set(ZxSpectrumPicoMiteVGA_defines
   USE_MRMLTR_PS2_KBD
   # Use stdio
   USE_STDIO
+  # Add some real IO
+  PICO_MITE_PORT
 )
 
 foreach(target
@@ -212,6 +214,7 @@ foreach(target
     tinyusb_board
     hardware_pio
     hardware_pwm
+    hardware_adc
   )
 
   pico_generate_pio_header(${target}

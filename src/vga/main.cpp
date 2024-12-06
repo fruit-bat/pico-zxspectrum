@@ -43,6 +43,7 @@
 #include "ZxScanlineVgaRenderLoop.h"
 #include "ZxSpectrumNespadJoystick.h"
 #include "hid_app.h"
+#include "RealPort.h"
 
 #define VREG_VSEL VREG_VOLTAGE_1_20
 
@@ -78,7 +79,8 @@ static ZxSpectrum zxSpectrum(
   &keyboard1,
   0,
   &joystick,
-  &mouse
+  &mouse,
+  ZX_SPECTRUM_REAL_PORT
 );
 static ZxSpectrumFileSettings zxSpectrumSettings(
   &sdCard0,
@@ -313,7 +315,8 @@ int main(){
 #ifdef USE_PS2_KBD
   ps2kbd.init_gpio(); // pio1, SM ?
 #endif
-
+  ZX_SPECTRUM_REAL_PORT_INIT
+  
   // Configure the GPIO pins for audio
   zxSpectrumAudioInit();  // pio1, ear SM ?, I2S SM ?
 
