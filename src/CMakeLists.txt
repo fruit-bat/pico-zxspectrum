@@ -100,15 +100,6 @@ set(zxspectrum_ear_in_pio
   ${CMAKE_CURRENT_LIST_DIR}/zx_ear_in.pio
 )
 
-set(murmulator_common_src
-	${CMAKE_CURRENT_LIST_DIR}/ps2kbd_mrmltr.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ps2kbd_mrmltr.h
-)
-
-set(murmulator_ps2kbd_pio
-  ${CMAKE_CURRENT_LIST_DIR}/ps2kbd_mrmltr.pio
-)
-
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
@@ -135,6 +126,27 @@ add_dependencies(ZX-MURMULATOR
 if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
   message("Relevant target: ZX-MURMULATOR")
   add_dependencies(relevant ZX-MURMULATOR)
+endif()
+
+########################################################################
+# MURMULATOR2 (RP2040 or RP2350)
+########################################################################
+add_custom_target(ZX-MURMULATOR2)
+add_dependencies(ZX-MURMULATOR2
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_HDMI_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_HDMI_I2S_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_720x576x50Hz
+)
+if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
+  message("Relevant target: ZX-MURMULATOR2")
+  add_dependencies(relevant ZX-MURMULATOR2)
 endif()
 
 ########################################################################
