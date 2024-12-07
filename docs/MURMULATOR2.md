@@ -1,5 +1,5 @@
 
-### MURMULATOR platform
+### MURMULATOR2 platform
 
 <img src="MURMULATOR2_pic.JPG" width="400"/>
 

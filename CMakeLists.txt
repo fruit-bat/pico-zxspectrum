@@ -42,7 +42,9 @@ pico_sdk_init()
 add_compile_definitions(PICO_MCU="${PICO_PLATFORM}")
 
 add_compile_options(-Wall)
-add_definitions(-DHID_PROTOCOL_DEFAULT=HID_PROTOCOL_REPORT)
+
+add_compile_definitions(HID_PROTOCOL_DEFAULT=HID_PROTOCOL_REPORT)
+add_compile_definitions(PICO_FLASH_SPI_CLKDIV=6)
 
 set(DVI_DEFAULT_SERIAL_CONFIG "pico_sock_cfg" CACHE STRING
 	"Select a default pin configuration from common_dvi_pin_configs.h")

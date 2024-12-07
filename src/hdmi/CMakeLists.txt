@@ -124,7 +124,6 @@ target_compile_definitions(ZxSpectrumBreadboardHdmiAudio720x576x50Hz PRIVATE
   PICO_HDMI_AUDIO 
   # Enable the PS/2 keyboard
   USE_PS2_KBD
-  PS2KBD_CLK6_DAT
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE

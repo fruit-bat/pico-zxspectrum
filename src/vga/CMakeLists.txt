@@ -192,6 +192,10 @@ foreach(target
   ZX-MURMULATOR_VGA_PWM_AUDIO_720x576x50Hz
   ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
   ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_720x576x50Hz
 )
 
   add_executable(${target}
@@ -215,6 +219,10 @@ foreach(target
 
   pico_generate_pio_header(${target}
     ${zxspectrum_ear_in_pio}
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_audio_i2s_pio}
   )
 
   pico_enable_stdio_usb(${target} 0)
@@ -312,17 +320,6 @@ foreach(target
 
 endforeach()
 
-foreach(target
-  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
-  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
-)
-
-pico_generate_pio_header(${target}
-${zxspectrum_audio_i2s_pio}
-)
-
-endforeach()
-
 target_compile_definitions(ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR_VGA_defines}
   ${ZX-MURMULATOR_VGA_PWM_Audio_defines}
@@ -346,3 +343,96 @@ target_compile_definitions(ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz PRIVATE
   ${ZX-MURMULATOR_VGA_I2S_Audio_defines}
   ${zxspectrum_vga_720x576x50Hz_defines}
 )
+
+#========================================================
+# ZX MURMULATOR2
+#========================================================
+set(ZX-MURMULATOR2_VGA_defines
+  MURMULATOR
+  # Configure the SPI sd card to use SPI0
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=6
+  SDCARD_PIN_SPI0_MOSI=7
+  SDCARD_PIN_SPI0_MISO=4
+  #VGA 222 vith VSYNC
+  VGA_ENC_RGB_222
+  VGA_VSYNC
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=6u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=3u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=12u
+  # Use the alternate volume map
+  AY8912_ALT_VOL_MAP
+  # Tape audio in
+  EAR_PIN=22
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+  PS2KBD_CLK2_DAT
+  # Pins for dual NES joypads, pio1 SM ?
+  NESPAD_DATA_PIN_BASE=26
+  NESPAD_CLK_PIN_BASE=20
+  NESPAD_PIO=pio1
+  NESPAD_IRQ=PIO1_IRQ_0
+  NESPAD_ENABLE
+)
+
+set(ZX-MURMULATOR2_VGA_PWM_Audio_defines
+  # Speaker pin audio
+  SPK_PIN=10
+  # Buzzer audio out
+  # BZR_PIN=10
+  # STEREO AY audio
+  AY8912_ABC_STEREO
+  # Left chanel audio out
+  AY8912_A_PIN=9
+  # Right chanel audio out
+  AY8912_C_PIN=11
+)
+
+set (ZX-MURMULATOR2_VGA_I2S_Audio_defines
+  # Configure the I2S audio, pio1 SM ?
+  PICO_AUDIO_I2S=1
+  PICO_AUDIO_I2S_PIO=pio1
+  PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
+  PICO_AUDIO_I2S_DATA=9
+  PICO_AUDIO_I2S_BCLK=10
+)
+
+foreach(target
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz
+  ZX-MURMULATOR2_VGA_I2S_AUDIO_720x576x50Hz
+)
+  pico_enable_stdio_uart(${target} 1)
+
+endforeach()
+
+target_compile_definitions(ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
+  ${ZX-MURMULATOR2_VGA_defines}
+  ${ZX-MURMULATOR2_VGA_PWM_Audio_defines}
+  ${zxspectrum_vga_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz PRIVATE
+  ${ZX-MURMULATOR2_VGA_defines}
+  ${ZX-MURMULATOR2_VGA_PWM_Audio_defines}
+  ${zxspectrum_vga_720x576x50Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz PRIVATE
+  ${ZX-MURMULATOR2_VGA_defines}
+  ${ZX-MURMULATOR2_VGA_I2S_Audio_defines}
+  ${zxspectrum_vga_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZX-MURMULATOR2_VGA_I2S_AUDIO_720x576x50Hz PRIVATE
+  ${ZX-MURMULATOR2_VGA_defines}
+  ${ZX-MURMULATOR2_VGA_I2S_Audio_defines}
+  ${zxspectrum_vga_720x576x50Hz_defines}
+)
+
