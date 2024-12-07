@@ -23,6 +23,8 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 
+* Additions for Murmulator 2
+
 23/11/24
 
 * Better beeper sound quality (Mark II)
@@ -101,6 +103,7 @@ Click on the images below for more information ...
 | [HDMI + key matrix](docs/ZxSpectrumBreadboardHdmiKbd1PinAudio.md) | Breadboard with key matrix support |
 | [ArnoldUK](docs/ZxSpectrumPicomputerVgaAuk.md) | Arnold UK's board |
 | [MURMULATOR](docs/MURMULATOR.md) | Micro with VGA/HDMI and more |
+| [MURMULATOR2](docs/MURMULATOR2.md) | Micro with VGA/HDMI and more |
 | [RP2040-PiZero](docs/ZxSpectrumPiZero.md) | Waveshare RP2040-PiZero Development Board |
 
 ## Screen shots

@@ -323,8 +323,6 @@ ${zxspectrum_audio_i2s_pio}
 
 endforeach()
 
-
-
 target_compile_definitions(ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR_VGA_defines}
   ${ZX-MURMULATOR_VGA_PWM_Audio_defines}
