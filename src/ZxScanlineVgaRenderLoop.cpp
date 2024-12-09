@@ -78,13 +78,92 @@ const scanvideo_mode_t vga_mode_720x288_50 =
   .yscale = 2,
 };
 
+#if CVBS_13_5MHZ
+// timing definition based on 13.5MHz pixel clock (270MHz core)
+// 312 lines, 50.08 frames per second (matches 48K specs)
+const scanvideo_timing_t cvbs_timing_50hz_13_5MHz =
+{
+    .clock_freq = 13500000,
+
+    .h_active = 720,
+    .v_active = 288,
+
+    .h_front_porch = 14,
+    .h_pulse = 68,
+    .h_total = 864,
+    .h_sync_polarity = 1 | CSYNC_EXTEND, // fill in vsync with eq pulses
+
+    .v_front_porch = 5,
+    .v_pulse = 5,
+    .v_total = 312,
+    .v_sync_polarity = 1,
+
+    .enable_clock = 0,
+    .clock_polarity = 0,
+
+    .enable_den = 0
+};
+
+const scanvideo_mode_t cvbs_mode_50 =
+{
+    .default_timing = &cvbs_timing_50hz_13_5MHz,
+    .pio_program = &video_24mhz_composable,
+    .width = 720,
+    .height = 256,
+    .xscale = 1,
+    .yscale = 1,
+};
+#endif
+
+#if CVBS_12MHZ
+// timing definition based on 12MHz pixel clock (240MHz core)
+// 312 lines, 50.08 frames per second (matches 48K specs)
+const scanvideo_timing_t cvbs_timing_50hz_12MHz =
+{
+    .clock_freq = 12000000,
+
+    .h_active = 640,    // visible area 64+512+64
+    .v_active = 288,    // visible area 16+256+16
+
+    .h_front_porch = 12,
+    .h_pulse = 60,
+    .h_total = 768,
+    .h_sync_polarity = 1 | CSYNC_EXTEND, // fill in vsync with eq pulses
+
+    .v_front_porch = 5,
+    .v_pulse = 5,
+    .v_total = 312,
+    .v_sync_polarity = 1,
+
+    .enable_clock = 0,
+    .clock_polarity = 0,
+
+    .enable_den = 0
+};
+
+const scanvideo_mode_t cvbs_mode_50 =
+{
+    .default_timing = &cvbs_timing_50hz_12MHz,
+    .pio_program = &video_24mhz_composable,
+    .width = 640,
+    .height = 256,
+    .xscale = 1,
+    .yscale = 1,
+};
+#endif
+
+
 #ifndef VGA_MODE
 #define VGA_MODE vga_mode_640x240_60
 #endif  
 
 void ZxScanlineVgaRenderLoopInit()
 {
+#if (CVBS_12MHZ || CVBS_13_5MHZ)
+  set_sys_clock_khz(2 * VGA_MODE.default_timing->clock_freq / 100, true);
+#else
   set_sys_clock_khz(VGA_MODE.default_timing->clock_freq / 100, true);
+#endif
   sleep_ms(10);
 }
 
