@@ -58,15 +58,30 @@ inline zx_audio_sample_t *zx_audio_buf_write_ptr(zx_audio_buf_t *b) {
   return &b->sample[b->wi];
 }
 
+
+#ifdef BZR_PIN
+  #ifdef AY8912_A_PIN
+    #ifdef AY8912_ABC_STEREO
+      #define PWM_WRAP (255 + 255)
+    #else
+      #define PWM_WRAP (255)
+    #endif
+  #else
+    #define PWM_WRAP (255 + 255 + 255)
+  #endif
+#else
+  #define PWM_WRAP (255 + 255 + 255)
+#endif
+
 static zx_audio_buf_t zx_audio_buf;
 static struct repeating_timer timer;
-bool repeating_timer_callback(struct repeating_timer *timer)
+bool __not_in_flash_func(repeating_timer_callback)(struct repeating_timer *timer)
 {
   static zx_audio_sample_t last;
   uint32_t vA;
   uint32_t vB;
   uint32_t vC;
-  uint32_t s;
+  int32_t s;
   uint32_t buzzer;
   
   if (zx_audio_buf_ready_for_read(&zx_audio_buf))
@@ -109,29 +124,15 @@ bool repeating_timer_callback(struct repeating_timer *timer)
     pwm_set_gpio_level(AY8912_A_PIN, lt);
     pwm_set_gpio_level(AY8912_C_PIN, rt);
     pwm_set_gpio_level(SPK_PIN, st);
-#else
+#else 
     uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
     uint32_t ss = __mul_instruction(_vol, s) >> 8;
-    uint32_t t = ayt + ss;
+    uint32_t t = ayt + ss + 128;
     pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
 #endif
 #endif
   return true;
 }
-
-#ifdef BZR_PIN
-  #ifdef AY8912_A_PIN
-    #ifdef AY8912_ABC_STEREO
-      #define PWM_WRAP (255 + 255)
-    #else
-      #define PWM_WRAP (255)
-    #endif
-  #else
-    #define PWM_WRAP (255 + 255 + 255)
-  #endif
-#else
-  #define PWM_WRAP (255 + 255 + 255)
-#endif
 
 static void init_pwm_pin(uint32_t pin) { 
   gpio_set_function(pin, GPIO_FUNC_PWM);
@@ -278,7 +279,7 @@ void zxSpectrumAudioInit() {
 #endif
 }
 
-void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, uint32_t s, uint32_t buzzer, bool mute) {
+void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
 #if defined(PICO_HDMI_AUDIO) || defined(PICO_AUDIO_I2S)
   uint32_t ll, rr;
   if (mute) {
