@@ -286,10 +286,11 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
     ll = rr = 0;
   }
   else {
-    uint32_t l = (((vA << 1) + vB + s) << 4);
-    uint32_t r = (((vC << 1) + vB + s) << 4);
-    ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
-    rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
+    const uint32_t l = (vA << 1) + vB + s + 128;
+    const uint32_t r = (vC << 1) + vB + s + 128;
+    const uint32_t v = _vol << 4;
+    ll = (__mul_instruction(v, l) >> 8) & 0xffff;
+    rr = (__mul_instruction(v, r) >> 8) & 0xffff;
   }
 #if defined(PICO_HDMI_AUDIO)
   audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
