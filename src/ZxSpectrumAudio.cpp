@@ -286,8 +286,8 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
     ll = rr = 0;
   }
   else {
-    uint32_t l = (((vA << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
-    uint32_t r = (((vC << 1) + vB + s) << 4) - ((255 + 255 + 255 + 255) << (4 - 1));
+    uint32_t l = (((vA << 1) + vB + s) << 4);
+    uint32_t r = (((vC << 1) + vB + s) << 4);
     ll = (__mul_instruction(_vol, l) >> 8) & 0xffff;
     rr = (__mul_instruction(_vol, r) >> 8) & 0xffff;
   }
@@ -299,7 +299,7 @@ void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint3
 #if defined(PICO_AUDIO_I2S)
   if (is2_audio_ready()) {
     is2_audio_put((ll << 16) | rr);
-  }  
+  }
 #endif
 #elif defined(PICO_AUDIO_I2S)
   is2_audio_put((ll << 16) | rr);
