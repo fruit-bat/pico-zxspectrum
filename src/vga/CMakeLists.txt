@@ -255,7 +255,7 @@ target_compile_definitions(ZxSpectrumPicoMiteVGA_640x480x60Hz PRIVATE
 # ZX MURMULATOR
 #========================================================
 set(ZX-MURMULATOR_VGA_defines
-  MURMULATOR
+  ZX_PLATFORM=MURMULATOR
   # Configure the SPI sd card to use SPI0
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=2
@@ -348,7 +348,7 @@ target_compile_definitions(ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz PRIVATE
 # ZX MURMULATOR2
 #========================================================
 set(ZX-MURMULATOR2_VGA_defines
-  MURMULATOR
+  ZX_PLATFORM=MURMULATOR2
   # Configure the SPI sd card to use SPI0
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=6
@@ -382,15 +382,15 @@ set(ZX-MURMULATOR2_VGA_defines
 
 set(ZX-MURMULATOR2_VGA_PWM_Audio_defines
   # Speaker pin audio
-  SPK_PIN=10
+  SPK_PIN=9
   # Buzzer audio out
   # BZR_PIN=10
   # STEREO AY audio
   AY8912_ABC_STEREO
   # Left chanel audio out
-  AY8912_A_PIN=9
+  AY8912_A_PIN=11
   # Right chanel audio out
-  AY8912_C_PIN=11
+  AY8912_C_PIN=10
 )
 
 set (ZX-MURMULATOR2_VGA_I2S_Audio_defines

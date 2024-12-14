@@ -100,6 +100,10 @@ set(zxspectrum_ear_in_pio
   ${CMAKE_CURRENT_LIST_DIR}/zx_ear_in.pio
 )
 
+set(zxspectrum_pwm_pio
+  ${CMAKE_CURRENT_LIST_DIR}/pwm.pio
+)
+
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)

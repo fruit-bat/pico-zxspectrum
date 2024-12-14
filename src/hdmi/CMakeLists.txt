@@ -417,8 +417,8 @@ set(zxspectrum_murmulator_hdmi_nespad_defines
 )
 
 set(murmulator_common_defines
+  ZX_PLATFORM="MURMULATOR"
   # Set up the DVI output to match the MURMULATOR board
-  MURMULATOR
   PICO_CORE1_STACK_SIZE=0x400
   DVI_DEFAULT_SERIAL_CONFIG=pimoroni_demo_hdmi_cfg
   DVI_VERTICAL_REPEAT=2
@@ -552,8 +552,8 @@ set(zxspectrum_murmulator2_hdmi_nespad_defines
 )
 
 set(murmulator2_common_defines
+  ZX_PLATFORM="MURMULATOR2"
   # Set up the DVI output to match the MURMULATOR board
-  MURMULATOR
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=murmulator2_hdmi_cfg
   PICO_CORE1_STACK_SIZE=0x400
@@ -572,23 +572,24 @@ set(murmulator2_common_defines
   # Use the alternate volume map
   AY8912_ALT_VOL_MAP  
   # Tape audio in
-  EAR_PIN=22
+  #EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
   PS2KBD_CLK2_DAT
 )
 
 set(murmulator2_pwm_audio_defines
-  # Speaker pin audio
+  # Speaker pin audio (@270MHz)
+  PICO_PWM_AUDIO_FREQ=45000
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=10
-  # Buzzer audio out
-  # BZR_PIN=10
   # STEREO AY audio
-  AY8912_ABC_STEREO
+#  AY8912_ABC_STEREO
   # Left chanel audio out
-  AY8912_A_PIN=9
+#  AY8912_A_PIN=9
   # Right chanel audio out
-  AY8912_C_PIN=11
+#  AY8912_C_PIN=11
 )
 
 set (zxspectrum_murmulator2_i2saudio_defines
@@ -629,6 +630,10 @@ foreach(target
 
   pico_generate_pio_header(${target} 
     ${zxspectrum_audio_i2s_pio}
+  )
+
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_pwm_pio}
   )
 
   # create map/bin/hex file etc.
