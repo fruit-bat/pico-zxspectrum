@@ -88,6 +88,9 @@ set(zxspectrum_common_libs
   hardware_dma
   hardware_flash # Needed for flash settings (not currently working)
   hardware_sync  # Needed for flash settings (not currently working)
+  hardware_pio
+  hardware_pwm
+  hardware_adc  
   Zeta
   Z80
 )

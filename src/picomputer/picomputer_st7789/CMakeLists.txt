@@ -174,6 +174,7 @@ set(zxspectrum_zx_lcd_common_libs
   tinyusb_board
   hardware_pio
   hardware_pwm
+  hardware_adc
 )
 
 foreach(target
