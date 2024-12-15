@@ -98,10 +98,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), _kV('v'), _kK('k'), _kS('s'),
+
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), 
+  _kV('v'), _kK('k'), _kS('s'), _kQ('q'),
+
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
-  _main(0, 0, _wizCols, 12, _menuRowsPerItem),
+  _main(0, 0, _wizCols, 13, _menuRowsPerItem),
   
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
@@ -184,7 +187,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 #endif
   _main.addOption(_keyboardOp.addQuickKey(&_kK));
   _main.addOption(_systemOp.addQuickKey(&_kS));
-
+  _main.addOption(_quickSaveOp.addQuickKey(&_kQ));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -300,6 +303,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       [](PicoPen *pen){ pen->printAt(0, 0, false, "System"); }, 
       true);
   });
+
+  _quickSaveOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s", _wizCol1Width, "Quick save");
+  });  
+  _quickSaveOp.toggle([=]() {
+    quickSave(0);
+    if (_snapLoadedListener) _snapLoadedListener("QS1");
+  });
+
   _systemBootSelOp.toggle([=]() {
     _wizUtils.confirm(
       [=](PicoPen *pen){
