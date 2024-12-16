@@ -563,8 +563,6 @@ set(murmulator2_common_defines
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
-  #SDCARD_PIO=pio1
-  #SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=6
   SDCARD_PIN_SPI0_MOSI=7
@@ -583,8 +581,6 @@ set(murmulator2_pwm_audio_defines
   # This could be ABC output on GPIO 9, 10, 11 but the sofware FIFO is not working on the RP2350
   # For now I will output mono PWM using a PIO block on GPIO 10
   #
-  # Speaker pin audio (@270MHz)
-  PICO_PWM_AUDIO_FREQ=45000
   PICO_AUDIO_PWM_PIO=pio1
   PICO_PIO_PWM_AUDIO
   SPK_PIN=10
@@ -659,7 +655,7 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_HDMI_AUDIO_720x576x50Hz PRIVATE
   ${murmulator2_common_defines}
   ${murmulator2_hdmi_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
-  ${zxspectrum_murmulator2_hdmi_nespad_defines}
+  ${zxspectrum_murmulator2_hdmi_nespad_defines}   
 )
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
@@ -667,6 +663,8 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
   ${murmulator2_pwm_audio_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
+  # Speaker pin audio (@252MHz 252000000 / (1000 * 3 * 2)) 
+  PICO_PWM_AUDIO_FREQ=42000       
 )
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
@@ -674,6 +672,8 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
   ${murmulator2_pwm_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
+  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2)) 
+  PICO_PWM_AUDIO_FREQ=45000     
 )
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
