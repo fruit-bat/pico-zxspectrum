@@ -572,13 +572,17 @@ set(murmulator2_common_defines
   # Use the alternate volume map
   AY8912_ALT_VOL_MAP  
   # Tape audio in
-  #EAR_PIN=22
+  EAR_PIN=22
   # Enable the PS/2 keyboard
   USE_PS2_KBD
   PS2KBD_CLK2_DAT
 )
 
 set(murmulator2_pwm_audio_defines
+  #
+  # This could be ABC output on GPIO 9, 10, 11 but the sofware FIFO is not working on the RP2350
+  # For now I will output mono PWM using a PIO block on GPIO 10
+  #
   # Speaker pin audio (@270MHz)
   PICO_PWM_AUDIO_FREQ=45000
   PICO_AUDIO_PWM_PIO=pio1
