@@ -158,7 +158,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     bool m = _zxSpectrum->mouse() && _zxSpectrum->mouse()->isMounted();
     const float v = read_voltage_sensor();
-    pen->printAtF(0, 0, false,"USB: joy %s%s%s, kbd %s%s%s, mice %s    VSYS: %3.1fv",
+    pen->printAtF(0, 0, false,"USB: joy %s%s%s, kbd %s%s%s, mice %s, VSYS: %3.1fv",
        (jl ? "L" : ""), (!jl && !jr ? "0" : (!!jl & !!jr ? "&" : "")), (jr ? "R" : ""),
        (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : ""),
        (m ? "1" : "0"),

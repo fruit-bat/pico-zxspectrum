@@ -225,6 +225,10 @@ foreach(target
     ${zxspectrum_audio_i2s_pio}
   )
 
+  pico_generate_pio_header(${target} 
+    ${zxspectrum_pwm_pio}
+  )
+  
   pico_enable_stdio_usb(${target} 0)
 
   # create map/bin/hex file etc.
@@ -255,7 +259,7 @@ target_compile_definitions(ZxSpectrumPicoMiteVGA_640x480x60Hz PRIVATE
 # ZX MURMULATOR
 #========================================================
 set(ZX-MURMULATOR_VGA_defines
-  ZX_PLATFORM=MURMULATOR
+  ZX_PLATFORM="MURMULATOR"
   # Configure the SPI sd card to use SPI0
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=2
@@ -348,7 +352,7 @@ target_compile_definitions(ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz PRIVATE
 # ZX MURMULATOR2
 #========================================================
 set(ZX-MURMULATOR2_VGA_defines
-  ZX_PLATFORM=MURMULATOR2
+  ZX_PLATFORM="MURMULATOR2"
   # Configure the SPI sd card to use SPI0
   SDCARD_PIN_SPI0_CS=5
   SDCARD_PIN_SPI0_SCK=6
