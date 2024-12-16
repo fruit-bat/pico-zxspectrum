@@ -381,16 +381,19 @@ set(ZX-MURMULATOR2_VGA_defines
 )
 
 set(ZX-MURMULATOR2_VGA_PWM_Audio_defines
-  # Speaker pin audio
-  SPK_PIN=9
-  # Buzzer audio out
-  # BZR_PIN=10
+  #
+  # This could be ABC output on GPIO 9, 10, 11 but the sofware FIFO is not working on the RP2350
+  # For now I will output mono PWM using a PIO block on GPIO 10
+  #
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
+  SPK_PIN=10
   # STEREO AY audio
-  AY8912_ABC_STEREO
+#  AY8912_ABC_STEREO
   # Left chanel audio out
-  AY8912_A_PIN=11
+#  AY8912_A_PIN=9
   # Right chanel audio out
-  AY8912_C_PIN=10
+#  AY8912_C_PIN=11
 )
 
 set (ZX-MURMULATOR2_VGA_I2S_Audio_defines
@@ -416,12 +419,16 @@ target_compile_definitions(ZX-MURMULATOR2_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR2_VGA_defines}
   ${ZX-MURMULATOR2_VGA_PWM_Audio_defines}
   ${zxspectrum_vga_640x480x60Hz_defines}
+  # Speaker pin audio (@250MHz 250000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=41666
 )
 
 target_compile_definitions(ZX-MURMULATOR2_VGA_PWM_AUDIO_720x576x50Hz PRIVATE
   ${ZX-MURMULATOR2_VGA_defines}
   ${ZX-MURMULATOR2_VGA_PWM_Audio_defines}
   ${zxspectrum_vga_720x576x50Hz_defines}
+  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=45000
 )
 
 target_compile_definitions(ZX-MURMULATOR2_VGA_I2S_AUDIO_640x480x60Hz PRIVATE

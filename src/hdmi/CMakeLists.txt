@@ -663,8 +663,8 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_640x480x60Hz PRIVATE
   ${murmulator2_pwm_audio_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
-  # Speaker pin audio (@252MHz 252000000 / (1000 * 3 * 2)) 
-  PICO_PWM_AUDIO_FREQ=42000       
+  # Speaker pin audio (@252MHz 252000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=42000
 )
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
@@ -672,8 +672,8 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
   ${murmulator2_pwm_audio_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
-  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2)) 
-  PICO_PWM_AUDIO_FREQ=45000     
+  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=45000
 )
 
 target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
