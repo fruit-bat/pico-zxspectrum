@@ -578,18 +578,12 @@ set(murmulator2_common_defines
 
 set(murmulator2_pwm_audio_defines
   #
-  # This could be ABC output on GPIO 9, 10, 11 but the sofware FIFO is not working on the RP2350
+  # This could be ABC output on GPIO 10, 9, 11 but the sofware FIFO is not working on the RP2350
   # For now I will output mono PWM using a PIO block on GPIO 10
   #
   PICO_AUDIO_PWM_PIO=pio1
   PICO_PIO_PWM_AUDIO
-  SPK_PIN=10
-  # STEREO AY audio
-#  AY8912_ABC_STEREO
-  # Left chanel audio out
-#  AY8912_A_PIN=9
-  # Right chanel audio out
-#  AY8912_C_PIN=11
+  SPK_PIN=9
 )
 
 set (zxspectrum_murmulator2_i2saudio_defines
