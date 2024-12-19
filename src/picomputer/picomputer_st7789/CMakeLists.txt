@@ -122,6 +122,8 @@ set(zxspectrum_zx_lcd_640x480x60Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToCpu
   # TODO work what this is
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
+  # Speaker pin audio (@250MHz 250000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=41666
 )
 
 set(zxspectrum_zx_lcd_720x576x50Hz_defines
@@ -138,10 +140,14 @@ set(zxspectrum_zx_lcd_720x576x50Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
   # TODO work what this is
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
+  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=45000
 )
 
 set(picomputer_zx_lcd_common_defines PRIVATE
   ${picomputer_common_defines}
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
   SPK_PIN=7
   PICOMPUTER_PICOZX
   PICOMPUTER_PICOZX_LCD
@@ -172,6 +178,7 @@ set(zxspectrum_zx_lcd_common_libs
   tinyusb_board
   hardware_pio
   hardware_pwm
+  hardware_adc
 )
 
 foreach(target
@@ -188,6 +195,10 @@ foreach(target
 
   pico_generate_pio_header(${target}
     ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
+  )
+
+  pico_generate_pio_header(${target}
+    ${zxspectrum_pwm_pio}
   )
 
   target_link_libraries(${target}
@@ -241,3 +252,4 @@ target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz PRIVATE
   LCD_INVERSE
   LCD_RGB
 )
+

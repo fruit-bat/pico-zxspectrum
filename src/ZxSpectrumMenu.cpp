@@ -8,6 +8,7 @@
 #include "BufferedInputStream.h"
 #include "hardware/clocks.h"
 #include "ff.h"
+#include "ZxSpectrumVoltage.h"
 
 // #define DEBUG_ZX_MENU
 
@@ -98,10 +99,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _zxSpectrum(zxSpectrum),
   _zxSpectrumSettings(settings),
   _tis(0),
-  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), _kV('v'), _kK('k'), _kS('s'),
+
+  _k1('1'), _k2('2'), _k3('3'), _k4('4'), _k5('5'), _k6('6'), _k7('7'), _k8('8'), _k9('9'), 
+  _kV('v'), _kK('k'), _kS('s'), _kQ('q'),
+
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
-  _main(0, 0, _wizCols, 12, _menuRowsPerItem),
+  _main(0, 0, _wizCols, 13, _menuRowsPerItem),
   
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
@@ -153,13 +157,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     bool k1 = _zxSpectrum->keyboard1() && _zxSpectrum->keyboard1()->isMounted();
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     bool m = _zxSpectrum->mouse() && _zxSpectrum->mouse()->isMounted();
-    pen->printAtF(0, 0, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s, Mice: %s",
-       (jl + jr ? "s" : ""),
+    const float v = read_voltage_sensor();
+    pen->printAtF(0, 0, false,"USB: joy %s%s%s, kbd %s%s%s, mice %s, VSYS: %3.1fv",
        (jl ? "L" : ""), (!jl && !jr ? "0" : (!!jl & !!jr ? "&" : "")), (jr ? "R" : ""),
-       (k1 == k2 ? "s" : ""),
        (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : ""),
-       (m ? "1" : "0")
-       );
+       (m ? "1" : "0"),
+       v);
     _devices.repaint();
   });
   
@@ -184,7 +187,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 #endif
   _main.addOption(_keyboardOp.addQuickKey(&_kK));
   _main.addOption(_systemOp.addQuickKey(&_kS));
-
+  _main.addOption(_quickSaveOp.addQuickKey(&_kQ));
 
   _main.enableQuickKeys();
   _snapOp.onPaint([=](PicoPen *pen){
@@ -300,6 +303,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       [](PicoPen *pen){ pen->printAt(0, 0, false, "System"); }, 
       true);
   });
+
+  _quickSaveOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s", _wizCol1Width, "Quick save");
+  });  
+  _quickSaveOp.toggle([=]() {
+    quickSave(0);
+    if (_snapLoadedListener) _snapLoadedListener("QS1");
+  });
+
   _systemBootSelOp.toggle([=]() {
     _wizUtils.confirm(
       [=](PicoPen *pen){
@@ -519,13 +532,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   };
 
   onPaint([](PicoPen *pen) {
-#ifdef MURMULATOR    
-     pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat on MURMULATOR");
+#ifdef ZX_PLATFORM
+     pen->printAtF(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat on %s", ZX_PLATFORM);
 #else
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
 #endif
-     pen->printAtF(0, 1, false, "on %s Pico Pi at %3.1fMhz", PICO_MCU, (float)clock_get_hz(clk_sys) / 1000000.0);
-     pen->printAtF(0, 2, false, "Menu System version %d.%d", ZX_VERSION_MAJOR, ZX_VERSION_MINOR);
+     pen->printAtF(0, 1, false, "VER: %s", __DATE__);
+     pen->printAtF(0, 2, false, "CPU: %s @%3.1fMhz", PICO_MCU, (float)clock_get_hz(clk_sys) / 1000000.0);
 
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");
@@ -639,7 +652,7 @@ void ZxSpectrumMenu::quickLoad(int slot) {
 
 void ZxSpectrumMenu::initialise() {
   loadSettings();
-  
+
   _pathQuickSaves.createFolders(_sdCard);
   _pathTapes.createFolders(_sdCard);
 

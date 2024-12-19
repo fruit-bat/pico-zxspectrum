@@ -16,6 +16,8 @@ set(ZxSpectrumPicomputerVgaZx_640x480x60Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToCpu
   # TODO work what this is
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=700
+  # Speaker pin audio (@250MHz 250000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=41666
 )
 
 set(ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines
@@ -32,6 +34,8 @@ set(ZxSpectrumPicomputerVgaZx_720x576x50Hz_defines
   ZX_SPECTRUM_INT_SRC=SyncToDisplay
   # TODO work what this is
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
+  # Speaker pin audio (@270MHz 270000000 / (1000 * 3 * 2))
+  PICO_PWM_AUDIO_FREQ=45000
 )
 
 foreach(target
@@ -71,6 +75,9 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
+  pico_generate_pio_header(${target}
+    ${zxspectrum_pwm_pio}
+  )
 
 endforeach()
 
@@ -85,6 +92,8 @@ set(ZxSpectrumPicomputerVga1111Zx_defines
   PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
   PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
   PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=9
   PICOMPUTER_VGA
 )
@@ -111,6 +120,8 @@ set(ZxSpectrumPicomputerVga222Zx_defines
   PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
   PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
   PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=7
   PICOMPUTER_PICOZX
 )
@@ -161,6 +172,8 @@ set(ZxSpectrumPicomputerVgaAuk_defines
   PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
   PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
   PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
@@ -190,6 +203,8 @@ set(ZxSpectrumPicomputerVgaAukBob_defines
   PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=2u
   PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
   PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=7
   PICOMPUTER_PICOZX
   REAL_ZXKEYBOARD
@@ -221,6 +236,8 @@ set(ZxSpectrumPicomputerVga1111AukBob_defines
   PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
   PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
   PICO_SCANVIDEO_COLOR_PIN_BASE=0u
+  PICO_AUDIO_PWM_PIO=pio1
+  PICO_PIO_PWM_AUDIO
   SPK_PIN=7
   EAR_PIN=6
   PICOMPUTER_PICOZX
@@ -229,7 +246,7 @@ set(ZxSpectrumPicomputerVga1111AukBob_defines
   HID_KEY_MOD_SAVE=2
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz 
+pico_generate_pio_header(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz
   ${zxspectrum_ear_in_pio}
 )
 
