@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "hardware/vreg.h"
+#include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 
@@ -243,8 +243,8 @@ void __not_in_flash_func(main_loop)(){
 }
 
 int main(){
-  vreg_set_voltage(VREG_VSEL);
-  sleep_ms(10);
+  pico_set_core_voltage();
+
   // Init 16 bit VGA
   ZxScanlineVgaRenderLoopInit();
 

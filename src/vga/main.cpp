@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "hardware/vreg.h"
+#include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 
 #include "ps2kbd.h"
@@ -255,8 +255,7 @@ int main(){
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
-  vreg_set_voltage(VREG_VSEL);
-  sleep_ms(10);
+  pico_set_core_voltage();
 
   ZxScanlineVgaRenderLoopInit();
 

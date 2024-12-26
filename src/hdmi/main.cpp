@@ -6,7 +6,7 @@
 #include "hardware/irq.h"
 #include "hardware/sync.h"
 #include "hardware/gpio.h"
-#include "hardware/vreg.h"
+#include "PicoCoreVoltage.h"
 #include "hardware/structs/bus_ctrl.h"
 #include "hardware/dma.h"
 #include "hardware/uart.h"
@@ -357,8 +357,7 @@ void __not_in_flash_func(main_loop)() {
 }
 
 int main() {
-  vreg_set_voltage(VREG_VSEL);
-  sleep_ms(10);
+  pico_set_core_voltage();
 
   // Run system at TMDS bit clock
   set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
