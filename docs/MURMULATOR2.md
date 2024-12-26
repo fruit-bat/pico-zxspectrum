@@ -3,8 +3,11 @@
 
 <img src="MURMULATOR2_pic.JPG" width="400"/>
 
-#### Circuit diagrams
+#### Circuit diagram
 <img src="MURMULATOR2_circuit.jpeg" height="300"/>
+
+#### Pin assignments
+<img src="MURMULATOR2_pins.png" height="500"/>
 
 #### Firmware
 | Video | Audio | Display mode | Firmware Pico | Firmware Pico2 |
