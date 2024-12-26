@@ -850,6 +850,7 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
   // Time for a single audio out sample in 32nds of a micro second
   const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
+  // 90%: const int32_t u32pas = (90UL * (1000000UL << 5UL)) / (PICO_AUDIO_OUT_FREQ * 100UL);
   
   const uint32_t c = z80Step(32);
   uint32_t vA, vB, vC;

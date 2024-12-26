@@ -9,6 +9,7 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 #include "ZxSpectrumVoltage.h"
+#include "PicoCoreVoltage.h"
 
 // #define DEBUG_ZX_MENU
 
@@ -73,7 +74,7 @@ void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) 
    _reset.move(0, 0, _wizCols, _reset.wh());
    _joystick.move(0, 0, _wizCols, _joystick.wh());
    _mouse.move(0, 0, _wizCols, _mouse.wh());
-   _devices.move(0, 3, _wizCols, _devices.wh());
+   _devices.move(0, 2, _wizCols, _devices.wh());
    _tzxSelect.move(0, 0, _wizCols, _tzxSelect.wh());
    repaint();
 }
@@ -139,7 +140,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _volume(0, 0, 16, 16),
   _keyboard(((SZ_FRAME_COLS-54)/2)-2 , 0, 52, 30),
 
-  _devices(0, 3, _wizCols, 1),
+  _devices(0, 2, _wizCols, 2),
  
   _tzxSelect(0, 0, _wizCols, 6, _menuRowsPerItem)
 { 
@@ -157,12 +158,24 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     bool k1 = _zxSpectrum->keyboard1() && _zxSpectrum->keyboard1()->isMounted();
     bool k2 = _zxSpectrum->keyboard2() && _zxSpectrum->keyboard2()->isMounted();
     bool m = _zxSpectrum->mouse() && _zxSpectrum->mouse()->isMounted();
-    const float v = read_voltage_sensor();
-    pen->printAtF(0, 0, false,"USB: joy %s%s%s, kbd %s%s%s, mice %s, VSYS: %3.1fv",
+    const float vsys = read_voltage_sensor();
+    const float vcore = pico_get_core_voltage();
+    const float fmhz = (float)clock_get_hz(clk_sys) / 1000000.0;
+
+    pen->printAtF(0, 0, false, 
+        "Clk: %3.1fMhz Vcore:%1.2fv Vsys:%1.2fv",
+        fmhz,
+        vcore,
+        vsys
+        );
+
+    pen->printAtF(0, 1, false,"USB: Joystick%s %s%s%s, Keyboard%s %s%s%s, Mice: %s",
+       (jl + jr ? "s" : ""),
        (jl ? "L" : ""), (!jl && !jr ? "0" : (!!jl & !!jr ? "&" : "")), (jr ? "R" : ""),
+       (k1 == k2 ? "s" : ""),
        (k1 ? "1" : ""), (!k1 && !k2 ? "0" : (k1 & k2 ? "&" : "")), (k2 ? "2" : ""),
-       (m ? "1" : "0"),
-       v);
+       (m ? "1" : "0")
+       );
     _devices.repaint();
   });
   
@@ -537,8 +550,10 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 #else
      pen->printAt(0, 0, false, "ZX Spectrum 48K/128K by fruit-bat");
 #endif
-     pen->printAtF(0, 1, false, "VER: %s", __DATE__);
-     pen->printAtF(0, 2, false, "CPU: %s @%3.1fMhz", PICO_MCU, (float)clock_get_hz(clk_sys) / 1000000.0);
+     pen->printAtF(0, 1, false, "Built for %s on %s",
+        PICO_MCU,
+        __DATE__
+      );
 
      pen->printAt(0, SZ_FRAME_ROWS-1, false, "F1 to exit menu");
      pen->printAt(SZ_FRAME_COLS-14, SZ_FRAME_ROWS-1, false, "ESC to go back");
