@@ -339,8 +339,9 @@ set(zx_spectrum_adafuit_feather_hdmi_defines
   SDCARD_PIN_SPI0_SCK=10
   SDCARD_PIN_SPI0_MOSI=11
   SDCARD_PIN_SPI0_MISO=12
-  # Speaker pin audio
-  SPK_PIN=25
+
+  PICO_HDMI_AUDIO
+  
   # defines from the board type
 #  PICO_BOOT_STAGE2_CHOOSE_GENERIC_03H=1
 
