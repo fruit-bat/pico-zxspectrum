@@ -31,3 +31,8 @@ This target uses I2S DAC (PCM5102).
 | 27 | I2S BCLK |
 | 28 | I2S LRCK |
 
+#### Firmware
+
+| Display | Audio | Firmware Pico | Firmware Pico 2 |
+| - | - | - | - |
+| CVBS 50Hz | I2S | [ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz](/uf2-rp2040/ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz.uf2) | 
