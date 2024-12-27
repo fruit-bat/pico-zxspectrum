@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/clocks.h"
-#include "hardware/vreg.h"
+#include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 #include "ZxSpectrumPrepareRgbScanline.h"
 #include "pzx_prepare_rgb444_scanline.h"
@@ -346,8 +346,8 @@ void __not_in_flash_func(main_loop)() {
 }
 
 int main() {
-  vreg_set_voltage(VREG_VSEL);
-  sleep_ms(10);
+  pico_set_core_voltage();
+
 #ifdef PICOMPUTER_PICOZX_LCD
   ZxScanlineVgaRenderLoopInit();
 #else

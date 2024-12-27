@@ -1,14 +1,10 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "hardware/vreg.h"
+#include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 
-#ifdef USE_MRMLTR_PS2_KBD
-#include "ps2kbd_mrmltr.h"
-#else
 #include "ps2kbd.h"
-#endif
 
 // #include "pzx_keyscan.h"
 
@@ -183,16 +179,10 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
-#ifdef USE_MRMLTR_PS2_KBD
-static Ps2Kbd_Mrmltr ps2kbd(
-  pio1,
-  0,
-  process_kbd_report
-);
-#elif defined(USE_PS2_KBD)
+#if defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
-  6,
+  PS2KBD_GPIO,
   process_kbd_report
 );
 #endif
@@ -265,8 +255,7 @@ int main(){
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
-  vreg_set_voltage(VREG_VSEL);
-  sleep_ms(10);
+  pico_set_core_voltage();
 
   ZxScanlineVgaRenderLoopInit();
 
@@ -359,3 +348,4 @@ int main(){
 
   main_loop();
 }
+
