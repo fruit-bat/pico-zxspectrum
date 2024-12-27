@@ -171,7 +171,8 @@ add_dependencies (ZxSpectrumBreadboard
   ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz
   ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz
   ZxSpectrum4PinAudioVga222Ps2_640x480x60Hz
-  ZxSpectrum4PinAudioVga222Ps2_720x576x50Hz  
+  ZxSpectrum4PinAudioVga222Ps2_720x576x50Hz
+  ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz
 )
 if ((${PICO_BOARD} STREQUAL "pico") OR (${PICO_BOARD} STREQUAL "pico2"))
   message("Relevant target: ZxSpectrumBreadboard")
