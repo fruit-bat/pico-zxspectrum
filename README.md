@@ -23,7 +23,13 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 
+27/12/24
+
 * Additions for Murmulator 2
+* Vcore and Vsys displayed on menu
+* PIO PWM mono audio for some builds
+
+The move to PWM audio is primarily to support the RP2350, on which I have been having problems with the timer interrupts. There were also some stability issues on the RP2040 particularly with the 270Mhz overclock. Anyhow, I think the sound quality is much better using the PIO, probably because the delivery of samples is done in sync with the PWM frame. The down side is I am only doing mono for now; I have run out of PIO state-machines on the RP2040, but the RP2350 has an extra PIO block so I may have a go at stereo just for the RP2350.
 
 23/11/24
 
