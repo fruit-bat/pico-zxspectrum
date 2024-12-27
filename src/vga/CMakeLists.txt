@@ -105,6 +105,15 @@ foreach(target
 
 endforeach()
 
+foreach(target
+  ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz
+)
+  pico_generate_pio_header(${target}
+    ${zxspectrum_audio_i2s_pio}
+  )
+
+endforeach()
+
 set(ZxSpectrum4PinAudioVga1111Ps2_defines
   # VGA 1111
   VGA_ENC_RGBY_1111
@@ -373,20 +382,6 @@ foreach(target
   pico_enable_stdio_uart(${target} 0)
 
 endforeach()
-
-foreach(target
-  ZX-MURMULATOR_VGA_I2S_AUDIO_640x480x60Hz
-  ZX-MURMULATOR_VGA_I2S_AUDIO_720x576x50Hz
-  ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz
-)
-
-pico_generate_pio_header(${target}
-${zxspectrum_audio_i2s_pio}
-)
-
-endforeach()
-
-
 
 target_compile_definitions(ZX-MURMULATOR_VGA_PWM_AUDIO_640x480x60Hz PRIVATE
   ${ZX-MURMULATOR_VGA_defines}
