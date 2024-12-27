@@ -49,11 +49,32 @@ set(zxspectrum_vga_720x576x50Hz_defines
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
 )
 
+set(zxspectrum_vga_CVBSx50Hz_defines
+  # Set the resolution of the menu screen
+  PCS_COLS=80
+  PCS_ROWS=30
+  SZ_FRAME_X=5
+  # Set the VGA timing
+  VGA_MODE=cvbs_mode_50
+  # different pixel clock variants, pick one
+  #CVBS_13_5MHZ=1
+  CVBS_12MHZ=1
+  # The display resolution
+  DISPLAY_WIDTH_PIXELS=640
+  DISPLAY_HEIGHT_PIXELS=576 # halved to 288
+  # The default interrupt source
+  ZX_SPECTRUM_INT_SRC=SyncToDisplay
+  # TODO work what this is
+  PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=800
+)
+
+
 foreach(target
   ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz
   ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz
   ZxSpectrum4PinAudioVga222Ps2_640x480x60Hz
   ZxSpectrum4PinAudioVga222Ps2_720x576x50Hz
+  ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz
 )
   add_executable(${target}
     ${zxspectrum_common_src}
@@ -106,6 +127,29 @@ set(ZxSpectrum4PinAudioVga1111Ps2_defines
   USE_PS2_KBD
 )
 
+set(ZxSpectrumI2SAudioVga1111Ps2_defines
+  # VGA 1111
+  VGA_ENC_RGBY_1111
+  PICO_SCANVIDEO_COLOR_PIN_COUNT=4u
+  PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=2u
+  PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=1u
+  PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=0u
+  PICO_SCANVIDEO_COLOR_PIN_BASE=12u
+
+  # Configure the I2S audio, pio1 SM ?
+  PICO_AUDIO_I2S=1
+  PICO_AUDIO_I2S_PIO=pio1
+  PICO_AUDIO_I2S_PIO_FUNC=GPIO_FUNC_PIO1
+  PICO_AUDIO_I2S_DATA=26
+  PICO_AUDIO_I2S_BCLK=27
+
+  # Enable the PS/2 keyboard
+  USE_PS2_KBD
+)
+
 target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2_720x576x50Hz PRIVATE
   ${picomputer_vga_defines}
   ${ZxSpectrum4PinAudioVga1111Ps2_defines}
@@ -116,6 +160,12 @@ target_compile_definitions(ZxSpectrum4PinAudioVga1111Ps2_640x480x60Hz PRIVATE
   ${picomputer_vga_defines}
   ${ZxSpectrum4PinAudioVga1111Ps2_defines}
   ${zxspectrum_vga_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz PRIVATE
+  ${picomputer_vga_defines}
+  ${ZxSpectrumI2SAudioVga1111Ps2_defines}
+  ${zxspectrum_vga_CVBSx50Hz_defines}
 )
 
 ########################################################################
