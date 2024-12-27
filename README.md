@@ -23,6 +23,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 
+28/12/24
+
+* Added a build with CVBS 50Hz output - credit to [svofski](https://github.com/svofski)
+
 27/12/24
 
 * Additions for Murmulator 2 (only mono PWM audio for now)
@@ -111,6 +115,7 @@ Click on the images below for more information ...
 | [MURMULATOR](docs/MURMULATOR.md) | Micro with VGA/HDMI and more |
 | [MURMULATOR2](docs/MURMULATOR2.md) | Micro with VGA/HDMI and more |
 | [RP2040-PiZero](docs/ZxSpectrumPiZero.md) | Waveshare RP2040-PiZero Development Board |
+| [CVBS 50Hz](docs/ZxSpectrumCVBS.md) | Unknown/breadboard with 50Hz CVBS output |
 
 ## Screen shots
 <img src="docs/screenshots/48k_boot_screen.png" height="200px"/> <img src="docs/screenshots/128k_boot_screen.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_1.png" height="200px"/> <img src="docs/screenshots/the_swarm_is_coming_2.png" height="200px"/> <img src="docs/screenshots/the_goblin_1.png" height="200px"/> <img src="docs/screenshots/the_goblin_2.png" height="200px"/> <img src="docs/screenshots/menu_main_vol.png" height="200px"/>
