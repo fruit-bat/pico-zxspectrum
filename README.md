@@ -25,7 +25,7 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 27/12/24
 
-* Additions for Murmulator 2
+* Additions for Murmulator 2 (only mono PWM audio for now)
 * Vcore and Vsys displayed on menu
 * PIO PWM mono audio for some builds
 
