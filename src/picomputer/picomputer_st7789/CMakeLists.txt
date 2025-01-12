@@ -188,6 +188,7 @@ foreach(target
   ZxSpectrumPicomputerZxInverseLcd_720x576x50Hz
   ZxSpectrumPicomputerZxILI9341Lcd_720x576x50Hz
   ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz
+  ZxSpectrumPicomputerZx2Lcd_720x576x50Hz
 )
   add_executable(${target}
     ${picomputer_zx_lcd_src}
@@ -253,3 +254,11 @@ target_compile_definitions(ZxSpectrumPicomputerZxILI9341Lcd_640x480x60Hz PRIVATE
   LCD_RGB
 )
 
+target_compile_definitions(ZxSpectrumPicomputerZx2Lcd_720x576x50Hz PRIVATE
+  ${picomputer_zx_lcd_common_defines}
+  ${zxspectrum_zx_lcd_720x576x50Hz_defines}
+  LCD_MIRROR_X
+  REAL_ZXKEYBOARD
+  REAL_ZXKEYBOARD_BOB
+  HID_KEY_MOD_SAVE=2
+)
