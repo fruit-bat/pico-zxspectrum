@@ -48,8 +48,6 @@
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_20
-
 struct semaphore dvi_start_sem;
 
 #ifdef PICOMPUTER_PICOZX_LCD
@@ -197,18 +195,19 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
-static  PIO pio = pio0;
-static  uint sm = 0;
-
 void __not_in_flash_func(setMenuState)(bool showMenu) {
   picomputerJoystick.enabled(!showMenu);
   pzx_menu_mode(showMenu);
 }
 
+static  PIO pio = pio0;
+static  uint sm = 0;
+
 #ifdef PICOMPUTER_PICOZX_LCD
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
+
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
 }
 #endif

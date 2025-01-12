@@ -21,7 +21,6 @@
 #include "ZxSpectrumPicomputerJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
-
 #include "bsp/board.h"
 #include "tusb.h"
 #include <pico/printf.h>
@@ -38,9 +37,6 @@
 #include "hid_app.h"
 
 #define LED_PIN 25
-#define SPK_PIN 9
-
-#define VREG_VSEL VREG_VOLTAGE_1_20
 
 struct semaphore dvi_start_sem;
 
@@ -185,6 +181,10 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
+void __not_in_flash_func(setMenuState)(bool showMenu) {
+  picomputerJoystick.enabled(!showMenu);
+  pzx_menu_mode(showMenu);
+}
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
@@ -243,7 +243,7 @@ void __not_in_flash_func(main_loop)(){
   }
 }
 
-int main(){
+int main() {
   pico_set_core_voltage();
 
   ZxScanlineVgaRenderLoopInit();
@@ -258,6 +258,7 @@ int main(){
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   // TZX tape option handlers
@@ -272,6 +273,7 @@ int main(){
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   picoRootWin.tzxOption(
@@ -279,6 +281,7 @@ int main(){
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
+      setMenuState(showMenu);
     }
   );
   snapFileLoop.set(&picoRootWin);
