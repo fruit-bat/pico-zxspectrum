@@ -232,7 +232,7 @@ void __not_in_flash_func(core1_main)() {
 #endif
 
   picoRootWin.move(0,0,40,30);
-  picoRootWin.setWizLayout(0, 12, 18);
+  picoRootWin.setWizLayout(0, 12, 18, 40);
 
   // Start up the LCD
   st7789_init(pio, sm);

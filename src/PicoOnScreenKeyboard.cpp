@@ -38,23 +38,27 @@ PicoOnScreenKeyboard::PicoOnScreenKeyboard(
   });
 
   onPaint([=](PicoPen *pen) {
-    pen->printAt(0, 0, false, getKeyboardLine(0));
-    pen->printAt(1, 2, false, getKeyboardLine(1));
-    pen->printAt(2, 4, false, getKeyboardLine(2));
-    pen->printAt(0, 6, false, getKeyboardLine(3));
-  });  
+    if (ww() > 42) {
+      paintRow(pen, 0, 0);
+      paintRow(pen, 1, 1);
+      paintRow(pen, 2, 2);
+      paintRow(pen, 0, 3);
+    }
+    else {
+      paintRow(pen, 0, 0);
+      paintRow(pen, 0, 1);
+      paintRow(pen, 0, 2);
+      paintRow(pen, 0, 3);
+    }
+  });
 };
 
-const char* PicoOnScreenKeyboard::getKeyboardLine(uint8_t which) {
- 
- int Pos=0;
-  for (int i=0; i < 10; i++) {
-    Pos+=sprintf(Buff+Pos," %s",Line[which][i].Name);
+void PicoOnScreenKeyboard::paintRow(PicoPen *pen, int32_t ox, uint8_t r) {
+  const int32_t y = r << 1;
+  for (int i = 0; i < 10; i++) {
+    const bool c = r == _y && i == _x;
+    if (c) pen->setAttrInverse(true);
+    pen->printAt(ox + (i << 2), y, false, Line[r][i].Name);    
+    if (c) pen->setAttrInverse(false);
   }
-  //Selected symbol
-  if(which==_y) {
-    Buff[_x*4]='[';
-    Buff[_x*4+4]=']';
-  }
-  return Buff;
 }

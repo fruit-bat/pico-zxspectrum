@@ -10,7 +10,6 @@ class PicoOnScreenKeyboard : public PicoWin {
 
  int8_t _x=0;
  int8_t _y=0;
- char  Buff[52];
 
 #define BIT0  0x01
 #define BIT1  0x02
@@ -80,12 +79,6 @@ const ZxSpectrumKey Line[4][10]={
     }
   };
 
-/*
-  const uint8_t Line[4][10]={{'1','2','3','4','5','6','7','8','9','0'},
-                        {'Q','W','E','R','T','Y','U','I','O','P'},
-                        {'A','S','D','F','G','H','J','K','L','<'},
-                        {'*','Z','X','C','V','B','N','M','*','_'}};
-  */
 public:
   PicoOnScreenKeyboard(int32_t x, int32_t y, int32_t w,int32_t h);
 
@@ -95,5 +88,5 @@ public:
     _press = press; 
   }
 
-  const char* getKeyboardLine(uint8_t which);
+  void paintRow(PicoPen *pen, int32_t ox, uint8_t r);
 };
