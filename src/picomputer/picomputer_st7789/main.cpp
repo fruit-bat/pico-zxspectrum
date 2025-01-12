@@ -363,7 +363,6 @@ int main() {
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   // TZX tape option handlers
@@ -378,7 +377,6 @@ int main() {
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   picoRootWin.tzxOption(
@@ -386,7 +384,6 @@ int main() {
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   snapFileLoop.set(&picoRootWin);

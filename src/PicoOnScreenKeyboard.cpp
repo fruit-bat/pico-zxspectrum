@@ -49,12 +49,12 @@ const char* PicoOnScreenKeyboard::getKeyboardLine(uint8_t which) {
  
  int Pos=0;
   for (int i=0; i < 10; i++) {
-    Pos+=sprintf(Buff+Pos," %s ",Line[which][i].Name);
+    Pos+=sprintf(Buff+Pos," %s",Line[which][i].Name);
   }
   //Selected symbol
   if(which==_y) {
-    Buff[_x*5]='[';
-    Buff[_x*5+4]=']';
+    Buff[_x*4]='[';
+    Buff[_x*4+4]=']';
   }
   return Buff;
 }
