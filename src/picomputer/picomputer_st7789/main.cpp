@@ -209,6 +209,7 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
 }
 
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+  setMenuState(showMenu);
 }
 #endif
 
