@@ -51,7 +51,11 @@
 struct semaphore dvi_start_sem;
 
 #ifdef PICOMPUTER_PICOZX_LCD
+#ifdef PICO_STARTUP_VGA
+static bool useVga = true;
+#else
 static bool useVga = false;
+#endif
 #endif
 
 static SdCardFatFsSpi sdCard0(0);
@@ -405,9 +409,14 @@ int main() {
   pzx_keyscan_init();
 
 #ifdef PICOMPUTER_PICOZX_LCD
+#ifdef PICO_STARTUP_VGA
+  useVga = !pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
+#else
   useVga = pzx_fire_raw();
-  ZxSpectrumFatSpiExists vgaoption(&sdCard0, "zxspectrum", "vga.txt");
-  useVga |= vgaoption.exists();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
+#endif
+  if (swap_option.exists()) useVga = !useVga;
 #endif
 
   sem_init(&dvi_start_sem, 0, 1);
