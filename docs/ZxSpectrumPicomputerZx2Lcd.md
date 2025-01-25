@@ -28,8 +28,8 @@ None as yet
 #### Firmware
 | LCD | Colour Encoding | Colour Channel | VGA | Sock | Firmware |
 | - | - | - | - | - | - |
-| ST7789 | BGR | Normal | 640x480x60Hz | Pico2 | [ZxSpectrumPicomputerZxLcd_640x480x60Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrumPicomputerZx2Lcd_640x480x60Hz.uf2) |
-| ST7789 | BGR | Normal | 720x576x50Hz | Pico2 | [ZxSpectrumPicomputerZxLcd_720x576x50Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrumPicomputerZx2Lcd_720x576x50Hz.uf2) |
+| ST7789 | BGR | Normal | 640x480x60Hz | Pico2 | [ZxSpectrumPicomputerZx2Lcd_640x480x60Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrumPicomputerZx2Lcd_640x480x60Hz.uf2) |
+| ST7789 | BGR | Normal | 720x576x50Hz | Pico2 | [ZxSpectrumPicomputerZx2Lcd_720x576x50Hz.uf2](/uf2-rp2350-arm-s/ZxSpectrumPicomputerZx2Lcd_720x576x50Hz.uf2) |
 
 
 #### Build system notes
