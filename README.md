@@ -85,6 +85,7 @@ Click on the images below for more information ...
   </tr>
 </table>
 
+<a href="docs/ZxSpectrumPicomputerZx2Lcd.md"><img src="docs/picozx2lcd.png" width="280"/></a>
 <a href="docs/pico_zx48_128.md"><img src="docs/pico_zx48_128_1.png" width="300"/></a>
 <a href="docs/ZxSpectrumPicomputerZxLcd.md"><img src="docs/picozxlcd.png" width="280"/></a>
 <a href="docs/ZxSpectrumPicomputerVga222Zx.md"><img src="docs/picomputer_picozx.png" width="300"/></a>
@@ -103,6 +104,7 @@ Click on the images below for more information ...
 | [HDMI breadboard](docs/ZxSpectrumBreadboardHdmiNPinAudio.md) | Some breadboard HDMI options |
 | [VGA breadboard](docs/ZxSpectrum4PinAudioVga1111Ps2.md) | Some breadboard VGA options | 
 | [PICO ZX48/128](docs/pico_zx48_128.md) | ZX Spectrum 48K replacement board by Bobricius |
+| [PICOZX2 LCD](docs/ZxSpectrumPicomputerZx2Lcd.md) | ZX Spectrum with LCD and VGA Mk 2 by Bobricius |
 | [PICOZX LCD](docs/ZxSpectrumPicomputerZxLcd.md) | ZX Spectrum with LCD and VGA by Bobricius |
 | [PICOZX](docs/ZxSpectrumPicomputerVga222Zx.md) | ZX Spectrum with VGA by Bobricius |
 | [RetroVGA](docs/ZxSpectrumPicomputerVga.md) | VGA micro-computer by Bobricius |

@@ -291,4 +291,17 @@ if (${PICO_BOARD} STREQUAL "pico")
   message("Relevant target: ZxSpectrumPicomputer")
   add_dependencies(relevant ZxSpectrumPicomputer)
 endif()
+########################################################################
+# Picomputer 2 II (RP2350 Only)
+########################################################################
+add_custom_target (ZxSpectrumPicomputer2)
+add_dependencies (ZxSpectrumPicomputer2
+  ZxSpectrumPicomputerZx2Lcd_640x480x60Hz
+  ZxSpectrumPicomputerZx2Lcd_720x576x50Hz
+)
+if (${PICO_BOARD} STREQUAL "pico2")
+  message("Relevant target: ZxSpectrumPicomputer2")
+  add_dependencies(relevant ZxSpectrumPicomputer2)
+endif()
+
 
