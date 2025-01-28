@@ -23,6 +23,10 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 
+28/01/25
+
+* Support for beautiful new [PICO ZX](docs/ZxSpectrumPicomputerZx2Lcd.md) board by bobricius
+
 28/12/24
 
 * Added a build with CVBS 50Hz output - credit to [svofski](https://github.com/svofski)
