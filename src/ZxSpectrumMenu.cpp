@@ -61,7 +61,7 @@ static const char *fext(const char *filename) {
   return dot + 1;
 }
 
-void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) {
+void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2, int32_t w) {
    _wizCol1Width = cols1;
    _wizCol2Width = cols2;
    _wizLeftMargin = margin;
@@ -76,6 +76,7 @@ void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2) 
    _mouse.move(0, 0, _wizCols, _mouse.wh());
    _devices.move(0, 2, _wizCols, _devices.wh());
    _tzxSelect.move(0, 0, _wizCols, _tzxSelect.wh());
+   _keyboard.move(0 , 0, w, 10),
    repaint();
 }
 
@@ -138,7 +139,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _systemBootSelOp("Boot select"),
 
   _volume(0, 0, 16, 16),
-  _keyboard(((SZ_FRAME_COLS-54)/2)-2 , 0, 52, 30),
+  _keyboard(((SZ_FRAME_COLS-44)/2)-2 , 0, 52, 10),
 
   _devices(0, 2, _wizCols, 2),
  

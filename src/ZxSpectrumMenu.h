@@ -131,7 +131,7 @@ public:
   void nextSnap(int d);
   void quickSave(int slot);
   void quickLoad(int slot);
-  void setWizLayout(int32_t margin, int32_t cols1, int32_t cols2);
+  void setWizLayout(int32_t margin, int32_t cols1, int32_t cols2, int32_t w);
   void initialise();
   void saveSettings();
   void loadSettings();

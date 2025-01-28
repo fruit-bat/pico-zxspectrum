@@ -84,6 +84,10 @@ void __not_in_flash_func(pzx_menu_mode)(bool m) {
 #endif
 }
 
+bool pzx_menu_mode() {
+  return menu != 0;
+}
+
 // Keyboard Matrix Arrays [INDEX][ROWS][COLS]
 #ifdef PICOMPUTER_PICOZX
 #define JOYSTICK_OFFSET 2

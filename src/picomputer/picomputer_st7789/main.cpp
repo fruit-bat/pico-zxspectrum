@@ -48,12 +48,14 @@
 
 #define LED_PIN 25
 
-#define VREG_VSEL VREG_VOLTAGE_1_20
-
 struct semaphore dvi_start_sem;
 
 #ifdef PICOMPUTER_PICOZX_LCD
+#ifdef PICO_STARTUP_VGA
+static bool useVga = true;
+#else
 static bool useVga = false;
+#endif
 #endif
 
 static SdCardFatFsSpi sdCard0(0);
@@ -197,19 +199,21 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
-static  PIO pio = pio0;
-static  uint sm = 0;
-
 void __not_in_flash_func(setMenuState)(bool showMenu) {
   picomputerJoystick.enabled(!showMenu);
   pzx_menu_mode(showMenu);
 }
 
+static  PIO pio = pio0;
+static  uint sm = 0;
+
 #ifdef PICOMPUTER_PICOZX_LCD
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
+
 void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+  setMenuState(showMenu);
 }
 #endif
 
@@ -233,7 +237,7 @@ void __not_in_flash_func(core1_main)() {
 #endif
 
   picoRootWin.move(0,0,40,30);
-  picoRootWin.setWizLayout(0, 12, 18);
+  picoRootWin.setWizLayout(0, 12, 18, 40);
 
   // Start up the LCD
   st7789_init(pio, sm);
@@ -364,7 +368,6 @@ int main() {
   picoRootWin.snapLoaded([&](const char *name) {
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   // TZX tape option handlers
@@ -379,7 +382,6 @@ int main() {
       picoRootWin.showTzxOptions();
       showMenu = true;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   picoRootWin.tzxOption(
@@ -387,7 +389,6 @@ int main() {
       zxSpectrum.tzxOption(option);
       showMenu = false;
       toggleMenu = false;
-      setMenuState(showMenu);
     }
   );
   snapFileLoop.set(&picoRootWin);
@@ -408,9 +409,14 @@ int main() {
   pzx_keyscan_init();
 
 #ifdef PICOMPUTER_PICOZX_LCD
+#ifdef PICO_STARTUP_VGA
+  useVga = !pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
+#else
   useVga = pzx_fire_raw();
-  ZxSpectrumFatSpiExists vgaoption(&sdCard0, "zxspectrum", "vga.txt");
-  useVga |= vgaoption.exists();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
+#endif
+  if (swap_option.exists()) useVga = !useVga;
 #endif
 
   sem_init(&dvi_start_sem, 0, 1);
