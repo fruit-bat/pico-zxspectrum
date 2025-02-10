@@ -309,25 +309,25 @@ Clone the projects from github:
 
 Using *git* protocol:
 ```sh
-git clone git@github.com:fruit-bat/pico-hid-host
+git clone git@github.com:fruit-bat/pico-hid-host.git
 git clone git@github.com:fruit-bat/pico-nespad.git
 git clone git@github.com:fruit-bat/pico-extras.git
 git clone git@github.com:fruit-bat/PicoDVI.git
 git clone git@github.com:fruit-bat/pico-zxspectrum.git
 git clone git@github.com:pimoroni/pimoroni-pico.git
-git clone git@github.com:fruit-bat/pico-dvi-menu
-git clone git@github.com:fruit-bat/pico-emu-utils
+git clone git@github.com:fruit-bat/pico-dvi-menu.git
+git clone git@github.com:fruit-bat/pico-emu-utils.git
 git clone git@github.com:redcode/Z80.git
 git clone git@github.com:redcode/Zeta.git
 ```
 ...or using *https* protocol:
 ```sh
 git clone https://github.com/fruit-bat/pico-hid-host
-git clone https://github.com/fruit-bat/pico-nespad.git
-git clone https://github.com/fruit-bat/pico-extras.git
-git clone https://github.com/fruit-bat/PicoDVI.git
-git clone https://github.com/fruit-bat/pico-zxspectrum.git
-git clone https://github.com/pimoroni/pimoroni-pico.git
+git clone https://github.com/fruit-bat/pico-nespad
+git clone https://github.com/fruit-bat/pico-extras
+git clone https://github.com/fruit-bat/PicoDVI
+git clone https://github.com/fruit-bat/pico-zxspectrum
+git clone https://github.com/pimoroni/pimoroni-pico
 git clone https://github.com/fruit-bat/pico-dvi-menu
 git clone https://github.com/fruit-bat/pico-emu-utils
 git clone https://github.com/redcode/Z80.git
@@ -346,6 +346,24 @@ Switch to the audio branch of PicoDVI
 cd PicoDVI
 git checkout audio
 cd -
+```
+
+Update existing repositories:
+
+Using *git* protocol:
+```sh
+cd ~/pico
+git -C pico-sdk submodule update --recursive
+git -C pico-hid-host pull
+git -C pico-nespad pull
+git -C pico-extras pull
+git -C PicoDVI pull
+git -C pico-zxspectrum pull
+git -C pimoroni-pico pull
+git -C pico-dvi-menu pull
+git -C pico-emu-utils pull
+git -C Z80 pull
+git -C Zeta pull
 ```
 
 Perform the build:
