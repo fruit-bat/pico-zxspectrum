@@ -23,7 +23,7 @@ This project is intended to be relatively easy to breadboard or prototype in som
 
 ## Updates
 
-10/02/35
+10/02/25
 
 * Updates for orginal [PICO ZX](docs/ZxSpectrumPicomputerZxLcd.md) board by bobricius
   * Improvements to menu navigation
