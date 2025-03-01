@@ -1,4 +1,5 @@
 #include "ZxSt7789LcdRenderLoop.h"
+#include "ZxRenderLoopCallbacks.h"
 #include "picomputer/picomputer_st7789/st7789_lcd.h"
 #include "picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.h"
 #include "pico/stdlib.h"
@@ -75,18 +76,18 @@ void ZxSt7789LcdRenderLoop(
           zxSpectrum.borderColour(y));
       }
 
-      ZxSt7789LcdRenderLoopCallbackLine(y);
+      ZxRenderLoopCallbackLine(y);
     }
 
     if (toggleMenu) {
       showMenu = !showMenu;
       toggleMenu = false;
-      ZxSt7789LcdRenderLoopCallbackMenu(showMenu);
+      ZxRenderLoopCallbackMenu(showMenu);
     }
 
     while((time_us_32() - t1) < 20000) {
       sleep_us(100);
-      ZxSt7789LcdRenderLoopCallbackLine(-1);
+      ZxRenderLoopCallbackLine(-1);
     }
 
     t1 += 20000;
