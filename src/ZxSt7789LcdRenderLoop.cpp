@@ -9,7 +9,7 @@
 static  PIO pio = pio0;
 static  uint sm = 0;
 
-void __not_in_flash_func(ZxSt7789LcdRenderLoopInit)(ZxSpectrumMenu& picoRootWin) {
+void ZxSt7789LcdRenderLoopInit(ZxSpectrumMenu& picoRootWin) {
 
   // Turn on the LCD backlight
 //   gpio_init(4);
@@ -25,7 +25,7 @@ void __not_in_flash_func(ZxSt7789LcdRenderLoopInit)(ZxSpectrumMenu& picoRootWin)
   sleep_ms(10);
 }
 
-void ZxSt7789LcdRenderLoop(
+void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,

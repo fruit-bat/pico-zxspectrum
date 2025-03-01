@@ -3,7 +3,9 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(zxspectrum_st7789_lcd_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSt7789LcdRenderLoop.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.cpp # TODO Move this file
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.cpp # TODO Move this file
 )
 
 set(zxspectrum_common_src
@@ -75,6 +77,7 @@ set(zxspectrum_dvi_src
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.S
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.h
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareDviScanline.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxDviRenderLoop.cpp
 )
 
 set(zxspectrum_kbd_src
