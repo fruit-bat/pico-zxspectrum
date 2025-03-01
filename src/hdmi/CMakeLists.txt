@@ -420,12 +420,17 @@ foreach(target
 )
   add_executable(${target}
     ${zxspectrum_common_src}
+    ${zxspectrum_st7789_lcd_src}
     ${zxspectrum_hdmi_src}
   )
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     ${zxspectrum_hdmi_libs}
+  )
+
+  pico_generate_pio_header(${target}
+    ${zxspectrum_st7789_pio}
   )
 
   # create map/bin/hex file etc.

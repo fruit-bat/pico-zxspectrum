@@ -1,6 +1,11 @@
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+set(zxspectrum_st7789_lcd_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSt7789LcdRenderLoop.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.cpp
+)
+
 set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMouse.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidMouse.cpp
@@ -105,6 +110,10 @@ set(zxspectrum_ear_in_pio
 
 set(zxspectrum_pwm_pio
   ${CMAKE_CURRENT_LIST_DIR}/pwm.pio
+)
+
+set(zxspectrum_st7789_pio 
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
 )
 
 add_subdirectory(hdmi)
