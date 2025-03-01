@@ -2,8 +2,9 @@
 
 #include "ZxSpectrum.h"
 #include "ZxSpectrumDisplay.h"
+#include "ZxSpectrumMenu.h"
 
-void ZxSt7789LcdRenderLoopInit();
+void ZxSt7789LcdRenderLoopInit(ZxSpectrumMenu& picoRootWin);
 
 void ZxSt7789LcdRenderLoop(
     ZxSpectrum &zxSpectrum,
