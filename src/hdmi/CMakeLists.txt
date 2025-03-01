@@ -411,6 +411,61 @@ target_compile_definitions(ZxSpectrumPiZero_720x576x50Hz PRIVATE
 )
 
 ########################################################################
+# Waveshare - RP2040 - PicoZero - For Bobricius PICO ZX board
+########################################################################
+
+foreach(target
+  ZxSpectrumBobZero_640x480x60Hz
+  ZxSpectrumBobZero_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+endforeach()
+
+
+set (ZxSpectrumBobZero_defines
+  # Set up the DVI output to match the Waveshare RP2040 PiZero
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  SDCARD_PIO=pio1
+  SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=21
+  SDCARD_PIN_SPI0_SCK=18
+  SDCARD_PIN_SPI0_MOSI=19
+  SDCARD_PIN_SPI0_MISO=20
+  # HDMI audio
+  PICO_HDMI_AUDIO
+)
+
+target_compile_definitions(ZxSpectrumBobZero_640x480x60Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxSpectrumBobZero_720x576x50Hz PRIVATE
+  ${ZxSpectrumPiZero_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
+########################################################################
 # ZX-MURMULATOR
 ########################################################################
 
