@@ -9,8 +9,8 @@
 #define SAMPLES 2
 
 #define ROW_PINS 9,1,8,5,4,15
-#define COL_PIN_DAT 10
-#define COL_PIN_CLK 11
+#define COL_PIN_DAT 17
+#define COL_PIN_CLK 14
 // TODO
 #define ROW_PINS_JOIN(a) (a)
 #define ROW_PINS_SHIFT 2
@@ -18,7 +18,7 @@
 // TODO Check this works when not a power of 2
 #define ROW_PIN_COUNT 6
 
-static uint8_t row_pins[] = {ROW_PINS};                // Row pins
+static uint8_t row_pins[] = {ROW_PINS};          // Row pins
 static uint8_t rs[COL_PIN_COUNT][SAMPLES];       // Oversampled pins
 static uint8_t rdb[COL_PIN_COUNT];               // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
