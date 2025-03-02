@@ -34,7 +34,7 @@ void __not_in_flash_func(ZxDviRenderLoop)(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    bool &toggleMenu)
+    volatile bool &toggleMenu)
 {
     dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
     dvi_start(&dvi0);
