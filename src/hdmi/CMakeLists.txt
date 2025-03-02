@@ -422,6 +422,7 @@ foreach(target
     ${zxspectrum_common_src}
     ${zxspectrum_st7789_lcd_src}
     ${zxspectrum_hdmi_src}
+    ${zxspectrum_kbd2_src}
   )
 
   target_link_libraries(${target}
@@ -458,6 +459,8 @@ set (ZxSpectrumBobZero_defines
   SDCARD_PIN_SPI0_MISO=20
   # HDMI audio
   PICO_HDMI_AUDIO
+  # Use the matrix keyboard
+  USE_KEY_MATRIX
 )
 
 target_compile_definitions(ZxSpectrumBobZero_640x480x60Hz PRIVATE

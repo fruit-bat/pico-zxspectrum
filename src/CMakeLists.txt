@@ -84,6 +84,10 @@ set(zxspectrum_kbd_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix.cpp
 )
 
+set(zxspectrum_kbd2_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix2.cpp
+)
+
 set(zxspectrum_common_libs
   pico_stdlib
   pico_multicore
