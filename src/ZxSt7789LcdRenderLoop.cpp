@@ -5,22 +5,14 @@
 #include "pico/stdlib.h"
 #include "PicoCharRendererSt7789.h"
 #include "PicoCharRendererVga.h"
+#include "hardware/clocks.h"
 
-static  PIO pio = pio0;
-static  uint sm = 0;
+static PIO pio = pio0;
+static uint sm = 0;
 
-void ZxSt7789LcdRenderLoopInit(ZxSpectrumMenu& picoRootWin) {
+void ZxSt7789LcdRenderLoopInit() {
 
-  // Turn on the LCD backlight
-//   gpio_init(4);
-//   gpio_set_dir(4, GPIO_OUT);
-//   gpio_put(4, 1);
-
-  picoRootWin.move(0,0,40,30);
-  picoRootWin.setWizLayout(0, 12, 18, 40);
-
-  // Start up the LCD
-  st7789_init(pio, sm);
+  set_sys_clock_khz(200000, true);
 
   sleep_ms(10);
 }
@@ -29,8 +21,25 @@ void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    bool &toggleMenu) 
+    bool &toggleMenu,
+    ZxSpectrumMenu& picoRootWin) 
 {
+  picoRootWin.move(0,0,40,30);
+  picoRootWin.setWizLayout(0, 12, 18, 40);
+
+  // TODO Configurable backlight control
+#ifdef PICOMPUTER_PICOZX_LCD
+  // Turn on the LCD backlight
+  gpio_init(4);
+  gpio_set_dir(4, GPIO_OUT);
+  gpio_put(4, 1);
+#endif
+
+  // Start up the LCD
+  st7789_init(pio, sm);
+
+  sleep_ms(10);
+
   uint32_t t1 = time_us_32();
   uint8_t* screenPtr;
   uint8_t* attrPtr;

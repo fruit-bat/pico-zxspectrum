@@ -104,9 +104,8 @@ set(picomputer_zx_lcd_src
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
   ${zxspectrum_scanvideo_src}
+  ${zxspectrum_st7789_lcd_src}
   main.cpp
-  st7789_lcd.cpp
-  pzx_prepare_rgb444_scanline.cpp
 )
 
 set(zxspectrum_zx_lcd_640x480x60Hz_defines
