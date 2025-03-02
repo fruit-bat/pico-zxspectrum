@@ -185,11 +185,12 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   picomputerJoystick.enabled(!showMenu);
   pzx_menu_mode(showMenu);
 }
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
+
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(uint32_t y) {
     pzx_keyscan_row();
 }
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void core1_main() {

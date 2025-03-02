@@ -189,10 +189,10 @@ static Ps2Kbd ps2kbd(
 
 static volatile uint _frames = 0;
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(uint32_t y) {
 }
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void __not_in_flash_func(core1_main)() {

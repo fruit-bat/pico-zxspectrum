@@ -2,7 +2,6 @@
 #include "ZxSpectrumPrepareDviScanline.h"
 #include "hardware/clocks.h"
 #include "PicoCharRenderer.h"
-#include "ZxRenderLoopCallbacks.h"
 
 extern "C" {
     #include "dvi.h"

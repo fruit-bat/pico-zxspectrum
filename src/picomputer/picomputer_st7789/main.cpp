@@ -206,17 +206,6 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   pzx_menu_mode(showMenu);
 }
 
-// TODO generic line and menu callbacks
-#ifdef PICOMPUTER_PICOZX_LCD
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
-    pzx_keyscan_row();
-}
-
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
-  setMenuState(showMenu);
-}
-#endif
-
 void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
   pzx_keyscan_row();
 }
@@ -293,29 +282,29 @@ void __not_in_flash_func(main_loop)() {
 }
 
 int main() {
-    pico_set_core_voltage();
+  pico_set_core_voltage();
 
-    // Initialise the keyboard scan
-    // This is done early so we know the boot mode
-    pzx_keyscan_init();
+  // Initialise the keyboard scan
+  // This is done early so we know the boot mode
+  pzx_keyscan_init();
 
 #ifdef PICOMPUTER_PICOZX_LCD
 
 #ifdef PICO_STARTUP_VGA
-    useVga = !pzx_fire_raw();
-    ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
+  useVga = !pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
 #else
-    useVga = pzx_fire_raw();
-    ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
+  useVga = pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
 #endif
-    if (swap_option.exists()) useVga = !useVga;
+  if (swap_option.exists()) useVga = !useVga;
 
-    // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
-    // going to use the VGA clock.
-    ZxScanlineVgaRenderLoopInit();
+  // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
+  // going to use the VGA clock.
+  ZxScanlineVgaRenderLoopInit();
 
 #else
-    ZxSt7789LcdRenderLoopInit();
+  ZxSt7789LcdRenderLoopInit();
 #endif
 
   //Initialise I/O

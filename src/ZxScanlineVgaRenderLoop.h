@@ -2,6 +2,7 @@
 
 #include "ZxSpectrum.h"
 #include "ZxSpectrumDisplay.h"
+#include "ZxRenderLoopCallbacks.h"
 
 void ZxScanlineVgaRenderLoopInit();
 
@@ -10,6 +11,3 @@ void ZxScanlineVgaRenderLoop(
     volatile uint &frames,
     bool &showMenu,
     bool &toggleMenu);
-
-extern void ZxScanlineVgaRenderLoopCallbackLine(uint32_t y);
-extern void ZxScanlineVgaRenderLoopCallbackMenu(bool state);

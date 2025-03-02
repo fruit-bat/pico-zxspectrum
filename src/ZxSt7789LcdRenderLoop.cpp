@@ -1,5 +1,4 @@
 #include "ZxSt7789LcdRenderLoop.h"
-#include "ZxRenderLoopCallbacks.h"
 #include "picomputer/picomputer_st7789/st7789_lcd.h"
 #include "picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.h"
 #include "pico/stdlib.h"
@@ -17,13 +16,7 @@ void ZxSt7789LcdRenderLoopInit() {
   sleep_ms(10);
 }
 
-void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
-    ZxSpectrum &zxSpectrum,
-    volatile uint &frames,
-    bool &showMenu,
-    bool &toggleMenu,
-    ZxSpectrumMenu& picoRootWin) 
-{
+static void ZxSt7789LcdRenderLoopPre(ZxSpectrumMenu& picoRootWin) {
   picoRootWin.move(0,0,40,30);
   picoRootWin.setWizLayout(0, 12, 18, 40);
 
@@ -39,6 +32,16 @@ void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
   st7789_init(pio, sm);
 
   sleep_ms(10);
+}
+
+void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
+    ZxSpectrum &zxSpectrum,
+    volatile uint &frames,
+    bool &showMenu,
+    bool &toggleMenu,
+    ZxSpectrumMenu& picoRootWin) 
+{
+  ZxSt7789LcdRenderLoopPre(picoRootWin);
 
   uint32_t t1 = time_us_32();
   uint8_t* screenPtr;

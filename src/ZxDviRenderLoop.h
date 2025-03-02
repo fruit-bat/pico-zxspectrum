@@ -2,6 +2,7 @@
 
 #include "ZxSpectrum.h"
 #include "ZxSpectrumDisplay.h"
+#include "ZxRenderLoopCallbacks.h"
 
 void ZxDviRenderLoopInit();
 
