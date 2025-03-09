@@ -29,7 +29,6 @@ ROW_PIN_BIT_R(a, ROW_PIN_6,  5) \
 )
 
 #define COL_PIN_COUNT 8
-// TODO Check this works when not a power of 2
 #define ROW_PIN_COUNT 6
 
 static uint8_t row_pins[] = {ROW_PINS};          // Row pins
