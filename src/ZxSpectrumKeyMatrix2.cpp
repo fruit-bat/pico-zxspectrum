@@ -8,12 +8,26 @@
 
 #define SAMPLES 2
 
-#define ROW_PINS 9,1,8,5,4,15
+#define ROW_PIN_1 9
+#define ROW_PIN_2 1
+#define ROW_PIN_3 8
+#define ROW_PIN_4 5
+#define ROW_PIN_5 4
+#define ROW_PIN_6 15
+#define ROW_PINS ROW_PIN_5,ROW_PIN_4,ROW_PIN_3,ROW_PIN_2,ROW_PIN_1,ROW_PIN_6
 #define COL_PIN_DAT 17
 #define COL_PIN_CLK 14
-// TODO
-#define ROW_PINS_JOIN(a) (a)
-#define ROW_PINS_SHIFT 2
+#define ROW_PIN_BIT_R(a,p,b) ((a >> (p - b)) & (1 << b))
+#define ROW_PIN_BIT_L(a,p,b) ((a << (b - p)) & (1 << b))
+#define ROW_PINS_JOIN(a) ( \
+ROW_PIN_BIT_R(a, ROW_PIN_5,  0) | \
+ROW_PIN_BIT_R(a, ROW_PIN_4,  1) | \
+ROW_PIN_BIT_R(a, ROW_PIN_3,  2) | \
+ROW_PIN_BIT_L(a, ROW_PIN_2,  3) | \
+ROW_PIN_BIT_R(a, ROW_PIN_1,  4) | \
+ROW_PIN_BIT_R(a, ROW_PIN_6,  5) \
+)
+
 #define COL_PIN_COUNT 8
 // TODO Check this works when not a power of 2
 #define ROW_PIN_COUNT 6
@@ -22,22 +36,19 @@ static uint8_t row_pins[] = {ROW_PINS};          // Row pins
 static uint8_t rs[COL_PIN_COUNT][SAMPLES];       // Oversampled pins
 static uint8_t rdb[COL_PIN_COUNT];               // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
-static uint8_t hri = 0;                          // Currenct hid report index
+static uint8_t hri = 0;                          // Currenct hid report inde
 static uint8_t kbi = 0;
 
-static uint8_t kbits[1][ROW_PIN_COUNT][COL_PIN_COUNT] = {
+static uint8_t kbits[1][COL_PIN_COUNT][ROW_PIN_COUNT] = {
   {
-    // TODO Rotate etc
-    // 48k Spectrum keys
-    {HID_KEY_1, HID_KEY_Q, HID_KEY_A, HID_KEY_0, HID_KEY_P, 0 /* SHIFT */, HID_KEY_ENTER, HID_KEY_SPACE},
-    {HID_KEY_2, HID_KEY_W, HID_KEY_S, HID_KEY_9, HID_KEY_O, HID_KEY_Z,     HID_KEY_L,     HID_KEY_ALT_RIGHT},
-    {HID_KEY_3, HID_KEY_E, HID_KEY_D, HID_KEY_8, HID_KEY_I, HID_KEY_X,     HID_KEY_K,     HID_KEY_M},
-    {HID_KEY_4, HID_KEY_R, HID_KEY_F, HID_KEY_7, HID_KEY_U, HID_KEY_C,     HID_KEY_J,     HID_KEY_N},
-    {HID_KEY_5, HID_KEY_T, HID_KEY_G, HID_KEY_6, HID_KEY_Y, HID_KEY_V,     HID_KEY_H,     HID_KEY_B},
-    // Extra keys - these are just some example mappings
-    {0 /* CTRL */, HID_KEY_ESCAPE, HID_KEY_BACKSPACE, HID_KEY_COMMA, HID_KEY_PERIOD, HID_KEY_SLASH, HID_KEY_APOSTROPHE, HID_KEY_MINUS},
-    {HID_KEY_ARROW_LEFT, HID_KEY_ARROW_UP, HID_KEY_ARROW_RIGHT, HID_KEY_ARROW_DOWN, HID_KEY_EQUAL, HID_KEY_SEMICOLON, HID_KEY_BRACKET_RIGHT, HID_KEY_BRACKET_LEFT},
-    {HID_KEY_GRAVE, HID_KEY_BACKSLASH, HID_KEY_F1, HID_KEY_F2, HID_KEY_F3, HID_KEY_F4, HID_KEY_F5, HID_KEY_F6}
+    { HID_KEY_1,     HID_KEY_2, HID_KEY_3, HID_KEY_4, HID_KEY_5, HID_KEY_F10 /* 128 K */ },
+    { HID_KEY_Q,     HID_KEY_W, HID_KEY_E, HID_KEY_R, HID_KEY_T, HID_KEY_F9  /* 48 K */ },
+    { HID_KEY_A,     HID_KEY_S, HID_KEY_D, HID_KEY_F, HID_KEY_G, HID_KEY_F1  /* Menu */ },
+    { HID_KEY_0,     HID_KEY_9, HID_KEY_8, HID_KEY_7, HID_KEY_6, HID_KEY_ARROW_DOWN /* Down */ },
+    { HID_KEY_P,     HID_KEY_O, HID_KEY_I, HID_KEY_U, HID_KEY_Y, HID_KEY_ARROW_RIGHT /* Right */ },
+    { 0,/* Shift */  HID_KEY_Z, HID_KEY_X, HID_KEY_C, HID_KEY_Z, HID_KEY_ARROW_UP /* Up */ },
+    { HID_KEY_ENTER, HID_KEY_L, HID_KEY_K, HID_KEY_J, HID_KEY_H, HID_KEY_BRACKET_LEFT /* Left */ },
+    { HID_KEY_SPACE, HID_KEY_ALT_RIGHT, HID_KEY_M, HID_KEY_N, HID_KEY_B, 0 /* Fire */ }
   }
 };
 
@@ -83,7 +94,7 @@ void __not_in_flash_func(zx_keyscan_row)() {
 
   gpio_put(COL_PIN_CLK, 0);
 
-  uint32_t a = ~(gpio_get_all() >> ROW_PINS_SHIFT);
+  uint32_t a = ~gpio_get_all();
 
   uint32_t r = ROW_PINS_JOIN(a);
   rs[ri][si] = (uint8_t)r;
