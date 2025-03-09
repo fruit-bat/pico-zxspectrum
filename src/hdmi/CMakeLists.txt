@@ -437,6 +437,9 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
 endforeach()
 
 
@@ -464,12 +467,12 @@ set (ZxSpectrumBobZero_defines
 )
 
 target_compile_definitions(ZxSpectrumBobZero_640x480x60Hz PRIVATE
-  ${ZxSpectrumPiZero_defines}
+  ${ZxSpectrumBobZero_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
 target_compile_definitions(ZxSpectrumBobZero_720x576x50Hz PRIVATE
-  ${ZxSpectrumPiZero_defines}
+  ${ZxSpectrumBobZero_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
 
