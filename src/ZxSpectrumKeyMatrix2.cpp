@@ -37,6 +37,15 @@ static uint8_t rdb[COL_PIN_COUNT];               // Debounced pins
 static hid_keyboard_report_t hr[2];              // Current and previous hid report
 static uint8_t hri = 0;                          // Currenct hid report inde
 static uint8_t kbi = 0;
+static uint8_t menu = 0;
+
+void __not_in_flash_func(zx_menu_mode)(bool m) {
+  menu = m ? 1 : 0; 
+}
+
+bool zx_menu_mode() {
+  return menu != 0;
+}
 
 static uint8_t kbits[6][COL_PIN_COUNT][ROW_PIN_COUNT] = {
   {
