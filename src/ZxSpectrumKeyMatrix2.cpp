@@ -30,6 +30,7 @@ ROW_PIN_BIT_R(a, ROW_PIN_6,  5) \
 
 #define COL_PIN_COUNT 8
 #define ROW_PIN_COUNT 6
+#define JOYSTICK_OFFSET 2
 
 static uint8_t row_pins[] = {ROW_PINS};          // Row pins
 static uint8_t rs[COL_PIN_COUNT][SAMPLES];       // Oversampled pins
@@ -116,12 +117,43 @@ static uint8_t kbits[6][COL_PIN_COUNT][ROW_PIN_COUNT] = {
   }
 };
 
-
-
-
+/**
+ * Special key locations we need to keep track of
+ */
+// TODO these say _ROW but they should be _COL
+#define KEY_UP_ROW 5
+#define KEY_UP_BIT 0x20
+#define KEY_DOWN_ROW 3
+#define KEY_DOWN_BIT 0x20
+#define KEY_LEFT_ROW 6
+#define KEY_LEFT_BIT 0x20
+#define KEY_RIGHT_ROW 4
+#define KEY_RIGHT_BIT 0x20
+#define KEY_FIRE_ROW 7
+#define KEY_FIRE_BIT 0x20
+#define KEY_CURSOR_ROW 0
+#define KEY_CURSOR_BIT 0x20
+#define KEY_KEMPSTON_ROW 1
+#define KEY_KEMPSTON_BIT 0x20 
 #define KEY_SHIFT_ROW 5
 #define KEY_SHIFT_BIT 0x1
-#define LED_PIN 25
+
+// TODO Check this and move to make
+// #define LED_PIN 25
+
+static uint8_t kempstonJoystick = 0;
+
+static void zx_mode_joystick() {
+  // Joystick mode
+  kempstonJoystick = JOYSTICK_OFFSET;
+  // gpio_put(LED_PIN, 0);
+}
+
+static void zx_mode_cursor() {
+  // Cursor mode
+  kempstonJoystick = 0;
+  // gpio_put(LED_PIN, 1);
+}
 
 void zx_keyscan_init() {
 
@@ -190,7 +222,19 @@ void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const
   static uint8_t modifier = 0;
   
   bool shift = rdb[KEY_SHIFT_ROW] & KEY_SHIFT_BIT;
-  //bool ctrl = rdb[KEY_CTRL_ROW] & KEY_CTRL_BIT;
+
+  // Cursor mode 
+  if (shift) {
+    if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
+      zx_mode_cursor();
+    }
+    // Joystick mode
+    if (rdb[KEY_KEMPSTON_ROW] & KEY_KEMPSTON_BIT) {
+      zx_mode_joystick();
+    }
+  }
+
+  kbi = (menu ? 4 : kempstonJoystick) + (shift ? 1 : 0 );
 
   // Build the current hid report
   uint32_t ki = 0;
@@ -221,4 +265,3 @@ void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const
   hri++;
   *prev = &hr[hri & 1];
 }
-

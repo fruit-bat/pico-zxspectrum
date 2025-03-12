@@ -232,8 +232,10 @@ void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
+  #ifdef USE_KEY_MATRIX
   // picomputerJoystick.enabled(!showMenu);
-  // pzx_menu_mode(showMenu);
+    zx_menu_mode(showMenu);
+  #endif
 }
 
 
