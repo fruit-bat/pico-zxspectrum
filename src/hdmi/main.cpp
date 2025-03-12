@@ -20,6 +20,7 @@
 
 #ifdef USE_KEY_MATRIX
 #include "ZxSpectrumKeyMatrix.h"
+#include "ZxSpectrumMatrixJoystick.h"
 #endif
 
 extern "C" {
@@ -86,6 +87,13 @@ static ZxSpectrumNespadJoystick joystickNespad;
 #ifdef NESPAD_ENABLE
 static ZxSpectrumHidJoystick joystickHid;
 static ZxSpectrumDualJoystick joystick(&joystickHid, &joystickNespad);
+#elif defined(USE_KEY_MATRIX)
+static ZxSpectrumHidJoystick joystickHid;
+static ZxSpectrumMatrixJoystick joystickMatrix;
+static ZxSpectrumDualJoystick joystick(
+  &joystickHid, 
+  &joystickMatrix
+);
 #else
 static ZxSpectrumHidJoystick joystick;
 #endif

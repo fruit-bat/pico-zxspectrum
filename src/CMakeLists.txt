@@ -86,6 +86,7 @@ set(zxspectrum_kbd_src
 
 set(zxspectrum_kbd2_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix2.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
 )
 
 set(zxspectrum_common_libs

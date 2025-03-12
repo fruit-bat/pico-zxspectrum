@@ -184,6 +184,33 @@ void zx_keyscan_init() {
    }
 }
 
+void zx_scan_matrix() {
+  for( int i = 0; i < COL_PIN_COUNT; ++i) {
+    sleep_ms(2);
+    zx_keyscan_row();
+  }
+}
+
+bool zx_fire_raw() {
+  zx_scan_matrix();
+  for(int si = 0; si < SAMPLES; ++si) {
+    uint8_t s = rs[KEY_FIRE_ROW][si];
+    if (s & KEY_FIRE_BIT) return true;  
+  }
+  return false;
+}
+
+uint8_t __not_in_flash_func(zx_kempston)() {
+  // 000FUDLR
+  return kempstonJoystick && !menu
+  ? ((rdb[KEY_FIRE_ROW] & KEY_FIRE_BIT) >> 1)    // Kempston fire
+  | ((rdb[KEY_LEFT_ROW] & KEY_LEFT_BIT) >> 4)    // Kempston left
+  | ((rdb[KEY_UP_ROW] & KEY_UP_BIT) >> 2)        // Kempston up
+  | ((rdb[KEY_RIGHT_ROW] & KEY_RIGHT_BIT) >> 5)  // Kempston right
+  | ((rdb[KEY_DOWN_ROW] & KEY_DOWN_BIT) >> 3)    // Kempston down
+  : 0;
+}
+
 void __not_in_flash_func(zx_keyscan_row)() {
   static uint32_t ri = 0; /* The column index */
   static uint32_t si = 0; /* The sample index */
