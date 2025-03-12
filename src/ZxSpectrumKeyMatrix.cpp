@@ -32,6 +32,14 @@ bool zx_menu_mode() {
   return menu != 0;
 }
 
+bool zx_fire_raw() {
+  return false;
+}
+
+uint8_t __not_in_flash_func(zx_kempston)() {
+  // 000FUDLR
+  return 0;
+}
 static uint8_t kbits[1][RN][CN] = {
   {
     // 48k Spectrum keys
