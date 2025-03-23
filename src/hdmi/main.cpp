@@ -424,8 +424,7 @@ int main() {
     keyboard2.setKiosk(isKiosk);
   }
 
-  // TODO While testing LCD
-  // showMenu = false;
+  showMenu = false;
   picoRootWin.removeMessage();
 
   printf("Main loop\n");
