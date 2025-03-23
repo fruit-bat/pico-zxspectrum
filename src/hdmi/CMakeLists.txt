@@ -428,6 +428,7 @@ foreach(target
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     ${zxspectrum_hdmi_libs}
+    pico_st7789_menu
   )
 
   pico_generate_pio_header(${target}
@@ -461,7 +462,18 @@ set (ZxSpectrumBobZero_defines
   SDCARD_PIN_SPI0_MOSI=19
   SDCARD_PIN_SPI0_MISO=20
   # HDMI audio
-  PICO_HDMI_AUDIO
+  # PICO_HDMI_AUDIO
+  # Single pin PWM audio
+  SPK_PIN=0
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
+  INITIAL_VOL=0x30
+  LCD_NO_BL
+  LCD_PIN_CLK=10
+  LCD_PIN_DC=12
+  LCD_PIN_CS=13
+  LCD_PIN_DIN=11
+  LCD_MIRROR_X
   # Use the matrix keyboard
   USE_KEY_MATRIX
 )

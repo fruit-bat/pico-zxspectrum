@@ -4,12 +4,6 @@
 #include "hardware/clocks.h"
 #include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
-#include "ZxSpectrumPrepareRgbScanline.h"
-#include "pzx_prepare_rgb444_scanline.h"
-#include "PicoCharRendererSt7789.h"
-#include "PicoCharRendererVga.h"
-
-#include "st7789_lcd.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumPrepareRgbScanline.h"

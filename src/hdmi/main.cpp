@@ -47,7 +47,6 @@ extern "C" {
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
 #include "ZxSpectrumFileLoop.h"
-#include "ZxSpectrumPrepareDviScanline.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
@@ -56,6 +55,7 @@ extern "C" {
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
 #include "ZxDviRenderLoop.h"
+#include "ZxSt7789LcdRenderLoop.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -72,6 +72,12 @@ extern "C" {
 #endif
 
 #define LED_PIN 25
+
+#ifdef PICO_STARTUP_DVI
+static bool useDvi = true;
+#else
+static bool useDvi = false;
+#endif
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -259,12 +265,23 @@ static volatile uint _frames = 0;
 
 void core1_main() {
   
-  ZxDviRenderLoop(
-    zxSpectrum,
-    _frames,
-    showMenu,
-    toggleMenu
-  );
+  if (useDvi) {
+    ZxDviRenderLoop(
+      zxSpectrum,
+      _frames,
+      showMenu,
+      toggleMenu
+    );
+  }
+  else {
+    ZxSt7789LcdRenderLoop(
+      zxSpectrum,
+      _frames,
+      showMenu,
+      toggleMenu,
+      picoRootWin
+    );
+  }
 
   while (1) 
     __wfi();
@@ -314,8 +331,16 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
-  // Init the DVI output and set the clock
-  ZxDviRenderLoopInit();
+  // TODO Check if we are using DVI or LCD
+  if (useDvi) {
+    // Init the DVI output and set the clock
+    ZxDviRenderLoopInit();
+  }
+  else {
+    // TODO without the DVI running we have no clock to sync with!
+    // TODO make sure we start an audio option to sync with instead!
+    ZxSt7789LcdRenderLoopInit();
+  }
 
   setup_default_uart();
 
@@ -399,7 +424,8 @@ int main() {
     keyboard2.setKiosk(isKiosk);
   }
 
-  showMenu = false;
+  // TODO While testing LCD
+  // showMenu = false;
   picoRootWin.removeMessage();
 
   printf("Main loop\n");

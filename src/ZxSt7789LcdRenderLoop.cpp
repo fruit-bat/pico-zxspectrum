@@ -38,7 +38,7 @@ void __not_in_flash_func(ZxSt7789LcdRenderLoop)(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    bool &toggleMenu,
+    volatile bool &toggleMenu,
     ZxSpectrumMenu& picoRootWin) 
 {
   ZxSt7789LcdRenderLoopPre(picoRootWin);
