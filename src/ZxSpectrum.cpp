@@ -32,7 +32,8 @@ ZxSpectrum::ZxSpectrum(
   _bzf(0),
   _sl(0),
   _slc(0)
-{
+{ 
+  setAudioFreqHz(44100);
   z80Power(true);
   _Z80.context = this;
   _Z80.options = Z80_MODEL_ZILOG_NMOS;
@@ -789,11 +790,6 @@ void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
 // audio in and out
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
-  // Time for a single audio out sample in 32nds of a micro second
-  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
-  // Time for a single audio in sample in 32nds of a micro second
-  const int32_t u32pes = ((1000000 << 5) / 1000000);
-  
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
   if (_moderate) {

@@ -36,7 +36,7 @@
 #define PICO_AUDIO_OUT_FREQ PICO_PWM_AUDIO_FREQ
 #endif
 
-void zxSpectrumAudioInit();
+uint32_t zxSpectrumAudioInit();
 
 void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, int32_t buzzerSmoothed, uint32_t buzzer, bool mute);
 

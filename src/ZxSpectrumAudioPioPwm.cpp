@@ -1,4 +1,3 @@
-
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
@@ -6,6 +5,11 @@
 #include "pwm.pio.h"
 
 #include "ZxSpectrumAudioPioPwm.h"
+#include "ZxSpectrumAudioVol.h"
+
+#ifndef PICO_PWM_AUDIO_FREQ
+#define PICO_PWM_AUDIO_FREQ 28000
+#endif
 
 static uint pwm_audio_sm = 0;
 
@@ -18,7 +22,7 @@ void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
     pio_sm_set_enabled(pio, sm, true);
 }
 
-void init_pio_pwm_audio() {
+uint32_t pio_pwm_audio_init() {
 
     gpio_init(SPK_PIN);
     gpio_set_dir(SPK_PIN, GPIO_OUT);
@@ -31,19 +35,17 @@ void init_pio_pwm_audio() {
     pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0);
     pio_pwm_set_period(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 1024);
     printf("Finish configuring PWM PIO\n");
+
+    return PICO_PWM_AUDIO_FREQ;
 }
 
-// Write `level` to TX FIFO. State machine will copy this into X.
-inline void pio_pwm_set_level(PIO pio, uint sm, uint32_t level) {
-    pio_sm_put_blocking(pio, sm, level);
-}
-
-void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute, uint32_t vol) {
+// TODO Mute not implemented
+void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
     const int32_t l = vA + vC + vB + s - (128*3);
-    const int32_t v = __mul_instruction(vol, 60);
+    const int32_t v = __mul_instruction(_vol, 60);
     const int32_t lr = __mul_instruction(v, l) >> (8 + 6);
     const int32_t k = lr + 512;
-    pio_pwm_set_level(PICO_AUDIO_PWM_PIO, pwm_audio_sm, k < 0 ? 0 : k > 1024 ? 1024 : k);
+    pio_sm_put_blocking(PICO_AUDIO_PWM_PIO, pwm_audio_sm, k < 0 ? 0 : k > 1024 ? 1024 : k);
 }
 
 bool __not_in_flash_func(pio_pwm_audio_ready)() {

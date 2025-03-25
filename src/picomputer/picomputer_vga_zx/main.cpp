@@ -291,7 +291,7 @@ int main(){
   tuh_hid_app_startup();
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioFreqHz(zxSpectrumAudioInit());
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

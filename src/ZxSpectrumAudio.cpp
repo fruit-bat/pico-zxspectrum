@@ -207,9 +207,10 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 #endif
 }
 
-void zxSpectrumAudioInit() {
+uint32_t zxSpectrumAudioInit() {
+  uint32_t audioOutFreq = 44100;
 #if defined(PICO_PIO_PWM_AUDIO)
-  init_pio_pwm_audio();
+  audioOutFreq = pio_pwm_audio_init();
 #elif defined(PICO_AUDIO_I2S)
   init_is2_audio();
 #elif defined(PICO_HDMI_AUDIO)
@@ -237,11 +238,12 @@ void zxSpectrumAudioInit() {
 #ifdef EAR_PIN
   init_ear_in();
 #endif
+  return audioOutFreq;
 }
 
 void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
 #if defined(PICO_PIO_PWM_AUDIO)
-  pio_pwm_audio_handler(vA, vB, vC, s, buzzer, mute, _vol);
+  pio_pwm_audio_handler(vA, vB, vC, s, buzzer, mute);
 #elif defined(PICO_HDMI_AUDIO) || defined(PICO_AUDIO_I2S)
   uint32_t ll, rr;
   if (mute) {

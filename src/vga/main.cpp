@@ -304,7 +304,7 @@ int main(){
 #endif
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();  // pio1, ear SM ?, I2S SM ?
+  zxSpectrum.setAudioFreqHz(zxSpectrumAudioInit());
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);

@@ -397,7 +397,7 @@ int main() {
 #endif
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioFreqHz(zxSpectrumAudioInit());
 
   printf("Core 1 start\n");
   
