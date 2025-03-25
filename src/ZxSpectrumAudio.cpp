@@ -3,6 +3,8 @@
 #include "hardware/clocks.h"
 #include "pico/printf.h"
 
+#include "ZxSpectrumAudioPioPwm.h"
+
 #ifndef INITIAL_VOL
 #define INITIAL_VOL 0x100
 #endif
@@ -10,89 +12,11 @@ static uint32_t _vol = INITIAL_VOL;
 
 #if defined(PICO_PIO_PWM_AUDIO) 
 
-#include "pwm.pio.h"
-static uint pwm_audio_sm = 0;
-
-// Write `period` to the input shift register
-void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
-    pio_sm_set_enabled(pio, sm, false);
-    pio_sm_put_blocking(pio, sm, period);
-    pio_sm_exec(pio, sm, pio_encode_pull(false, false));
-    pio_sm_exec(pio, sm, pio_encode_out(pio_isr, 32));
-    pio_sm_set_enabled(pio, sm, true);
-}
-
-void init_pio_pwm_audio() {
-
-  gpio_init(SPK_PIN);
-  gpio_set_dir(SPK_PIN, GPIO_OUT);
-
-  uint offset = pio_add_program(PICO_AUDIO_PWM_PIO, &pwm_program);
-  printf("Loaded PWM PIO at %u\n", offset);
-  pwm_audio_sm = pio_claim_unused_sm(PICO_AUDIO_PWM_PIO, true);
-  printf("Chosen %d for PWM PIO State machine\n", pwm_audio_sm);
-  pwm_program_init(PICO_AUDIO_PWM_PIO, pwm_audio_sm, offset, SPK_PIN);
-  pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0);
-  pio_pwm_set_period(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 1024);
-  printf("Finish configuring PWM PIO\n");
-}
-
-// Write `level` to TX FIFO. State machine will copy this into X.
-inline void pio_pwm_set_level(PIO pio, uint sm, uint32_t level) {
-    pio_sm_put_blocking(pio, sm, level);
-}
+// TODO Removed
 
 #elif !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
 #include "pico/time.h"
-// PWM Audio stuff
-#define ZX_AUDIO_BUF_SIZE_BITS 7
-#define ZX_AUDIO_BUF_SIZE (1<<ZX_AUDIO_BUF_SIZE_BITS)
-#define ZX_AUDIO_BUF_MOD_MASK (ZX_AUDIO_BUF_SIZE-1)
-
-// Sample for delayed deliver to PWM output
-typedef struct {
-  uint16_t vA; 
-  uint16_t vB; 
-  uint16_t vC; 
-  uint16_t s; 
-  uint16_t b; 
-} zx_audio_sample_t;
-
-typedef struct {
-  zx_audio_sample_t sample[ZX_AUDIO_BUF_SIZE];
-  uint32_t ri;
-  uint32_t wi;
-} zx_audio_buf_t;
-
-void zx_audio_buf_init(zx_audio_buf_t *b) {
-  b->ri = 0;
-  b->wi = 0;
-}
-
-inline bool zx_audio_buf_ready_for_write(zx_audio_buf_t *b) {
-  return ((b->ri - b->wi) & ZX_AUDIO_BUF_MOD_MASK) != 1; 
-}
-
-inline bool zx_audio_buf_ready_for_read(zx_audio_buf_t *b) {
-  return b->ri != b->wi; 
-}
-
-inline void zx_audio_buf_read_next(zx_audio_buf_t *b) {
-  b->ri = (b->ri + 1) & ZX_AUDIO_BUF_MOD_MASK;  
-}
-
-inline void zx_audio_buf_write_next(zx_audio_buf_t *b) {
-  b->wi = (b->wi + 1) & ZX_AUDIO_BUF_MOD_MASK;  
-}
-
-inline zx_audio_sample_t *zx_audio_buf_read_ptr(zx_audio_buf_t *b) {
-  return &b->sample[b->ri];
-}
-
-inline zx_audio_sample_t *zx_audio_buf_write_ptr(zx_audio_buf_t *b) {
-  return &b->sample[b->wi];
-}
-
+#include "ZxSpectrumAudioBuf.h"
 
 #ifdef BZR_PIN
   #ifdef AY8912_A_PIN
@@ -317,11 +241,7 @@ void zxSpectrumAudioInit() {
 
 void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
 #if defined(PICO_PIO_PWM_AUDIO)
-  const int32_t l = vA + vC + vB + s - (128*3);
-  const int32_t v = __mul_instruction(_vol, 60);
-  const int32_t lr = __mul_instruction(v, l) >> (8 + 6);
-  const int32_t k = lr + 512;
-  pio_pwm_set_level(PICO_AUDIO_PWM_PIO, pwm_audio_sm, k < 0 ? 0 : k > 1024 ? 1024 : k);
+  pio_pwm_audio_handler(vA, vB, vC, s, buzzer, mute, _vol);
 #elif defined(PICO_HDMI_AUDIO) || defined(PICO_AUDIO_I2S)
   uint32_t ll, rr;
   if (mute) {
@@ -373,8 +293,7 @@ void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }
 
 bool __not_in_flash_func(zxSpectrumAudioReady)() {
 #if defined(PICO_PIO_PWM_AUDIO)
-  return !pio_sm_is_tx_fifo_full(PICO_AUDIO_PWM_PIO, pwm_audio_sm);
-  // return !(PICO_AUDIO_PWM_PIO->fstat & (1u << (pwm_audio_sm + PIO_FSTAT_TXFULL_LSB)));
+  return pio_pwm_audio_ready();
 #elif defined(PICO_HDMI_AUDIO)
   return get_write_size(&dvi0.audio_ring, true) > 0;
 #elif defined(PICO_AUDIO_I2S)
