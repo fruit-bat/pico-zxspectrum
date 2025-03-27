@@ -127,9 +127,24 @@ uint32_t pwm_audio_init() {
 }
 
 void __not_in_flash_func(pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
-
+  zx_audio_sample_t *buf = zx_audio_buf_write_ptr(&zx_audio_buf);
+  if (mute) {
+    buf->vA = 0;
+    buf->vB = 0;
+    buf->vC = 0;
+    buf->s = 0;
+    buf->b = 0;
+  }
+  else {
+    buf->vA = vA;
+    buf->vB = vB;
+    buf->vC = vC;
+    buf->s = s;
+    buf->b = buzzer;
+  }
+  zx_audio_buf_write_next(&zx_audio_buf);
 }
 
 bool __not_in_flash_func(pwm_audio_ready)() {
-    return true;
+  return zx_audio_buf_ready_for_write(&zx_audio_buf);
 }
