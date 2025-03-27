@@ -5,6 +5,8 @@
 
 #include "ZxSpectrumAudioPioPwm.h"
 #include "ZxSpectrumAudioPwm.h"
+#include "ZxSpectrumAudioI2s.h"
+#include "ZxSpectrumAudioHdmi.h"
 #include "ZxSpectrumAudioVol.h"
 
 #if defined(PICO_PIO_PWM_AUDIO) 
@@ -14,72 +16,11 @@
 #endif
 
 #ifdef PICO_AUDIO_I2S
-#include "audio_i2s.pio.h"
-#include "hardware/pio.h"
-#include "audio_i2s.pio.h"
 
-static void update_pio_frequency(uint32_t sample_freq, PIO audio_pio, uint pio_sm) {
-  uint32_t system_clock_frequency = clock_get_hz(clk_sys);
-  assert(system_clock_frequency < 0x40000000);
-  uint32_t divider = system_clock_frequency * 4 / (sample_freq * 3); // avoid arithmetic overflow
-  assert(divider < 0x1000000);
-  pio_sm_set_clkdiv_int_frac(audio_pio, pio_sm, divider >> 8u, divider & 0xffu);
-}
-
-static uint i2s_audio_sm = 0;
-
-static void init_is2_audio() {
-  gpio_set_function(PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_PIO_FUNC);
-  gpio_set_function(PICO_AUDIO_I2S_BCLK, PICO_AUDIO_I2S_PIO_FUNC);
-  gpio_set_function(PICO_AUDIO_I2S_BCLK + 1, PICO_AUDIO_I2S_PIO_FUNC);
-  uint offset = pio_add_program(PICO_AUDIO_I2S_PIO, &audio_i2s_program);
-#ifdef PICO_AUDIO_I2S_SM
-  i2s_audio_sm = PICO_AUDIO_I2S_SM;
-#else
-  i2s_audio_sm = pio_claim_unused_sm(PICO_AUDIO_I2S_PIO, true);
-#endif
-  audio_i2s_program_init(PICO_AUDIO_I2S_PIO, i2s_audio_sm, offset, PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_BCLK);
-  update_pio_frequency(PICO_I2S_AUDIO_FREQ, PICO_AUDIO_I2S_PIO, i2s_audio_sm);
-  pio_sm_set_enabled(PICO_AUDIO_I2S_PIO, i2s_audio_sm, true);
-}
-
-inline bool is2_audio_ready() {
-  return !pio_sm_is_tx_fifo_full(PICO_AUDIO_I2S_PIO, i2s_audio_sm);
-}
-
-inline void is2_audio_put(uint32_t x) {
-  *(volatile uint32_t*)&PICO_AUDIO_I2S_PIO->txf[i2s_audio_sm] = x;
-}
 #endif
 
 #ifdef PICO_HDMI_AUDIO
-#include "dvi.h"
 
-extern struct dvi_inst dvi0;
-
-#define AUDIO_BUFFER_SIZE   256
-audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
-
-#if (PICO_HDMI_AUDIO_FREQ == 32000)
-#define HDMI_N     4096     // From HDMI standard for 32kHz
-#elif (PICO_HDMI_AUDIO_FREQ == 44100)
-#define HDMI_N     6272     // From HDMI standard for 44.1kHz
-#else
-#define HDMI_N     6144     // From HDMI standard for 48kHz
-#endif
-
-static void init_hdmi_audio() {
-  dvi_get_blank_settings(&dvi0)->top    = 0;
-  dvi_get_blank_settings(&dvi0)->bottom = 0;
-  dvi_audio_sample_buffer_set(&dvi0, audio_buffer, AUDIO_BUFFER_SIZE);
-  dvi_set_audio_freq(
-    &dvi0, 
-    PICO_HDMI_AUDIO_FREQ, 
-    dvi0.timing->bit_clk_khz*HDMI_N/(PICO_HDMI_AUDIO_FREQ/100)/128,
-    HDMI_N
-  );
-  increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
-}
 #endif
 
 #ifdef EAR_PIN
@@ -116,27 +57,11 @@ uint32_t zxSpectrumAudioInit() {
 #if defined(PICO_PIO_PWM_AUDIO)
   audioOutFreq = pio_pwm_audio_init();
 #elif defined(PICO_AUDIO_I2S)
-  init_is2_audio();
+  audioOutFreq = i2s_audio_init();
 #elif defined(PICO_HDMI_AUDIO)
-  init_hdmi_audio();
+  audioOutFreq = hdmi_audio_init();
 #else  
-  init_audio_output_timer();
-  #ifdef BZR_PIN
-    gpio_init(BZR_PIN);
-    gpio_set_dir(BZR_PIN, GPIO_OUT);
-  #endif
-  #ifdef SPK_PIN
-    init_pwm_pin(SPK_PIN);
-  #endif
-  #ifdef AY8912_A_PIN
-    init_pwm_pin(AY8912_A_PIN);
-  #endif
-  #ifdef AY8912_B_PIN
-    init_pwm_pin(AY8912_B_PIN);
-  #endif
-  #ifdef AY8912_C_PIN
-    init_pwm_pin(AY8912_C_PIN);
-  #endif
+  audioOutFreq = pwm_audio_init();
 #endif
 
 #ifdef EAR_PIN
@@ -148,63 +73,29 @@ uint32_t zxSpectrumAudioInit() {
 void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
 #if defined(PICO_PIO_PWM_AUDIO)
   pio_pwm_audio_handler(vA, vB, vC, s, buzzer, mute);
-#elif defined(PICO_HDMI_AUDIO) || defined(PICO_AUDIO_I2S)
-  uint32_t ll, rr;
-  if (mute) {
-    ll = rr = 0;
-  }
-  else {
-    const int32_t l = (vA << 1) + vB + s - (128*3);
-    const int32_t r = (vC << 1) + vB + s - (128*3);
-    const int32_t v = __mul_instruction(_vol, 60);
-    ll = (__mul_instruction(v, l) >> 8) & 0xffff;
-    rr = (__mul_instruction(v, r) >> 8) & 0xffff;
-  }
-#if defined(PICO_HDMI_AUDIO)
-  audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
-	audio_ptr->channels[0] = ll;
-	audio_ptr->channels[1] = rr;
-	increase_write_pointer(&dvi0.audio_ring, 1);
-#if defined(PICO_AUDIO_I2S)
-  if (is2_audio_ready()) {
-    is2_audio_put((ll << 16) | rr);
-  }
-#endif
+#elif defined(PICO_HDMI_AUDIO)
+  hdmi_audio_handler(vA, vB, vC, s, buzzer, mute);
 #elif defined(PICO_AUDIO_I2S)
-  is2_audio_put((ll << 16) | rr);
-#endif
+  i2s_audio_handler(vA, vB, vC, s, buzzer, mute);
 #else
-  zx_audio_sample_t *buf = zx_audio_buf_write_ptr(&zx_audio_buf);
-  if (mute) {
-    buf->vA = 0;
-    buf->vB = 0;
-    buf->vC = 0;
-    buf->s = 0;
-    buf->b = 0;
-  }
-  else {
-    buf->vA = vA;
-    buf->vB = vB;
-    buf->vC = vC;
-    buf->s = s;
-    buf->b = buzzer;
-  }
-  zx_audio_buf_write_next(&zx_audio_buf);
+  pwm_audio_handler(vA, vB, vC, s, buzzer, mute);
 #endif
 }
 
+// TODO Move
 uint32_t zxSpectrumAudioGetVolume() { return _vol; }
 
+// TODO Move
 void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }
 
 bool __not_in_flash_func(zxSpectrumAudioReady)() {
 #if defined(PICO_PIO_PWM_AUDIO)
   return pio_pwm_audio_ready();
 #elif defined(PICO_HDMI_AUDIO)
-  return get_write_size(&dvi0.audio_ring, true) > 0;
+  return hdmi_audio_ready();
 #elif defined(PICO_AUDIO_I2S)
-  return is2_audio_ready();
+  return i2s_audio_ready();
 #else
-  return zx_audio_buf_ready_for_write(&zx_audio_buf);
+  return pwm_audio_ready();
 #endif
 }

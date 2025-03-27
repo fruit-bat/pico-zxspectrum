@@ -431,9 +431,13 @@ foreach(target
     pico_st7789_menu
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_st7789_pio}
+  foreach(pio
+    ${zxspectrum_pio_all}
   )
+    pico_generate_pio_header(${target}
+      ${pio}
+    )    
+  endforeach()
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})

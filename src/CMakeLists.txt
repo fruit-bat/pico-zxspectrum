@@ -19,6 +19,7 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPioPwm.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPwm.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioI2s.cpp
+  #${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioHdmi.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
@@ -126,6 +127,13 @@ set(zxspectrum_pwm_pio
 
 set(zxspectrum_st7789_pio 
   ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
+)
+
+set(zxspectrum_pio_all
+  ${zxspectrum_audio_i2s_pio}
+  ${zxspectrum_ear_in_pio}
+  ${zxspectrum_pwm_pio}
+  ${zxspectrum_st7789_pio}
 )
 
 add_subdirectory(hdmi)
