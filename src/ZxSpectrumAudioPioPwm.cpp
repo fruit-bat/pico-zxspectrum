@@ -14,7 +14,7 @@
 static uint pwm_audio_sm = 0;
 
 // Write `period` to the input shift register
-void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
+static void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
     pio_sm_set_enabled(pio, sm, false);
     pio_sm_put_blocking(pio, sm, period);
     pio_sm_exec(pio, sm, pio_encode_pull(false, false));

@@ -4,110 +4,14 @@
 #include "pico/printf.h"
 
 #include "ZxSpectrumAudioPioPwm.h"
-
-#ifndef INITIAL_VOL
-#define INITIAL_VOL 0x100
-#endif
-static uint32_t _vol = INITIAL_VOL;
+#include "ZxSpectrumAudioPwm.h"
+#include "ZxSpectrumAudioVol.h"
 
 #if defined(PICO_PIO_PWM_AUDIO) 
 
-// TODO Removed
-
 #elif !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
-#include "pico/time.h"
-#include "ZxSpectrumAudioBuf.h"
-
-#ifdef BZR_PIN
-  #ifdef AY8912_A_PIN
-    #ifdef AY8912_ABC_STEREO
-      #define PWM_WRAP (255 + 255)
-    #else
-      #define PWM_WRAP (255)
-    #endif
-  #else
-    #define PWM_WRAP (255 + 255 + 255)
-  #endif
-#else
-  #define PWM_WRAP (255 + 255 + 255)
+// TODO Perhaps define PICO_PWM_AUDIO
 #endif
-
-static zx_audio_buf_t zx_audio_buf;
-static struct repeating_timer timer;
-bool __not_in_flash_func(repeating_timer_callback)(struct repeating_timer *timer)
-{
-  static zx_audio_sample_t last;
-  uint32_t vA;
-  uint32_t vB;
-  uint32_t vC;
-  int32_t s;
-  uint32_t buzzer;
-  
-  if (zx_audio_buf_ready_for_read(&zx_audio_buf))
-  {
-    zx_audio_sample_t *buf = zx_audio_buf_read_ptr(&zx_audio_buf);
-    last = *buf;
-    vA = buf->vA;
-    vB = buf->vB;
-    vC = buf->vC;
-    s = buf->s;
-    buzzer = buf->b;
-    zx_audio_buf_read_next(&zx_audio_buf);
-  }
-  else {
-    vA = last.vA;
-    vB = last.vB;
-    vC = last.vC;
-    s = last.s;
-    buzzer = last.b;
-  }
-#ifdef BZR_PIN
-    gpio_put(BZR_PIN, buzzer);
-#ifdef SPK_PIN
-    pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
-#else
-#ifdef AY8912_ABC_STERO
-    pwm_set_gpio_level(AY8912_A_PIN, vA + vB);
-    pwm_set_gpio_level(AY8912_C_PIN, vC + vB);
-#else
-    pwm_set_gpio_level(AY8912_A_PIN, vA);
-    pwm_set_gpio_level(AY8912_B_PIN, vB);
-    pwm_set_gpio_level(AY8912_C_PIN, vC);
-#endif
-#endif
-#else
-#ifdef AY8912_ABC_STEREO
-    uint32_t lt = __mul_instruction(_vol, vA + vB) >> 8;
-    uint32_t rt = __mul_instruction(_vol, vC + vB) >> 8;
-    uint32_t st = __mul_instruction(_vol, s) >> 8;
-    pwm_set_gpio_level(AY8912_A_PIN, lt);
-    pwm_set_gpio_level(AY8912_C_PIN, rt);
-    pwm_set_gpio_level(SPK_PIN, st);
-#else 
-    uint32_t ayt = __mul_instruction(_vol, vA + vB + vC) >> 8;
-    uint32_t ss = __mul_instruction(_vol, s) >> 8;
-    uint32_t t = ayt + ss + 128;
-    pwm_set_gpio_level(SPK_PIN, t >= 255 + 255 + 255 ? ayt - ss : t);
-#endif
-#endif
-  return true;
-}
-
-static void init_pwm_pin(uint32_t pin) { 
-  gpio_set_function(pin, GPIO_FUNC_PWM);
-  const int audio_pin_slice = pwm_gpio_to_slice_num(pin);
-  pwm_config config = pwm_get_default_config();
-  pwm_config_set_clkdiv(&config, 1.0f); 
-  pwm_config_set_wrap(&config, PWM_WRAP);
-  pwm_init(audio_pin_slice, &config, true);
-}
-
-static void init_audio_output_timer() {
-  zx_audio_buf_init(&zx_audio_buf);
-  add_repeating_timer_us(-(1000000/PICO_PWM_AUDIO_FREQ), repeating_timer_callback, NULL, &timer);
-}
-#endif
-// END PWM buffer stuff
 
 #ifdef PICO_AUDIO_I2S
 #include "audio_i2s.pio.h"
