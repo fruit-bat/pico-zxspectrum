@@ -56,6 +56,7 @@ extern "C" {
 #include "ZxSpectrumDisplay.h"
 #include "ZxDviRenderLoop.h"
 #include "ZxSt7789LcdRenderLoop.h"
+#include "ZxSpectrumAudioDriver.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -397,7 +398,7 @@ int main() {
 #endif
 
   // Configure the GPIO pins for audio
-  zxSpectrum.setAudioFreqHz(zxSpectrumAudioInit());
+  zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
 
   printf("Core 1 start\n");
   

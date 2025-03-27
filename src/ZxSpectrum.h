@@ -69,7 +69,9 @@ private:
   uint32_t _slc;
   uint32_t _fc;  // Screen flip count
   uint32_t _fcf; // Screen flip count per frame
-  
+  zx_spectrum_audio_handler_t _audio_handler;
+  zx_spectrum_audio_ready_t _audio_ready;
+
   volatile uint8_t _borderBuf[240];       //Border Buffer 240 lines
 
   uint32_t tStatesPerMilliSecond();
@@ -277,8 +279,13 @@ public:
     }
   }
 
-  inline void setAudioFreqHz(uint32_t hz) {
+  inline void setAudioDriver(zx_spectrum_audio_driver_t* audio_driver) {
+    // Set the audio handler
+    _audio_handler = audio_driver->handler;
+    _audio_ready = audio_driver->ready;
+    uint32_t hz = audio_driver->init();
     // Time for a single audio out sample in 32nds of a micro second
+    // 90%: const int32_t u32pas = (90UL * (1000000UL << 5UL)) / (hz * 100UL);
     u32pas = ((1000000 << 5) / hz);
     // Time for a single audio in sample in 32nds of a micro second
     u32pes = ((1000000 << 5) / 1000000);
