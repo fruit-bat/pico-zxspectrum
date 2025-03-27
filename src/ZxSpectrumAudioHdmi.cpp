@@ -5,6 +5,7 @@
 #include "hardware/clocks.h"
 #include "ZxSpectrumAudioHdmi.h"
 #include "ZxSpectrumAudioVol.h"
+#include "ZxSpectrumAudio16BitStereo.h"
 
 #include "dvi.h"
 
@@ -37,10 +38,14 @@ uint32_t hdmi_audio_init()
     HDMI_N
   );
   increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
+
+  return PICO_HDMI_AUDIO_FREQ;
 }
 
 void __not_in_flash_func(hdmi_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
 {
+  uint32_t ll, rr;
+  audio_handler_16bit_helper(vA, vB, vC, s, buzzer, mute, ll, rr);
   audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
 	audio_ptr->channels[0] = ll;
 	audio_ptr->channels[1] = rr;

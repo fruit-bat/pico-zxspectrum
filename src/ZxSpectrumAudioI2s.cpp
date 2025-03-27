@@ -5,6 +5,7 @@
 #include "hardware/clocks.h"
 #include "ZxSpectrumAudioI2s.h"
 #include "ZxSpectrumAudioVol.h"
+#include "ZxSpectrumAudio16BitStereo.h"
 
 #ifndef PICO_I2S_AUDIO_FREQ
 #define PICO_I2S_AUDIO_FREQ 44100
@@ -67,20 +68,8 @@ static inline bool audio_ready() {
 
 void __not_in_flash_func(i2s_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
 {
-  // Note that this is the same code as for HDMI
   uint32_t ll, rr;
-  if (mute)
-  {
-    ll = rr = 0;
-  }
-  else
-  {
-    const int32_t l = (vA << 1) + vB + s - (128 * 3);
-    const int32_t r = (vC << 1) + vB + s - (128 * 3);
-    const int32_t v = __mul_instruction(_vol, 60);
-    ll = (__mul_instruction(v, l) >> 8) & 0xffff;
-    rr = (__mul_instruction(v, r) >> 8) & 0xffff;
-  }
+  audio_handler_16bit_helper(vA, vB, vC, s, buzzer, mute, ll, rr);
 
   if (audio_ready())
   {
