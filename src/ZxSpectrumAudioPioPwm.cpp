@@ -32,7 +32,7 @@ uint32_t pio_pwm_audio_init() {
     pwm_audio_sm = pio_claim_unused_sm(PICO_AUDIO_PWM_PIO, true);
     printf("Chosen %d for PWM PIO State machine\n", pwm_audio_sm);
     pwm_program_init(PICO_AUDIO_PWM_PIO, pwm_audio_sm, offset, SPK_PIN);
-    pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0);
+    pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0); // TODO do we need to calculate this!?!
     pio_pwm_set_period(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 1024);
     printf("Finish configuring PWM PIO\n");
 
