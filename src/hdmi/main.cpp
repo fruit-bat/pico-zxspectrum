@@ -397,8 +397,9 @@ int main() {
   zx_keyscan_init();
 #endif
 
-  // Configure the GPIO pins for audio
-  zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
+  // Setup the default audio driver
+  //zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
+  zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_hdmi_index]);
 
   printf("Core 1 start\n");
   

@@ -9,6 +9,7 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 #include "ZxSpectrumVoltage.h"
+#include "ZxSpectrumAudioVol.h"
 #include "PicoCoreVoltage.h"
 
 // #define DEBUG_ZX_MENU

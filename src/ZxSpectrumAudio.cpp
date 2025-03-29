@@ -69,33 +69,3 @@ uint32_t zxSpectrumAudioInit() {
 #endif
   return audioOutFreq;
 }
-
-void __not_in_flash_func(zxSpectrumAudioHandler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
-#if defined(PICO_PIO_PWM_AUDIO)
-  pio_pwm_audio_handler(vA, vB, vC, s, buzzer, mute);
-#elif defined(PICO_HDMI_AUDIO)
-  hdmi_audio_handler(vA, vB, vC, s, buzzer, mute);
-#elif defined(PICO_AUDIO_I2S)
-  i2s_audio_handler(vA, vB, vC, s, buzzer, mute);
-#else
-  pwm_audio_handler(vA, vB, vC, s, buzzer, mute);
-#endif
-}
-
-// TODO Move
-uint32_t zxSpectrumAudioGetVolume() { return _vol; }
-
-// TODO Move
-void zxSpectrumAudioSetVolume(uint32_t vol) { _vol = vol; }
-
-bool __not_in_flash_func(zxSpectrumAudioReady)() {
-#if defined(PICO_PIO_PWM_AUDIO)
-  return pio_pwm_audio_ready();
-#elif defined(PICO_HDMI_AUDIO)
-  return hdmi_audio_ready();
-#elif defined(PICO_AUDIO_I2S)
-  return i2s_audio_ready();
-#else
-  return pwm_audio_ready();
-#endif
-}

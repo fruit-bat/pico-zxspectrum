@@ -23,13 +23,5 @@
 
 uint32_t zxSpectrumAudioInit();
 
-void zxSpectrumAudioHandler(uint32_t vA, uint32_t vB, uint32_t vC, int32_t buzzerSmoothed, uint32_t buzzer, bool mute);
-
 uint32_t zxSpectrumReadEar();
 bool zxSpectrumEarReady();
-
-uint32_t zxSpectrumAudioGetVolume();
-
-void zxSpectrumAudioSetVolume(uint32_t vol);
-bool zxSpectrumAudioReady();
-
