@@ -21,7 +21,7 @@
 // See CMakeLists.txt files for configurations
 //
 
-zx_spectrum_audio_driver_t* zxSpectrumAudioInit();
+zx_spectrum_audio_driver_t* zxSpectrumAudioInit(zx_spectrum_audio_driver_enum_t audio_driver_index);
 
 uint32_t zxSpectrumReadEar();
 bool zxSpectrumEarReady();

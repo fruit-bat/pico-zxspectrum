@@ -52,10 +52,9 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 #endif
 }
 
-zx_spectrum_audio_driver_t* zxSpectrumAudioInit() {
+zx_spectrum_audio_driver_t* zxSpectrumAudioInit(zx_spectrum_audio_driver_enum_t audio_driver_index) {
 #ifdef EAR_PIN
   init_ear_in();
 #endif
-// &_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index];
-  return &_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pwm_index];
+  return &_zx_spectrum_audio_drivers[audio_driver_index];
 }

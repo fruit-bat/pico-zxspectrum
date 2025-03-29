@@ -414,7 +414,16 @@ int main() {
 #endif
 
   // Setup the default audio driver
-  zxSpectrum.setAudioDriver(zxSpectrumAudioInit());
+#ifdef PICO_ST7789_LCD
+  if (useDvi) {
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pwm_index));
+  }
+  else {
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
+  }
+#else
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
+#endif
 
   printf("Core 1 start\n");
   
