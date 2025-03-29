@@ -1,9 +1,27 @@
-
-#include "audio_i2s.pio.h"
-#include "hardware/pio.h"
-#include "audio_i2s.pio.h"
-#include "hardware/clocks.h"
 #include "ZxSpectrumAudioHdmi.h"
+
+#if !defined(PICO_HDMI_AUDIO)
+#include "ZxSpectrumAudioNull.h"
+
+uint32_t hdmi_audio_init()
+{
+  return null_audio_init();
+}
+
+void __not_in_flash_func(hdmi_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
+{
+  null_audio_handler(vA, vB, vC, s, buzzer, mute);
+}
+
+bool __not_in_flash_func(hdmi_audio_ready)()
+{
+  return null_audio_ready();
+}
+
+#else
+
+#include "hardware/pio.h"
+#include "hardware/clocks.h"
 #include "ZxSpectrumAudioVol.h"
 #include "ZxSpectrumAudio16BitStereo.h"
 
@@ -56,3 +74,5 @@ bool __not_in_flash_func(hdmi_audio_ready)()
 {
   return get_write_size(&dvi0.audio_ring, true) > 0;
 }
+
+#endif

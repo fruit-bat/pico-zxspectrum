@@ -1,3 +1,30 @@
+#include "ZxSpectrumAudioPwm.h"
+
+// Default to hardware PWM
+#if !defined(PICO_PIO_PWM_AUDIO) && !defined(PICO_AUDIO_I2S) && !defined(PICO_HDMI_AUDIO)
+#define PICO_PWM_AUDIO
+#endif
+
+#if !defined(PICO_PWM_AUDIO)
+#include "ZxSpectrumAudioNull.h"
+
+uint32_t pwm_audio_init()
+{
+  return null_audio_init();
+}
+
+void __not_in_flash_func(pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
+{
+  null_audio_handler(vA, vB, vC, s, buzzer, mute);
+}
+
+bool __not_in_flash_func(pwm_audio_ready)()
+{
+  return null_audio_ready();
+}
+
+#else
+
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
@@ -148,3 +175,5 @@ void __not_in_flash_func(pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t v
 bool __not_in_flash_func(pwm_audio_ready)() {
   return zx_audio_buf_ready_for_write(&zx_audio_buf);
 }
+
+#endif

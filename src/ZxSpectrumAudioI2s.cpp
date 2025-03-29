@@ -1,9 +1,29 @@
 
+#include "ZxSpectrumAudioI2s.h"
+
+#if !defined(PICO_AUDIO_I2S)
+#include "ZxSpectrumAudioNull.h"
+
+uint32_t i2s_audio_init()
+{
+  return null_audio_init();
+}
+
+void __not_in_flash_func(i2s_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
+{
+  null_audio_handler(vA, vB, vC, s, buzzer, mute);
+}
+
+bool __not_in_flash_func(i2s_audio_ready)()
+{
+  return null_audio_ready();
+}
+
+#else
+
 #include "audio_i2s.pio.h"
 #include "hardware/pio.h"
-#include "audio_i2s.pio.h"
 #include "hardware/clocks.h"
-#include "ZxSpectrumAudioI2s.h"
 #include "ZxSpectrumAudioVol.h"
 #include "ZxSpectrumAudio16BitStereo.h"
 
@@ -81,3 +101,5 @@ bool __not_in_flash_func(i2s_audio_ready)()
 {
   return audio_ready();
 }
+
+#endif

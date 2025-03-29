@@ -52,20 +52,10 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 #endif
 }
 
-uint32_t zxSpectrumAudioInit() {
-  uint32_t audioOutFreq = 44100;
-#if defined(PICO_PIO_PWM_AUDIO)
-  audioOutFreq = pio_pwm_audio_init();
-#elif defined(PICO_AUDIO_I2S)
-  audioOutFreq = i2s_audio_init();
-#elif defined(PICO_HDMI_AUDIO)
-  audioOutFreq = hdmi_audio_init();
-#else  
-  audioOutFreq = pwm_audio_init();
-#endif
-
+zx_spectrum_audio_driver_t* zxSpectrumAudioInit() {
 #ifdef EAR_PIN
   init_ear_in();
 #endif
-  return audioOutFreq;
+// &_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index];
+  return &_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pwm_index];
 }

@@ -74,10 +74,12 @@ extern "C" {
 
 #define LED_PIN 25
 
+#ifdef PICO_ST7789_LCD
 #ifdef PICO_STARTUP_DVI
 static bool useDvi = true;
 #else
 static bool useDvi = false;
+#endif
 #endif
 
 static SdCardFatFsSpi sdCard0(0);
@@ -266,6 +268,7 @@ static volatile uint _frames = 0;
 
 void core1_main() {
   
+#ifdef PICO_ST7789_LCD
   if (useDvi) {
     ZxDviRenderLoop(
       zxSpectrum,
@@ -283,6 +286,14 @@ void core1_main() {
       picoRootWin
     );
   }
+#else
+  ZxDviRenderLoop(
+    zxSpectrum,
+    _frames,
+    showMenu,
+    toggleMenu
+  );
+#endif
 
   while (1) 
     __wfi();
@@ -332,6 +343,7 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+#ifdef PICO_ST7789_LCD
   // TODO Check if we are using DVI or LCD
   if (useDvi) {
     // Init the DVI output and set the clock
@@ -342,6 +354,10 @@ int main() {
     // TODO make sure we start an audio option to sync with instead!
     ZxSt7789LcdRenderLoopInit();
   }
+#else 
+  // Init the DVI output and set the clock
+  ZxDviRenderLoopInit();
+#endif
 
   setup_default_uart();
 
@@ -398,8 +414,7 @@ int main() {
 #endif
 
   // Setup the default audio driver
-  //zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
-  zxSpectrum.setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_hdmi_index]);
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit());
 
   printf("Core 1 start\n");
   

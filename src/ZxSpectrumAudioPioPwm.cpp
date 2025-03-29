@@ -1,10 +1,31 @@
+#include "ZxSpectrumAudioPioPwm.h"
+
+#if !defined(PICO_PIO_PWM_AUDIO)
+#include "ZxSpectrumAudioNull.h"
+
+uint32_t pio_pwm_audio_init()
+{
+  return null_audio_init();
+}
+
+void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
+{
+  null_audio_handler(vA, vB, vC, s, buzzer, mute);
+}
+
+bool __not_in_flash_func(pio_pwm_audio_ready)()
+{
+  return null_audio_ready();
+}
+
+#else
+
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 #include "pico/printf.h"
 #include "pwm.pio.h"
 
-#include "ZxSpectrumAudioPioPwm.h"
 #include "ZxSpectrumAudioVol.h"
 
 #ifndef PICO_PWM_AUDIO_FREQ
@@ -51,3 +72,5 @@ void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32
 bool __not_in_flash_func(pio_pwm_audio_ready)() {
     return !pio_sm_is_tx_fifo_full(PICO_AUDIO_PWM_PIO, pwm_audio_sm);
 }
+
+#endif

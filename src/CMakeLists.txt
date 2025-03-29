@@ -15,12 +15,13 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings.cpp # Needed for flash settings (not currently working)
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioDriver.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioVol.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPioPwm.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPwm.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioNull.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioI2s.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioHdmi.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioDriver.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
