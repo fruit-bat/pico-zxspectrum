@@ -144,6 +144,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   EAR_PIN=11
   # Enable the PS/2 keyboard
   USE_PS2_KBD
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
