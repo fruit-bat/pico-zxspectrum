@@ -303,8 +303,7 @@ int main(){
   ps2kbd.init_gpio(); // pio1, SM ?
 #endif
 
-  // Configure the GPIO pins for audio
-  zxSpectrum.setAudioFreqHz(zxSpectrumAudioInit());
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
