@@ -3,9 +3,14 @@
 #if !defined(PICO_HDMI_AUDIO)
 #include "ZxSpectrumAudioNull.h"
 
-uint32_t hdmi_audio_init()
+void hdmi_audio_init()
 {
-  return null_audio_init();
+  null_audio_init();
+}
+
+uint32_t hdmi_audio_freq()
+{
+  return null_audio_freq();
 }
 
 void __not_in_flash_func(hdmi_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
@@ -44,7 +49,7 @@ audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
 #define HDMI_N     6144     // From HDMI standard for 48kHz
 #endif
 
-uint32_t hdmi_audio_init()
+void hdmi_audio_init()
 {
   dvi_get_blank_settings(&dvi0)->top    = 0;
   dvi_get_blank_settings(&dvi0)->bottom = 0;
@@ -56,7 +61,9 @@ uint32_t hdmi_audio_init()
     HDMI_N
   );
   increase_write_pointer(&dvi0.audio_ring, get_write_size(&dvi0.audio_ring, true));
+}
 
+uint32_t hdmi_audio_freq() {
   return PICO_HDMI_AUDIO_FREQ;
 }
 

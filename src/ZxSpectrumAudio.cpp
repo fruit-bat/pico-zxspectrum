@@ -4,24 +4,6 @@
 #include "pico/printf.h"
 
 #include "ZxSpectrumAudioPioPwm.h"
-#include "ZxSpectrumAudioPwm.h"
-#include "ZxSpectrumAudioI2s.h"
-#include "ZxSpectrumAudioHdmi.h"
-#include "ZxSpectrumAudioVol.h"
-
-#if defined(PICO_PIO_PWM_AUDIO) 
-
-#elif !defined(PICO_HDMI_AUDIO) && !defined(PICO_AUDIO_I2S)
-// TODO Perhaps define PICO_PWM_AUDIO
-#endif
-
-#ifdef PICO_AUDIO_I2S
-
-#endif
-
-#ifdef PICO_HDMI_AUDIO
-
-#endif
 
 #ifdef EAR_PIN
 #include "zx_ear_in.pio.h"
@@ -53,6 +35,7 @@ bool __not_in_flash_func(zxSpectrumEarReady)() {
 }
 
 zx_spectrum_audio_driver_t* zxSpectrumAudioInit(zx_spectrum_audio_driver_enum_t audio_driver_index) {
+  zx_spectrum_audio_driver_init();
 #ifdef EAR_PIN
   init_ear_in();
 #endif

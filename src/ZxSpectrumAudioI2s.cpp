@@ -4,9 +4,14 @@
 #if !defined(PICO_AUDIO_I2S)
 #include "ZxSpectrumAudioNull.h"
 
-uint32_t i2s_audio_init()
+void i2s_audio_init()
 {
-  return null_audio_init();
+  null_audio_init();
+}
+
+uint32_t i2s_audio_freq()
+{
+  return null_audio_freq();
 }
 
 void __not_in_flash_func(i2s_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
@@ -64,7 +69,7 @@ static inline void is2_audio_put(uint32_t x)
   *(volatile uint32_t *)&PICO_AUDIO_I2S_PIO->txf[i2s_audio_sm] = x;
 }
 
-uint32_t i2s_audio_init()
+void i2s_audio_init()
 {
   gpio_set_function(PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_PIO_FUNC);
   gpio_set_function(PICO_AUDIO_I2S_BCLK, PICO_AUDIO_I2S_PIO_FUNC);
@@ -78,7 +83,9 @@ uint32_t i2s_audio_init()
   audio_i2s_program_init(PICO_AUDIO_I2S_PIO, i2s_audio_sm, offset, PICO_AUDIO_I2S_DATA, PICO_AUDIO_I2S_BCLK);
   update_pio_frequency(PICO_I2S_AUDIO_FREQ, PICO_AUDIO_I2S_PIO, i2s_audio_sm);
   pio_sm_set_enabled(PICO_AUDIO_I2S_PIO, i2s_audio_sm, true);
+}
 
+uint32_t i2s_audio_freq() {
   return PICO_I2S_AUDIO_FREQ;
 }
 

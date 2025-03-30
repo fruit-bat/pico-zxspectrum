@@ -1,8 +1,11 @@
 
 #include "ZxSpectrumAudioNull.h"
 
-uint32_t null_audio_init()
+void null_audio_init()
 {
+}
+
+uint32_t null_audio_freq() {
   return 28000;
 }
 

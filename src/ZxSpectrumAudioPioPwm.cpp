@@ -3,9 +3,14 @@
 #if !defined(PICO_PIO_PWM_AUDIO)
 #include "ZxSpectrumAudioNull.h"
 
-uint32_t pio_pwm_audio_init()
+void pio_pwm_audio_init()
 {
-  return null_audio_init();
+  null_audio_init();
+}
+
+uint32_t pio_pwm_audio_freq()
+{
+  return null_audio_freq();
 }
 
 void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
@@ -43,7 +48,7 @@ static void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
     pio_sm_set_enabled(pio, sm, true);
 }
 
-uint32_t pio_pwm_audio_init() {
+void pio_pwm_audio_init() {
 
     gpio_init(SPK_PIN);
     gpio_set_dir(SPK_PIN, GPIO_OUT);
@@ -56,7 +61,9 @@ uint32_t pio_pwm_audio_init() {
     pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0); // TODO do we need to calculate this!?!
     pio_pwm_set_period(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 1024);
     printf("Finish configuring PWM PIO\n");
+}
 
+uint32_t pio_pwm_audio_freq() {
     return PICO_PWM_AUDIO_FREQ;
 }
 
