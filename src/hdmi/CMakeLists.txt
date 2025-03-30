@@ -144,6 +144,7 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   EAR_PIN=11
   # Enable the PS/2 keyboard
   USE_PS2_KBD
+  PICO_HDMI_AUDIO  
   PICO_PIO_PWM_AUDIO
   PICO_AUDIO_PWM_PIO=pio1
 )
@@ -161,6 +162,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+#  PICO_HDMI_AUDIO
+  PICO_PWM_AUDIO
   BZR_PIN=21
   EAR_PIN=11
   AY8912_A_PIN=20
