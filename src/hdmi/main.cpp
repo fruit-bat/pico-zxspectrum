@@ -343,7 +343,14 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+#ifdef USE_KEY_MATRIX
+  // Initialise the keyboard scan
+  zx_keyscan_init();
+#endif
+
 #ifdef PICO_ST7789_LCD
+  if(zx_fire_raw()) useDvi = !useDvi;
+  
   // TODO Check if we are using DVI or LCD
   if (useDvi) {
     // Init the DVI output and set the clock
@@ -408,18 +415,13 @@ int main() {
   // Initialise the menu renderer
   pcw_init_renderer();
   
-#ifdef USE_KEY_MATRIX
-  // Initialise the keyboard scan
-  zx_keyscan_init();
-#endif
-
   // Setup the default audio driver
 #ifdef PICO_ST7789_LCD
   if (useDvi) {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pwm_index));
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
   }
   else {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pio_pwm_index));
   }
 #else
   zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
