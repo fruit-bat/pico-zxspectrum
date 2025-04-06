@@ -41,6 +41,7 @@
 #include "hid_app.h"
 #include "ZxSt7789LcdRenderLoop.h"
 #include "ZxRenderLoopCallbacks.h"
+#include "PicoCharRendererSt7789.h"
 
 #define LED_PIN 25
 
