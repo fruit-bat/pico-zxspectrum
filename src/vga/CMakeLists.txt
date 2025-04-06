@@ -93,24 +93,13 @@ foreach(target
     pico_scanvideo_menu
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   pico_enable_stdio_usb(${target} 0)
   pico_enable_stdio_uart(${target} 1)
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
-
-endforeach()
-
-foreach(target
-  ZxSpectrumI2SAudioVga1111Ps2_CVBSx50Hz
-)
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
 
 endforeach()
 
@@ -276,17 +265,7 @@ foreach(target
     hardware_pwm
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target} 
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target} 
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   pico_enable_stdio_usb(${target} 0)
 

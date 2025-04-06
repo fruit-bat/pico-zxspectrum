@@ -9,9 +9,7 @@ add_executable(ZxSpectrumPicomputerMax
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerMax
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
+zxspectrum_generate_pio_headers(ZxSpectrumPicomputerMax)
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   ${picomputer_common_defines}
@@ -58,9 +56,7 @@ add_executable(ZxSpectrumPicomputerZX
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerZX
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
+zxspectrum_generate_pio_headers(ZxSpectrumPicomputerZX)
 
 target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   ${picomputer_common_defines}
@@ -194,13 +190,7 @@ foreach(target
     ${picomputer_zx_lcd_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_zx_lcd_common_libs}
