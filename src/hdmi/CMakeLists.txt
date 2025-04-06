@@ -20,13 +20,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
 endforeach()
 
@@ -268,9 +262,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
@@ -436,13 +428,7 @@ foreach(target
     pico_st7789_menu
   )
 
-  foreach(pio
-    ${zxspectrum_pio_all}
-  )
-    pico_generate_pio_header(${target}
-      ${pio}
-    )    
-  endforeach()
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
@@ -579,17 +565,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
@@ -723,17 +699,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})

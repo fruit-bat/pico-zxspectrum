@@ -181,7 +181,7 @@ static Ps2Kbd ps2kbd(
 
 static volatile uint _frames = 0;
 
-void __not_in_flash_func(ZxRenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {

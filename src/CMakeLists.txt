@@ -138,6 +138,16 @@ set(zxspectrum_pio_all
   ${zxspectrum_st7789_pio}
 )
 
+function(zxspectrum_generate_pio_headers TARGET)
+  foreach(pio
+    ${zxspectrum_pio_all}
+    )
+    pico_generate_pio_header(${TARGET}
+      ${pio}
+    )
+  endforeach()
+endfunction()
+
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
 add_subdirectory(vga)
