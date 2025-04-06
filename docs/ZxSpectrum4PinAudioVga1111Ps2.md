@@ -18,7 +18,7 @@ This target uses 4 audio pins:
 ![image](ZxSpectrum4PinAudioVga1111Ps2.png)
 
 The firmware produces RGBY 1111 for the VGA out:
-![image](rgby_1111_vga.png)
+![image](rgby_1111_vga_1.png)
 
 #### Firmware
 
