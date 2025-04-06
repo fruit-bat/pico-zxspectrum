@@ -28,8 +28,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="1.2227055"
-     inkscape:cx="315.69335"
-     inkscape:cy="222.04856"
+     inkscape:cx="278.4808"
+     inkscape:cy="224.91107"
      inkscape:window-width="1920"
      inkscape:window-height="1002"
      inkscape:window-x="0"
@@ -40,7 +40,8 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Background"
-     style="display:inline;fill:#ffffff">
+     style="display:inline;fill:#ffffff"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#ffffff"
        id="rect1201"
@@ -53,8 +54,7 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Layer 1"
-     style="display:inline"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <text
        x="200"
        y="160"
@@ -162,9 +162,7 @@
        dominant-baseline="middle"
        id="text34"><tspan
          sodipodi:role="line"
-         id="tspan736"
-         x="162"
-         y="300">Pico pin 21 (GP16 csync)</tspan></text>
+         id="tspan1502">Pico pin 21 (GP16 CS)</tspan></text>
     <line
        x1="173"
        y1="300"
@@ -327,14 +325,12 @@
        id="text82">330 Ω</text>
     <text
        x="162"
-       y="220"
+       y="220.66132"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;dominant-baseline:middle;text-anchor:end"
        dominant-baseline="middle"
        id="text84"><tspan
          sodipodi:role="line"
-         id="tspan622"
-         x="162"
-         y="220">Pico pin 20 (GP15 Y)</tspan></text>
+         id="tspan1500">Pico pin 20 (GP15 Y0)</tspan></text>
     <line
        x1="173"
        y1="220"
@@ -450,9 +446,7 @@
        dominant-baseline="middle"
        id="text120"><tspan
          sodipodi:role="line"
-         id="tspan610"
-         x="162"
-         y="140">Pico pin 16 (GP12 B)</tspan></text>
+         id="tspan1498">Pico pin 16 (GP12 B0)</tspan></text>
     <line
        x1="173"
        y1="140"
@@ -546,9 +540,7 @@
        dominant-baseline="middle"
        id="text148"><tspan
          sodipodi:role="line"
-         id="tspan612"
-         x="162"
-         y="100">Pico pin 17 ( GP13 G)</tspan></text>
+         id="tspan1496">Pico pin 17 ( GP13 G0)</tspan></text>
     <line
        x1="173"
        y1="100"
@@ -669,9 +661,7 @@
        dominant-baseline="middle"
        id="text184"><tspan
          sodipodi:role="line"
-         id="tspan620"
-         x="162"
-         y="60">Pico pin 19 (GP14 R)</tspan></text>
+         id="tspan1494">Pico pin 19 (GP14 R0)</tspan></text>
     <line
        x1="173"
        y1="60"
