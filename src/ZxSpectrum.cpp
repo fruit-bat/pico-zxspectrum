@@ -32,7 +32,9 @@ ZxSpectrum::ZxSpectrum(
   _bzf(0),
   _sl(0),
   _slc(0)
-{
+{ 
+  // Initialise to the null audio driver
+  setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_null_index]);
   z80Power(true);
   _Z80.context = this;
   _Z80.options = Z80_MODEL_ZILOG_NMOS;
@@ -789,11 +791,6 @@ void __not_in_flash_func(ZxSpectrum::stepScanline)(const uint32_t c) {
 // audio in and out
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
-  // Time for a single audio out sample in 32nds of a micro second
-  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
-  // Time for a single audio in sample in 32nds of a micro second
-  const int32_t u32pes = ((1000000 << 5) / 1000000);
-  
   const uint32_t c = z80Step(16);
   uint32_t vA, vB, vC;
   if (_moderate) {
@@ -802,9 +799,9 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
     // Audio out
     _ta32 += t32;
     while(_ta32 >= u32pas) {
-      if(zxSpectrumAudioReady()) {
+      if(_audio_ready()) {
         _ay.vol(vA, vB, vC);
-        zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+        _audio_handler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
       }
       _ta32 -= u32pas;
     }
@@ -831,9 +828,9 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
     if (_pulseChain.end()) _ear = (_eb >> _ebc) & 1;
   }
   else {
-    if (zxSpectrumAudioReady()) {
+    if (_audio_ready()) {
       _ay.vol(vA, vB, vC);
-      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      _audio_handler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
     }
     const uint32_t tu32 = time_us_32() << 5;
     const uint32_t tud = tu32 - _tu32;
@@ -848,10 +845,6 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
 // audio output
 uint32_t __not_in_flash_func(ZxSpectrum::step)()
 {
-  // Time for a single audio out sample in 32nds of a micro second
-  const int32_t u32pas = ((1000000 << 5) / PICO_AUDIO_OUT_FREQ);
-  // 90%: const int32_t u32pas = (90UL * (1000000UL << 5UL)) / (PICO_AUDIO_OUT_FREQ * 100UL);
-  
   const uint32_t c = z80Step(32);
   uint32_t vA, vB, vC;
   if (_moderate) {
@@ -860,16 +853,16 @@ uint32_t __not_in_flash_func(ZxSpectrum::step)()
     // Audio out
     _ta32 += t32;
     while(_ta32 >= u32pas) {
-      while(!zxSpectrumAudioReady());
+      while(!_audio_ready());
       _ay.vol(vA, vB, vC);
-      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      _audio_handler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
       _ta32 -= u32pas;
     }
   }
   else {
-    if (zxSpectrumAudioReady()) {
+    if (_audio_ready()) {
       _ay.vol(vA, vB, vC);
-      zxSpectrumAudioHandler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
+      _audio_handler(vA, vB, vC, getBuzzerSmoothed(), getBuzzer(), _mute);
     }
     const uint32_t tu32 = time_us_32() << 5;
     const uint32_t tud = tu32 - _tu32;

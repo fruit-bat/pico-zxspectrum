@@ -186,7 +186,7 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   pzx_menu_mode(showMenu);
 }
 
-void __not_in_flash_func(ZxRenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
     pzx_keyscan_row();
 }
 
@@ -290,8 +290,7 @@ int main() {
   
   tuh_hid_app_startup();
 
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

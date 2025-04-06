@@ -20,13 +20,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
 endforeach()
 
@@ -144,6 +138,9 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   EAR_PIN=11
   # Enable the PS/2 keyboard
   USE_PS2_KBD
+  PICO_HDMI_AUDIO  
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
@@ -159,6 +156,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+#  PICO_HDMI_AUDIO
+  PICO_PWM_AUDIO
   BZR_PIN=21
   EAR_PIN=11
   AY8912_A_PIN=20
@@ -263,9 +262,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
@@ -428,11 +425,10 @@ foreach(target
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
     ${zxspectrum_hdmi_libs}
+    pico_st7789_menu
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_st7789_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
@@ -462,6 +458,19 @@ set (ZxSpectrumBobZero_defines
   SDCARD_PIN_SPI0_MISO=20
   # HDMI audio
   PICO_HDMI_AUDIO
+  #PICO_STARTUP_DVI
+  # Single pin PWM audio
+  SPK_PIN=0
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
+  INITIAL_VOL=0x30
+  PICO_ST7789_LCD
+  LCD_NO_BL
+  LCD_PIN_CLK=10
+  LCD_PIN_DC=12
+  LCD_PIN_CS=13
+  LCD_PIN_DIN=11
+  LCD_MIRROR_X
   # Use the matrix keyboard
   USE_KEY_MATRIX
 )
@@ -556,17 +565,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
@@ -700,17 +699,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})

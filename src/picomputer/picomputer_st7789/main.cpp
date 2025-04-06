@@ -4,12 +4,6 @@
 #include "hardware/clocks.h"
 #include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
-#include "ZxSpectrumPrepareRgbScanline.h"
-#include "pzx_prepare_rgb444_scanline.h"
-#include "PicoCharRendererSt7789.h"
-#include "PicoCharRendererVga.h"
-
-#include "st7789_lcd.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumPrepareRgbScanline.h"
@@ -47,6 +41,7 @@
 #include "hid_app.h"
 #include "ZxSt7789LcdRenderLoop.h"
 #include "ZxRenderLoopCallbacks.h"
+#include "PicoCharRendererSt7789.h"
 
 #define LED_PIN 25
 
@@ -301,7 +296,12 @@ int main() {
 
   // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
   // going to use the VGA clock.
-  ZxScanlineVgaRenderLoopInit();
+  if (useVga) {
+    ZxScanlineVgaRenderLoopInit();
+  }
+  else {
+    ZxSt7789LcdRenderLoopInit();
+  }
 
 #else
   ZxSt7789LcdRenderLoopInit();
@@ -346,7 +346,7 @@ int main() {
   tuh_hid_app_startup();
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

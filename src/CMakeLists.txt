@@ -15,6 +15,13 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings.cpp # Needed for flash settings (not currently working)
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioVol.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPioPwm.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPwm.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioNull.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioI2s.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioHdmi.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioDriver.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
@@ -123,6 +130,23 @@ set(zxspectrum_pwm_pio
 set(zxspectrum_st7789_pio 
   ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
 )
+
+set(zxspectrum_pio_all
+  ${zxspectrum_audio_i2s_pio}
+  ${zxspectrum_ear_in_pio}
+  ${zxspectrum_pwm_pio}
+  ${zxspectrum_st7789_pio}
+)
+
+function(zxspectrum_generate_pio_headers TARGET)
+  foreach(pio
+    ${zxspectrum_pio_all}
+    )
+    pico_generate_pio_header(${TARGET}
+      ${pio}
+    )
+  endforeach()
+endfunction()
 
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)
