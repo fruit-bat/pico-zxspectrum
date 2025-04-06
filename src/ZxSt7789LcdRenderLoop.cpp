@@ -13,7 +13,7 @@ void ZxSt7789LcdRenderLoopInit() {
 
   // TODO 1) If this is set to 200Mhz the border of the spectrum is out vertical alignment / or ends early
   // TODO 2) Put back to 200Mhz once (1) is fixed
-  set_sys_clock_khz(270000, true);
+  set_sys_clock_khz(200000, true);
 
   sleep_ms(10);
 }

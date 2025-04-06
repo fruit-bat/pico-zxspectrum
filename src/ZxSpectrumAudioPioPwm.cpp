@@ -33,11 +33,8 @@ bool __not_in_flash_func(pio_pwm_audio_ready)()
 
 #include "ZxSpectrumAudioVol.h"
 
-#ifndef PICO_PWM_AUDIO_FREQ
-#define PICO_PWM_AUDIO_FREQ 28000
-#endif
-
 static uint pwm_audio_sm = 0;
+static uint32_t pwm_audio_freq = 28000;
 
 // Write `period` to the input shift register
 static void pio_pwm_set_period(PIO pio, uint sm, uint32_t period) {
@@ -61,10 +58,12 @@ void pio_pwm_audio_init() {
     pio_sm_set_clkdiv(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 2.0); // TODO do we need to calculate this!?!
     pio_pwm_set_period(PICO_AUDIO_PWM_PIO, pwm_audio_sm, 1024);
     printf("Finish configuring PWM PIO\n");
+
+    pwm_audio_freq = clock_get_hz(clk_sys) / (1024 * 2 * 3);
 }
 
 uint32_t pio_pwm_audio_freq() {
-    return PICO_PWM_AUDIO_FREQ;
+    return pwm_audio_freq;
 }
 
 // TODO Mute not implemented

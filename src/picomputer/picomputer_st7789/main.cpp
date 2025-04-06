@@ -296,7 +296,12 @@ int main() {
 
   // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
   // going to use the VGA clock.
-  ZxScanlineVgaRenderLoopInit();
+  if (useVga) {
+    ZxScanlineVgaRenderLoopInit();
+  }
+  else {
+    ZxSt7789LcdRenderLoopInit();
+  }
 
 #else
   ZxSt7789LcdRenderLoopInit();
