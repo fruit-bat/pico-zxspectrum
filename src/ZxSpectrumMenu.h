@@ -125,6 +125,8 @@ private:
   void ejectTape();
   
   static bool isZ80(const char* filename);
+  
+  PicoQuickKeyAscii *getQuickKey(uint i);
 
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);

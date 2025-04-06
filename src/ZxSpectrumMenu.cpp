@@ -64,6 +64,21 @@ static const char *fext(const char *filename) {
   return dot + 1;
 }
 
+PicoQuickKeyAscii *ZxSpectrumMenu::getQuickKey(uint i) {
+  switch(i) {
+    case 0: return &_k1;
+    case 1: return &_k2;
+    case 2: return &_k3;
+    case 3: return &_k4;
+    case 4: return &_k5;
+    case 5: return &_k6;
+    case 6: return &_k7;
+    case 7: return &_k8;
+    case 8: return &_k9;
+    default: return &_k1;
+  }
+}
+
 void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2, int32_t w) {
    _wizCol1Width = cols1;
    _wizCol2Width = cols2;
@@ -529,34 +544,43 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     }
     _wiz.pop(true);
   });
-
-  _audio.addOption(_audioNullOp.addQuickKey(&_k1));
-  _audio.addOption(_audioPioPwmOp.addQuickKey(&_k2));
-  _audio.addOption(_audioPwmOp.addQuickKey(&_k3));
-  _audio.addOption(_audioI2sOp.addQuickKey(&_k4));
-  _audio.addOption(_audioHdmiOp.addQuickKey(&_k5));
-  _audio.enableQuickKeys();
-
-  _audioNullOp.toggle([=]() {
-    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_null_index]);
-    _wiz.pop(true);
-  });
+  uint audioQuickKeyIndex = 0;
+  // ONLY FOR DEBUG
+  // _audio.addOption(_audioNullOp.addQuickKey(&_k1));
+  // _audioNullOp.toggle([=]() {
+  //   _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_null_index]);
+  //   _wiz.pop(true);
+  // });
+#ifdef PICO_PIO_PWM_AUDIO  
+  _audio.addOption(_audioPioPwmOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
   _audioPioPwmOp.toggle([=]() {
     _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
     _wiz.pop(true);
   });
+#endif
+#ifdef PICO_PWM_AUDIO  
+  _audio.addOption(_audioPwmOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
   _audioPwmOp.toggle([=]() {
     _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pwm_index]);
     _wiz.pop(true);
   });
+#endif
+#ifdef PICO_AUDIO_I2S  
+  _audio.addOption(_audioI2sOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
   _audioI2sOp.toggle([=]() {
     _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_i2s_index]);
     _wiz.pop(true);
   });
+#endif
+#ifdef PICO_HDMI_AUDIO  
+  _audio.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
   _audioHdmiOp.toggle([=]() {
     _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_hdmi_index]);
     _wiz.pop(true);
   });
+#endif
+  _audio.enableQuickKeys();
+
 
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
