@@ -36,6 +36,7 @@ void zx_spectrum_audio_driver_init();
 #elif defined(PICO_PIO_PWM_AUDIO)
 #define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pio_pwm_index
 #else
+#define PICO_PWM_AUDIO
 #define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pwm_index
 #endif
 #endif

@@ -107,7 +107,7 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 );
 
 static bool showMenu = true;
-static bool toggleMenu = false;
+static volatile bool toggleMenu = false;
 static volatile uint _frames = 0;
 
 extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)

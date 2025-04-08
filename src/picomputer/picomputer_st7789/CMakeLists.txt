@@ -4,6 +4,7 @@ include_directories(${picomputer_common_inc})
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_st7789_lcd_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
@@ -51,6 +52,7 @@ pico_add_extra_outputs(ZxSpectrumPicomputerMax)
 add_executable(ZxSpectrumPicomputerZX
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_st7789_lcd_src}
 	main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp

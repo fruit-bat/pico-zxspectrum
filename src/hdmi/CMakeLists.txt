@@ -20,7 +20,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  zxspectrum_generate_pio_headers(${target})
+  # zxspectrum_generate_pio_headers(${target})
 
 endforeach()
 
@@ -212,6 +212,8 @@ foreach(target
     ${zxspectrum_common_libs}
     ${zxspectrum_hdmi_libs}
   )
+
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})

@@ -10,4 +10,4 @@ void ZxScanlineVgaRenderLoop(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    bool &toggleMenu);
+    volatile bool &toggleMenu);
