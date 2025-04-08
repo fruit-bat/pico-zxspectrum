@@ -67,9 +67,7 @@ foreach(target
     main.cpp
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}

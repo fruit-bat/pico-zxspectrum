@@ -9,6 +9,8 @@ foreach(target
     ${zxspectrum_scanvideo_src}
     main.cpp
   )
+  
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}

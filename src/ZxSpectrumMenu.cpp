@@ -9,6 +9,9 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 #include "ZxSpectrumVoltage.h"
+#include "ZxSpectrumAudio.h"
+#include "ZxSpectrumAudioVol.h"
+#include "ZxSpectrumAudioDriver.h"
 #include "PicoCoreVoltage.h"
 
 // #define DEBUG_ZX_MENU
@@ -59,6 +62,21 @@ static const char *fext(const char *filename) {
   const char *dot = strrchr(filename, '.');
   if(!dot || dot == filename) return "";
   return dot + 1;
+}
+
+PicoQuickKeyAscii *ZxSpectrumMenu::getQuickKey(uint i) {
+  switch(i) {
+    case 0: return &_k1;
+    case 1: return &_k2;
+    case 2: return &_k3;
+    case 3: return &_k4;
+    case 4: return &_k5;
+    case 5: return &_k6;
+    case 6: return &_k7;
+    case 7: return &_k8;
+    case 8: return &_k9;
+    default: return &_k1;
+  }
 }
 
 void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2, int32_t w) {
@@ -131,9 +149,17 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _mouseSinclairJoystickLOp("Sinclair Joystick L"),
   _mouseSinclairJoystickROp("Sinclair Joystick R"),
 
+  _audio(0, 0, _wizCols, 6, _menuRowsPerItem),
+  _audioNullOp("Null"),
+  _audioPioPwmOp("PIO PWM"),
+  _audioPwmOp("PWM"),
+  _audioI2sOp("I2S"),
+  _audioHdmiOp("Monitor"), 
+
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
   _settingsLoadOp("Load"),
+  _settingsAudioOp("Audio out"), // TODO Find a better home
 
   _system(0, 0, _wizCols, 6, _menuRowsPerItem),
   _systemBootSelOp("Boot select"),
@@ -285,6 +311,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
   _settings.addOption(_settingsSaveOp.addQuickKey(&_k1));
   _settings.addOption(_settingsLoadOp.addQuickKey(&_k2));
+  _settings.addOption(_settingsAudioOp.addQuickKey(&_k3));
   _settings.enableQuickKeys();
   _settingsSaveOp.toggle([=]() {
     saveSettings();
@@ -293,6 +320,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _settingsLoadOp.toggle([=]() {
     loadSettings();
     _wiz.pop(true);
+  });
+  _settingsAudioOp.toggle([=]() {
+    _wiz.push(
+      &_audio, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Audio out"); }, 
+      true);
   });
   _settingsOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -416,6 +449,17 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
   });
 
+  _audioOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m = "-- fix me --";
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio out", _wizCol2Width, m);
+  });
+  _audioOp.toggle([=]() {
+    _wiz.push(
+      &_audio, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Audio output"); }, 
+      true);
+  });
 
   _chooseSnap.onToggle = [=](FILINFO *finfo, int32_t i, const char* path) {
     snapName(finfo->fname);
@@ -500,6 +544,43 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     }
     _wiz.pop(true);
   });
+  uint audioQuickKeyIndex = 0;
+  // ONLY FOR DEBUG
+  // _audio.addOption(_audioNullOp.addQuickKey(&_k1));
+  // _audioNullOp.toggle([=]() {
+  //   _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_null_index]);
+  //   _wiz.pop(true);
+  // });
+#ifdef PICO_PIO_PWM_AUDIO  
+  _audio.addOption(_audioPioPwmOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  _audioPioPwmOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_PWM_AUDIO  
+  _audio.addOption(_audioPwmOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  _audioPwmOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pwm_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_AUDIO_I2S  
+  _audio.addOption(_audioI2sOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  _audioI2sOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_i2s_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_HDMI_AUDIO  
+  _audio.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  _audioHdmiOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_hdmi_index]);
+    _wiz.pop(true);
+  });
+#endif
+  _audio.enableQuickKeys();
+
 
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));

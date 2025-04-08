@@ -185,11 +185,12 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   picomputerJoystick.enabled(!showMenu);
   pzx_menu_mode(showMenu);
 }
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
+
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
     pzx_keyscan_row();
 }
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void core1_main() {
@@ -289,8 +290,7 @@ int main() {
   
   tuh_hid_app_startup();
 
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

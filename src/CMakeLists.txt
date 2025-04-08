@@ -1,6 +1,13 @@
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+set(zxspectrum_st7789_lcd_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSt7789LcdRenderLoop.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.cpp # TODO Move this file
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.cpp # TODO Move this file
+)
+
 set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMouse.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumHidMouse.cpp
@@ -8,6 +15,13 @@ set(zxspectrum_common_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFlashSettings.cpp # Needed for flash settings (not currently working)
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFileSettings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudio.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioVol.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPioPwm.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioPwm.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioNull.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioI2s.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioHdmi.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumAudioDriver.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumFatSpiKiosk.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyboard.cpp
@@ -70,10 +84,17 @@ set(zxspectrum_dvi_src
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.S
   ${CMAKE_CURRENT_LIST_DIR}/tmds_encode_zxspectrum.h
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPrepareDviScanline.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxDviRenderLoop.cpp
 )
 
 set(zxspectrum_kbd_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
+)
+
+set(zxspectrum_kbd2_src
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix2.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
 )
 
 set(zxspectrum_common_libs
@@ -106,6 +127,27 @@ set(zxspectrum_ear_in_pio
 set(zxspectrum_pwm_pio
   ${CMAKE_CURRENT_LIST_DIR}/pwm.pio
 )
+
+set(zxspectrum_st7789_pio 
+  ${CMAKE_CURRENT_LIST_DIR}/picomputer/picomputer_st7789/st7789_lcd.pio # TODO Move this file
+)
+
+set(zxspectrum_pio_all
+  ${zxspectrum_audio_i2s_pio}
+  ${zxspectrum_ear_in_pio}
+  ${zxspectrum_pwm_pio}
+  ${zxspectrum_st7789_pio}
+)
+
+function(zxspectrum_generate_pio_headers TARGET)
+  foreach(pio
+    ${zxspectrum_pio_all}
+    )
+    pico_generate_pio_header(${TARGET}
+      ${pio}
+    )
+  endforeach()
+endfunction()
 
 add_subdirectory(hdmi)
 add_subdirectory(picomputer)

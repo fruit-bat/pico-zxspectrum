@@ -75,9 +75,7 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
 endforeach()
 
@@ -244,10 +242,6 @@ set(ZxSpectrumPicomputerVga1111AukBob_defines
   REAL_ZXKEYBOARD
   REAL_ZXKEYBOARD_BOB
   HID_KEY_MOD_SAVE=2
-)
-
-pico_generate_pio_header(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz
-  ${zxspectrum_ear_in_pio}
 )
 
 target_compile_definitions(ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz PRIVATE

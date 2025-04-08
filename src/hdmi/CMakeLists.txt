@@ -20,13 +20,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  # zxspectrum_generate_pio_headers(${target})
 
 endforeach()
 
@@ -144,6 +138,9 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi1PinAudio PRIVATE
   EAR_PIN=11
   # Enable the PS/2 keyboard
   USE_PS2_KBD
+  PICO_HDMI_AUDIO  
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
 )
 
 target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
@@ -159,6 +156,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi2PinAudio PRIVATE
 target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
   ${zxspectrum_hdmi_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+#  PICO_HDMI_AUDIO
+  PICO_PWM_AUDIO
   BZR_PIN=21
   EAR_PIN=11
   AY8912_A_PIN=20
@@ -214,6 +213,8 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
+  zxspectrum_generate_pio_headers(${target})
+
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 endforeach()
@@ -263,9 +264,7 @@ foreach(target
     ${zxspectrum_hdmi_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_common_libs}
@@ -411,6 +410,84 @@ target_compile_definitions(ZxSpectrumPiZero_720x576x50Hz PRIVATE
 )
 
 ########################################################################
+# Waveshare - RP2040 - PicoZero - For Bobricius PICO ZX board
+########################################################################
+
+foreach(target
+  ZxSpectrumBobZero_640x480x60Hz
+  ZxSpectrumBobZero_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_st7789_lcd_src}
+    ${zxspectrum_hdmi_src}
+    ${zxspectrum_kbd2_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+    pico_st7789_menu
+  )
+
+  zxspectrum_generate_pio_headers(${target})
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
+endforeach()
+
+
+set (ZxSpectrumBobZero_defines
+  # Set up the DVI output to match the Waveshare RP2040 PiZero
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  SDCARD_PIO=pio1
+  SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=21
+  SDCARD_PIN_SPI0_SCK=18
+  SDCARD_PIN_SPI0_MOSI=19
+  SDCARD_PIN_SPI0_MISO=20
+  # HDMI audio
+  PICO_HDMI_AUDIO
+  #PICO_STARTUP_DVI
+  # Single pin PWM audio
+  SPK_PIN=0
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
+  INITIAL_VOL=0x30
+  PICO_ST7789_LCD
+  LCD_NO_BL
+  LCD_PIN_CLK=10
+  LCD_PIN_DC=12
+  LCD_PIN_CS=13
+  LCD_PIN_DIN=11
+  LCD_MIRROR_X
+  # Use the matrix keyboard
+  USE_KEY_MATRIX
+)
+
+target_compile_definitions(ZxSpectrumBobZero_640x480x60Hz PRIVATE
+  ${ZxSpectrumBobZero_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxSpectrumBobZero_720x576x50Hz PRIVATE
+  ${ZxSpectrumBobZero_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
+########################################################################
 # ZX-MURMULATOR
 ########################################################################
 
@@ -490,17 +567,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
@@ -634,17 +701,7 @@ foreach(target
     ${zxspectrum_hdmi_libs}
   )
 
-  pico_generate_pio_header(${target}
-    ${zxspectrum_ear_in_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_audio_i2s_pio}
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})

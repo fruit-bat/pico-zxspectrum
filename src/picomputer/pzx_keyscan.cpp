@@ -6,7 +6,7 @@
 #include "class/hid/hid.h"
 #include "pzx_keyscan.h"
 
-// define REAL_ZXKEYBOARD to use ZX Spectum 5x8 real keyboard matrix
+// define REAL_ZXKEYBOARD to use ZX Spectrum 5x8 real keyboard matrix
 
 #define SAMPLES 4 
 

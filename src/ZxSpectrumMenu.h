@@ -66,6 +66,7 @@ private:
   PicoOption _resetOp;
   PicoOption _joystickOp;
   PicoOption _mouseOp;
+  PicoOption _audioOp;
   PicoOption _settingsOp;
   PicoOption _volumeOp;
   PicoOption _keyboardOp;
@@ -95,9 +96,17 @@ private:
   PicoOptionText _mouseSinclairJoystickLOp;
   PicoOptionText _mouseSinclairJoystickROp;
 
+  PicoSelect _audio;
+  PicoOptionText _audioNullOp;
+  PicoOptionText _audioPioPwmOp;
+  PicoOptionText _audioPwmOp;
+  PicoOptionText _audioI2sOp;
+  PicoOptionText _audioHdmiOp;
+
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;
   PicoOptionText _settingsLoadOp;
+  PicoOptionText _settingsAudioOp; // TODO Find a better home
 
   PicoSelect _system;
   PicoOptionText _systemBootSelOp;
@@ -116,6 +125,8 @@ private:
   void ejectTape();
   
   static bool isZ80(const char* filename);
+  
+  PicoQuickKeyAscii *getQuickKey(uint i);
 
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);
