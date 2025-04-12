@@ -77,9 +77,9 @@ private:
   uint32_t tStatesPerMilliSecond();
   
   inline uint32_t z80Step(uint32_t tstates) {  
-    u_int32_t t = 0;
+    uint32_t t = 0;
     while(true) {
-      const u_int32_t k = z80_run(&_Z80, 6);
+      const uint32_t k = z80_run(&_Z80, 6);
       _bzf += k;
       t += k;
       const int32_t j = (int32_t)((_port254 >> 3) & 2) - 1;
