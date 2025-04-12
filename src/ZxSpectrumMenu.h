@@ -62,13 +62,12 @@ private:
   PicoOption _snapOp;
   PicoOption _freqOp;
   PicoOption _intSourceOp;
-  PicoOption _muteOp;
+  PicoOptionText _audioOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
   PicoOption _mouseOp;
-  PicoOption _audioOp;
+  
   PicoOption _settingsOp;
-  PicoOption _volumeOp;
   PicoOption _keyboardOp;
   PicoOption _systemOp;
   PicoOption _quickSaveOp;
@@ -80,6 +79,11 @@ private:
 
   PicoWizExplorer _chooseTape;
   PicoWizExplorer _chooseSnap;
+
+  PicoSelect _audioOptions;
+  PicoOption _muteOp;
+  PicoOption _audioOutOp;
+  PicoOption _volumeOp;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -96,7 +100,7 @@ private:
   PicoOptionText _mouseSinclairJoystickLOp;
   PicoOptionText _mouseSinclairJoystickROp;
 
-  PicoSelect _audio;
+  PicoSelect _audioOutOptions;
   PicoOptionText _audioNullOp;
   PicoOptionText _audioPioPwmOp;
   PicoOptionText _audioPwmOp;
@@ -106,7 +110,6 @@ private:
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;
   PicoOptionText _settingsLoadOp;
-  PicoOptionText _settingsAudioOp; // TODO Find a better home
 
   PicoSelect _system;
   PicoOptionText _systemBootSelOp;
