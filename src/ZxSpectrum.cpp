@@ -48,6 +48,19 @@ ZxSpectrum::ZxSpectrum(
   reset(ZxSpectrum128k);
 }
 
+void ZxSpectrum::setAudioDriver(zx_spectrum_audio_driver_t* audio_driver) {
+  _audio_driver = audio_driver;
+  // Set the audio handler
+  _audio_handler = audio_driver->handler;
+  _audio_ready = audio_driver->ready;
+  uint32_t hz = audio_driver->freq();
+  // Time for a single audio out sample in 32nds of a micro second
+  // 90%: const int32_t u32pas = (90UL * (1000000UL << 5UL)) / (hz * 100UL);
+  u32pas = ((1000000 << 5) / hz);
+  // Time for a single audio in sample in 32nds of a micro second
+  u32pes = ((1000000 << 5) / 1000000);
+}
+
 void ZxSpectrum::transmute(ZxSpectrumType type) {
   _type = type;
   switch (type) {

@@ -152,11 +152,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _mouseSinclairJoystickROp("Sinclair Joystick R"),
 
   _audioOutOptions(0, 0, _wizCols, 6, _menuRowsPerItem),
-  _audioNullOp("Null"),
-  _audioPioPwmOp("PIO PWM"),
-  _audioPwmOp("PWM"),
-  _audioI2sOp("I2S"),
-  _audioHdmiOp("Monitor"), 
+  _audioNullOp(_zx_spectrum_audio_drivers[0].name),
+  _audioPioPwmOp(_zx_spectrum_audio_drivers[1].name),
+  _audioPwmOp(_zx_spectrum_audio_drivers[2].name),
+  _audioI2sOp(_zx_spectrum_audio_drivers[3].name),
+  _audioHdmiOp(_zx_spectrum_audio_drivers[4].name), 
 
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
@@ -469,13 +469,16 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
   _audioOutOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    const char *m = "-- fix me --";
+    const char *m = _zxSpectrum->getAudioDriver()->name;
     pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio out", _wizCol2Width, m);
   });
   _audioOutOp.toggle([=]() {
+    const char *m = _zxSpectrum->getAudioDriver()->name;
     _wiz.push(
       &_audioOutOptions, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Audio output"); }, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false, "Audio output (%s)", m); 
+      }, 
       true);
   });
 // End of audio settings

@@ -13,6 +13,7 @@ typedef struct
   zx_spectrum_audio_freq_t freq;
   zx_spectrum_audio_ready_t ready;
   zx_spectrum_audio_handler_t handler;
+  const char *name;
 } zx_spectrum_audio_driver_t;
 
 extern zx_spectrum_audio_driver_t _zx_spectrum_audio_drivers[];
