@@ -19,7 +19,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
-  SZ_WIZ_CW1=12
+  SZ_WIZ_CW1=13
   SZ_WIZ_CW2=18
   SZ_FRAME_COLS=40
   SZ_FRAME_ROWS=30
@@ -67,7 +67,7 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
-  SZ_WIZ_CW1=12
+  SZ_WIZ_CW1=13
   SZ_WIZ_CW2=18
   SZ_FRAME_COLS=34
   SZ_FRAME_ROWS=23

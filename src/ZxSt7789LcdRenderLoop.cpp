@@ -10,17 +10,17 @@ static PIO pio = pio0;
 static uint sm = 0;
 
 void ZxSt7789LcdRenderLoopInit() {
-
-  // TODO 1) If this is set to 200Mhz the border of the spectrum is out vertical alignment / or ends early
-  // TODO 2) Put back to 200Mhz once (1) is fixed
   set_sys_clock_khz(200000, true);
-
   sleep_ms(10);
 }
 
 static void ZxSt7789LcdRenderLoopPre(ZxSpectrumMenu& picoRootWin) {
   picoRootWin.move(0,0,40,30);
-  picoRootWin.setWizLayout(0, 12, 18, 40);
+
+  // TODO this is now confusing there are defines in the make files
+  // like SZ_WIZ_CW1 that can't be used here as there need to be a 
+  // a set for LCD and VGA screens!
+  picoRootWin.setWizLayout(0, 13, 18, 40);
 
   // TODO Configurable backlight control
 #ifdef PICOMPUTER_PICOZX_LCD

@@ -477,7 +477,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     _wiz.push(
       &_audioOutOptions, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false, "Audio output (%s)", m); 
+        pen->printAtF(0, 0, false, "Audio output [%s]", m); 
       }, 
       true);
   });
