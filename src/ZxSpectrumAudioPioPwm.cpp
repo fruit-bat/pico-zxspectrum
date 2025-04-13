@@ -66,10 +66,9 @@ uint32_t pio_pwm_audio_freq() {
     return pwm_audio_freq;
 }
 
-// TODO Mute not implemented
 void __not_in_flash_func(pio_pwm_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute) {
     const int32_t l = vA + vC + vB + s - (128*3);
-    const int32_t v = __mul_instruction(_vol, 60);
+    const int32_t v = __mul_instruction(_vol, mute ? 0 : 60);
     const int32_t lr = __mul_instruction(v, l) >> (8 + 6);
     const int32_t k = lr + 512;
     pio_sm_put_blocking(PICO_AUDIO_PWM_PIO, pwm_audio_sm, k < 0 ? 0 : k > 1024 ? 1024 : k);
