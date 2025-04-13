@@ -451,7 +451,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
   _muteOp.onPaint([=](PicoPen *pen){
     pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio", _wizCol2Width, _zxSpectrum->mute() ? "off" : "on");
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio", _wizCol2Width, _zxSpectrum->mute() ? "Off" : "On");
   });
   _volume.config(
     [](uint32_t v) { zxSpectrumAudioSetVolume(v); },

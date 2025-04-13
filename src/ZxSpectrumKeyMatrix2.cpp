@@ -131,9 +131,9 @@ static uint8_t kbits[6][COL_PIN_COUNT][ROW_PIN_COUNT] = {
 #define KEY_RIGHT_BIT 0x20
 #define KEY_FIRE_ROW 7
 #define KEY_FIRE_BIT 0x20
-#define KEY_CURSOR_ROW 0
+#define KEY_CURSOR_ROW 1
 #define KEY_CURSOR_BIT 0x20
-#define KEY_KEMPSTON_ROW 1
+#define KEY_KEMPSTON_ROW 0
 #define KEY_KEMPSTON_BIT 0x20 
 #define KEY_SHIFT_ROW 5
 #define KEY_SHIFT_BIT 0x1
