@@ -191,6 +191,7 @@ void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
+  setMenuState(state);
 }
 
 void core1_main() {
@@ -257,9 +258,7 @@ int main() {
   
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
-      showMenu = false;
-      toggleMenu = false;
-      setMenuState(showMenu);
+      toggleMenu = showMenu;
     }
   );
   // TZX tape option handlers
@@ -272,17 +271,13 @@ int main() {
     },
     [&]() { // Show options
       picoRootWin.showTzxOptions();
-      showMenu = true;
-      toggleMenu = false;
-      setMenuState(showMenu);
+      toggleMenu = !showMenu;
     }
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
       zxSpectrum.tzxOption(option);
-      showMenu = false;
-      toggleMenu = false;
-      setMenuState(showMenu);
+      toggleMenu = showMenu;
     }
   );
   snapFileLoop.set(&picoRootWin);

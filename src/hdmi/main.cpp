@@ -250,7 +250,7 @@ void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   #ifdef USE_KEY_MATRIX
-  // picomputerJoystick.enabled(!showMenu);
+  joystickMatrix.enabled(!showMenu);
     zx_menu_mode(showMenu);
   #endif
 }
@@ -381,8 +381,7 @@ int main() {
 #endif
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = showMenu;
     }
   );
   // TZX tape option handlers
@@ -395,15 +394,13 @@ int main() {
     },
     [&]() { // Show options
       picoRootWin.showTzxOptions();
-      showMenu = true;
-      toggleMenu = false;
+      toggleMenu = !showMenu;
     }
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
       zxSpectrum.tzxOption(option);
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = !showMenu;
     }
   );
   snapFileLoop.set(&picoRootWin);
