@@ -20,6 +20,7 @@
 
 #ifdef USE_KEY_MATRIX
 #include "ZxSpectrumKeyMatrix.h"
+#include "ZxSpectrumMatrixJoystick.h"
 #endif
 
 extern "C" {
@@ -46,7 +47,6 @@ extern "C" {
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
 #include "ZxSpectrumFileLoop.h"
-#include "ZxSpectrumPrepareDviScanline.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
@@ -54,6 +54,9 @@ extern "C" {
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
+#include "ZxDviRenderLoop.h"
+#include "ZxSt7789LcdRenderLoop.h"
+#include "ZxSpectrumAudioDriver.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -71,8 +74,13 @@ extern "C" {
 
 #define LED_PIN 25
 
-struct dvi_inst dvi0;
-struct semaphore dvi_start_sem;
+#ifdef PICO_ST7789_LCD
+#ifdef PICO_STARTUP_DVI
+static bool useDvi = true;
+#else
+static bool useDvi = false;
+#endif
+#endif
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -88,6 +96,13 @@ static ZxSpectrumNespadJoystick joystickNespad;
 #ifdef NESPAD_ENABLE
 static ZxSpectrumHidJoystick joystickHid;
 static ZxSpectrumDualJoystick joystick(&joystickHid, &joystickNespad);
+#elif defined(USE_KEY_MATRIX)
+static ZxSpectrumHidJoystick joystickHid;
+static ZxSpectrumMatrixJoystick joystickMatrix;
+static ZxSpectrumDualJoystick joystick(
+  &joystickHid, 
+  &joystickMatrix
+);
 #else
 static ZxSpectrumHidJoystick joystick;
 #endif
@@ -227,6 +242,19 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
+  #ifdef USE_KEY_MATRIX
+    zx_keyscan_row();
+  #endif
+}
+
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
+  #ifdef USE_KEY_MATRIX
+  joystickMatrix.enabled(!showMenu);
+    zx_menu_mode(showMenu);
+  #endif
+}
+
 
 #if defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
@@ -236,80 +264,36 @@ static Ps2Kbd ps2kbd(
 );
 #endif
 
-unsigned char* screenPtr;
-unsigned char* attrPtr;
 static volatile uint _frames = 0;
 
-void __not_in_flash_func(core1_render)() {
-  uint y = 0;
-  uint ys = 0;
-  for(int i = 0; i < (DISPLAY_BLANK_LINES/2); ++i) {
-    if (showMenu) {
-      pcw_prepare_blankline_80(&dvi0, _frames);
-    }
-    else {
-      zx_prepare_hdmi_scanline(&dvi0, y, _frames, screenPtr, attrPtr, 0);
-    }
-  }
-  while(true) {
-    const uint32_t fpf = zxSpectrum.flipsPerFrame();
-    const bool ringoMode = fpf > 46 && fpf < 52;
-    if (ringoMode) {
-      screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
-      attrPtr = screenPtr + (32 * 24 * 8);
-    }
-
-    if (showMenu) {
-      uint rs = pcw_prepare_scanline_80(&dvi0, y++, ys, _frames);
-      if (0 == (y & 7)) {
-        ys += rs;
-      }
-    }
-    else {
-      zx_prepare_hdmi_scanline(
-        &dvi0, 
-        y, 
-        _frames, 
-        screenPtr, 
-        attrPtr, 
-        zxSpectrum.borderColour(y)
-      );
-      y++;
-    }
-  #ifdef USE_KEY_MATRIX
-    zx_keyscan_row();
-  #endif
-    if (y == ZX_SPECTRUM_SCREEN_HEIGHT) {
-      y = 0;
-      ys = 0;
-      for(int i = 0; i < DISPLAY_BLANK_LINES; ++i) {
-        if (showMenu) {
-          pcw_prepare_blankline_80(&dvi0, _frames);
-        }
-        else {           
-          zx_prepare_hdmi_scanline(&dvi0, 239, _frames, screenPtr, attrPtr, 0);
-        }
-      }
-     _frames++;
-      if (!ringoMode) {
-        screenPtr = zxSpectrum.screenPtr();
-        attrPtr = screenPtr + (32 * 24 * 8);
-      }
-      if (toggleMenu) {
-        showMenu = !showMenu;
-        toggleMenu = false;
-      }
-    }
-  }
-}
-
-void __not_in_flash_func(core1_main)() {
+void core1_main() {
   
-  dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
-//  sem_acquire_blocking(&dvi_start_sem);
-  dvi_start(&dvi0);
-  
-  core1_render();
+#ifdef PICO_ST7789_LCD
+  if (useDvi) {
+    ZxDviRenderLoop(
+      zxSpectrum,
+      _frames,
+      showMenu,
+      toggleMenu
+    );
+  }
+  else {
+    ZxSt7789LcdRenderLoop(
+      zxSpectrum,
+      _frames,
+      showMenu,
+      toggleMenu,
+      picoRootWin
+    );
+  }
+#else
+  ZxDviRenderLoop(
+    zxSpectrum,
+    _frames,
+    showMenu,
+    toggleMenu
+  );
+#endif
 
   while (1) 
     __wfi();
@@ -359,9 +343,28 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
-  // Run system at TMDS bit clock
-  set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
-  sleep_ms(10);
+#ifdef USE_KEY_MATRIX
+  // Initialise the keyboard scan
+  zx_keyscan_init();
+#endif
+
+#ifdef PICO_ST7789_LCD
+  if(zx_fire_raw()) useDvi = !useDvi;
+  
+  // TODO Check if we are using DVI or LCD
+  if (useDvi) {
+    // Init the DVI output and set the clock
+    ZxDviRenderLoopInit();
+  }
+  else {
+    // TODO without the DVI running we have no clock to sync with!
+    // TODO make sure we start an audio option to sync with instead!
+    ZxSt7789LcdRenderLoopInit();
+  }
+#else 
+  // Init the DVI output and set the clock
+  ZxDviRenderLoopInit();
+#endif
 
   setup_default_uart();
 
@@ -378,8 +381,7 @@ int main() {
 #endif
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = showMenu;
     }
   );
   // TZX tape option handlers
@@ -392,23 +394,17 @@ int main() {
     },
     [&]() { // Show options
       picoRootWin.showTzxOptions();
-      showMenu = true;
-      toggleMenu = false;
+      toggleMenu = !showMenu;
     }
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
       zxSpectrum.tzxOption(option);
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = !showMenu;
     }
   );
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
-
- 
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
@@ -416,21 +412,19 @@ int main() {
   // Initialise the menu renderer
   pcw_init_renderer();
   
-#ifdef USE_KEY_MATRIX
-  // Initialise the keyboard scan
-  zx_keyscan_init();
+  // Setup the default audio driver
+#ifdef PICO_ST7789_LCD
+  if (useDvi) {
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
+  }
+  else {
+    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pio_pwm_index));
+  }
+#else
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 #endif
-  printf("Configuring DVI\n");
-  dvi0.timing = &DVI_TIMING;
-  dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
-  dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
-
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
 
   printf("Core 1 start\n");
-//  sem_init(&dvi_start_sem, 0, 1);
-//  hw_set_bits(&bus_ctrl_hw->priority, BUSCTRL_BUS_PRIORITY_PROC1_BITS);
   
   multicore_launch_core1(core1_main);
   
@@ -440,7 +434,6 @@ int main() {
           
   picoDisplay.refresh();
   
-//  sem_release(&dvi_start_sem);
   printf("SD mount\n");
 
   if (sdCard0.mount()) {

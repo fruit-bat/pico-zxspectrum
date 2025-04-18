@@ -183,12 +183,11 @@ void __not_in_flash_func(process_joystick)() {
   }
 }
 
-
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
     pzx_keyscan_row();
 }
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   picomputerJoystick.enabled(!showMenu);  
   pzx_menu_mode(showMenu);
 }
@@ -257,9 +256,7 @@ int main(){
   
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
-      showMenu = false;
-      toggleMenu = false;
-      ZxScanlineVgaRenderLoopCallbackMenu(showMenu);
+      toggleMenu = showMenu;
     }
   );
   // TZX tape option handlers
@@ -272,17 +269,13 @@ int main(){
     },
     [&]() { // Show options
       picoRootWin.showTzxOptions();
-      showMenu = true;
-      toggleMenu = false;
-      ZxScanlineVgaRenderLoopCallbackMenu(showMenu);
+      toggleMenu = !showMenu;
     }
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
       zxSpectrum.tzxOption(option);
-      showMenu = false;
-      toggleMenu = false;
-      ZxScanlineVgaRenderLoopCallbackMenu(showMenu);
+      toggleMenu = showMenu;
     }
   );
   snapFileLoop.set(&picoRootWin);
@@ -290,8 +283,7 @@ int main(){
   
   tuh_hid_app_startup();
 
-  // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);

@@ -4,14 +4,13 @@ include_directories(${picomputer_common_inc})
 add_executable(ZxSpectrumPicomputerMax
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_st7789_lcd_src}
   main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerMax
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
+zxspectrum_generate_pio_headers(ZxSpectrumPicomputerMax)
 
 target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   ${picomputer_common_defines}
@@ -20,7 +19,7 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
-  SZ_WIZ_CW1=12
+  SZ_WIZ_CW1=13
   SZ_WIZ_CW2=18
   SZ_FRAME_COLS=40
   SZ_FRAME_ROWS=30
@@ -53,14 +52,13 @@ pico_add_extra_outputs(ZxSpectrumPicomputerMax)
 add_executable(ZxSpectrumPicomputerZX
   ${zxspectrum_common_src}
   ${picomputer_common_src}
+  ${zxspectrum_st7789_lcd_src}
 	main.cpp
   st7789_lcd.cpp
   pzx_prepare_rgb444_scanline.cpp
 )
 
-pico_generate_pio_header(ZxSpectrumPicomputerZX
-  ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-)
+zxspectrum_generate_pio_headers(ZxSpectrumPicomputerZX)
 
 target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   ${picomputer_common_defines}
@@ -69,7 +67,7 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   PCS_ROWS=30
   # Set the size of the menus
   SZ_WIZ_ML=0
-  SZ_WIZ_CW1=12
+  SZ_WIZ_CW1=13
   SZ_WIZ_CW2=18
   SZ_FRAME_COLS=34
   SZ_FRAME_ROWS=23
@@ -104,9 +102,8 @@ set(picomputer_zx_lcd_src
   ${picomputer_common_src}
   ${zxspectrum_rgb_src}
   ${zxspectrum_scanvideo_src}
+  ${zxspectrum_st7789_lcd_src}
   main.cpp
-  st7789_lcd.cpp
-  pzx_prepare_rgb444_scanline.cpp
 )
 
 set(zxspectrum_zx_lcd_640x480x60Hz_defines
@@ -195,13 +192,7 @@ foreach(target
     ${picomputer_zx_lcd_src}
   )
 
-  pico_generate_pio_header(${target}
-    ${CMAKE_CURRENT_LIST_DIR}/st7789_lcd.pio
-  )
-
-  pico_generate_pio_header(${target}
-    ${zxspectrum_pwm_pio}
-  )
+  zxspectrum_generate_pio_headers(${target})
 
   target_link_libraries(${target}
     ${zxspectrum_zx_lcd_common_libs}

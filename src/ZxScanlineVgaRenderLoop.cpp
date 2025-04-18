@@ -171,7 +171,7 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   ZxSpectrum &zxSpectrum, 
   volatile uint &frames,
   bool &showMenu,
-  bool &toggleMenu
+  volatile bool &toggleMenu
 ) {
   scanvideo_setup(&VGA_MODE);
   scanvideo_timing_enable(true);
@@ -202,7 +202,7 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
       if (toggleMenu) {
         showMenu = !showMenu;
         toggleMenu = false;
-        ZxScanlineVgaRenderLoopCallbackMenu(showMenu);
+        ZxRenderLoopCallbackMenu(showMenu);
       }
       
       frames = frame_num;
@@ -233,7 +233,7 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
     // Release the rendered buffer into the wild
     scanvideo_end_scanline_generation(scanline_buffer);
 
-    ZxScanlineVgaRenderLoopCallbackLine(y);
+    ZxRenderLoopCallbackLine(y);
   }
 
   __builtin_unreachable();

@@ -4,9 +4,9 @@
 #include "ZxSpectrumDisplay.h"
 #include "ZxRenderLoopCallbacks.h"
 
-void ZxScanlineVgaRenderLoopInit();
+void ZxDviRenderLoopInit();
 
-void ZxScanlineVgaRenderLoop(
+void ZxDviRenderLoop(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,

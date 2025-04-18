@@ -4,12 +4,6 @@
 #include "hardware/clocks.h"
 #include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
-#include "ZxSpectrumPrepareRgbScanline.h"
-#include "pzx_prepare_rgb444_scanline.h"
-#include "PicoCharRendererSt7789.h"
-#include "PicoCharRendererVga.h"
-
-#include "st7789_lcd.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumPrepareRgbScanline.h"
@@ -45,6 +39,9 @@
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
 #include "hid_app.h"
+#include "ZxSt7789LcdRenderLoop.h"
+#include "ZxRenderLoopCallbacks.h"
+#include "PicoCharRendererSt7789.h"
 
 #define LED_PIN 25
 
@@ -110,7 +107,7 @@ static PicoWinHidKeyboard picoWinHidKeyboard(
 );
 
 static bool showMenu = true;
-static bool toggleMenu = false;
+static volatile bool toggleMenu = false;
 static volatile uint _frames = 0;
 
 extern "C" void __not_in_flash_func(process_mouse_report)(hid_mouse_report_t const * report)
@@ -204,24 +201,20 @@ void __not_in_flash_func(setMenuState)(bool showMenu) {
   pzx_menu_mode(showMenu);
 }
 
-static  PIO pio = pio0;
-static  uint sm = 0;
-
-#ifdef PICOMPUTER_PICOZX_LCD
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackLine)(uint32_t y) {
-    pzx_keyscan_row();
+void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
+  pzx_keyscan_row();
 }
 
-void __not_in_flash_func(ZxScanlineVgaRenderLoopCallbackMenu)(bool state) {
+void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   setMenuState(showMenu);
 }
-#endif
 
 void __not_in_flash_func(core1_main)() {
   sem_acquire_blocking(&dvi_start_sem);
   printf("Core 1 running...\n");
 
 #ifdef PICOMPUTER_PICOZX_LCD
+
   if (useVga) {
     ZxScanlineVgaRenderLoop(
       zxSpectrum,
@@ -230,83 +223,17 @@ void __not_in_flash_func(core1_main)() {
       toggleMenu
     );
   }
-  // Turn on the LCD backlight
-  gpio_init(4);
-  gpio_set_dir(4, GPIO_OUT);
-  gpio_put(4, 1);
+
 #endif
 
-  picoRootWin.move(0,0,40,30);
-  picoRootWin.setWizLayout(0, 12, 18, 40);
+  ZxSt7789LcdRenderLoop(
+    zxSpectrum,
+    _frames,
+    showMenu,
+    toggleMenu,
+    picoRootWin
+  );
 
-  // Start up the LCD
-  st7789_init(pio, sm);
-
-  sleep_ms(10);
-
-  uint32_t t1 = time_us_32();
-
-
-  uint8_t* screenPtr;
-  uint8_t* attrPtr;
-  screenPtr = zxSpectrum.screenPtr();
-  attrPtr = screenPtr + (32 * 24 * 8);
-
-  while (1) {
-
-    for (uint y = 0; y < 240; ++y) {
-
-      const uint32_t fpf = zxSpectrum.flipsPerFrame();
-      const bool ringoMode = fpf > 46 && fpf < 52;
-      if (ringoMode) {
-        screenPtr = zxSpectrum.memPtr(y & 4 ? 7 : 5);
-        attrPtr = screenPtr + (32 * 24 * 8);
-      }
-
-      if (y == 0) {
-
-        if (!ringoMode) {
-          screenPtr = zxSpectrum.screenPtr();
-          attrPtr = screenPtr + (32 * 24 * 8);
-        }
-
-        _frames++;
-      }
-
-      if (showMenu) {
-        pcw_send_st7789_scanline(
-          pio,
-          sm,
-          y,
-          _frames);
-      }
-      else {
-        pzx_send_rgb444_scanline(
-          pio,
-          sm,
-          y,
-          _frames,
-          screenPtr,
-          attrPtr,
-          zxSpectrum.borderColour(y));
-      }
-
-      pzx_keyscan_row();
-    }
-
-    if (toggleMenu) {
-      showMenu = !showMenu;
-      toggleMenu = false;
-      setMenuState(showMenu);
-    }
-
-    while((time_us_32() - t1) < 20000) {
-      sleep_us(100);
-      pzx_keyscan_row();
-    }
-
-    t1 += 20000;
-  }
   __builtin_unreachable();
 }
 
@@ -352,10 +279,32 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+  // Initialise the keyboard scan
+  // This is done early so we know the boot mode
+  pzx_keyscan_init();
+
 #ifdef PICOMPUTER_PICOZX_LCD
-  ZxScanlineVgaRenderLoopInit();
+
+#ifdef PICO_STARTUP_VGA
+  useVga = !pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
 #else
-  set_sys_clock_khz(200000, true);
+  useVga = pzx_fire_raw();
+  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
+#endif
+  if (swap_option.exists()) useVga = !useVga;
+
+  // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
+  // going to use the VGA clock.
+  if (useVga) {
+    ZxScanlineVgaRenderLoopInit();
+  }
+  else {
+    ZxSt7789LcdRenderLoopInit();
+  }
+
+#else
+  ZxSt7789LcdRenderLoopInit();
 #endif
 
   //Initialise I/O
@@ -366,8 +315,7 @@ int main() {
 
   picoRootWin.refresh([&]() { picoDisplay.refresh(); });
   picoRootWin.snapLoaded([&](const char *name) {
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = showMenu;
     }
   );
   // TZX tape option handlers
@@ -380,15 +328,13 @@ int main() {
     },
     [&]() { // Show options
       picoRootWin.showTzxOptions();
-      showMenu = true;
-      toggleMenu = false;
+      toggleMenu = !showMenu;
     }
   );
   picoRootWin.tzxOption(
     [&](uint32_t option) {
       zxSpectrum.tzxOption(option);
-      showMenu = false;
-      toggleMenu = false;
+      toggleMenu = showMenu;
     }
   );
   snapFileLoop.set(&picoRootWin);
@@ -397,27 +343,13 @@ int main() {
   tuh_hid_app_startup();
 
   // Configure the GPIO pins for audio
-  zxSpectrumAudioInit();
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
 
   // Initialise the menu renderer
   pcw_init_renderer();
-
-  // Initialise the keyboard scan
-  pzx_keyscan_init();
-
-#ifdef PICOMPUTER_PICOZX_LCD
-#ifdef PICO_STARTUP_VGA
-  useVga = !pzx_fire_raw();
-  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
-#else
-  useVga = pzx_fire_raw();
-  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
-#endif
-  if (swap_option.exists()) useVga = !useVga;
-#endif
 
   sem_init(&dvi_start_sem, 0, 1);
 

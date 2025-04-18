@@ -62,12 +62,12 @@ private:
   PicoOption _snapOp;
   PicoOption _freqOp;
   PicoOption _intSourceOp;
-  PicoOption _muteOp;
+  PicoOptionText _audioOp;
   PicoOption _resetOp;
   PicoOption _joystickOp;
   PicoOption _mouseOp;
+  
   PicoOption _settingsOp;
-  PicoOption _volumeOp;
   PicoOption _keyboardOp;
   PicoOption _systemOp;
   PicoOption _quickSaveOp;
@@ -79,6 +79,11 @@ private:
 
   PicoWizExplorer _chooseTape;
   PicoWizExplorer _chooseSnap;
+
+  PicoSelect _audioOptions;
+  PicoOption _muteOp;
+  PicoOption _audioOutOp;
+  PicoOption _volumeOp;
 
   PicoSelect _reset;
   PicoOptionText _reset48kOp;
@@ -94,6 +99,13 @@ private:
   PicoOptionText _mouseKempstonJoystickOp;
   PicoOptionText _mouseSinclairJoystickLOp;
   PicoOptionText _mouseSinclairJoystickROp;
+
+  PicoSelect _audioOutOptions;
+  PicoOptionText _audioNullOp;
+  PicoOptionText _audioPioPwmOp;
+  PicoOptionText _audioPwmOp;
+  PicoOptionText _audioI2sOp;
+  PicoOptionText _audioHdmiOp;
 
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;
@@ -116,6 +128,8 @@ private:
   void ejectTape();
   
   static bool isZ80(const char* filename);
+  
+  PicoQuickKeyAscii *getQuickKey(uint i);
 
 public:
   void showMessage(std::function<void(PicoPen *pen)> message);

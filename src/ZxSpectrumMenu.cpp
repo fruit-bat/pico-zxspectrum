@@ -9,6 +9,9 @@
 #include "hardware/clocks.h"
 #include "ff.h"
 #include "ZxSpectrumVoltage.h"
+#include "ZxSpectrumAudio.h"
+#include "ZxSpectrumAudioVol.h"
+#include "ZxSpectrumAudioDriver.h"
 #include "PicoCoreVoltage.h"
 
 // #define DEBUG_ZX_MENU
@@ -61,6 +64,21 @@ static const char *fext(const char *filename) {
   return dot + 1;
 }
 
+PicoQuickKeyAscii *ZxSpectrumMenu::getQuickKey(uint i) {
+  switch(i) {
+    case 0: return &_k1;
+    case 1: return &_k2;
+    case 2: return &_k3;
+    case 3: return &_k4;
+    case 4: return &_k5;
+    case 5: return &_k6;
+    case 6: return &_k7;
+    case 7: return &_k8;
+    case 8: return &_k9;
+    default: return &_k1;
+  }
+}
+
 void ZxSpectrumMenu::setWizLayout(int32_t margin, int32_t cols1, int32_t cols2, int32_t w) {
    _wizCol1Width = cols1;
    _wizCol2Width = cols2;
@@ -108,7 +126,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _wiz(_wizLeftMargin, 6, _wizCols, _explorerRows * _explorerRowsPerFile),
   _wizUtils(&_wiz, _explorerRowsPerFile, &_k1, &_k2),
   _main(0, 0, _wizCols, 13, _menuRowsPerItem),
-  
+  _audioOp("Audio"),
   _tapePlayer(0, 0, _wizCols, 6, _menuRowsPerItem),
 
   _chooseTapeOp("Tapes"),
@@ -116,6 +134,8 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _chooseTape(&_wizUtils, sdCard, &_pathTapes, 0, 0, _wizCols, _explorerRows, _explorerRowsPerFile),
   _chooseSnap(&_wizUtils, sdCard, &_pathSnaps, 0, 0, _wizCols, _explorerRows, _explorerRowsPerFile),
   
+  _audioOptions(0, 0, _wizCols, 6, _menuRowsPerItem),
+
   _reset(0, 0, _wizCols, 6, _menuRowsPerItem),
   _reset48kOp("Reset 48K ZX Spectrum"),
   _reset128kOp("Reset 128K ZX Spectrum"),
@@ -130,6 +150,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _mouseKempstonJoystickOp("Kemptson Joystick"),
   _mouseSinclairJoystickLOp("Sinclair Joystick L"),
   _mouseSinclairJoystickROp("Sinclair Joystick R"),
+
+  _audioOutOptions(0, 0, _wizCols, 6, _menuRowsPerItem),
+  _audioNullOp(_zx_spectrum_audio_drivers[0].name),
+  _audioPioPwmOp(_zx_spectrum_audio_drivers[1].name),
+  _audioPwmOp(_zx_spectrum_audio_drivers[2].name),
+  _audioI2sOp(_zx_spectrum_audio_drivers[3].name),
+  _audioHdmiOp(_zx_spectrum_audio_drivers[4].name), 
 
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
@@ -191,14 +218,11 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _main.addOption(_tapePlayerOp.addQuickKey(&_k2));
   _main.addOption(_freqOp.addQuickKey(&_k3));
   _main.addOption(_intSourceOp.addQuickKey(&_k4));
-  _main.addOption(_muteOp.addQuickKey(&_k5));
+  _main.addOption(_audioOp.addQuickKey(&_k5));
   _main.addOption(_resetOp.addQuickKey(&_k6));
   _main.addOption(_joystickOp.addQuickKey(&_k7));
   _main.addOption(_mouseOp.addQuickKey(&_k8));
   _main.addOption(_settingsOp.addQuickKey(&_k9));
-#ifndef BZR_PIN  
-  _main.addOption(_volumeOp.addQuickKey(&_kV));
-#endif
   _main.addOption(_keyboardOp.addQuickKey(&_kK));
   _main.addOption(_systemOp.addQuickKey(&_kS));
   _main.addOption(_quickSaveOp.addQuickKey(&_kQ));
@@ -258,13 +282,13 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     }
     pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "CPU Interrupt", _wizCol2Width, m);
   });
-  _muteOp.toggle([=]() {
-    _zxSpectrum->toggleMute();
-    _main.repaint();
-  });
-  _muteOp.onPaint([=](PicoPen *pen){
-    pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio", _wizCol2Width, _zxSpectrum->mute() ? "off" : "on");
+  _audioOp.toggle([=]() {
+    _wiz.push(
+      &_audioOptions, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false,"Audio options");
+      }, 
+      true);
   });
   _resetOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -338,21 +362,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     );
   });
 
-  _volume.config(
-    [](uint32_t v) { zxSpectrumAudioSetVolume(v); },
-    []() { return zxSpectrumAudioGetVolume(); }
-  );
-  _volumeOp.onPaint([=](PicoPen *pen){
-    pen->clear();
-    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Volume", _wizCol2Width, _volume.getChars());
-  });
-  _volumeOp.toggle([=]() {
-    _wiz.push(
-      &_volume, 
-      [](PicoPen *pen){ pen->printAt(0, 0, false, "Volume control"); }, 
-      true);
-  });
-
   _keyboard.config(
       [this](uint8_t line, uint8_t key) { _zxSpectrum->keyboard1()->virtuallpress(line,key); }
     );
@@ -416,7 +425,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
       true);
   });
 
-
   _chooseSnap.onToggle = [=](FILINFO *finfo, int32_t i, const char* path) {
     snapName(finfo->fname);
     FatFsSpiInputStream *is = new FatFsSpiInputStream(_sdCard, path);
@@ -427,6 +435,54 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _chooseSnap.onWizSaveFile = [=](FatFsSpiOutputStream *os) {
     return _zxSpectrum->saveZ80(os);
   };
+
+  // Start of audio settings
+  uint audioQuickKeyIndex = 0;
+  _audioOptions.addOption(_muteOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  #ifndef BZR_PIN  
+  _audioOptions.addOption(_volumeOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  #endif
+  _audioOptions.addOption(_audioOutOp.addQuickKey(getQuickKey(audioQuickKeyIndex++)));
+  _audioOptions.enableQuickKeys();
+
+  _muteOp.toggle([=]() {
+    _zxSpectrum->toggleMute();
+    _main.repaint();
+  });
+  _muteOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio", _wizCol2Width, _zxSpectrum->mute() ? "Off" : "On");
+  });
+  _volume.config(
+    [](uint32_t v) { zxSpectrumAudioSetVolume(v); },
+    []() { return zxSpectrumAudioGetVolume(); }
+  );
+  _volumeOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Volume", _wizCol2Width, _volume.getChars());
+  });
+  _volumeOp.toggle([=]() {
+    _wiz.push(
+      &_volume, 
+      [](PicoPen *pen){ pen->printAt(0, 0, false, "Volume control"); }, 
+      true);
+  });
+  _audioOutOp.onPaint([=](PicoPen *pen){
+    pen->clear();
+    const char *m = _zxSpectrum->getAudioDriver()->name;
+    pen->printAtF(0, 0, false,"%-*s[ %-*s]", _wizCol1Width, "Audio out", _wizCol2Width, m);
+  });
+  _audioOutOp.toggle([=]() {
+    const char *m = _zxSpectrum->getAudioDriver()->name;
+    _wiz.push(
+      &_audioOutOptions, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false, "Audio output [%s]", m); 
+      }, 
+      true);
+  });
+// End of audio settings
+
 
   _reset.addOption(_reset48kOp.addQuickKey(&_k1));
   _reset.addOption(_reset128kOp.addQuickKey(&_k2));
@@ -500,6 +556,36 @@ ZxSpectrumMenu::ZxSpectrumMenu(
     }
     _wiz.pop(true);
   });
+  uint audioOutQuickKeyIndex = 0;
+#ifdef PICO_PIO_PWM_AUDIO  
+_audioOutOptions.addOption(_audioPioPwmOp.addQuickKey(getQuickKey(audioOutQuickKeyIndex++)));
+  _audioPioPwmOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pio_pwm_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_PWM_AUDIO  
+_audioOutOptions.addOption(_audioPwmOp.addQuickKey(getQuickKey(audioOutQuickKeyIndex++)));
+  _audioPwmOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_pwm_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_AUDIO_I2S  
+_audioOutOptions.addOption(_audioI2sOp.addQuickKey(getQuickKey(audioOutQuickKeyIndex++)));
+  _audioI2sOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_i2s_index]);
+    _wiz.pop(true);
+  });
+#endif
+#ifdef PICO_HDMI_AUDIO  
+_audioOutOptions.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioOutQuickKeyIndex++)));
+  _audioHdmiOp.toggle([=]() {
+    _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[zx_spectrum_audio_driver_hdmi_index]);
+    _wiz.pop(true);
+  });
+#endif
+  _audioOutOptions.enableQuickKeys();
 
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));
