@@ -1,5 +1,4 @@
 #include "ZxSpectrumSettings.h"
-#include "ZxSpectrumAudio.h"
 
 ZxSpectrumSettings::ZxSpectrumSettings()
 {
@@ -10,7 +9,7 @@ ZxSpectrumSettings::~ZxSpectrumSettings()
 }
 
 inline static bool is_audio_driver_valid(uint i) {
-  return i < ZX_SPECTRUM_AUDIO_DRIVER_COUNT;
+  return i < ZX_SPECTRUM_AUDIO_DRIVER_COUNT && i > 0;
 }
 
 inline static zx_spectrum_audio_driver_enum_t non_dvi_audio_default() {
@@ -106,4 +105,7 @@ void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->volume = 0x100;
   values->joystickMode = ZxSpectrumJoystickModeKempston;
   values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
+  values->audioDriverLcdDefault = non_dvi_audio_default();
+  values->audioDriverDviDefault = zx_spectrum_audio_driver_hdmi_index;
+  values->audioDriverVgaDefault = non_dvi_audio_default();
 }
