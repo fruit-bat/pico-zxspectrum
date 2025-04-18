@@ -488,6 +488,69 @@ target_compile_definitions(ZxSpectrumBobZero_720x576x50Hz PRIVATE
 )
 
 ########################################################################
+# SpotPear HDMI - RP2040/RP2350
+########################################################################
+
+foreach(target
+  ZxSpectrumSpotPear_640x480x60Hz
+  ZxSpectrumSpotPear_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_hdmi_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+  )
+
+  zxspectrum_generate_pio_headers(${target})
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
+endforeach()
+
+set (ZxSpectrumSpotPear_defines
+  # Set up the DVI output to match the SpotPear HDMI
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=SpotPear_hdmi_cfg
+  PICO_CORE1_STACK_SIZE=0x400
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use SPI0
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=2
+  SDCARD_PIN_SPI0_MOSI=3
+  SDCARD_PIN_SPI0_MISO=4
+  # HDMI audio
+  PICO_HDMI_AUDIO
+  #PICO_STARTUP_DVI
+  # Single pin PWM audio
+  SPK_PIN=7
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
+  INITIAL_VOL=0x30
+)
+
+target_compile_definitions(ZxSpectrumSpotPear_640x480x60Hz PRIVATE
+  ${ZxSpectrumSpotPear_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxSpectrumSpotPear_720x576x50Hz PRIVATE
+  ${ZxSpectrumSpotPear_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
+
+########################################################################
 # ZX-MURMULATOR
 ########################################################################
 
