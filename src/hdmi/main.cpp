@@ -57,6 +57,7 @@ extern "C" {
 #include "ZxDviRenderLoop.h"
 #include "ZxSt7789LcdRenderLoop.h"
 #include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -255,7 +256,6 @@ void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   #endif
 }
 
-
 #if defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
@@ -267,33 +267,14 @@ static Ps2Kbd ps2kbd(
 static volatile uint _frames = 0;
 
 void core1_main() {
-  
-#ifdef PICO_ST7789_LCD
-  if (useDvi) {
-    ZxDviRenderLoop(
-      zxSpectrum,
-      _frames,
-      showMenu,
-      toggleMenu
-    );
-  }
-  else {
-    ZxSt7789LcdRenderLoop(
+
+  ZxSpectrumVideoLoop(
       zxSpectrum,
       _frames,
       showMenu,
       toggleMenu,
       picoRootWin
-    );
-  }
-#else
-  ZxDviRenderLoop(
-    zxSpectrum,
-    _frames,
-    showMenu,
-    toggleMenu
   );
-#endif
 
   while (1) 
     __wfi();
@@ -348,23 +329,7 @@ int main() {
   zx_keyscan_init();
 #endif
 
-#ifdef PICO_ST7789_LCD
-  if(zx_fire_raw()) useDvi = !useDvi;
-  
-  // TODO Check if we are using DVI or LCD
-  if (useDvi) {
-    // Init the DVI output and set the clock
-    ZxDviRenderLoopInit();
-  }
-  else {
-    // TODO without the DVI running we have no clock to sync with!
-    // TODO make sure we start an audio option to sync with instead!
-    ZxSt7789LcdRenderLoopInit();
-  }
-#else 
-  // Init the DVI output and set the clock
-  ZxDviRenderLoopInit();
-#endif
+  ZxSpectrumVideoInit();
 
   setup_default_uart();
 

@@ -171,7 +171,8 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   ZxSpectrum &zxSpectrum, 
   volatile uint &frames,
   bool &showMenu,
-  volatile bool &toggleMenu
+  volatile bool &toggleMenu,
+  ZxSpectrumMenu& picoRootWin
 ) {
   scanvideo_setup(&VGA_MODE);
   scanvideo_timing_enable(true);

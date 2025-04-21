@@ -3,6 +3,7 @@
 #include "ZxSpectrum.h"
 #include "ZxSpectrumDisplay.h"
 #include "ZxRenderLoopCallbacks.h"
+#include "ZxSpectrumMenu.h"
 
 void ZxScanlineVgaRenderLoopInit();
 
@@ -10,4 +11,5 @@ void ZxScanlineVgaRenderLoop(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    volatile bool &toggleMenu);
+    volatile bool &toggleMenu,
+    ZxSpectrumMenu& picoRootWin);
