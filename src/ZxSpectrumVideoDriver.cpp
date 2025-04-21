@@ -23,9 +23,14 @@ zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_C
     "Null"
   },
   {
-    ZxScanlineVgaRenderLoopInit,
+    ZxScanlineVgaRenderLoopInit_640x480p_60hz,
     ZxScanlineVgaRenderLoop,
-    "VGA"
+    "VGA 640x480p 60hz"
+  },
+  {
+    ZxScanlineVgaRenderLoopInit_720x576p_50hz,
+    ZxScanlineVgaRenderLoop,
+    "VGA 720x576p 50hz"
   },
   {
     ZxDviRenderLoopInit_640x480p_60hz,
