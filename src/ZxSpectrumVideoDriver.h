@@ -39,7 +39,7 @@ typedef enum
     zx_spectrum_video_driver_dvi_640x480p_60hz_index,
     zx_spectrum_video_driver_dvi_720x540p_50hz_index,
     zx_spectrum_video_driver_dvi_720x576p_50hz_index,
-    zx_spectrum_audio_driver_lcd_index,
+    zx_spectrum_video_driver_lcd_index,
 } zx_spectrum_video_driver_enum_t;
 
 #define ZX_SPECTRUM_VIDEO_DRIVER_COUNT (zx_spectrum_video_driver_lcd_index + 1)

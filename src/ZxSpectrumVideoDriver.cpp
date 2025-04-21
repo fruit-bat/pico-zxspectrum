@@ -1,5 +1,9 @@
 #include "ZxSpectrumVideoDriver.h"
 
+#include "ZxDviRenderLoop.h"
+#include "ZxSt7789LcdRenderLoop.h"
+#include "ZxScanlineVgaRenderLoop.h"
+
 void ZxSpectrumVideoInitNull() {
 }
 
@@ -12,6 +16,38 @@ void ZxSpectrumVideoLoopNull(
 {
 }
 
+zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_COUNT] = {
+  {
+    ZxSpectrumVideoInitNull,
+    ZxSpectrumVideoLoopNull,
+    "Null"
+  },
+  {
+    ZxScanlineVgaRenderLoopInit,
+    ZxScanlineVgaRenderLoop,
+    "VGA"
+  },
+  {
+    ZxDviRenderLoopInit_640x480p_60hz,
+    ZxDviRenderLoop,
+    "DVI 640x480p 60Hz"
+  },
+  {
+    ZxDviRenderLoopInit_720x540p_50hz,
+    ZxDviRenderLoop,
+    "DVI 720x540p 50hz"
+  },
+  {
+    ZxDviRenderLoopInit_720x576p_50hz,
+    ZxDviRenderLoop,
+    "DVI 720x576p 50hz"
+  },
+  {
+    ZxSt7789LcdRenderLoopInit,
+    ZxSt7789LcdRenderLoop,
+    "LCD"
+  }
+};
 
 // DVI_DEFAULT_SERIAL_CONFIG
 
