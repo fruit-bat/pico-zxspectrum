@@ -20,14 +20,30 @@ extern "C" {
 
 struct dvi_inst dvi0;
 
-void ZxDviRenderLoopInit() {
+void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
   // Run system at TMDS bit clock
-  set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
+  set_sys_clock_khz(t->bit_clk_khz, true);
   sleep_ms(10);
 
-  dvi0.timing = &DVI_TIMING;
+  dvi0.timing = t;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
+}
+
+void ZxDviRenderLoopInit() {
+  ZxDviRenderLoopInit_s(&DVI_TIMING);
+}
+
+void ZxDviRenderLoopInit_640x480p_60hz() {
+  ZxDviRenderLoopInit_s(&dvi_timing_640x480p_60hz);
+}
+
+void ZxDviRenderLoopInit_720x540p_50hz() {
+  ZxDviRenderLoopInit_s(&dvi_timing_720x540p_50hz);
+}
+
+void ZxDviRenderLoopInit_720x576p_50hz() {
+  ZxDviRenderLoopInit_s(&dvi_timing_720x576p_50hz);
 }
 
 void __not_in_flash_func(ZxDviRenderLoop)(

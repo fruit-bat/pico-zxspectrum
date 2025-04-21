@@ -36,7 +36,9 @@ typedef enum
 {
     zx_spectrum_video_driver_null_index = 0,
     zx_spectrum_video_driver_vga_index,
-    zx_spectrum_video_driver_dvi_index,
+    zx_spectrum_video_driver_dvi_640x480p_60hz_index,
+    zx_spectrum_video_driver_dvi_720x540p_50hz_index,
+    zx_spectrum_video_driver_dvi_720x576p_50hz_index,
     zx_spectrum_audio_driver_lcd_index,
 } zx_spectrum_video_driver_enum_t;
 
