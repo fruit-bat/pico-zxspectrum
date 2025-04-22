@@ -167,6 +167,16 @@ void ZxScanlineVgaRenderLoopInit()
   sleep_ms(10);
 }
 
+void ZxScanlineVgaRenderLoopInit_640x480p_60hz() {
+  set_sys_clock_khz(vga_mode_640x240_60.default_timing->clock_freq / 100, true);
+  sleep_ms(10);
+}
+
+void ZxScanlineVgaRenderLoopInit_720x576p_50hz() {
+  set_sys_clock_khz(ga_mode_720x288_50.default_timing->clock_freq / 100, true);
+  sleep_ms(10);
+}
+
 void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   ZxSpectrum &zxSpectrum, 
   volatile uint &frames,

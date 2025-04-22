@@ -54,30 +54,21 @@ zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_C
   }
 };
 
-// DVI_DEFAULT_SERIAL_CONFIG
+static zx_spectrum_video_driver_enum_t _video_driver_index = 
+#if defined(DVI_DEFAULT_SERIAL_CONFIG)
+zx_spectrum_video_driver_dvi_640x480p_60hz_index
+#elif defined(PICO_ST7789_LCD)
+zx_spectrum_video_driver_lcd_index
+#elif defined(VGA_MODE)
+zx_spectrum_video_driver_vga_640x480p_60hz_index
+#else
+zx_spectrum_video_driver_null_index
+#endif
+;
 
 void ZxSpectrumVideoInit() {
-    /*
-#ifdef PICO_ST7789_LCD
-    if(zx_fire_raw()) useDvi = !useDvi;
-    
-    // TODO Check if we are using DVI or LCD
-    if (useDvi) {
-      // Init the DVI output and set the clock
-      ZxDviRenderLoopInit();
-    }
-    else {
-      // TODO without the DVI running we have no clock to sync with!
-      // TODO make sure we start an audio option to sync with instead!
-      ZxSt7789LcdRenderLoopInit();
-    }
-#else 
-    // Init the DVI output and set the clock
-    ZxDviRenderLoopInit();
-#endif
-*/
+  _zx_spectrum_video_drivers[_video_driver_index].init();
 }
-
 
 void ZxSpectrumVideoLoop(
     ZxSpectrum &zxSpectrum,
@@ -86,32 +77,11 @@ void ZxSpectrumVideoLoop(
     volatile bool &toggleMenu,
     ZxSpectrumMenu& picoRootWin)
 {
-    /*
-#ifdef PICO_ST7789_LCD
-  if (useDvi) {
-    ZxDviRenderLoop(
+  _zx_spectrum_video_drivers[_video_driver_index].loop(
       zxSpectrum,
-      _frames,
-      showMenu,
-      toggleMenu
-    );
-  }
-  else {
-    ZxSt7789LcdRenderLoop(
-      zxSpectrum,
-      _frames,
+      frames,
       showMenu,
       toggleMenu,
       picoRootWin
-    );
-  }
-#else
-  ZxDviRenderLoop(
-    zxSpectrum,
-    _frames,
-    showMenu,
-    toggleMenu
   );
-#endif
-*/
 }

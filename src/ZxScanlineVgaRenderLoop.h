@@ -7,6 +7,10 @@
 
 void ZxScanlineVgaRenderLoopInit();
 
+void ZxScanlineVgaRenderLoopInit_640x480p_60hz();
+
+void ZxScanlineVgaRenderLoopInit_720x576p_50hz();
+
 void ZxScanlineVgaRenderLoop(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
