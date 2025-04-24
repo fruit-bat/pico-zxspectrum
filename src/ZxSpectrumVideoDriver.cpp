@@ -1,21 +1,30 @@
 #include "ZxSpectrumVideoDriver.h"
 
-#if defined(DVI_DEFAULT_SERIAL_CONFIG)
-#include "ZxDviRenderLoop.h"
-#else
-#define ZxDviRenderLoopInit NULL 
-#define ZxDviRenderLoop NULL
-#endif
-
 #if defined(PICO_ST7789_LCD)
 #include "ZxSt7789LcdRenderLoop.h"
+#ifndef DEFAULT_VIDEO_DRIVER
+#define DEFAULT_VIDEO_DRIVER zx_spectrum_video_driver_lcd_index
+#endif
 #else
 #define ZxSt7789LcdRenderLoopInit NULL
 #define ZxSt7789LcdRenderLoop NULL
 #endif
 
+#if defined(DVI_DEFAULT_SERIAL_CONFIG)
+#include "ZxDviRenderLoop.h"
+#ifndef DEFAULT_VIDEO_DRIVER
+#define DEFAULT_VIDEO_DRIVER zx_spectrum_video_driver_dvi_index
+#endif
+#else
+#define ZxDviRenderLoopInit NULL 
+#define ZxDviRenderLoop NULL
+#endif
+
 #if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ) || defined(VGA_MODE)
 #include "ZxScanlineVgaRenderLoop.h"
+#ifndef DEFAULT_VIDEO_DRIVER
+#define DEFAULT_VIDEO_DRIVER zx_spectrum_video_driver_vga_index
+#endif
 #else
 #define ZxScanlineVgaRenderLoopInit NULL
 #define ZxScanlineVgaRenderLoop NULL

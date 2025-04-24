@@ -167,7 +167,7 @@ void ZxScanlineVgaRenderLoopInit() {
 }
 #else
 void ZxScanlineVgaRenderLoopInit() {
-  setScanvideoMode(&vVGA_MODE, falsee);
+  setScanvideoMode(&vVGA_MODE, false);
 }
 #endif
 

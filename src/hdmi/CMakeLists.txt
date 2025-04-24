@@ -446,7 +446,6 @@ set (ZxSpectrumBobZero_defines
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
   # Set the default video driver
-  DEFAULT_VIDEO_DRIVER=zx_spectrum_video_driver_lcd_index
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
