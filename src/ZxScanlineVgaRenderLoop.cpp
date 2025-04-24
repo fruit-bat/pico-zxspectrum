@@ -86,7 +86,7 @@ const scanvideo_mode_t vga_mode_720x288_50 =
   .yscale = 2,
 };
 
-#if CVBS_13_5MHZ
+#if defined(CVBS_13_5MHZ)
 // timing definition based on 13.5MHz pixel clock (270MHz core)
 // 312 lines, 50.08 frames per second (matches 48K specs)
 const scanvideo_timing_t cvbs_timing_50hz_13_5MHz =
@@ -122,15 +122,11 @@ const scanvideo_mode_t cvbs_mode_50_13_5 =
     .yscale = 1,
 };
 
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz() {
+void ZxScanlineVgaRenderLoopInit() {
   setScanvideoMode(&cvbs_mode_50_13_5, true);
 }
-#else
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz() {
-}
-#endif
 
-#if CVBS_12MHZ
+#elif defined(CVBS_12MHZ)
 // timing definition based on 12MHz pixel clock (240MHz core)
 // 312 lines, 50.08 frames per second (matches 48K specs)
 const scanvideo_timing_t cvbs_timing_50hz_12MHz =
@@ -164,23 +160,16 @@ const scanvideo_mode_t cvbs_mode_50_12 =
     .height = 256,
     .xscale = 1,
     .yscale = 1,
-s};
+};
 
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz() {
+void ZxScanlineVgaRenderLoopInit() {
   setScanvideoMode(&cvbs_mode_50_12, true);
 }
 #else
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz() {
+void ZxScanlineVgaRenderLoopInit() {
+  setScanvideoMode(&vVGA_MODE, falsee);
 }
 #endif
-
-void ZxScanlineVgaRenderLoopInit_640x480p_60hz() {
-  setScanvideoMode(&vga_mode_640x240_60, falsee);
-}
-
-void ZxScanlineVgaRenderLoopInit_720x576p_50hz() {
-  setScanvideoMode(&vga_mode_720x288_50, falsee);
-}
 
 void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   ZxSpectrum &zxSpectrum, 

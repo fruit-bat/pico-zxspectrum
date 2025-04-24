@@ -69,9 +69,6 @@ extern "C" {
 
 // DVDD 1.2V (1.1V seems ok too)
 #define VREG_VSEL VREG_VOLTAGE_1_20
-#ifndef DVI_TIMING
-#define DVI_TIMING dvi_timing_640x480p_60hz
-#endif
 
 #define LED_PIN 25
 

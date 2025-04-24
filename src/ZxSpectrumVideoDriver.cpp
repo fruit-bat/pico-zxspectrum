@@ -1,53 +1,36 @@
 #include "ZxSpectrumVideoDriver.h"
 
+#if defined(DVI_DEFAULT_SERIAL_CONFIG)
 #include "ZxDviRenderLoop.h"
-#include "ZxSt7789LcdRenderLoop.h"
+#else
+#define ZxDviRenderLoopInit NULL 
+#define ZxDviRenderLoop NULL
+#endif
 
-#if defined(CVBS_VIDEO) || defined(VGA_VIDEO)
+#if defined(PICO_ST7789_LCD)
+#include "ZxSt7789LcdRenderLoop.h"
+#else
+#define ZxSt7789LcdRenderLoopInit NULL
+#define ZxSt7789LcdRenderLoop NULL
+#endif
+
+#if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ) || defined(VGA_MODE)
 #include "ZxScanlineVgaRenderLoop.h"
 #else
-#define ZxScanlineVgaRenderLoopInit_640x480p_60hz NULL
-#define ZxScanlineVgaRenderLoopInit_720x576p_50hz NULL
-#define ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz NULL
-#define ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz NULL
+#define ZxScanlineVgaRenderLoopInit NULL
 #define ZxScanlineVgaRenderLoop NULL
 #endif
 
 zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_COUNT] = {  
   {
-    ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz,
+    ZxScanlineVgaRenderLoopInit,
     ZxScanlineVgaRenderLoop,
-    "CVBS 50Hz 13.5Mhz"
+    "VGA"
   },
   {
-    ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz,
-    ZxScanlineVgaRenderLoop,
-    "CVBS 50Hz 12Mhz"
-  },
-  {
-    ZxScanlineVgaRenderLoopInit_640x480p_60hz,
-    ZxScanlineVgaRenderLoop,
-    "VGA 640x480p 60hz"
-  },
-  {
-    ZxScanlineVgaRenderLoopInit_720x576p_50hz,
-    ZxScanlineVgaRenderLoop,
-    "VGA 720x576p 50hz"
-  },
-  {
-    ZxDviRenderLoopInit_640x480p_60hz,
+    ZxDviRenderLoopInit,
     ZxDviRenderLoop,
-    "DVI 640x480p 60Hz"
-  },
-  {
-    ZxDviRenderLoopInit_720x540p_50hz,
-    ZxDviRenderLoop,
-    "DVI 720x540p 50hz"
-  },
-  {
-    ZxDviRenderLoopInit_720x576p_50hz,
-    ZxDviRenderLoop,
-    "DVI 720x576p 50hz"
+    "DVI"
   },
   {
     ZxSt7789LcdRenderLoopInit,
@@ -56,17 +39,7 @@ zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_C
   }
 };
 
-static zx_spectrum_video_driver_enum_t _video_driver_index = 
-#if defined(DVI_DEFAULT_SERIAL_CONFIG)
-zx_spectrum_video_driver_dvi_640x480p_60hz_index
-#elif defined(PICO_ST7789_LCD)
-zx_spectrum_video_driver_lcd_index
-#elif defined(VGA_MODE)
-zx_spectrum_video_driver_vga_640x480p_60hz_index
-#else
-zx_spectrum_video_driver_null_index
-#endif
-;
+static zx_spectrum_video_driver_enum_t _video_driver_index = DEFAULT_VIDEO_DRIVER;
 
 void ZxSpectrumVideoInit() {
   zx_spectrum_video_init_t init = _zx_spectrum_video_drivers[_video_driver_index].init;

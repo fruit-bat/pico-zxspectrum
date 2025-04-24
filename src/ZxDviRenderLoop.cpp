@@ -14,10 +14,6 @@ extern "C" {
     #include "tmds_encode_zxspectrum.h"
 }
 
-#ifndef DVI_TIMING
-#define DVI_TIMING dvi_timing_640x480p_60hz
-#endif
-
 struct dvi_inst dvi0;
 
 void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
@@ -32,18 +28,6 @@ void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
 
 void ZxDviRenderLoopInit() {
   ZxDviRenderLoopInit_s(&DVI_TIMING);
-}
-
-void ZxDviRenderLoopInit_640x480p_60hz() {
-  ZxDviRenderLoopInit_s(&dvi_timing_640x480p_60hz);
-}
-
-void ZxDviRenderLoopInit_720x540p_50hz() {
-  ZxDviRenderLoopInit_s(&dvi_timing_720x540p_50hz);
-}
-
-void ZxDviRenderLoopInit_720x576p_50hz() {
-  ZxDviRenderLoopInit_s(&dvi_timing_720x576p_50hz);
 }
 
 void __not_in_flash_func(ZxDviRenderLoop)(

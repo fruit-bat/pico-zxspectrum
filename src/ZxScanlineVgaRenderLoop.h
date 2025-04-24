@@ -5,10 +5,7 @@
 #include "ZxRenderLoopCallbacks.h"
 #include "ZxSpectrumMenu.h"
 
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz();
-void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz();
-void ZxScanlineVgaRenderLoopInit_640x480p_60hz();
-void ZxScanlineVgaRenderLoopInit_720x576p_50hz();
+void ZxScanlineVgaRenderLoopInit();
 
 void ZxScanlineVgaRenderLoop(
     ZxSpectrum &zxSpectrum,
