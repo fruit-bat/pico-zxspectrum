@@ -12,6 +12,14 @@
 #define VGA_H_SYNC_POLARITY 5
 #endif
 
+static scanvideo_mode_t *_scanvideo_mode = 0; 
+
+static void setScanvideoMode(scanvideo_mode_t *scanvideo_mode, bool doubleClock) {
+  _scanvideo_mode = &canvideo_mode;
+  set_sys_clock_khz((doubleClock ? 2 : 1) * _scanvideo_mode->default_timing->clock_freq / 100, true);
+  sleep_ms(10);
+}
+
 const scanvideo_timing_t vga_timing_640x480_60 =
 {
     .clock_freq = 25000000,
@@ -104,7 +112,7 @@ const scanvideo_timing_t cvbs_timing_50hz_13_5MHz =
     .enable_den = 0
 };
 
-const scanvideo_mode_t cvbs_mode_50 =
+const scanvideo_mode_t cvbs_mode_50_13_5 =
 {
     .default_timing = &cvbs_timing_50hz_13_5MHz,
     .pio_program = &video_24mhz_composable,
@@ -113,6 +121,13 @@ const scanvideo_mode_t cvbs_mode_50 =
     .xscale = 1,
     .yscale = 1,
 };
+
+void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz() {
+  setScanvideoMode(&cvbs_mode_50_13_5, true);
+}
+#else
+void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz() {
+}
 #endif
 
 #if CVBS_12MHZ
@@ -141,7 +156,7 @@ const scanvideo_timing_t cvbs_timing_50hz_12MHz =
     .enable_den = 0
 };
 
-const scanvideo_mode_t cvbs_mode_50 =
+const scanvideo_mode_t cvbs_mode_50_12 =
 {
     .default_timing = &cvbs_timing_50hz_12MHz,
     .pio_program = &video_24mhz_composable,
@@ -149,32 +164,22 @@ const scanvideo_mode_t cvbs_mode_50 =
     .height = 256,
     .xscale = 1,
     .yscale = 1,
-};
-#endif
+s};
 
-
-#ifndef VGA_MODE
-#define VGA_MODE vga_mode_640x240_60
-#endif  
-
-void ZxScanlineVgaRenderLoopInit()
-{
-#if (CVBS_12MHZ || CVBS_13_5MHZ)
-  set_sys_clock_khz(2 * VGA_MODE.default_timing->clock_freq / 100, true);
-#else
-  set_sys_clock_khz(VGA_MODE.default_timing->clock_freq / 100, true);
-#endif
-  sleep_ms(10);
+void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz() {
+  setScanvideoMode(&cvbs_mode_50_12, true);
 }
+#else
+void ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz() {
+}
+#endif
 
 void ZxScanlineVgaRenderLoopInit_640x480p_60hz() {
-  set_sys_clock_khz(vga_mode_640x240_60.default_timing->clock_freq / 100, true);
-  sleep_ms(10);
+  setScanvideoMode(&vga_mode_640x240_60, falsee);
 }
 
 void ZxScanlineVgaRenderLoopInit_720x576p_50hz() {
-  set_sys_clock_khz(ga_mode_720x288_50.default_timing->clock_freq / 100, true);
-  sleep_ms(10);
+  setScanvideoMode(&vga_mode_720x288_50, falsee);
 }
 
 void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
@@ -184,6 +189,8 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   volatile bool &toggleMenu,
   ZxSpectrumMenu& picoRootWin
 ) {
+  if (!_scanvideo_mode) return;
+
   scanvideo_setup(&VGA_MODE);
   scanvideo_timing_enable(true);
 

@@ -2,25 +2,27 @@
 
 #include "ZxDviRenderLoop.h"
 #include "ZxSt7789LcdRenderLoop.h"
+
+#if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ)
 #include "ZxScanlineVgaRenderLoop.h"
+#else
+#define ZxScanlineVgaRenderLoopInit_640x480p_60hz NULL
+#define ZxScanlineVgaRenderLoopInit_720x576p_50hz NULL
+#define ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz NULL
+#define ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz NULL
+#define ZxScanlineVgaRenderLoop NULL
+#endif
 
-void ZxSpectrumVideoInitNull() {
-}
-
-void ZxSpectrumVideoLoopNull(
-  ZxSpectrum &zxSpectrum,
-  volatile uint &frames,
-  bool &showMenu,
-  volatile bool &toggleMenu,
-  ZxSpectrumMenu& picoRootWin)
-{
-}
-
-zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_COUNT] = {
+zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_COUNT] = {  
   {
-    ZxSpectrumVideoInitNull,
-    ZxSpectrumVideoLoopNull,
-    "Null"
+    ZxScanlineVgaRenderLoopInit_CVBS_50Hz_13_5Mhz,
+    ZxScanlineVgaRenderLoop,
+    "CVBS 50Hz 13.5Mhz"
+  },
+  {
+    ZxScanlineVgaRenderLoopInit_CVBS_50Hz_12Mhz,
+    ZxScanlineVgaRenderLoop,
+    "CVBS 50Hz 12Mhz"
   },
   {
     ZxScanlineVgaRenderLoopInit_640x480p_60hz,
@@ -67,17 +69,19 @@ zx_spectrum_video_driver_null_index
 ;
 
 void ZxSpectrumVideoInit() {
-  _zx_spectrum_video_drivers[_video_driver_index].init();
+  zx_spectrum_video_init_t init = _zx_spectrum_video_drivers[_video_driver_index].init;
+  if (init) init();
 }
 
 void ZxSpectrumVideoLoop(
-    ZxSpectrum &zxSpectrum,
-    volatile uint &frames,
-    bool &showMenu,
-    volatile bool &toggleMenu,
-    ZxSpectrumMenu& picoRootWin)
+  ZxSpectrum &zxSpectrum,
+  volatile uint &frames,
+  bool &showMenu,
+  volatile bool &toggleMenu,
+  ZxSpectrumMenu& picoRootWin)
 {
-  _zx_spectrum_video_drivers[_video_driver_index].loop(
+  zx_spectrum_video_loop_t loop = _zx_spectrum_video_drivers[_video_driver_index].loop;  
+  if (loop) loop(
       zxSpectrum,
       frames,
       showMenu,

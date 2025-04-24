@@ -34,7 +34,8 @@ typedef struct
 
 typedef enum
 {
-    zx_spectrum_video_driver_null_index = 0,
+    zx_spectrum_video_driver_CVBS_50Hz_13_5Mhz_index = 0,
+    zx_spectrum_video_driver_CVBS_50Hz_12Mhz_index,
     zx_spectrum_video_driver_vga_640x480p_60hz_index,
     zx_spectrum_video_driver_vga_720x576p_50hz_index,
     zx_spectrum_video_driver_dvi_640x480p_60hz_index,
