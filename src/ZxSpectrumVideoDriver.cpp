@@ -3,7 +3,7 @@
 #include "ZxDviRenderLoop.h"
 #include "ZxSt7789LcdRenderLoop.h"
 
-#if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ)
+#if defined(CVBS_VIDEO) || defined(VGA_VIDEO)
 #include "ZxScanlineVgaRenderLoop.h"
 #else
 #define ZxScanlineVgaRenderLoopInit_640x480p_60hz NULL
