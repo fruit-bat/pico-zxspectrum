@@ -15,6 +15,7 @@ extern "C" {
 }
 
 struct dvi_inst dvi0;
+bool dvi_running = false;
 
 void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
   // Run system at TMDS bit clock
@@ -39,7 +40,8 @@ void __not_in_flash_func(ZxDviRenderLoop)(
 {
     dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
     dvi_start(&dvi0);
-
+    dvi_running = true;
+    
     uint8_t* screenPtr;
     uint8_t* attrPtr;
     screenPtr = zxSpectrum.screenPtr();

@@ -33,6 +33,7 @@ bool __not_in_flash_func(hdmi_audio_ready)()
 #include "dvi.h"
 
 extern struct dvi_inst dvi0;
+extern bool dvi_running;
 
 #define AUDIO_BUFFER_SIZE   256
 audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
@@ -69,17 +70,19 @@ uint32_t hdmi_audio_freq() {
 
 void __not_in_flash_func(hdmi_audio_handler)(uint32_t vA, uint32_t vB, uint32_t vC, int32_t s, uint32_t buzzer, bool mute)
 {
-  uint32_t ll, rr;
-  audio_handler_16bit_helper(vA, vB, vC, s, buzzer, mute, ll, rr);
-  audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
-	audio_ptr->channels[0] = ll;
-	audio_ptr->channels[1] = rr;
-	increase_write_pointer(&dvi0.audio_ring, 1);
+  if (dvi_running) {
+    uint32_t ll, rr;
+    audio_handler_16bit_helper(vA, vB, vC, s, buzzer, mute, ll, rr);
+    audio_sample_t *audio_ptr = get_write_pointer(&dvi0.audio_ring);
+    audio_ptr->channels[0] = ll;
+    audio_ptr->channels[1] = rr;
+    increase_write_pointer(&dvi0.audio_ring, 1);  
+  }
 }
 
 bool __not_in_flash_func(hdmi_audio_ready)()
 {
-  return get_write_size(&dvi0.audio_ring, true) > 0;
+  return !dvi_running || get_write_size(&dvi0.audio_ring, true) > 0;
 }
 
 #endif

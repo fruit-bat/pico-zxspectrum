@@ -7,10 +7,6 @@
 
 void ZxDviRenderLoopInit();
 
-void ZxDviRenderLoopInit_640x480p_60hz();
-void ZxDviRenderLoopInit_720x540p_50hz();
-void ZxDviRenderLoopInit_720x576p_50hz();
-
 void ZxDviRenderLoop(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
