@@ -158,6 +158,12 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   _audioI2sOp(_zx_spectrum_audio_drivers[3].name),
   _audioHdmiOp(_zx_spectrum_audio_drivers[4].name), 
 
+  _videoOp("Video"),
+  _videoOptions(0, 0, _wizCols, 6, _menuRowsPerItem),
+  _videoVgaOp("VGA"),
+  _videoDviOp("DVI"),
+  _videoLcdOp("LCD"),
+
   _settings(0, 0, _wizCols, 6, _menuRowsPerItem),
   _settingsSaveOp("Save"),
   _settingsLoadOp("Load"),
@@ -330,6 +336,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
 
   _system.addOption(_systemBootSelOp.addQuickKey(&_k1));
+  _system.addOption(_videoOp.addQuickKey(&_k2));
   _system.enableQuickKeys();
   _systemOp.onPaint([=](PicoPen *pen){
     pen->clear();
@@ -586,6 +593,39 @@ _audioOutOptions.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioOutQuickKey
   });
 #endif
   _audioOutOptions.enableQuickKeys();
+
+  _videoOp.toggle([=]() {
+    const char *m = "TODO"; //_zxSpectrum->getAudioDriver()->name;
+    _wiz.push(
+      &_videoOptions, 
+      [=](PicoPen *pen){ 
+        pen->printAtF(0, 0, false, "Video output [%s]", m); 
+      }, 
+      true);
+  });
+  uint videoQuickKeyIndex = 0;
+#if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ) || defined(VGA_MODE)
+  _videoOptions.addOption(_videoVgaOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
+  _videoVgaOp.toggle([=]() {
+// TODO
+    _wiz.pop(true);
+  });
+#endif
+#if defined(DVI_DEFAULT_SERIAL_CONFIG)
+  _videoOptions.addOption(_videoDviOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
+  _videoDviOp.toggle([=]() {
+// TODO
+    _wiz.pop(true);
+  });
+#endif
+#if defined(PICO_ST7789_LCD)
+  _videoOptions.addOption(_videoLcdOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
+  _videoLcdOp.toggle([=]() {
+// TODO
+    _wiz.pop(true);
+  });
+#endif
+  _videoOptions.enableQuickKeys();
 
   _tapePlayer.addOption(_chooseTapeOp.addQuickKey(&_k1));
   _tapePlayer.addOption(_ejectTapeOp.addQuickKey(&_k2));

@@ -107,6 +107,12 @@ private:
   PicoOptionText _audioI2sOp;
   PicoOptionText _audioHdmiOp;
 
+  PicoOptionText _videoOp;
+  PicoSelect _videoOptions;
+  PicoOptionText _videoVgaOp;
+  PicoOptionText _videoDviOp;
+  PicoOptionText _videoLcdOp;
+
   PicoSelect _settings;
   PicoOptionText _settingsSaveOp;
   PicoOptionText _settingsLoadOp;
