@@ -41,4 +41,6 @@ typedef enum
 
 #define ZX_SPECTRUM_VIDEO_DRIVER_COUNT (zx_spectrum_video_driver_lcd_index + 1)
 
+zx_spectrum_video_driver_enum_t videoDriverIndex();
 
+const char* videoDriverName();

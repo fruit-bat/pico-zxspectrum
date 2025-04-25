@@ -50,6 +50,14 @@ zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_C
 
 static zx_spectrum_video_driver_enum_t _video_driver_index = DEFAULT_VIDEO_DRIVER;
 
+zx_spectrum_video_driver_enum_t videoDriverIndex() {
+  return _video_driver_index;
+}
+
+const char* videoDriverName() {
+  return _zx_spectrum_video_drivers[_video_driver_index].name;
+}
+
 void ZxSpectrumVideoInit() {
   zx_spectrum_video_init_t init = _zx_spectrum_video_drivers[_video_driver_index].init;
   if (init) init();

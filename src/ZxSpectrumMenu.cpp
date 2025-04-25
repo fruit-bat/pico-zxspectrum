@@ -12,6 +12,7 @@
 #include "ZxSpectrumAudio.h"
 #include "ZxSpectrumAudioVol.h"
 #include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
 #include "PicoCoreVoltage.h"
 
 // #define DEBUG_ZX_MENU
@@ -595,7 +596,7 @@ _audioOutOptions.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioOutQuickKey
   _audioOutOptions.enableQuickKeys();
 
   _videoOp.toggle([=]() {
-    const char *m = "TODO"; //_zxSpectrum->getAudioDriver()->name;
+    const char *m = videoDriverName();
     _wiz.push(
       &_videoOptions, 
       [=](PicoPen *pen){ 
