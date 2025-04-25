@@ -324,8 +324,11 @@ int main() {
 #ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
   zx_keyscan_init();
+#ifdef PICO_ST7789_LCD
+  if(zx_fire_raw()) ZxSpectrumVideoNext();
 #endif
-
+#endif
+  // Not that the following sets the system clock
   ZxSpectrumVideoInit();
 
   setup_default_uart();

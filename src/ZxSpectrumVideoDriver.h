@@ -44,3 +44,5 @@ typedef enum
 zx_spectrum_video_driver_enum_t videoDriverIndex();
 
 const char* videoDriverName();
+
+void ZxSpectrumVideoNext();
