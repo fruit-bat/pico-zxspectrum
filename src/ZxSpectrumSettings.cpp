@@ -114,6 +114,9 @@ void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->joystickMode = ZxSpectrumJoystickModeKempston;
   values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
   values->videoDriverDefault = (uint8_t)videoDriverIndex();
+  for(uint8_t i = 0; i <  ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
+    values->audioDriverDefault[i] = (uint8_t)0; // TODO
+  }
 
   /*
   values->audioDriverLcdDefault = non_dvi_audio_default();

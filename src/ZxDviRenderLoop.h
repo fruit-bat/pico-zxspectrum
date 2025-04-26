@@ -13,3 +13,5 @@ void ZxDviRenderLoop(
     bool &showMenu,
     volatile bool &toggleMenu,
     ZxSpectrumMenu& picoRootWin);
+
+zx_spectrum_audio_driver_enum_t ZxDviRenderLoopAudioDefault();

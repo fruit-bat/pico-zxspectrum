@@ -6,6 +6,23 @@
 #include "PicoCharRendererScanvideo.h"
 #include "hardware/clocks.h"
 
+
+zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAduioDefault() {
+#if defined(PICO_DEFAULT_AUDIO)
+  return PICO_DEFAULT_AUDIO;
+#elif defined(PICO_DEFAULT_AUDIO_VGA)
+  return PICO_DEFAULT_AUDIO_VGA;
+#elif defined(PICO_AUDIO_I2S)
+  return zx_spectrum_audio_driver_i2s_index;
+#elif defined(PICO_PIO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pio_pwm_index;
+#elif defined(PICO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pwm_index;
+#else
+  return zx_spectrum_audio_driver_pwm_index;
+#endif 
+}
+
 #ifdef VGA_VSYNC
 #define VGA_H_SYNC_POLARITY 1
 #else

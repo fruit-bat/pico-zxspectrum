@@ -4,6 +4,7 @@
 #include "ZxSpectrumJoystick.h"
 #include "ZxSpectrumMouse.h"
 #include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriverEnum.h"
 
 typedef struct {
   uint32_t volume;
@@ -11,7 +12,7 @@ typedef struct {
   ZxSpectrumMouseMode mouseMode;
   ZxSpectrumJoystickMode mouseJoystickMode;
   uint8_t videoDriverDefault;
-  uint8_t audioDriverDefault[3];
+  uint8_t audioDriverDefault[ZX_SPECTRUM_VIDEO_DRIVER_COUNT];
 } ZxSpectrumSettingValues;
 
 class ZxSpectrumSettings {

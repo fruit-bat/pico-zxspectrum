@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pico/stdlib.h>
+#include "ZxSpectrumAudioDriverEnum.h"
 
 typedef void (*zx_spectrum_audio_init_t)();
 typedef uint32_t (*zx_spectrum_audio_freq_t)();
@@ -17,18 +18,6 @@ typedef struct
 } zx_spectrum_audio_driver_t;
 
 extern zx_spectrum_audio_driver_t _zx_spectrum_audio_drivers[];
-
-typedef enum
-{
-  zx_spectrum_audio_driver_null_index = 0,
-  zx_spectrum_audio_driver_pio_pwm_index,
-  zx_spectrum_audio_driver_pwm_index,
-  zx_spectrum_audio_driver_i2s_index,
-  zx_spectrum_audio_driver_hdmi_index
-} zx_spectrum_audio_driver_enum_t;
-
-#define ZX_SPECTRUM_AUDIO_DRIVER_COUNT (zx_spectrum_audio_driver_hdmi_index + 1)
-
 
 void zx_spectrum_audio_driver_init();
 

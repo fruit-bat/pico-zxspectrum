@@ -8,6 +8,7 @@
 #else
 #define ZxSt7789LcdRenderLoopInit NULL
 #define ZxSt7789LcdRenderLoop NULL
+#define ZxSt7789LcdRender NULL
 #endif
 
 #if defined(DVI_DEFAULT_SERIAL_CONFIG)
@@ -18,6 +19,7 @@
 #else
 #define ZxDviRenderLoopInit NULL 
 #define ZxDviRenderLoop NULL
+#define ZxDviRenderLoopAudioDefault NULL
 #endif
 
 #if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ) || defined(VGA_MODE)
@@ -28,22 +30,26 @@
 #else
 #define ZxScanlineVgaRenderLoopInit NULL
 #define ZxScanlineVgaRenderLoop NULL
+#define ZxScanlineVgaRenderLoopAudioDefault NULL
 #endif
 
 zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_COUNT] = {  
   {
     ZxScanlineVgaRenderLoopInit,
     ZxScanlineVgaRenderLoop,
+    ZxScanlineVgaRenderLoopAudioDefault,
     "VGA"
   },
   {
     ZxDviRenderLoopInit,
     ZxDviRenderLoop,
+    ZxDviRenderLoopAudioDefault,
     "DVI"
   },
   {
     ZxSt7789LcdRenderLoopInit,
     ZxSt7789LcdRenderLoop,
+    ZxSt7789LcdRenderAduioDefault,
     "LCD"
   }
 };

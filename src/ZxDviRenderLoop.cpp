@@ -17,6 +17,24 @@ extern "C" {
 struct dvi_inst dvi0;
 bool dvi_running = false;
 
+zx_spectrum_audio_driver_enum_t ZxDviRenderLoopAudioDefault() {
+#if defined(PICO_DEFAULT_AUDIO)
+  return PICO_DEFAULT_AUDIO;
+#elif defined(PICO_DEFAULT_AUDIO_DVI)
+  return PICO_DEFAULT_AUDIO_DVI;
+#elif defined(PICO_HDMI_AUDIO)
+  return zx_spectrum_audio_driver_hdmi_index;
+#elif defined(PICO_AUDIO_I2S)
+  return zx_spectrum_audio_driver_i2s_index;
+#elif defined(PICO_PIO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pio_pwm_index;
+#elif defined(PICO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pwm_index;
+#else
+  return zx_spectrum_audio_driver_pwm_index;
+#endif 
+}
+
 void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
   // Run system at TMDS bit clock
   set_sys_clock_khz(t->bit_clk_khz, true);
