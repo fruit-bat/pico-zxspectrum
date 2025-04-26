@@ -317,6 +317,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
 
   _settings.addOption(_settingsSaveOp.addQuickKey(&_k1));
   _settings.addOption(_settingsLoadOp.addQuickKey(&_k2));
+  _settings.addOption(_videoOp.addQuickKey(&_k3));
   _settings.enableQuickKeys();
   _settingsSaveOp.toggle([=]() {
     saveSettings();
@@ -338,7 +339,6 @@ ZxSpectrumMenu::ZxSpectrumMenu(
   });
 
   _system.addOption(_systemBootSelOp.addQuickKey(&_k1));
-  _system.addOption(_videoOp.addQuickKey(&_k2));
   _system.enableQuickKeys();
   _systemOp.onPaint([=](PicoPen *pen){
     pen->clear();
