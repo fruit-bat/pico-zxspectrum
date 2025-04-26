@@ -808,11 +808,14 @@ void ZxSpectrumMenu::initialise() {
 
 void ZxSpectrumMenu::saveSettings() {
   ZxSpectrumSettingValues settings;
+  _zxSpectrumSettings->load(&settings);
   settings.volume = zxSpectrumAudioGetVolume();
   settings.joystickMode = _zxSpectrum->joystick()->mode();
   settings.mouseMode = _zxSpectrum->mouse()->mouseMode();
   settings.mouseJoystickMode = _zxSpectrum->mouse()->mode();
   settings.videoDriverDefault = _videoDriverIndex;
+  settings.audioDriverDefault[_videoDriverIndex] = 
+    zx_spectrum_audio_driver_index(_zxSpectrum->getAudioDriver());
 
   _zxSpectrumSettings->save(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
@@ -833,4 +836,5 @@ void ZxSpectrumMenu::loadSettings() {
   _zxSpectrum->mouse()->mouseMode(settings.mouseMode);
   _zxSpectrum->mouse()->mode(settings.mouseJoystickMode);
   _videoDriverIndex = settings.videoDriverDefault;
+  _zxSpectrum->setAudioDriver(&_zx_spectrum_audio_drivers[settings.audioDriverDefault[_videoDriverIndex]]);
 }

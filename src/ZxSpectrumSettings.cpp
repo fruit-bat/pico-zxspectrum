@@ -14,18 +14,6 @@ inline static bool is_audio_driver_valid(uint i) {
   return i < ZX_SPECTRUM_AUDIO_DRIVER_COUNT && i > 0;
 }
 
-inline static zx_spectrum_audio_driver_enum_t non_dvi_audio_default() {
-#if defined(PICO_AUDIO_I2S)
-  return zx_spectrum_audio_driver_i2s_index;
-#elif defined(PICO_PIO_PWM_AUDIO)      
-  return zx_spectrum_audio_driver_pio_pwm_index;
-#elif defined(PICO_PWM_AUDIO)      
-  return zx_spectrum_audio_driver_pwm_index;
-#else
-  return zx_spectrum_audio_driver_null_index;
-#endif  
-}
-
 void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
 
     // Volume
@@ -67,22 +55,16 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
     if (values->videoDriverDefault >= ZX_SPECTRUM_VIDEO_DRIVER_COUNT || !isZxSpectrumVideoDriverInstalled((zx_spectrum_video_driver_enum_t)values->videoDriverDefault)) {
       values->videoDriverDefault = (uint8_t)videoDriverIndex();
     }
-/*
-    // Audio LCD default
-    if (!is_audio_driver_valid(values->audioDriverLcdDefault)) {
-      values->audioDriverLcdDefault = non_dvi_audio_default();
-    } 
 
-    // Audio DVI default
-    if (!is_audio_driver_valid(values->audioDriverDviDefault)) {
-      values->audioDriverDviDefault = zx_spectrum_audio_driver_hdmi_index;
+    // Audio output
+    for(uint8_t i = 0; i <  ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
+      if (values->audioDriverDefault[i] >= ZX_SPECTRUM_AUDIO_DRIVER_COUNT) {
+        zx_spectrum_video_driver_t* videoDriver = getZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)i);
+        values->audioDriverDefault[i] = videoDriver 
+          ? (uint8_t)videoDriver->audio_default()
+          : 0;
+      }
     }
-
-    // Audio VGA default
-    if (!is_audio_driver_valid(values->audioDriverVgaDefault)) {
-      values->audioDriverVgaDefault = non_dvi_audio_default();
-    } 
-      */
 }
 
 bool ZxSpectrumSettings::onSave(ZxSpectrumSettingValues *values)
@@ -115,12 +97,9 @@ void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
   values->videoDriverDefault = (uint8_t)videoDriverIndex();
   for(uint8_t i = 0; i <  ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
-    values->audioDriverDefault[i] = (uint8_t)0; // TODO
+    zx_spectrum_video_driver_t* videoDriver = getZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)i);
+    values->audioDriverDefault[i] = videoDriver 
+      ? (uint8_t)videoDriver->audio_default()
+      : 0;
   }
-
-  /*
-  values->audioDriverLcdDefault = non_dvi_audio_default();
-  values->audioDriverDviDefault = zx_spectrum_audio_driver_hdmi_index;
-  values->audioDriverVgaDefault = non_dvi_audio_default();
-  */
 }
