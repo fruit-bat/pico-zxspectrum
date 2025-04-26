@@ -321,6 +321,14 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+  // Try to use the general settings for video and audio defaults
+  // This will start up the SD card before the system frequency is decided
+  if (sdCard0.mount()) {
+    ZxSpectrumSettingValues settings;
+    zxSpectrumSettings.load(&settings);
+    setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
+  }
+
 #ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
   zx_keyscan_init();

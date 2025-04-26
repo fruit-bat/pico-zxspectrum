@@ -30,6 +30,7 @@ private:
   int32_t _menuRowsPerItem;
   int32_t _explorerRowsPerFile;
   int32_t _explorerRows;
+  uint8_t _videoDriverIndex;
 
   FatFsFilePath _pathZxSpectrum;
   FatFsFilePath _pathSnaps;

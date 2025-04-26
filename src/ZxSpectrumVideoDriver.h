@@ -46,3 +46,11 @@ zx_spectrum_video_driver_enum_t videoDriverIndex();
 const char* videoDriverName();
 
 void ZxSpectrumVideoNext();
+
+zx_spectrum_video_driver_t *getZxSpectrumVideoDriver(zx_spectrum_video_driver_enum_t index);
+
+void setZxSpectrumVideoDriver(zx_spectrum_video_driver_enum_t index);
+
+inline bool isZxSpectrumVideoDriverInstalled(zx_spectrum_video_driver_enum_t index) {
+    return getZxSpectrumVideoDriver(index)->init != NULL;
+}

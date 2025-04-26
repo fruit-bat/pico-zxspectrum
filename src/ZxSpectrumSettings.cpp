@@ -1,4 +1,6 @@
 #include "ZxSpectrumSettings.h"
+#include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
 
 ZxSpectrumSettings::ZxSpectrumSettings()
 {
@@ -61,6 +63,11 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
         break;
     }
 
+    // Video output
+    if (values->videoDriverDefault >= ZX_SPECTRUM_VIDEO_DRIVER_COUNT || !isZxSpectrumVideoDriverInstalled((zx_spectrum_video_driver_enum_t)values->videoDriverDefault)) {
+      values->videoDriverDefault = (uint8_t)videoDriverIndex();
+    }
+/*
     // Audio LCD default
     if (!is_audio_driver_valid(values->audioDriverLcdDefault)) {
       values->audioDriverLcdDefault = non_dvi_audio_default();
@@ -75,6 +82,7 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
     if (!is_audio_driver_valid(values->audioDriverVgaDefault)) {
       values->audioDriverVgaDefault = non_dvi_audio_default();
     } 
+      */
 }
 
 bool ZxSpectrumSettings::onSave(ZxSpectrumSettingValues *values)
@@ -105,7 +113,11 @@ void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->volume = 0x100;
   values->joystickMode = ZxSpectrumJoystickModeKempston;
   values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
+  values->videoDriverDefault = (uint8_t)videoDriverIndex();
+
+  /*
   values->audioDriverLcdDefault = non_dvi_audio_default();
   values->audioDriverDviDefault = zx_spectrum_audio_driver_hdmi_index;
   values->audioDriverVgaDefault = non_dvi_audio_default();
+  */
 }

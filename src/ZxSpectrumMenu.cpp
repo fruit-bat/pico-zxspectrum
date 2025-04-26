@@ -112,6 +112,7 @@ ZxSpectrumMenu::ZxSpectrumMenu(
    _menuRowsPerItem(SZ_MENU_SEP),
    _explorerRowsPerFile(SZ_FILE_SEP),
    _explorerRows(SZ_FILE_ROWS),
+   _videoDriverIndex(0),
    _pathZxSpectrum("/zxspectrum"),
    _pathSnaps(&_pathZxSpectrum, "snapshots"),
    _pathTapes(&_pathZxSpectrum, "tapes"),
@@ -596,11 +597,12 @@ _audioOutOptions.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioOutQuickKey
   _audioOutOptions.enableQuickKeys();
 
   _videoOp.toggle([=]() {
-    const char *m = videoDriverName();
+    const char *k = videoDriverName();
+    const char *m = getZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)_videoDriverIndex)->name;
     _wiz.push(
       &_videoOptions, 
       [=](PicoPen *pen){ 
-        pen->printAtF(0, 0, false, "Video output [%s]", m); 
+        pen->printAtF(0, 0, false, "Video output [%s,%s]", k,m); 
       }, 
       true);
   });
@@ -608,21 +610,21 @@ _audioOutOptions.addOption(_audioHdmiOp.addQuickKey(getQuickKey(audioOutQuickKey
 #if defined(CVBS_12MHZ) || defined(CVBS_13_5MHZ) || defined(VGA_MODE)
   _videoOptions.addOption(_videoVgaOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
   _videoVgaOp.toggle([=]() {
-// TODO
+    _videoDriverIndex = (uint8_t)zx_spectrum_video_driver_vga_index;
     _wiz.pop(true);
   });
 #endif
 #if defined(DVI_DEFAULT_SERIAL_CONFIG)
   _videoOptions.addOption(_videoDviOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
   _videoDviOp.toggle([=]() {
-// TODO
+    _videoDriverIndex = (uint8_t)zx_spectrum_video_driver_dvi_index;
     _wiz.pop(true);
   });
 #endif
 #if defined(PICO_ST7789_LCD)
   _videoOptions.addOption(_videoLcdOp.addQuickKey(getQuickKey(videoQuickKeyIndex++)));
   _videoLcdOp.toggle([=]() {
-// TODO
+    _videoDriverIndex = (uint8_t)zx_spectrum_video_driver_lcd_index;
     _wiz.pop(true);
   });
 #endif
@@ -794,6 +796,7 @@ void ZxSpectrumMenu::quickLoad(int slot) {
 }
 
 void ZxSpectrumMenu::initialise() {
+ 
   loadSettings();
 
   _pathQuickSaves.createFolders(_sdCard);
@@ -809,10 +812,13 @@ void ZxSpectrumMenu::saveSettings() {
   settings.joystickMode = _zxSpectrum->joystick()->mode();
   settings.mouseMode = _zxSpectrum->mouse()->mouseMode();
   settings.mouseJoystickMode = _zxSpectrum->mouse()->mode();
+  settings.videoDriverDefault = _videoDriverIndex;
+
   _zxSpectrumSettings->save(&settings);
   DBG_PRINTF("ZxSpectrumMenu: Saved volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Saved joystick setting '%d'\n", settings.joystickMode);  
   DBG_PRINTF("ZxSpectrumMenu: Saved mouse setting '%d'\n", settings.mouseMode);  
+  DBG_PRINTF("ZxSpectrumMenu: Saved video driver index '%d'\n", settings.videoDriverDefault);  
 }
 
 void ZxSpectrumMenu::loadSettings() {
@@ -821,8 +827,10 @@ void ZxSpectrumMenu::loadSettings() {
   DBG_PRINTF("ZxSpectrumMenu: Loaded volume setting '%ld'\n", settings.volume);
   DBG_PRINTF("ZxSpectrumMenu: Loaded joystick setting '%d'\n", settings.joystickMode);
   DBG_PRINTF("ZxSpectrumMenu: Loaded mouse setting '%d'\n", settings.mouseMode);
+  DBG_PRINTF("ZxSpectrumMenu: Loaded video driver index '%d'\n", settings.videoDriverDefault);
   zxSpectrumAudioSetVolume(settings.volume);
   _zxSpectrum->joystick()->mode(settings.joystickMode);
   _zxSpectrum->mouse()->mouseMode(settings.mouseMode);
   _zxSpectrum->mouse()->mode(settings.mouseJoystickMode);
+  _videoDriverIndex = settings.videoDriverDefault;
 }

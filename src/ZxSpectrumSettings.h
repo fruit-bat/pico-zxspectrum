@@ -10,9 +10,8 @@ typedef struct {
   ZxSpectrumJoystickMode joystickMode;
   ZxSpectrumMouseMode mouseMode;
   ZxSpectrumJoystickMode mouseJoystickMode;
-  zx_spectrum_audio_driver_enum_t audioDriverLcdDefault;
-  zx_spectrum_audio_driver_enum_t audioDriverVgaDefault;
-  zx_spectrum_audio_driver_enum_t audioDriverDviDefault;
+  uint8_t videoDriverDefault;
+  uint8_t audioDriverDefault[3];
 } ZxSpectrumSettingValues;
 
 class ZxSpectrumSettings {
