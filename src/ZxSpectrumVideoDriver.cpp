@@ -8,7 +8,7 @@
 #else
 #define ZxSt7789LcdRenderLoopInit NULL
 #define ZxSt7789LcdRenderLoop NULL
-#define ZxSt7789LcdRender NULL
+#define ZxSt7789LcdRenderAudioDefault NULL
 #endif
 
 #if defined(DVI_DEFAULT_SERIAL_CONFIG)
@@ -49,7 +49,7 @@ zx_spectrum_video_driver_t _zx_spectrum_video_drivers[ZX_SPECTRUM_VIDEO_DRIVER_C
   {
     ZxSt7789LcdRenderLoopInit,
     ZxSt7789LcdRenderLoop,
-    ZxSt7789LcdRenderAduioDefault,
+    ZxSt7789LcdRenderAudioDefault,
     "LCD"
   }
 };

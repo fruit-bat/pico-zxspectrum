@@ -60,7 +60,7 @@ void ZxSpectrumSettings::sanitise(ZxSpectrumSettingValues *values) {
     for(uint8_t i = 0; i <  ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
       if (values->audioDriverDefault[i] >= ZX_SPECTRUM_AUDIO_DRIVER_COUNT) {
         zx_spectrum_video_driver_t* videoDriver = getZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)i);
-        values->audioDriverDefault[i] = videoDriver 
+        values->audioDriverDefault[i] = videoDriver->audio_default != NULL
           ? (uint8_t)videoDriver->audio_default()
           : 0;
       }
@@ -96,10 +96,10 @@ void ZxSpectrumSettings::defaults(ZxSpectrumSettingValues *values) {
   values->joystickMode = ZxSpectrumJoystickModeKempston;
   values->mouseMode = ZxSpectrumMouseModeKempstonMouse;
   values->videoDriverDefault = (uint8_t)videoDriverIndex();
-  for(uint8_t i = 0; i <  ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
+  for(uint8_t i = 0; i < ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
     zx_spectrum_video_driver_t* videoDriver = getZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)i);
-    values->audioDriverDefault[i] = videoDriver 
-      ? (uint8_t)videoDriver->audio_default()
-      : 0;
+    values->audioDriverDefault[i] = videoDriver->audio_default != NULL
+       ? (uint8_t)videoDriver->audio_default()
+       : 0;
   }
 }

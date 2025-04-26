@@ -9,7 +9,7 @@
 static PIO pio = pio0;
 static uint sm = 0;
 
-zx_spectrum_audio_driver_enum_t ZxSt7789LcdRenderAduioDefault() {
+zx_spectrum_audio_driver_enum_t ZxSt7789LcdRenderAudioDefault() {
 #if defined(PICO_DEFAULT_AUDIO)
   return PICO_DEFAULT_AUDIO;
 #elif defined(PICO_DEFAULT_AUDIO_LCD)

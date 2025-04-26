@@ -22,18 +22,3 @@ extern zx_spectrum_audio_driver_t _zx_spectrum_audio_drivers[];
 void zx_spectrum_audio_driver_init();
 
 zx_spectrum_audio_driver_enum_t zx_spectrum_audio_driver_index(zx_spectrum_audio_driver_t *d);
-
-#if !defined(PICO_DEFAULT_AUDIO)
-#if defined(PICO_HDMI_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_hdmi_index
-#elif defined(PICO_AUDIO_I2S)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_i2s_index
-#elif defined(PICO_PIO_PWM_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pio_pwm_index
-#elif defined(PICO_PWM_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pwm_index
-#else
-#define PICO_PWM_AUDIO
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pwm_index
-#endif
-#endif
