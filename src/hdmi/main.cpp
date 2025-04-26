@@ -72,14 +72,6 @@ extern "C" {
 
 #define LED_PIN 25
 
-#ifdef PICO_ST7789_LCD
-#ifdef PICO_STARTUP_DVI
-static bool useDvi = true;
-#else
-static bool useDvi = false;
-#endif
-#endif
-
 static SdCardFatFsSpi sdCard0(0);
 
 // ZX Spectrum emulator
@@ -323,19 +315,19 @@ int main() {
 
   // Try to use the general settings for video and audio defaults
   // This will start up the SD card before the system frequency is decided
+  ZxSpectrumSettingValues settings;
+  zxSpectrumSettings.defaults(&settings);
   if (sdCard0.mount()) {
-    ZxSpectrumSettingValues settings;
     zxSpectrumSettings.load(&settings);
-    setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
   }
+  setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
 
 #ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
   zx_keyscan_init();
-#ifdef PICO_ST7789_LCD
   if(zx_fire_raw()) ZxSpectrumVideoNext();
 #endif
-#endif
+
   // Not that the following sets the system clock
   ZxSpectrumVideoInit();
 
@@ -386,16 +378,7 @@ int main() {
   pcw_init_renderer();
   
   // Setup the default audio driver
-#ifdef PICO_ST7789_LCD
-  if (useDvi) {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
-  }
-  else {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pio_pwm_index));
-  }
-#else
-  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
-#endif
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit((zx_spectrum_audio_driver_enum_t)settings.audioDriverDefault[settings.videoDriverDefault]));
 
   printf("Core 1 start\n");
   
