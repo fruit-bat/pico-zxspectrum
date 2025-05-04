@@ -6,9 +6,7 @@
 #include "hardware/pwm.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
-//#include "ZxSpectrumPrepareRgbScanline.h"
 #include "ZxSpectrumFatSpiKiosk.h"
-//#include "ZxScanlineVgaRenderLoop.h"
 #endif
 #include "pzx_keyscan.h"
 
@@ -39,8 +37,6 @@
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
 #include "hid_app.h"
-//#include "ZxSt7789LcdRenderLoop.h"
-//#include "ZxRenderLoopCallbacks.h"
 #include "PicoCharRendererSt7789.h"
 
 #include "ZxSpectrumAudioDriver.h"
@@ -48,8 +44,6 @@
 
 // TODO This should probably not be in here
 #define LED_PIN 25
-
-struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -206,7 +200,6 @@ void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void __not_in_flash_func(core1_main)() {
-//  sem_acquire_blocking(&dvi_start_sem);
 
   ZxSpectrumVideoLoop(
     zxSpectrum,
@@ -324,8 +317,6 @@ int main() {
   // Initialise the menu renderer
   pcw_init_renderer();
 
-//  sem_init(&dvi_start_sem, 0, 1);
-
   multicore_launch_core1(core1_main);
 
   picoRootWin.showMessage([=](PicoPen *pen) {
@@ -333,8 +324,6 @@ int main() {
   });
 
   picoDisplay.refresh();
-
-//  sem_release(&dvi_start_sem);
 
   if (sdCard0.mount()) {
 
