@@ -7,7 +7,7 @@
 #include "hardware/clocks.h"
 
 
-zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAduioDefault() {
+zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAudioDefault() {
 #if defined(PICO_DEFAULT_AUDIO)
   return PICO_DEFAULT_AUDIO;
 #elif defined(PICO_DEFAULT_AUDIO_VGA)
@@ -29,10 +29,10 @@ zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAduioDefault() {
 #define VGA_H_SYNC_POLARITY 5
 #endif
 
-static scanvideo_mode_t *_scanvideo_mode = 0; 
+static const scanvideo_mode_t  *_scanvideo_mode = 0; 
 
-static void setScanvideoMode(scanvideo_mode_t *scanvideo_mode, bool doubleClock) {
-  _scanvideo_mode = &canvideo_mode;
+static void setScanvideoMode(const scanvideo_mode_t *scanvideo_mode, bool doubleClock) {
+  _scanvideo_mode = scanvideo_mode;
   set_sys_clock_khz((doubleClock ? 2 : 1) * _scanvideo_mode->default_timing->clock_freq / 100, true);
   sleep_ms(10);
 }
@@ -184,7 +184,7 @@ void ZxScanlineVgaRenderLoopInit() {
 }
 #else
 void ZxScanlineVgaRenderLoopInit() {
-  setScanvideoMode(&vVGA_MODE, false);
+  setScanvideoMode(&VGA_MODE, false);
 }
 #endif
 
@@ -197,7 +197,7 @@ void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
 ) {
   if (!_scanvideo_mode) return;
 
-  scanvideo_setup(&VGA_MODE);
+  scanvideo_setup(_scanvideo_mode);
   scanvideo_timing_enable(true);
 
   unsigned char* screenPtr = zxSpectrum.screenPtr();

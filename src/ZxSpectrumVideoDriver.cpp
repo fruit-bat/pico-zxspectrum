@@ -73,10 +73,11 @@ const char* videoDriverName() {
 }
 
 void ZxSpectrumVideoNext() {
-  for (int i =  0; i < ZX_SPECTRUM_VIDEO_DRIVER_COUNT - 1; ++i) {
-    const int k = (1 + i + (int)_video_driver_index) % ZX_SPECTRUM_VIDEO_DRIVER_COUNT;
-    if (_zx_spectrum_video_drivers[k].init != NULL) {
+  for (uint32_t i = 1; i < ZX_SPECTRUM_VIDEO_DRIVER_COUNT; ++i) {
+    const uint32_t k = (i + (uint32_t)_video_driver_index) % (uint32_t)ZX_SPECTRUM_VIDEO_DRIVER_COUNT;
+    if (_zx_spectrum_video_drivers[k].init) {
       _video_driver_index = (zx_spectrum_video_driver_enum_t)k;
+      break;
     }
   }
 }

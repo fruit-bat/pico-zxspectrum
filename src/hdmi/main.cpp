@@ -46,16 +46,16 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFileLoop.h"
+//#include "ZxSpectrumFileLoop.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
-#include "ZxSpectrumAudio.h"
+//#include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
-#include "ZxSpectrumDisplay.h"
-#include "ZxDviRenderLoop.h"
-#include "ZxSt7789LcdRenderLoop.h"
+//#include "ZxSpectrumDisplay.h"
+//#include "ZxDviRenderLoop.h"
+//#include "ZxSt7789LcdRenderLoop.h"
 #include "ZxSpectrumAudioDriver.h"
 #include "ZxSpectrumVideoDriver.h"
 
@@ -316,10 +316,7 @@ int main() {
   // Try to use the general settings for video and audio defaults
   // This will start up the SD card before the system frequency is decided
   ZxSpectrumSettingValues settings;
-  zxSpectrumSettings.defaults(&settings);
-  if (sdCard0.mount()) {
-    zxSpectrumSettings.load(&settings);
-  }
+  zxSpectrumSettings.load(&settings);
   setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
 
 #ifdef USE_KEY_MATRIX

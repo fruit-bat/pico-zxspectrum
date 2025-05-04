@@ -14,4 +14,4 @@ void ZxScanlineVgaRenderLoop(
     volatile bool &toggleMenu,
     ZxSpectrumMenu& picoRootWin);
 
-zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAduioDefault();
+zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAudioDefault();
