@@ -87,6 +87,7 @@ bool ZxSpectrumSettings::load(ZxSpectrumSettingValues *values)
 {
     defaults(values);
     bool r = onLoad(values);
+    if (!r ) r = onLoad(values);
     sanitise(values);
     return r;
 }

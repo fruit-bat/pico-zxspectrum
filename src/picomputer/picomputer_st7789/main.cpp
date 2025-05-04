@@ -266,10 +266,7 @@ int main() {
   // Try to use the general settings for video and audio defaults
   // This will start up the SD card before the system frequency is decided
   ZxSpectrumSettingValues settings;
-  zxSpectrumSettings.defaults(&settings);
-  if (sdCard0.mount()) {
-    zxSpectrumSettings.load(&settings);
-  }  
+  zxSpectrumSettings.load(&settings);
   setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
 
 #ifdef USE_KEY_MATRIX
