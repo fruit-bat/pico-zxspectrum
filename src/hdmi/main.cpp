@@ -46,16 +46,11 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-//#include "ZxSpectrumFileLoop.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
-//#include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
-//#include "ZxSpectrumDisplay.h"
-//#include "ZxDviRenderLoop.h"
-//#include "ZxSt7789LcdRenderLoop.h"
 #include "ZxSpectrumAudioDriver.h"
 #include "ZxSpectrumVideoDriver.h"
 
