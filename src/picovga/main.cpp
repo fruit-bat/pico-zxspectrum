@@ -35,15 +35,14 @@
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
 #include "ZxSpectrumDisplay.h"
-#include "ZxScanlineVgaRenderLoop.h"
 #include "hid_app.h"
+#include "ZxSpectrumFileSettings.h"
+#include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
 
 #define LED_PIN 25
-#define SPK_PIN 9
 
 #define VREG_VSEL VREG_VOLTAGE_1_20
-
-struct semaphore dvi_start_sem;
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -188,16 +187,17 @@ void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void __not_in_flash_func(core1_main)() {
-  sem_acquire_blocking(&dvi_start_sem);
-  printf("Core 1 running...\n");
 
-  ZxScanlineVgaRenderLoop(
+  ZxSpectrumVideoLoop(
     zxSpectrum,
     _frames,
     showMenu,
-    toggleMenu
+    toggleMenu,
+    picoRootWin
   );
 
+  while (1) 
+    __wfi();
   __builtin_unreachable();
 }
 
@@ -245,8 +245,14 @@ void __not_in_flash_func(main_loop)(){
 int main(){
   pico_set_core_voltage();
 
-  // Init 16 bit VGA
-  ZxScanlineVgaRenderLoopInit();
+  // Try to use the general settings for video and audio defaults
+  // This will start up the SD card before the system frequency is decided
+  ZxSpectrumSettingValues settings;
+  zxSpectrumSettings.load(&settings);
+  setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
+
+  // Not that the following sets the system clock
+  ZxSpectrumVideoInit();
 
   //Initialise I/O
   stdio_init_all();
@@ -287,7 +293,8 @@ int main(){
   ps2kbd.init_gpio();
 #endif
 
-  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
+  // Setup the default audio driver
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit((zx_spectrum_audio_driver_enum_t)settings.audioDriverDefault[settings.videoDriverDefault]));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
 //  keyboard2.setZxSpectrum(&zxSpectrum);
@@ -300,8 +307,6 @@ int main(){
 
   sleep_ms(10);
 
-  sem_init(&dvi_start_sem, 0, 1);
-
   multicore_launch_core1(core1_main);
 
   picoRootWin.showMessage([=](PicoPen *pen) {
@@ -309,9 +314,6 @@ int main(){
   });
 
   picoDisplay.refresh();
-
-
-  sem_release(&dvi_start_sem);
 
   if (sdCard0.mount()) {
 
