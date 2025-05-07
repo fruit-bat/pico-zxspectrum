@@ -327,6 +327,8 @@ add_dependencies (ZxSpectrumPicomputer
   ZxSpectrumPicomputerVgaAukBob_720x576x50Hz
   ZxSpectrumPicomputerMax
   ZxSpectrumPicomputerZX
+  ZxSpectrumBobZero_640x480x60Hz
+  ZxSpectrumBobZero_720x576x50Hz
   # this one is not like the others... made for emilen72 
   ZxSpectrumPicomputerVga1111AukBob_720x576x50Hz  
 )

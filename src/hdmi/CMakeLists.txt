@@ -169,13 +169,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmiKbd1PinAudio PRIVATE
   # Set up the DVI output to match the Pimoroni Pico DV board
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-  DVI_VERTICAL_REPEAT=2
-  DVI_N_TMDS_BUFFERS=3
-  DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Single pin audio for now
@@ -743,7 +738,7 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
 target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
   ${murmulator2_common_defines}
   ${zxspectrum_murmulator2_i2saudio_defines}
-  ${zxspectrum_hdmi2_640x480x60Hz_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
 )
 
