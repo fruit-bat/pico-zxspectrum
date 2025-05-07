@@ -273,25 +273,33 @@ endforeach()
 target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+  PICO_HDMI_AUDIO
   ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_i2s_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
   PICO_HDMI_AUDIO
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_hdmi_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_720x576x50Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  PICO_HDMI_AUDIO
   ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_i2s_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
   PICO_HDMI_AUDIO
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_hdmi_index
 )
 
 ########################################################################
