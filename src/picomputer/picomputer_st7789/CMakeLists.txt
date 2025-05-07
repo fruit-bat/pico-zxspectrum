@@ -31,6 +31,8 @@ target_compile_definitions(ZxSpectrumPicomputerMax PRIVATE
   SPK_PIN=0
   PICOMPUTER_MAX
   LCD_MIRROR_X
+  PICO_ST7789_LCD
+  USE_KEY_MATRIX
 )
 
 target_link_libraries(ZxSpectrumPicomputerMax
@@ -79,6 +81,8 @@ target_compile_definitions(ZxSpectrumPicomputerZX PRIVATE
   SPK_PIN=0
   PICOMPUTER_ZX
   LCD_MIRROR_X
+  PICO_ST7789_LCD
+  USE_KEY_MATRIX
 )
 
 target_link_libraries(ZxSpectrumPicomputerZX
@@ -149,6 +153,8 @@ set(picomputer_zx_lcd_common_defines PRIVATE
   PICOMPUTER_PICOZX
   PICOMPUTER_PICOZX_LCD
   INITIAL_VOL=0x30
+  PICO_ST7789_LCD
+  USE_KEY_MATRIX
   LCD_NO_BL
   LCD_PIN_CLK=2
   LCD_PIN_DC=6

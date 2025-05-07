@@ -9,6 +9,22 @@
 static PIO pio = pio0;
 static uint sm = 0;
 
+zx_spectrum_audio_driver_enum_t ZxSt7789LcdRenderAudioDefault() {
+#if defined(PICO_DEFAULT_AUDIO)
+  return PICO_DEFAULT_AUDIO;
+#elif defined(PICO_DEFAULT_AUDIO_LCD)
+  return PICO_DEFAULT_AUDIO_LCD;
+#elif defined(PICO_AUDIO_I2S)
+  return zx_spectrum_audio_driver_i2s_index;
+#elif defined(PICO_PIO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pio_pwm_index;
+#elif defined(PICO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pwm_index;
+#else
+  return zx_spectrum_audio_driver_pwm_index;
+#endif  
+}
+
 void ZxSt7789LcdRenderLoopInit() {
   set_sys_clock_khz(200000, true);
   sleep_ms(10);

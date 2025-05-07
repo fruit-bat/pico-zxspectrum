@@ -14,3 +14,4 @@ void ZxSt7789LcdRenderLoop(
     volatile bool &toggleMenu,
     ZxSpectrumMenu& picoRootWin);
 
+zx_spectrum_audio_driver_enum_t ZxSt7789LcdRenderAudioDefault();

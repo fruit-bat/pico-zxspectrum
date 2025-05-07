@@ -6,11 +6,36 @@
 #include "PicoCharRendererScanvideo.h"
 #include "hardware/clocks.h"
 
+
+zx_spectrum_audio_driver_enum_t ZxScanlineVgaRenderLoopAudioDefault() {
+#if defined(PICO_DEFAULT_AUDIO)
+  return PICO_DEFAULT_AUDIO;
+#elif defined(PICO_DEFAULT_AUDIO_VGA)
+  return PICO_DEFAULT_AUDIO_VGA;
+#elif defined(PICO_AUDIO_I2S)
+  return zx_spectrum_audio_driver_i2s_index;
+#elif defined(PICO_PIO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pio_pwm_index;
+#elif defined(PICO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pwm_index;
+#else
+  return zx_spectrum_audio_driver_pwm_index;
+#endif 
+}
+
 #ifdef VGA_VSYNC
 #define VGA_H_SYNC_POLARITY 1
 #else
 #define VGA_H_SYNC_POLARITY 5
 #endif
+
+static const scanvideo_mode_t  *_scanvideo_mode = 0; 
+
+static void setScanvideoMode(const scanvideo_mode_t *scanvideo_mode, bool doubleClock) {
+  _scanvideo_mode = scanvideo_mode;
+  set_sys_clock_khz((doubleClock ? 2 : 1) * _scanvideo_mode->default_timing->clock_freq / 100, true);
+  sleep_ms(10);
+}
 
 const scanvideo_timing_t vga_timing_640x480_60 =
 {
@@ -78,7 +103,7 @@ const scanvideo_mode_t vga_mode_720x288_50 =
   .yscale = 2,
 };
 
-#if CVBS_13_5MHZ
+#if defined(CVBS_13_5MHZ)
 // timing definition based on 13.5MHz pixel clock (270MHz core)
 // 312 lines, 50.08 frames per second (matches 48K specs)
 const scanvideo_timing_t cvbs_timing_50hz_13_5MHz =
@@ -104,7 +129,7 @@ const scanvideo_timing_t cvbs_timing_50hz_13_5MHz =
     .enable_den = 0
 };
 
-const scanvideo_mode_t cvbs_mode_50 =
+const scanvideo_mode_t cvbs_mode_50_13_5 =
 {
     .default_timing = &cvbs_timing_50hz_13_5MHz,
     .pio_program = &video_24mhz_composable,
@@ -113,9 +138,12 @@ const scanvideo_mode_t cvbs_mode_50 =
     .xscale = 1,
     .yscale = 1,
 };
-#endif
 
-#if CVBS_12MHZ
+void ZxScanlineVgaRenderLoopInit() {
+  setScanvideoMode(&cvbs_mode_50_13_5, true);
+}
+
+#elif defined(CVBS_12MHZ)
 // timing definition based on 12MHz pixel clock (240MHz core)
 // 312 lines, 50.08 frames per second (matches 48K specs)
 const scanvideo_timing_t cvbs_timing_50hz_12MHz =
@@ -141,7 +169,7 @@ const scanvideo_timing_t cvbs_timing_50hz_12MHz =
     .enable_den = 0
 };
 
-const scanvideo_mode_t cvbs_mode_50 =
+const scanvideo_mode_t cvbs_mode_50_12 =
 {
     .default_timing = &cvbs_timing_50hz_12MHz,
     .pio_program = &video_24mhz_composable,
@@ -150,30 +178,26 @@ const scanvideo_mode_t cvbs_mode_50 =
     .xscale = 1,
     .yscale = 1,
 };
-#endif
 
-
-#ifndef VGA_MODE
-#define VGA_MODE vga_mode_640x240_60
-#endif  
-
-void ZxScanlineVgaRenderLoopInit()
-{
-#if (CVBS_12MHZ || CVBS_13_5MHZ)
-  set_sys_clock_khz(2 * VGA_MODE.default_timing->clock_freq / 100, true);
-#else
-  set_sys_clock_khz(VGA_MODE.default_timing->clock_freq / 100, true);
-#endif
-  sleep_ms(10);
+void ZxScanlineVgaRenderLoopInit() {
+  setScanvideoMode(&cvbs_mode_50_12, true);
 }
+#else
+void ZxScanlineVgaRenderLoopInit() {
+  setScanvideoMode(&VGA_MODE, false);
+}
+#endif
 
 void __not_in_flash_func(ZxScanlineVgaRenderLoop)(
   ZxSpectrum &zxSpectrum, 
   volatile uint &frames,
   bool &showMenu,
-  volatile bool &toggleMenu
+  volatile bool &toggleMenu,
+  ZxSpectrumMenu& picoRootWin
 ) {
-  scanvideo_setup(&VGA_MODE);
+  if (!_scanvideo_mode) return;
+
+  scanvideo_setup(_scanvideo_mode);
   scanvideo_timing_enable(true);
 
   unsigned char* screenPtr = zxSpectrum.screenPtr();

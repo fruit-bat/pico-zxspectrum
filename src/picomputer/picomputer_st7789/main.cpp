@@ -6,9 +6,7 @@
 #include "hardware/pwm.h"
 
 #ifdef PICOMPUTER_PICOZX_LCD
-#include "ZxSpectrumPrepareRgbScanline.h"
 #include "ZxSpectrumFatSpiKiosk.h"
-#include "ZxScanlineVgaRenderLoop.h"
 #endif
 #include "pzx_keyscan.h"
 
@@ -39,21 +37,13 @@
 #include "FatFsDirCache.h"
 #include "ZxSpectrumFileSettings.h"
 #include "hid_app.h"
-#include "ZxSt7789LcdRenderLoop.h"
-#include "ZxRenderLoopCallbacks.h"
 #include "PicoCharRendererSt7789.h"
 
+#include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
+
+// TODO This should probably not be in here
 #define LED_PIN 25
-
-struct semaphore dvi_start_sem;
-
-#ifdef PICOMPUTER_PICOZX_LCD
-#ifdef PICO_STARTUP_VGA
-static bool useVga = true;
-#else
-static bool useVga = false;
-#endif
-#endif
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -210,23 +200,8 @@ void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
 }
 
 void __not_in_flash_func(core1_main)() {
-  sem_acquire_blocking(&dvi_start_sem);
-  printf("Core 1 running...\n");
 
-#ifdef PICOMPUTER_PICOZX_LCD
-
-  if (useVga) {
-    ZxScanlineVgaRenderLoop(
-      zxSpectrum,
-      _frames,
-      showMenu,
-      toggleMenu
-    );
-  }
-
-#endif
-
-  ZxSt7789LcdRenderLoop(
+  ZxSpectrumVideoLoop(
     zxSpectrum,
     _frames,
     showMenu,
@@ -234,6 +209,8 @@ void __not_in_flash_func(core1_main)() {
     picoRootWin
   );
 
+  while (1) 
+    __wfi();
   __builtin_unreachable();
 }
 
@@ -279,33 +256,24 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+  // Try to use the general settings for video and audio defaults
+  // This will start up the SD card before the system frequency is decided
+  ZxSpectrumSettingValues settings;
+  zxSpectrumSettings.load(&settings);
+  setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
+
+#ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
-  // This is done early so we know the boot mode
   pzx_keyscan_init();
-
-#ifdef PICOMPUTER_PICOZX_LCD
-
-#ifdef PICO_STARTUP_VGA
-  useVga = !pzx_fire_raw();
-  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "lcd.txt");
-#else
-  useVga = pzx_fire_raw();
-  ZxSpectrumFatSpiExists swap_option(&sdCard0, "zxspectrum", "vga.txt");
+  if(pzx_fire_raw()) ZxSpectrumVideoNext();
 #endif
-  if (swap_option.exists()) useVga = !useVga;
 
-  // Note that we do not call ZxSt7789LcdRenderLoopInit as we are
-  // going to use the VGA clock.
-  if (useVga) {
-    ZxScanlineVgaRenderLoopInit();
-  }
-  else {
-    ZxSt7789LcdRenderLoopInit();
-  }
+  // Not that the following sets the system clock
+  ZxSpectrumVideoInit();
 
-#else
-  ZxSt7789LcdRenderLoopInit();
-#endif
+  // setup_default_uart();
+
+  tuh_hid_app_startup();
 
   //Initialise I/O
   stdio_init_all();
@@ -340,18 +308,14 @@ int main() {
   snapFileLoop.set(&picoRootWin);
   quickSave.set(&picoRootWin);
 
-  tuh_hid_app_startup();
-
-  // Configure the GPIO pins for audio
-  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
+  // Setup the default audio driver
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit((zx_spectrum_audio_driver_enum_t)settings.audioDriverDefault[settings.videoDriverDefault]));
 
   keyboard1.setZxSpectrum(&zxSpectrum);
   keyboard2.setZxSpectrum(&zxSpectrum);
 
   // Initialise the menu renderer
   pcw_init_renderer();
-
-  sem_init(&dvi_start_sem, 0, 1);
 
   multicore_launch_core1(core1_main);
 
@@ -360,8 +324,6 @@ int main() {
   });
 
   picoDisplay.refresh();
-
-  sem_release(&dvi_start_sem);
 
   if (sdCard0.mount()) {
 

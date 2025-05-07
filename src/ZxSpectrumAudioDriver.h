@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pico/stdlib.h>
+#include "ZxSpectrumAudioDriverEnum.h"
 
 typedef void (*zx_spectrum_audio_init_t)();
 typedef uint32_t (*zx_spectrum_audio_freq_t)();
@@ -18,28 +19,6 @@ typedef struct
 
 extern zx_spectrum_audio_driver_t _zx_spectrum_audio_drivers[];
 
-typedef enum zx_spectrum_audio_driver_enum
-{
-  zx_spectrum_audio_driver_null_index = 0,
-  zx_spectrum_audio_driver_pio_pwm_index,
-  zx_spectrum_audio_driver_pwm_index,
-  zx_spectrum_audio_driver_i2s_index,
-  zx_spectrum_audio_driver_hdmi_index
-} zx_spectrum_audio_driver_enum_t;
-
 void zx_spectrum_audio_driver_init();
 
-#if !defined(PICO_DEFAULT_AUDIO)
-#if defined(PICO_HDMI_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_hdmi_index
-#elif defined(PICO_AUDIO_I2S)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_i2s_index
-#elif defined(PICO_PIO_PWM_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pio_pwm_index
-#elif defined(PICO_PWM_AUDIO)
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pwm_index
-#else
-#define PICO_PWM_AUDIO
-#define PICO_DEFAULT_AUDIO zx_spectrum_audio_driver_pwm_index
-#endif
-#endif
+zx_spectrum_audio_driver_enum_t zx_spectrum_audio_driver_index(zx_spectrum_audio_driver_t *d);

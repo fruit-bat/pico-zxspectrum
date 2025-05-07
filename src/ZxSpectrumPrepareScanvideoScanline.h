@@ -2,6 +2,7 @@
 
 #include "pico/stdlib.h"
 #include "pico/scanvideo.h"
+#include "ZxSpectrumAudioDriverEnum.h"
 
 #ifdef __cplusplus
 extern "C" {

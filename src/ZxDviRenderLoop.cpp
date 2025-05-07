@@ -14,31 +14,52 @@ extern "C" {
     #include "tmds_encode_zxspectrum.h"
 }
 
-#ifndef DVI_TIMING
-#define DVI_TIMING dvi_timing_640x480p_60hz
-#endif
-
 struct dvi_inst dvi0;
+bool dvi_running = false;
 
-void ZxDviRenderLoopInit() {
+zx_spectrum_audio_driver_enum_t ZxDviRenderLoopAudioDefault() {
+#if defined(PICO_DEFAULT_AUDIO)
+  return PICO_DEFAULT_AUDIO;
+#elif defined(PICO_DEFAULT_AUDIO_DVI)
+  return PICO_DEFAULT_AUDIO_DVI;
+#elif defined(PICO_HDMI_AUDIO)
+  return zx_spectrum_audio_driver_hdmi_index;
+#elif defined(PICO_AUDIO_I2S)
+  return zx_spectrum_audio_driver_i2s_index;
+#elif defined(PICO_PIO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pio_pwm_index;
+#elif defined(PICO_PWM_AUDIO)
+  return zx_spectrum_audio_driver_pwm_index;
+#else
+  return zx_spectrum_audio_driver_pwm_index;
+#endif 
+}
+
+void ZxDviRenderLoopInit_s(const struct dvi_timing *t) {
   // Run system at TMDS bit clock
-  set_sys_clock_khz(DVI_TIMING.bit_clk_khz, true);
+  set_sys_clock_khz(t->bit_clk_khz, true);
   sleep_ms(10);
 
-  dvi0.timing = &DVI_TIMING;
+  dvi0.timing = t;
   dvi0.ser_cfg = DVI_DEFAULT_SERIAL_CONFIG;
   dvi_init(&dvi0, next_striped_spin_lock_num(), next_striped_spin_lock_num());
+}
+
+void ZxDviRenderLoopInit() {
+  ZxDviRenderLoopInit_s(&DVI_TIMING);
 }
 
 void __not_in_flash_func(ZxDviRenderLoop)(
     ZxSpectrum &zxSpectrum,
     volatile uint &frames,
     bool &showMenu,
-    volatile bool &toggleMenu)
+    volatile bool &toggleMenu,
+    ZxSpectrumMenu& picoRootWin)
 {
     dvi_register_irqs_this_core(&dvi0, DMA_IRQ_1);
     dvi_start(&dvi0);
-
+    dvi_running = true;
+    
     uint8_t* screenPtr;
     uint8_t* attrPtr;
     screenPtr = zxSpectrum.screenPtr();

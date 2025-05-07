@@ -46,17 +46,13 @@ extern "C" {
 #include <pico/printf.h>
 #include "SdCardFatFsSpi.h"
 #include "QuickSave.h"
-#include "ZxSpectrumFileLoop.h"
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
 #include "PicoCharRenderer.h"
 #include "ZxSpectrumMenu.h"
-#include "ZxSpectrumAudio.h"
 #include "ZxSpectrumFileSettings.h"
-#include "ZxSpectrumDisplay.h"
-#include "ZxDviRenderLoop.h"
-#include "ZxSt7789LcdRenderLoop.h"
 #include "ZxSpectrumAudioDriver.h"
+#include "ZxSpectrumVideoDriver.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -68,19 +64,8 @@ extern "C" {
 
 // DVDD 1.2V (1.1V seems ok too)
 #define VREG_VSEL VREG_VOLTAGE_1_20
-#ifndef DVI_TIMING
-#define DVI_TIMING dvi_timing_640x480p_60hz
-#endif
 
 #define LED_PIN 25
-
-#ifdef PICO_ST7789_LCD
-#ifdef PICO_STARTUP_DVI
-static bool useDvi = true;
-#else
-static bool useDvi = false;
-#endif
-#endif
 
 static SdCardFatFsSpi sdCard0(0);
 
@@ -255,7 +240,6 @@ void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   #endif
 }
 
-
 #if defined(USE_PS2_KBD)
 static Ps2Kbd ps2kbd(
   pio1,
@@ -267,33 +251,14 @@ static Ps2Kbd ps2kbd(
 static volatile uint _frames = 0;
 
 void core1_main() {
-  
-#ifdef PICO_ST7789_LCD
-  if (useDvi) {
-    ZxDviRenderLoop(
-      zxSpectrum,
-      _frames,
-      showMenu,
-      toggleMenu
-    );
-  }
-  else {
-    ZxSt7789LcdRenderLoop(
+
+  ZxSpectrumVideoLoop(
       zxSpectrum,
       _frames,
       showMenu,
       toggleMenu,
       picoRootWin
-    );
-  }
-#else
-  ZxDviRenderLoop(
-    zxSpectrum,
-    _frames,
-    showMenu,
-    toggleMenu
   );
-#endif
 
   while (1) 
     __wfi();
@@ -343,28 +308,20 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+  // Try to use the general settings for video and audio defaults
+  // This will start up the SD card before the system frequency is decided
+  ZxSpectrumSettingValues settings;
+  zxSpectrumSettings.load(&settings);
+  setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
+
 #ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
   zx_keyscan_init();
+  if(zx_fire_raw()) ZxSpectrumVideoNext();
 #endif
 
-#ifdef PICO_ST7789_LCD
-  if(zx_fire_raw()) useDvi = !useDvi;
-  
-  // TODO Check if we are using DVI or LCD
-  if (useDvi) {
-    // Init the DVI output and set the clock
-    ZxDviRenderLoopInit();
-  }
-  else {
-    // TODO without the DVI running we have no clock to sync with!
-    // TODO make sure we start an audio option to sync with instead!
-    ZxSt7789LcdRenderLoopInit();
-  }
-#else 
-  // Init the DVI output and set the clock
-  ZxDviRenderLoopInit();
-#endif
+  // Not that the following sets the system clock
+  ZxSpectrumVideoInit();
 
   setup_default_uart();
 
@@ -413,16 +370,7 @@ int main() {
   pcw_init_renderer();
   
   // Setup the default audio driver
-#ifdef PICO_ST7789_LCD
-  if (useDvi) {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_hdmi_index));
-  }
-  else {
-    zxSpectrum.setAudioDriver(zxSpectrumAudioInit(zx_spectrum_audio_driver_pio_pwm_index));
-  }
-#else
-  zxSpectrum.setAudioDriver(zxSpectrumAudioInit(PICO_DEFAULT_AUDIO));
-#endif
+  zxSpectrum.setAudioDriver(zxSpectrumAudioInit((zx_spectrum_audio_driver_enum_t)settings.audioDriverDefault[settings.videoDriverDefault]));
 
   printf("Core 1 start\n");
   

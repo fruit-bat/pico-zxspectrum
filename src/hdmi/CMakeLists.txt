@@ -169,13 +169,8 @@ target_compile_definitions(ZxSpectrumBreadboardHdmi4PinAudio PRIVATE
 
 target_compile_definitions(ZxSpectrumBreadboardHdmiKbd1PinAudio PRIVATE
   # Set up the DVI output to match the Pimoroni Pico DV board
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   DVI_DEFAULT_SERIAL_CONFIG=${DVI_DEFAULT_SERIAL_CONFIG}
-  DVI_VERTICAL_REPEAT=2
-  DVI_N_TMDS_BUFFERS=3
-  DVI_1BPP_BIT_REVERSE=1
-  # Set the resolution of the menu screen
-  PCS_COLS=80
-  PCS_ROWS=30
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Single pin audio for now
@@ -278,25 +273,33 @@ endforeach()
 target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
+  PICO_HDMI_AUDIO
   ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_i2s_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_640x480x60Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
   PICO_HDMI_AUDIO
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_hdmi_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_I2SAudio_720x576x50Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
+  PICO_HDMI_AUDIO
   ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_i2s_index
 )
 
 target_compile_definitions(ZxSpectrumPicoDv_HdmiAudio_720x576x50Hz PRIVATE
   ${zxspectrum_pico_dv_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
   PICO_HDMI_AUDIO
+  ${zxspectrum_pico_dv_i2saudio_defines}
+  PICO_DEFAULT_AUDIO_DVI=zx_spectrum_audio_driver_hdmi_index
 )
 
 ########################################################################
@@ -445,6 +448,7 @@ set (ZxSpectrumBobZero_defines
   # Set up the DVI output to match the Waveshare RP2040 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2040_pizero_hdmi_cfg
+  # Set the default video driver
   PICO_CORE1_STACK_SIZE=0x400
   DVI_VERTICAL_REPEAT=2
   DVI_N_TMDS_BUFFERS=3
@@ -742,7 +746,7 @@ target_compile_definitions(ZX-MURMULATOR2_HDMI_PWM_AUDIO_720x576x50Hz PRIVATE
 target_compile_definitions(ZX-MURMULATOR2_HDMI_I2S_AUDIO_640x480x60Hz PRIVATE
   ${murmulator2_common_defines}
   ${zxspectrum_murmulator2_i2saudio_defines}
-  ${zxspectrum_hdmi2_640x480x60Hz_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
   ${zxspectrum_murmulator2_hdmi_nespad_defines}
 )
 
