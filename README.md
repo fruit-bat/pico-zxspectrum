@@ -29,6 +29,7 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Default video mode can be set in the menu
 * Default audio mode can be set in the menu
 * Video and audio mode persisted with other settings in .config on the SD card
+* Quite a big update to the video and audio processing, raise an issue if I have broken your firmware.
 
 10/02/25
 
