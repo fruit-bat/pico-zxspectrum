@@ -12,7 +12,7 @@ It supports:
 * USB joysticks
 * DVI video
 * LCD video (ST7789)
-* PWM sound (1 pin)
+* PWM sound (1 pin) or Monitor
 * SPI SD card
 
 By default, the board starts up using the LCD as its display.

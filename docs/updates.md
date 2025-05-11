@@ -1,6 +1,45 @@
 
 ## Updates
 
+28/12/24
+
+* Added a build with CVBS 50Hz output - credit to [svofski](https://github.com/svofski)
+
+27/12/24
+
+* Additions for Murmulator 2 (only mono PWM audio for now)
+* Vcore and Vsys displayed on menu
+* PIO PWM mono audio for some builds
+
+The move to PWM audio is primarily to support the RP2350, on which I have been having problems with the timer interrupts. There were also some stability issues on the RP2040 particularly with the 270Mhz overclock. Anyhow, I think the sound quality is much better using the PIO, probably because the delivery of samples is done in sync with the PWM frame. The down side is I am only doing mono for now; I have run out of PIO state-machines on the RP2040, but the RP2350 has an extra PIO block so I may have a go at stereo just for the RP2350.
+
+23/11/24
+
+* Better beeper sound quality (Mark II)
+
+18/11/24
+
+* Better beeper sound quality (Should improve most builds)
+
+16/10/24
+
+* Published a selection of RP2350 builds
+* There are now two firmware folders uf2-rp2040 and uf2-rp2350-arm-s
+
+If you have a board for which you would like a RP2350 build please raise an issue and I 
+will try to add it.
+
+29/09/24
+
+* Removed dependency on modified TinyUSB library
+* Unmodified pico-sdk can be now used
+* New library for USB joystick/mouse/keyboard. See https://github.com/fruit-bat/pico-hid-host
+
+18/09/24
+
+* Added support for NES/SNES joypads on MURMULATOR firmware
+* New library to support reading NES/SNES joypads. See https://github.com/fruit-bat/pico-nespad
+
 24/08/24
 
 * Fixed USB joystick issue
