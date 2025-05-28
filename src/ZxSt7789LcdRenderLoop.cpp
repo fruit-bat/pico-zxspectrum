@@ -31,7 +31,13 @@ void ZxSt7789LcdRenderLoopInit() {
 }
 
 static void ZxSt7789LcdRenderLoopPre(ZxSpectrumMenu& picoRootWin) {
-  picoRootWin.move(0,0,40,30);
+  
+  picoRootWin.move(
+    LCD_SZ_FRAME_X,
+    LCD_SZ_FRAME_Y,
+    LCD_SZ_FRAME_COLS,
+    LCD_SZ_FRAME_ROWS
+  );
 
   // TODO this is now confusing there are defines in the make files
   // like SZ_WIZ_CW1 that can't be used here as there need to be a 
