@@ -263,7 +263,7 @@ target_compile_definitions(ZxSpectrumPicomputerZx2Lcd_720x576x50Hz PRIVATE
   REAL_ZXKEYBOARD
   REAL_ZXKEYBOARD_BOB
   HID_KEY_MOD_SAVE=2
-  PICO_STARTUP_VGA
+  DEFAULT_VIDEO_DRIVER=zx_spectrum_video_driver_vga_index
 )
 
 target_compile_definitions(ZxSpectrumPicomputerZx2Lcd_640x480x60Hz PRIVATE
@@ -273,5 +273,5 @@ target_compile_definitions(ZxSpectrumPicomputerZx2Lcd_640x480x60Hz PRIVATE
   REAL_ZXKEYBOARD
   REAL_ZXKEYBOARD_BOB
   HID_KEY_MOD_SAVE=2
-  PICO_STARTUP_VGA  
+  DEFAULT_VIDEO_DRIVER=zx_spectrum_video_driver_vga_index  
 )
