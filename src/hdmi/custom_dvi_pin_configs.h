@@ -34,4 +34,12 @@ static const struct dvi_serialiser_cfg murmulator2_hdmi_cfg = {
 	.invert_diffpairs = true
 };
 
+static const struct dvi_serialiser_cfg SpotPear_hdmi_cfg = {
+	.pio = DVI_DEFAULT_PIO_INST,
+	.sm_tmds = {0, 1, 2},
+	.pins_tmds = {10, 12, 14},
+	.pins_clk = 8,
+	.invert_diffpairs = true
+};
+
 #endif
