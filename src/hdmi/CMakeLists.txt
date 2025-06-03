@@ -493,6 +493,11 @@ target_compile_definitions(ZxSpectrumBobZero_720x576x50Hz PRIVATE
 
 ########################################################################
 # SpotPear HDMI - RP2040/RP2350
+#
+#  Video working
+#  Audio working
+#  SD card not working
+#
 ########################################################################
 
 foreach(target
