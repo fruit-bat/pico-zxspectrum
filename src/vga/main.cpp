@@ -252,8 +252,8 @@ void __not_in_flash_func(main_loop)(){
 }
 
 int main(){
-  gpio_init(LED_PIN);
-  gpio_set_dir(LED_PIN, GPIO_OUT);
+//  gpio_init(LED_PIN);
+//  gpio_set_dir(LED_PIN, GPIO_OUT);
 
   pico_set_core_voltage();
 
@@ -262,6 +262,9 @@ int main(){
   ZxSpectrumSettingValues settings;
   zxSpectrumSettings.load(&settings);
   setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
+
+  // Not that the following sets the system clock
+  ZxSpectrumVideoInit();
 
 #ifdef USE_STDIO
   //Initialise I/O

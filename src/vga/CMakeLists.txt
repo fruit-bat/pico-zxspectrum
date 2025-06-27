@@ -4,7 +4,7 @@
 ########################################################################
 
 set(picomputer_vga_defines
-  #PICO_CORE1_STACK_SIZE=0x800
+  PICO_CORE1_STACK_SIZE=0x800
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use SPI0

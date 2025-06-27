@@ -22,6 +22,9 @@ This project is intended to be relatively easy to breadboard or prototype in som
 * Kempston mouse emulation
 
 ## Updates
+27/06/25
+
+* Fixed some broken VGA firmware
 
 07/05/25
 
