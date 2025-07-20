@@ -8,6 +8,9 @@
    id="svg4921"
    sodipodi:docname="rgby_1111_vga.svg"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:export-filename="rgby_1111_vga.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +39,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer8"
-     inkscape:label="Layer 2">
+     inkscape:label="Layer 2"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#ffffff"
        id="rect5261"
