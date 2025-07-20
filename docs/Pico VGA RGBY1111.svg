@@ -60,21 +60,21 @@
 	<line x1="300" y1="140" x2="330" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<line x1="370" y1="140" x2="400" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<rect x="330" y="132" width="40" height="16" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
-	<text x="350" y="126" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 350, 126)">470 Ω</text>
+	<text x="350" y="126" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 350, 126)">100 Ω</text>
 	<text x="102" y="140" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 102, 140)">RP VGA B0</text>
 	<line x1="113" y1="140" x2="180" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="110" cy="140" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
 	<line x1="180" y1="140" x2="210" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<line x1="250" y1="140" x2="280" y2="140" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<rect x="210" y="132" width="40" height="16" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
-	<text x="230" y="126" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 230, 126)">330 Ω</text>
+	<text x="230" y="126" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 230, 126)">100 Ω</text>
 	<text x="418" y="100" style="font-family:Arial;font-size:12px;text-anchor:start" dominant-baseline="middle" transform="rotate(0, 418, 100)">VGA pin 2 (G)</text>
 	<line x1="400" y1="100" x2="407" y2="100" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="410" cy="100" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
 	<line x1="300" y1="100" x2="330" y2="100" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<line x1="370" y1="100" x2="400" y2="100" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<rect x="330" y="92" width="40" height="16" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
-	<text x="350" y="86" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 350, 86)">470 Ω</text>
+	<text x="350" y="86" style="font-family:Arial;font-size:11px;text-anchor:middle" dominant-baseline="baseline" transform="rotate(0, 350, 86)">100 Ω</text>
 	<text x="102" y="100" style="font-family:Arial;font-size:12px;text-anchor:end" dominant-baseline="middle" transform="rotate(0, 102, 100)">RP VGA G0</text>
 	<line x1="113" y1="100" x2="180" y2="100" style="stroke:rgb(0, 0, 0);stroke-linecap:square;stroke-width:2" />
 	<ellipse cx="110" cy="100" rx="3" ry="3" style="fill-opacity:0;fill:rgb(0, 0, 0);stroke:rgb(0, 0, 0);stroke-width:2" />
