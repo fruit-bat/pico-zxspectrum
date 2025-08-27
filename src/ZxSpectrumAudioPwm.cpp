@@ -89,7 +89,7 @@ bool __not_in_flash_func(repeating_timer_callback)(struct repeating_timer *timer
 #ifdef SPK_PIN
     pwm_set_gpio_level(SPK_PIN, vA + vB + vC);
 #else
-#ifdef AY8912_ABC_STERO
+#ifdef AY8912_ABC_STEREO
     pwm_set_gpio_level(AY8912_A_PIN, vA + vB);
     pwm_set_gpio_level(AY8912_C_PIN, vC + vB);
 #else
