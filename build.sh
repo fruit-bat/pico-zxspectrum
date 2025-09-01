@@ -13,12 +13,14 @@ build_group() {
 }
 
 # Pimoroni Pico VGA Demo Base with a Pico RP2040
-build_group vgaboard rp2040
+#build_group vgaboard rp2040
 # Pimoroni Pico VGA Demo Base with a Pico2 RP2350 (Untested)
-build_group vgaboard rp2350-arm-s
+#build_group vgaboard rp2350-arm-s
 # Adafruit feather with built in RP2040
-build_group adafruit_feather_rp2040 rp2040
+#build_group adafruit_feather_rp2040 rp2040
 # Various Pi Pico RP2040 boards
-build_group pico rp2040
+#build_group pico rp2040
 # Various Pi Pico2 RP2350 boards
-build_group pico2 rp2350-arm-s
+#build_group pico2 rp2350-arm-s
+# Waveshare RP2350 PiZero
+build_group waveshare_rp2350_zero rp2350-arm-s
