@@ -264,6 +264,19 @@ if (${PICO_BOARD} STREQUAL "pico")
 endif()
 
 ########################################################################
+# Waveshare - RP2350 - PiZero (RP2350 only)
+########################################################################
+add_custom_target (ZxSpectrumRP2350PiZero)
+add_dependencies (ZxSpectrumRP2350PiZero
+  ZxSpectrumRP2350PiZero_640x480x60Hz
+  ZxSpectrumRP2350PiZero_720x576x50Hz
+)
+if (${PICO_BOARD} STREQUAL "waveshare_rp2350_zero")
+  message("Relevant target: ZxSpectrumRP2350PiZero")
+  add_dependencies(relevant ZxSpectrumRP2350PiZero)
+endif()
+
+########################################################################
 # Olimex RP2040-PICO-PC (RP2040 or RP2350)
 ########################################################################
 add_custom_target (ZxSpectrumOlimexPc)

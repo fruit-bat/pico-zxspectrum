@@ -308,6 +308,9 @@ void __not_in_flash_func(main_loop)() {
 int main() {
   pico_set_core_voltage();
 
+  // Perhaps this is needed for using high GPIO for the SDCARD PIO
+  pio_set_gpio_base(pio1, 16);
+  
   // Try to use the general settings for video and audio defaults
   // This will start up the SD card before the system frequency is decided
   ZxSpectrumSettingValues settings;
