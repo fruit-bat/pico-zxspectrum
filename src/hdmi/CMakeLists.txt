@@ -433,6 +433,9 @@ foreach(target
   # create map/bin/hex file etc.
   pico_add_extra_outputs(${target})
 
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
 endforeach()
 
 set (ZxSpectrumRP2350PiZero_defines
