@@ -439,6 +439,7 @@ foreach(target
 endforeach()
 
 set (ZxSpectrumRP2350PiZero_defines
+  PICO_PIO_USE_GPIO_BASE=1
   # Set up the DVI output to match the Waveshare RP2350 PiZero
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=waveshare_rp2350_pizero_hdmi_cfg
