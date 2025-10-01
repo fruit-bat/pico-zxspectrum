@@ -400,6 +400,8 @@ set (ZxSpectrumPiZero_defines
   SDCARD_PIN_SPI0_MISO=20
   # HDMI audio
   PICO_HDMI_AUDIO
+  # Enable PS/2 keyboard on GPIO6-DAT, GPIO7-CLK
+  USE_PS2_KBD
 )
 
 target_compile_definitions(ZxSpectrumPiZero_640x480x60Hz PRIVATE
