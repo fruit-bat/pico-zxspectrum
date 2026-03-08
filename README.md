@@ -298,6 +298,21 @@ and set FF_USE_FIND to 1
 ```
 #define FF_USE_FIND            1
 ```
+Edit:
+```sh
+pimoroni-pico/drivers/sdcard/sdcard.c
+```
+and change
+```
+	float clkdiv = 3.0f;
+```
+to
+```
+	float clkdiv = 3.6f;
+```  
+
+
+
 Switch to the audio branch of PicoDVI
 ```sh
 cd PicoDVI
