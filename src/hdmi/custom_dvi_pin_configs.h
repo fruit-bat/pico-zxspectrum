@@ -16,6 +16,18 @@
 #endif
 
 // ----------------------------------------------------------------------------
+// Picomputer flip board by Bobricius
+//
+// This board is wired the same as the Adafruit sock
+static const struct dvi_serialiser_cfg picomputer_flip_cfg = {
+        .pio = DVI_DEFAULT_PIO_INST,
+        .sm_tmds = {0, 1, 2},
+        .pins_tmds = {12, 18, 16},
+        .pins_clk = 14,
+        .invert_diffpairs = false
+};
+
+// ----------------------------------------------------------------------------
 //  Waveshare - RP2040 - PiZero
 //
 static const struct dvi_serialiser_cfg waveshare_rp2040_pizero_hdmi_cfg = {

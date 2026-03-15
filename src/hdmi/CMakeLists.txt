@@ -392,8 +392,8 @@ set (ZxSpectrumPiZero_defines
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
-  SDCARD_PIO=pio1
-  SDCARD_PIO_SM=1
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=21
   SDCARD_PIN_SPI0_SCK=18
   SDCARD_PIN_SPI0_MOSI=19
@@ -516,8 +516,8 @@ set (ZxSpectrumBobZero_defines
   # Tell FATFS we want to find files
   FF_USE_FIND=1
   # Configure the SPI sd card to use PIO
-  SDCARD_PIO=pio1
-  SDCARD_PIO_SM=1
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
   SDCARD_PIN_SPI0_CS=21
   SDCARD_PIN_SPI0_SCK=18
   SDCARD_PIN_SPI0_MOSI=19
@@ -951,3 +951,79 @@ target_compile_definitions(ZxSpectrumOlimexPcHdmiAudio720x576x50Hz PRIVATE
   ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
 
+########################################################################
+# Picomputer flip by Bobriciuss - RP2350
+#
+foreach(target
+  ZxPicomputerFlip_640x480x60Hz
+  ZxPicomputerFlip_720x576x50Hz
+)
+  add_executable(${target}
+    ${zxspectrum_common_src}
+    ${zxspectrum_st7789_lcd_src}
+    ${zxspectrum_hdmi_src}
+    ${zxspectrum_kbd2_src}
+  )
+
+  target_link_libraries(${target}
+    ${zxspectrum_common_libs}
+    ${zxspectrum_hdmi_libs}
+    pico_st7789_menu
+  )
+
+  zxspectrum_generate_pio_headers(${target})
+
+  # create map/bin/hex file etc.
+  pico_add_extra_outputs(${target})
+
+  pico_enable_stdio_usb(${target} 0)
+  pico_enable_stdio_uart(${target} 0)
+
+endforeach()
+
+
+set (ZxPicomputerFlip_defines
+  DVI_CUSTOM_CONFIG
+  DVI_DEFAULT_SERIAL_CONFIG=picomputer_flip_cfg
+  # Set the default video driver
+  PICO_CORE1_STACK_SIZE=0x800
+  DVI_VERTICAL_REPEAT=2
+  DVI_N_TMDS_BUFFERS=3
+  DVI_1BPP_BIT_REVERSE=1
+  # Tell FATFS we want to find files
+  FF_USE_FIND=1
+  # Configure the SPI sd card to use PIO
+  #SDCARD_PIO=pio1
+  #SDCARD_PIO_SM=1
+  SDCARD_PIN_SPI0_CS=5
+  SDCARD_PIN_SPI0_SCK=6
+  SDCARD_PIN_SPI0_MOSI=4
+  SDCARD_PIN_SPI0_MISO=7
+  # HDMI audio
+  PICO_HDMI_AUDIO
+  #PICO_STARTUP_DVI
+  # Single pin PWM audio
+  SPK_PIN=0
+  PICO_PIO_PWM_AUDIO
+  PICO_AUDIO_PWM_PIO=pio1
+  INITIAL_VOL=0x30
+  PICO_ST7789_LCD
+  LCD_NO_BL
+  LCD_PIN_CLK=14
+  LCD_PIN_DC=13
+  LCD_PIN_CS=1
+  LCD_PIN_DIN=15
+  LCD_MIRROR_X
+  # Use the matrix keyboard
+  USE_KEY_MATRIX
+)
+
+target_compile_definitions(ZxPicomputerFlip_640x480x60Hz PRIVATE
+  ${ZxPicomputerFlip_defines}
+  ${zxspectrum_hdmi_640x480x60Hz_defines}
+)
+
+target_compile_definitions(ZxPicomputerFlip_720x576x50Hz PRIVATE
+  ${ZxPicomputerFlip_defines}
+  ${zxspectrum_hdmi_720x576x50Hz_defines}
+)
