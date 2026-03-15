@@ -26,7 +26,7 @@ int main(){
   gpio_set_dir(LED_PIN, GPIO_OUT);
 
   // Initialise the keyboard scan
-  pzx_keyscan_init();
+  zx_keyscan_init();
   
   // Initialise the menu renderer
   pcw_init_renderer();
@@ -47,13 +47,13 @@ int main(){
 
     printf("RP2040 Pico Pi at %3.1fMhz  ", (float)clock_get_hz(clk_sys) / 1000000.0);
     sleep_ms(500);
-    pzx_keyscan_row();
+    zx_keyscan_row();
     
     t1 = time_us_32();
     
     for(int i = 0; i < 100; ++i) {
       /*
-      pzx_send_rgb444_frame(
+      zx_send_rgb444_frame(
         pio, 
         sm,
         frame++,

@@ -15,9 +15,7 @@ set(picomputer_common_defines
 )
 
 set(picomputer_common_src
-	${CMAKE_CURRENT_LIST_DIR}/pzx_keyscan.cpp
-	${CMAKE_CURRENT_LIST_DIR}/pzx_keyscan.h
-	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumPicomputerJoystick.cpp
+	${zxspectrum_picomputer_kbd_src}
 )
 
 add_subdirectory(picomputer_vga)

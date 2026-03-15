@@ -2,11 +2,11 @@
 
 #include "tusb.h"
 
-void pzx_keyscan_init();
-void __not_in_flash_func(pzx_keyscan_row)();
-uint8_t __not_in_flash_func(pzx_kempston)();
-void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev);
-void __not_in_flash_func(pzx_menu_mode)(bool menu);
-bool pzx_menu_mode();
-bool pzx_fire_raw();
+void zx_keyscan_init();
+void zx_keyscan_row();
+uint8_t zx_kempston();
+void zx_keyscan_get_hid_reports(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev);
+void zx_menu_mode(bool menu);
+bool zx_menu_mode();
+bool zx_fire_raw();
 

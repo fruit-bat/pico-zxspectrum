@@ -78,13 +78,13 @@ static uint8_t hri = 0;                          // Currenct hid report index
 static uint8_t kbi = 0;
 static uint8_t menu = 0;
 
-void __not_in_flash_func(pzx_menu_mode)(bool m) {
+void __not_in_flash_func(zx_menu_mode)(bool m) {
 #ifdef PICOMPUTER_PICOZX
   menu = m ? 1 : 0; 
 #endif
 }
 
-bool pzx_menu_mode() {
+bool zx_menu_mode() {
   return menu != 0;
 }
 
@@ -386,7 +386,7 @@ static uint8_t kbits[5][6][6] = {
 
 static uint8_t kempstonJoystick = 0;
 
-static void pzx_mode_joystick() {
+static void zx_mode_joystick() {
   // Joystick mode
   kempstonJoystick = JOYSTICK_OFFSET;
 #ifdef LED_PIN
@@ -394,7 +394,7 @@ static void pzx_mode_joystick() {
 #endif
 }
 
-static void pzx_mode_cursor() {
+static void zx_mode_cursor() {
   // Cursor mode
   kempstonJoystick = 0;
 #ifdef LED_PIN
@@ -402,7 +402,7 @@ static void pzx_mode_cursor() {
 #endif
 }
 
-void pzx_keyscan_init() {
+void zx_keyscan_init() {
 
   for(int i = 0; i < RN; ++i) {
       gpio_init(rp[i]);
@@ -421,13 +421,13 @@ void pzx_keyscan_init() {
    gpio_put(row, 0);
 
 #ifdef REAL_ZXKEYBOARD
-   pzx_mode_joystick();
+   zx_mode_joystick();
 #else
-   pzx_mode_cursor();
+   zx_mode_cursor();
 #endif
 }
 
-void __not_in_flash_func(pzx_keyscan_row)() {
+void __not_in_flash_func(zx_keyscan_row)() {
   static uint32_t ri = 0;
   static uint32_t si = 0;
   uint32_t a = ~(gpio_get_all() >> CP_SHIFT);
@@ -457,15 +457,15 @@ void __not_in_flash_func(pzx_keyscan_row)() {
   rdb[ri] = (am | rdb[ri]) & om; 
 }
 
-void pzx_scan_matrix() {
+void zx_scan_matrix() {
   for( int i = 0; i < RN; ++i) {
     sleep_ms(2);
-    pzx_keyscan_row();
+    zx_keyscan_row();
   }
 }
 
-bool pzx_fire_raw() {
-  pzx_scan_matrix();
+bool zx_fire_raw() {
+  zx_scan_matrix();
   for(int si = 0; si < SAMPLES; ++si) {
     uint8_t s = rs[KEY_FIRE_ROW][si];
     if (s & KEY_FIRE_BIT) return true;  
@@ -473,7 +473,7 @@ bool pzx_fire_raw() {
   return false;
 }
 
-uint8_t __not_in_flash_func(pzx_kempston)() {
+uint8_t __not_in_flash_func(zx_kempston)() {
 // 000FUDLR
 #ifdef PICOMPUTER_PICOZX
   #ifdef REAL_ZXKEYBOARD_DM
@@ -506,7 +506,7 @@ uint8_t __not_in_flash_func(pzx_kempston)() {
 #endif
 }
 
-void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev) {
+void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const **curr, hid_keyboard_report_t const **prev) {
 
   // Key modifier (shift, alt, ctrl, etc.)
   static uint8_t modifier = 0;
@@ -534,12 +534,12 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
     }
     if (rdb[3] & (1<<3)) {
       // Cursor mode
-      pzx_mode_cursor();
+      zx_mode_cursor();
       kbi &= ~1;
     }
     else if (rdb[3] & (1<<4)) {
       // Joystick mode
-      pzx_mode_joystick();
+      zx_mode_joystick();
       kbi |= 1;
     }    
     rdb[KEY_UP_ROW] &= ~KEY_UP_BIT;
@@ -554,11 +554,11 @@ void __not_in_flash_func(pzx_keyscan_get_hid_reports)(hid_keyboard_report_t cons
   // Cursor mode 
   if (shift) {
     if (rdb[KEY_CURSOR_ROW] & KEY_CURSOR_BIT) { 
-      pzx_mode_cursor();
+      zx_mode_cursor();
     }
     // Joystick mode
     if (rdb[KEY_KEMPSTON_ROW] & KEY_KEMPSTON_BIT) {
-      pzx_mode_joystick();
+      zx_mode_joystick();
     }
   }
   #endif
