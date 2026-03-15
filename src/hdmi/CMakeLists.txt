@@ -955,8 +955,8 @@ target_compile_definitions(ZxSpectrumOlimexPcHdmiAudio720x576x50Hz PRIVATE
 # Picomputer flip by Bobriciuss - RP2350
 #
 foreach(target
-  ZZxPicomputerFlip_640x480x60Hz
-  ZZxPicomputerFlip_720x576x50Hz
+  ZxPicomputerFlip_640x480x60Hz
+  ZxPicomputerFlip_720x576x50Hz
 )
   add_executable(${target}
     ${zxspectrum_common_src}
@@ -982,8 +982,7 @@ foreach(target
 endforeach()
 
 
-set (ZZxPicomputerFlip_defines
-  # Set up the DVI output to match the Waveshare RP2040 PiZero
+set (ZxPicomputerFlip_defines
   DVI_CUSTOM_CONFIG
   DVI_DEFAULT_SERIAL_CONFIG=picomputer_flip_cfg
   # Set the default video driver
@@ -1019,12 +1018,12 @@ set (ZZxPicomputerFlip_defines
   USE_KEY_MATRIX
 )
 
-target_compile_definitions(ZZxPicomputerFlip_640x480x60Hz PRIVATE
-  ${ZZxPicomputerFlip_defines}
+target_compile_definitions(ZxPicomputerFlip_640x480x60Hz PRIVATE
+  ${ZxPicomputerFlip_defines}
   ${zxspectrum_hdmi_640x480x60Hz_defines}
 )
 
-target_compile_definitions(ZZxPicomputerFlip_720x576x50Hz PRIVATE
-  ${ZZxPicomputerFlip_defines}
+target_compile_definitions(ZxPicomputerFlip_720x576x50Hz PRIVATE
+  ${ZxPicomputerFlip_defines}
   ${zxspectrum_hdmi_720x576x50Hz_defines}
 )
