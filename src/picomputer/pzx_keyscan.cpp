@@ -22,22 +22,23 @@
 #define RN_PZX_REAL 6
 #define CP_VGA 20, 21, 22, 26, 27, 28
 #define CP_MAX 1, 2, 3, 4, 5, 14
-#define CP_FLP 1, 2, 3, 4, 5, 14
+#define CP_FLP 3, 2, 8, 9, 10, 20
 #define CP_PZX 19, 20, 21, 22, 26, 27, 28
 #define CP_PZX_REAL 18, 19, 20, 21, 22, 26, 27, 28
 #define RP_VGA 14, 15, 16, 17, 18, 19
 #define RP_MAX 6, 9, 15, 8, 7, 22
-#define RP_FLP 6, 9, 15, 8, 7, 22
+#define RP_FLP 26, 28, 27, 21, 22, 11
 #define RP_PZX 8, 9, 14, 15, 16, 17, 18
 #define RP_PZX_REAL 8, 9, 14, 15, 16, 17
 #define CP_SHIFT_VGA 20
 #define CP_SHIFT_MAX 1
-#define CP_SHIFT_FLP 1
+#define CP_SHIFT_FLP 2
 #define CP_SHIFT_PZX 19
 #define CP_SHIFT_PZX_REAL 18
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
-#define CP_JOIN_FLP(a) ((a & 31) | ((a >> 8) & 32))
+// 1, 0, 6, 7, 8, 18
+#define CP_JOIN_FLP(a) (((2&a)>>1)|((1&a)<<1)|(((3<<6)&a)>>4)|(((1<<18)&a)>>(18-6)))
 #define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (7 << 4)))
 #define CP_JOIN_PZX_REAL(a) ((a & 31) | ((a >> 3) & (7 << 5)))
 
