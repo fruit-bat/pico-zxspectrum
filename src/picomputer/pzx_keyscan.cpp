@@ -12,29 +12,43 @@
 
 #define CN_VGA 6
 #define CN_MAX 6
+#define CN_FLP 6
 #define CN_PZX 7
 #define CN_PZX_REAL 8
 #define RN_VGA 6
 #define RN_MAX 6
+#define RN_FLP 6
 #define RN_PZX 7
 #define RN_PZX_REAL 6
 #define CP_VGA 20, 21, 22, 26, 27, 28
 #define CP_MAX 1, 2, 3, 4, 5, 14
+#define CP_FLP 1, 2, 3, 4, 5, 14
 #define CP_PZX 19, 20, 21, 22, 26, 27, 28
 #define CP_PZX_REAL 18, 19, 20, 21, 22, 26, 27, 28
 #define RP_VGA 14, 15, 16, 17, 18, 19
 #define RP_MAX 6, 9, 15, 8, 7, 22
+#define RP_FLP 6, 9, 15, 8, 7, 22
 #define RP_PZX 8, 9, 14, 15, 16, 17, 18
 #define RP_PZX_REAL 8, 9, 14, 15, 16, 17
 #define CP_SHIFT_VGA 20
 #define CP_SHIFT_MAX 1
+#define CP_SHIFT_FLP 1
 #define CP_SHIFT_PZX 19
 #define CP_SHIFT_PZX_REAL 18
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
+#define CP_JOIN_FLP(a) ((a & 31) | ((a >> 8) & 32))
 #define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (7 << 4)))
 #define CP_JOIN_PZX_REAL(a) ((a & 31) | ((a >> 3) & (7 << 5)))
 
+#ifdef PICOMPUTER_FLIP
+  #define CP CP_FLP
+  #define RP RP_FLP
+  #define CP_JOIN CP_JOIN_FLP
+  #define CP_SHIFT CP_SHIFT_FLP
+  #define RN RN_FLP
+  #define CN CN_FLP
+#endif
 #ifdef PICOMPUTER_VGA
   #define CP CP_VGA
   #define RP RP_VGA
@@ -311,7 +325,7 @@ static uint8_t kbits[5][6][6] = {
 #endif
 
 #define COL_TO_BIT(col) (1<<(col-1))
-#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA) || defined(PICOMPUTER_FLIP)
   #define KEY_ALT_ROW 5
   #define KEY_ALT_BIT 0x20
   #define KEY_FIRE_ROW 4
@@ -511,7 +525,7 @@ void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const
   // Key modifier (shift, alt, ctrl, etc.)
   static uint8_t modifier = 0;
 
-#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA) || defined(PICOMPUTER_FLIP)
   
   bool alt_down = rdb[KEY_ALT_ROW] & KEY_ALT_BIT;
   
@@ -569,7 +583,7 @@ void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const
   uint32_t ki = 0;
   hid_keyboard_report_t *chr = &hr[hri & 1];
   chr->modifier = modifier;
-#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA) || defined(PICOMPUTER_FLIP)
   // Press ctrl for quick save
   if (alt_down && (((rdb[0] | rdb[1] | rdb[2]) & 31) != 0)) chr->modifier |= 1;
 #else
@@ -586,7 +600,7 @@ void __not_in_flash_func(zx_keyscan_get_hid_reports)(hid_keyboard_report_t const
           while(ki < sizeof(chr->keycode)) chr->keycode[ki++] = 1;
           break;  
         }
-#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA)
+#if defined(PICOMPUTER_MAX) || defined(PICOMPUTER_ZX) || defined(PICOMPUTER_VGA) || defined(PICOMPUTER_FLIP)
         uint8_t kc = kbits[alt_down ? 4 : kbi][ri][ci];
 #else
         uint8_t kc = kbits[kbi][ri][ci];

@@ -1017,7 +1017,7 @@ set (ZxPicomputerFlip_defines
   # Use the matrix keyboard
   USE_KEY_MATRIX
   # This is just used to select the correct keyobard layout
-  PICOMPUTER_MAX
+  PICOMPUTER_FLIP
 )
 
 target_compile_definitions(ZxPicomputerFlip_640x480x60Hz PRIVATE
