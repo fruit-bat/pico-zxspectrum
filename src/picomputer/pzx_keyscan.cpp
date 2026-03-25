@@ -38,10 +38,14 @@
 #define CP_JOIN_VGA(a) ((a & 7) | ((a >> 3) & (7 << 3)))
 #define CP_JOIN_MAX(a) ((a & 31) | ((a >> 8) & 32))
 // 1, 0, 6, 7, 8, 18
-#define CP_JOIN_FLP(a) (((2&a)>>1)|((1&a)<<1)|(((3<<6)&a)>>4)|(((1<<18)&a)>>(18-6)))
+#define CP_JOIN_FLP(a) (((2&a)>>1)|((1&a)<<1)|(((7<<6)&a)>>4)|(((1<<18)&a)>>(18-6)))
 #define CP_JOIN_PZX(a) ((a & 15) | ((a >> 3) & (7 << 4)))
 #define CP_JOIN_PZX_REAL(a) ((a & 31) | ((a >> 3) & (7 << 5)))
-
+// 012345678901234567890
+//   21    345         6    
+// 21    345         6
+//   ----            
+//       ------------                   
 #ifdef PICOMPUTER_FLIP
   #define CP CP_FLP
   #define RP RP_FLP
