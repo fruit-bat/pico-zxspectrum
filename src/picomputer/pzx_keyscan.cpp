@@ -4,7 +4,7 @@
 #include "hardware/clocks.h"
 #include "hardware/structs/clocks.h"
 #include "class/hid/hid.h"
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 
 // define REAL_ZXKEYBOARD to use ZX Spectrum 5x8 real keyboard matrix
 

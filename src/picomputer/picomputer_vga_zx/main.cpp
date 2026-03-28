@@ -4,7 +4,7 @@
 #include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 
 #include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"

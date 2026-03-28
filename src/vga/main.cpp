@@ -6,7 +6,7 @@
 
 #include "ps2kbd.h"
 
-// #include "pzx_keyscan.h"
+// #include "ZxSpectrumKeyMatrix.h"
 
 
 #include "PicoCharRendererVga.h"

@@ -8,7 +8,7 @@
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumFatSpiKiosk.h"
 #endif
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"

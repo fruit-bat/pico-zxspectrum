@@ -4,7 +4,7 @@
 #include "hardware/vreg.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 #include "pzx_prepare_rgb444_scanline.h"
 #include "PicoCharRendererSt7789.h"
 #include "st7789_lcd.h"
