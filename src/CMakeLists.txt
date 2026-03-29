@@ -98,6 +98,13 @@ set(zxspectrum_kbd2_src
   ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
 )
 
+# Keyboard source for the Picomputer ZX and Max (possibly others)
+set(zxspectrum_picomputer_kbd_src
+	${CMAKE_CURRENT_LIST_DIR}/picomputer/pzx_keyscan.cpp
+	${CMAKE_CURRENT_LIST_DIR}/picomputer/pzx_keyscan.h
+	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
+)
+
 set(zxspectrum_common_libs
   pico_stdlib
   pico_multicore

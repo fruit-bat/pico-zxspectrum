@@ -4,7 +4,7 @@
 #include "PicoCoreVoltage.h"
 #include "hardware/pwm.h"
 
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 
 #include "PicoCharRendererVga.h"
 #include "PicoWinHidKeyboard.h"
@@ -18,7 +18,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
-#include "ZxSpectrumPicomputerJoystick.h"
+#include "ZxSpectrumMatrixJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
 #include "bsp/board.h"
@@ -49,7 +49,7 @@ static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick hidJoystick;
-static ZxSpectrumPicomputerJoystick picomputerJoystick;
+static ZxSpectrumMatrixJoystick picomputerJoystick;
 static ZxSpectrumDualJoystick dualJoystick(
   &hidJoystick, 
   &picomputerJoystick
@@ -184,12 +184,12 @@ void __not_in_flash_func(process_joystick)() {
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
-    pzx_keyscan_row();
+    zx_keyscan_row();
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
   picomputerJoystick.enabled(!showMenu);  
-  pzx_menu_mode(showMenu);
+  zx_menu_mode(showMenu);
 }
 
 void core1_main() {
@@ -220,7 +220,7 @@ void __not_in_flash_func(main_loop)(){
 
     hid_keyboard_report_t const *curr;
     hid_keyboard_report_t const *prev;
-    pzx_keyscan_get_hid_reports(&curr, &prev);
+    zx_keyscan_get_hid_reports(&curr, &prev);
     process_picomputer_kbd_report(curr, prev);
     process_joystick();
     
@@ -253,8 +253,8 @@ int main(){
   setZxSpectrumVideoDriver((zx_spectrum_video_driver_enum_t)settings.videoDriverDefault);  
 
   // Initialise the keyboard scan
-  pzx_keyscan_init();
-  if(pzx_fire_raw()) ZxSpectrumVideoNext();
+  zx_keyscan_init();
+  if(zx_fire_raw()) ZxSpectrumVideoNext();
 
   // Not that the following sets the system clock
   ZxSpectrumVideoInit();

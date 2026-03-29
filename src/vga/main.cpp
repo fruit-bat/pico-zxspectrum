@@ -6,7 +6,7 @@
 
 #include "ps2kbd.h"
 
-// #include "pzx_keyscan.h"
+// #include "ZxSpectrumKeyMatrix.h"
 
 
 #include "PicoCharRendererVga.h"
@@ -227,7 +227,7 @@ void __not_in_flash_func(main_loop)(){
 
 //    hid_keyboard_report_t const *curr;
 //    hid_keyboard_report_t const *prev;
-//    pzx_keyscan_get_hid_reports(&curr, &prev);
+//    zx_keyscan_get_hid_reports(&curr, &prev);
 //    process_picomputer_kbd_report(curr, prev);
     process_joystick();
 
@@ -317,7 +317,7 @@ int main(){
   pcw_init_renderer();
 
   // Initialise the keyboard scan
-//  pzx_keyscan_init();
+//  zx_keyscan_init();
 
   sleep_ms(10);
 

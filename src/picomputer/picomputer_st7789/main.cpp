@@ -8,7 +8,7 @@
 #ifdef PICOMPUTER_PICOZX_LCD
 #include "ZxSpectrumFatSpiKiosk.h"
 #endif
-#include "pzx_keyscan.h"
+#include "ZxSpectrumKeyMatrix.h"
 
 #include "PicoWinHidKeyboard.h"
 #include "PicoDisplay.h"
@@ -21,7 +21,7 @@
 #include "ZxSpectrumHidKeyboard.h"
 #include "ZxSpectrumDualJoystick.h"
 #include "ZxSpectrumHidJoystick.h"
-#include "ZxSpectrumPicomputerJoystick.h"
+#include "ZxSpectrumMatrixJoystick.h"
 #include "ZxSpectrumHidMouse.h"
 
 #include "bsp/board.h"
@@ -52,7 +52,7 @@ static ZxSpectrumFileLoop snapFileLoop;
 static QuickSave quickSave;
 static ZxSpectrumHidMouse mouse;
 static ZxSpectrumHidJoystick hidJoystick;
-static ZxSpectrumPicomputerJoystick picomputerJoystick;
+static ZxSpectrumMatrixJoystick picomputerJoystick;
 static ZxSpectrumDualJoystick dualJoystick(
   &hidJoystick,
   &picomputerJoystick
@@ -188,11 +188,11 @@ void __not_in_flash_func(process_joystick)() {
 
 void __not_in_flash_func(setMenuState)(bool showMenu) {
   picomputerJoystick.enabled(!showMenu);
-  pzx_menu_mode(showMenu);
+  zx_menu_mode(showMenu);
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackLine)(int32_t y) {
-  pzx_keyscan_row();
+  zx_keyscan_row();
 }
 
 void __not_in_flash_func(ZxRenderLoopCallbackMenu)(bool state) {
@@ -231,7 +231,7 @@ void __not_in_flash_func(main_loop)() {
     else {
       hid_keyboard_report_t const *curr;
       hid_keyboard_report_t const *prev;
-      pzx_keyscan_get_hid_reports(&curr, &prev);
+      zx_keyscan_get_hid_reports(&curr, &prev);
       process_picomputer_kbd_report(curr, prev);
     }
     if (!showMenu) {
@@ -264,8 +264,8 @@ int main() {
 
 #ifdef USE_KEY_MATRIX
   // Initialise the keyboard scan
-  pzx_keyscan_init();
-  if(pzx_fire_raw()) ZxSpectrumVideoNext();
+  zx_keyscan_init();
+  if(zx_fire_raw()) ZxSpectrumVideoNext();
 #endif
 
   // Not that the following sets the system clock
