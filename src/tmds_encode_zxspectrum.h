@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #ifndef _TMDS_ENCODE_ZXSPECTRUM_H
 #define _TMDS_ENCODE_ZXSPECTRUM_H
 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumHidKeyboard.h"
 #include "stdlib.h"
 #include <pico/printf.h>

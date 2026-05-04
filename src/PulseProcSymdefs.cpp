@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "PulseProcSymdefs.h"
 
 PulseProcSymdefs::PulseProcSymdefs(std::vector<uint16_t>* sd) :

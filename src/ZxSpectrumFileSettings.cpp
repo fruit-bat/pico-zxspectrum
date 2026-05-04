@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumFileSettings.h"
 #include "FatFsSpiOutputStream.h"
 #include "FatFsSpiInputStream.h"

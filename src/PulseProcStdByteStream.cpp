@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "PulseProcStdByteStream.h"
 
 PulseProcStdByteStream::PulseProcStdByteStream(PulseProcStdByte* ppb) :

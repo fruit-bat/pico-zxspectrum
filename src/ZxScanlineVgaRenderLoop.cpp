@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxScanlineVgaRenderLoop.h"
 #include "ZxSpectrumDisplay.h"
 #include "ZxSpectrumPrepareRgbScanline.h"

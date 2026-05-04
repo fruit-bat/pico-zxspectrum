@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "PulseProcSymbol.h"
 
 int32_t __not_in_flash_func(PulseProcSymbol::advance)(

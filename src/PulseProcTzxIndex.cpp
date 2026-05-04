@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "PulseProcTzxIndex.h"
 
 PulseProcTzxIndex::PulseProcTzxIndex() : _bi(0)

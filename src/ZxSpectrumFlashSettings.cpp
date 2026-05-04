@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumFlashSettings.h"
 #include <hardware/flash.h>
 #include <hardware/sync.h>

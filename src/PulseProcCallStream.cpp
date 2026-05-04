@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "PulseProcCallStream.h"
 
 PulseProcCallStream::PulseProcCallStream(uint32_t* i) :

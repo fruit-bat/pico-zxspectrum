@@ -1,4 +1,12 @@
-/* Copyright Amstrad, redistributed with permission, not MIT */
+/* 
+ * ZX Spectrum ROM
+ * Copyright (c) Amstrad plc
+ *
+ * This ROM is redistributed with permission from Amstrad.
+ * It is not covered by the MIT License used for the rest of this project.
+ *
+ * This file must not be assumed to be freely reusable under MIT terms.
+ */
 #ifdef __cplusplus
 extern "C" {
 #endif
