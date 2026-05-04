@@ -453,6 +453,9 @@ They are not covered by the MIT License and must not be assumed to be freely reu
 
 These files are provided for use with this emulator project. Users should ensure their use complies with Amstrad's terms.
 
+### Docs
+You should not assume that anything in the docs foloer is solely covered by the MIT License.
+
 ## Thanks to
 [CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
 [Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>
