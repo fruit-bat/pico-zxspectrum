@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 set(picomputer_common_defines

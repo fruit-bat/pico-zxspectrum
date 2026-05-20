@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 
 set(picomputer_vgazx_defines
   ${picomputer_common_defines}

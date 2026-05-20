@@ -423,6 +423,39 @@ If not already present, they will be created as the emulator starts up.
 ```sh
 tio -m ODELBS /dev/ttyUSB0
 ```
+
+## License
+
+### Source
+The majority of this project is licensed under the MIT License (see LICENSE).
+
+If you make improvements or build something interesting with it, I'd genuinely enjoy hearing about it or seeing contributions back—but there is no obligation.
+
+Some files include third-party code with their own licenses. These are clearly marked within those files and remain under their respective licenses.
+
+Please refer to individual file headers for details where applicable.
+
+This is a hobby project provided as-is, with no warranty.
+
+### Binaries
+Pre-built binaries provided in this repository are compiled from a combination of this project's source code and third-party components.
+
+While the majority of the source code is licensed under the MIT License, the binaries may include components under other licenses. As such, they are subject to the terms of those respective licenses.
+
+You should not assume that the binaries are solely covered by the MIT License.
+
+If you intend to use the software in a commercial or redistributed form, it is recommended to review the licenses of included components or build from source.
+
+### ROMs
+ROM images included in this project are copyrighted by Amstrad and are redistributed with permission.
+
+They are not covered by the MIT License and must not be assumed to be freely reusable under those terms.
+
+These files are provided for use with this emulator project. Users should ensure their use complies with Amstrad's terms.
+
+### Docs
+You should not assume that anything in the docs folder is solely covered by the MIT License.
+
 ## Thanks to
 [CarlK](https://github.com/carlk3/) for the super [no OS FAT FS for Pico](https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico)<br/>
 [Damien G](https://damieng.com/) for maintaining and publishing some wonderful [8-bit fonts](https://damieng.com/typography/zx-origins/)<br/>

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 cmake_minimum_required(VERSION 3.12)
 
 # Determine the MCU type and configure accordingly

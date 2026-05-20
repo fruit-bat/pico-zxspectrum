@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumPrepareScanvideoScanline.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "ZxSpectrumDisplay.h"

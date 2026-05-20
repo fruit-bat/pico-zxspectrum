@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumFatSpiKiosk.h"
 
 ZxSpectrumFatSpiKiosk::ZxSpectrumFatSpiKiosk(SdCardFatFsSpi* sdCard, const char *folder) :

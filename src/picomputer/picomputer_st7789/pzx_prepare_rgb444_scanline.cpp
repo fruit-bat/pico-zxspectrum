@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "pzx_prepare_rgb444_scanline.h"
 #include "st7789_lcd.pio.h"
 

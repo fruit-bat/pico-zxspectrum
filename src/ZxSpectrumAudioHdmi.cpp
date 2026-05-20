@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumAudioHdmi.h"
 
 #if !defined(PICO_HDMI_AUDIO)

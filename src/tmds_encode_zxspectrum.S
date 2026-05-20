@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "hardware/regs/addressmap.h"
 #include "hardware/regs/sio.h"
 

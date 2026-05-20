@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include <pico/printf.h>
 #include "hid_host_joy.h"
 #include "ZxSpectrumMatrixJoystick.h"

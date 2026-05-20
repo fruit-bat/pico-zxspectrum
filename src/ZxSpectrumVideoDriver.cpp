@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumVideoDriver.h"
 
 #if defined(PICO_ST7789_LCD)

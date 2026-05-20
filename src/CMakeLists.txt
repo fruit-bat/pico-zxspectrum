@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
@@ -101,7 +103,7 @@ set(zxspectrum_kbd2_src
 # Keyboard source for the Picomputer ZX and Max (possibly others)
 set(zxspectrum_picomputer_kbd_src
 	${CMAKE_CURRENT_LIST_DIR}/picomputer/pzx_keyscan.cpp
-	${CMAKE_CURRENT_LIST_DIR}/picomputer/pzx_keyscan.h
+  ${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumKeyMatrix.h
 	${CMAKE_CURRENT_LIST_DIR}/ZxSpectrumMatrixJoystick.cpp
 )
 

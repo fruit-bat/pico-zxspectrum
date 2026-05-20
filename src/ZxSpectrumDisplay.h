@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #pragma once
 
 #define ZX_SPECTRUM_SCREEN_WIDTH 256

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSpectrumAudioPioPwm.h"
 
 #if !defined(PICO_PIO_PWM_AUDIO)

@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 include_directories(${picomputer_common_inc})
 
 add_executable(ZxSpectrumPicomputerMax

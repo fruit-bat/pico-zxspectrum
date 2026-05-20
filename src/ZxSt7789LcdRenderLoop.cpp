@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #include "ZxSt7789LcdRenderLoop.h"
 #include "picomputer/picomputer_st7789/st7789_lcd.h"
 #include "picomputer/picomputer_st7789/pzx_prepare_rgb444_scanline.h"

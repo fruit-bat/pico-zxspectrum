@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 fruit-bat
 #ifndef _CUSTOM_DVI_PIN_CONFIGS_H
 #define _CUSTOM_DVI_PIN_CONFIGS_H
 

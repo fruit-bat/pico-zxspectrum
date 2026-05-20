@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 fruit-bat
 ########################################################################
 # VGA on Pimoroni Pico VGA Demo Base
 # PICO_BOARD=vgaboard
